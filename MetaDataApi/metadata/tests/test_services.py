@@ -17,7 +17,9 @@ class TestRdfService(TestCase):
         from MetaDataApi.metadata.services.rdf import rdfService
 
         url = "http://motools.sf.net/event/event.n3"
-        
+        url = "http://bigasterisk.com/foaf.rdf"
+        url = "http://xmlns.com/foaf/0.1/"
+
         service = rdfService()
         
         service.rdfs_upload(url)
