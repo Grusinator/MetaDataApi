@@ -1,0 +1,104 @@
+<rdf:RDF
+      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+      xmlns:admin="http://webns.net/mvcb/"
+      xmlns:redfoot="http://redfoot.net/2005/session#"
+      xmlns:owl="http://www.w3.org/2002/07/owl#"
+      xmlns:doap="http://usefulinc.com/ns/doap#"
+      xmlns:cert="http://www.w3.org/ns/auth/cert#"
+      xmlns:rsa="http://www.w3.org/ns/auth/rsa#"
+>
+<foaf:PersonalProfileDocument rdf:about="">
+  <foaf:maker rdf:resource="http://bigasterisk.com/foaf.rdf#drewp"/>
+  <foaf:primaryTopic rdf:resource="http://bigasterisk.com/foaf.rdf#drewp"/>
+  <admin:generatorAgent rdf:resource="http://www.ldodds.com/foaf/foaf-a-matic"/>
+  <admin:errorReportsTo rdf:resource="mailto:leigh@ldodds.com"/>
+</foaf:PersonalProfileDocument>
+<foaf:Person rdf:about="http://bigasterisk.com/foaf.rdf#drewp">
+ <foaf:name>Drew Perttula</foaf:name>
+ <foaf:title>Mr</foaf:title>
+ <foaf:givenname>Drew</foaf:givenname>
+ <foaf:family_name>Perttula</foaf:family_name>
+ <foaf:nick>drewp</foaf:nick>
+ <foaf:mbox_sha1sum>847eea9f89b1efff3c735c0d73b30b8280cfc030</foaf:mbox_sha1sum>
+ <foaf:homepage rdf:resource="http://bigasterisk.com"/>
+ <foaf:depiction rdf:resource="http://bigasterisk.com/drewheadshot"/>
+ <foaf:holdsAccount rdf:resource="http://delicious.com/drewpca/"/>
+ <foaf:holdsAccount rdf:resource="http://identi.ca/user/8563"/>
+ <foaf:workplaceHomepage rdf:resource="http://www.dreamworksanimation.com/"/>
+ <foaf:schoolHomepage rdf:resource="http://berkeley.edu"/>
+ <foaf:currentProject rdf:resource="http://gasuse.bigasterisk.com/"/>
+ <foaf:currentProject rdf:resource="http://fantasyfamegame.com/"/>
+
+
+<rdfs:seeAlso rdf:resource="http://revyu.com/people/drewp/about/rdf"/>
+<owl:sameAs rdf:resource="http://revyu.com/people/drewp"/>
+
+
+<rdfs:seeAlso rdf:resource="http://identi.ca/drewp/foaf"/>
+<owl:sameAs rdf:resource="http://identi.ca/user/8563"/>
+
+ 
+ <foaf:knows>
+  <foaf:Person>
+   <foaf:name>David McClosky</foaf:name>
+   <foaf:mbox_sha1sum>1c9699bb667d9ad9595cbaa0467ce677bf225829</foaf:mbox_sha1sum></foaf:Person>
+ </foaf:knows>
+ <foaf:knows>
+  <foaf:Person>
+   <foaf:name>Kelsi Perttula</foaf:name>
+   <foaf:mbox_sha1sum>92fe6a27d1a6d6342da3889b6af429f8f3d229b2</foaf:mbox_sha1sum></foaf:Person>
+ </foaf:knows>
+ <foaf:knows>
+  <foaf:Person rdf:about="http://collectivesource.com/foaf.rdf#nathan">
+   <foaf:name>Nathan Wilson</foaf:name>
+   <foaf:mbox_sha1sum>25b089f5bc32b48f545daf04a60c4823dc477c80</foaf:mbox_sha1sum>
+   <rdfs:seeAlso rdf:resource="http://collectivesource.com/foaf.rdf"/>
+  </foaf:Person>
+ </foaf:knows>
+ <foaf:knows>
+  <foaf:Person rdf:about="http://bblfish.net/people/henry/card#me">
+   <foaf:name>Henry Story</foaf:name>
+   <rdfs:seeAlso rdf:resource="http://bblfish.net/people/henry/card"/>
+  </foaf:Person>
+ </foaf:knows>
+
+
+
+ <redfoot:hexdigest>a58baff6ce11790bea51287049899088</redfoot:hexdigest>
+ <based_near xmlns="http://xmlns.com/foaf/0.1/">
+    <Point xmlns="http://www.w3.org/2003/01/geo/wgs84_pos#">
+        <lat>37.520478</lat>
+        <long>-122.27603</long>
+    </Point>
+ </based_near>
+ <foaf:based_near rdf:resource="http://sws.geonames.org/5404335/"/>
+
+</foaf:Person>
+
+<doap:Project rdf:about="http://fantasyfamegame.com/">
+ <doap:name>Fantasy Fame Game</doap:name>
+ <doap:description>(unreleased)</doap:description>
+ <doap:homepage rdf:resource="http://fantasyfamegame.com/" />
+ <doap:maintainer rdf:resource="http://bigasterisk.com/foaf.rdf#drewp"/>
+ <doap:category rdf:resource="http://rdflib.net/projects#using_rdflib"/>
+</doap:Project>
+
+
+	<rdf:Description rdf:about="http://bigasterisk.com/foaf.rdf#drewp">
+		<foaf:holdsAccount>
+			<foaf:OnlineAccount rdf:about="#accnt">
+				<foaf:accountServiceHomePage rdf:resource="/cert/" />
+			</foaf:OnlineAccount>
+		</foaf:holdsAccount>
+	</rdf:Description>
+	<rsa:RSAPublicKey>
+		<cert:identity rdf:resource="#accnt" />
+		<rsa:public_exponent cert:decimal="65537"/>
+		<rsa:modulus cert:hex="d00c13c94adda4636cdf55b66d4c28dde58fe40059458f7b17683c75f5dc111a6e17eb60e42190aeefc904e6f91dbeb0d0084114df3fa4532d5d439a70fce8d8138712dde3e0faa1f9023cf315dbb3e6227b87f87d9552f721c5418cfa8108f710c5dc96978d6c872343132eb359a33a4bba165044c21d6ccafeddcf3b293d50b68f9f8a971a3ecc7b2a3cdad1ab1bfd66ccf89e34453287a2d097a5a98a21b03e9e2f261ab43fe5521d2f2bd606f3a7293fe763efbb37a06563ebe21beea9ea75eb156caa58997072996aa725508ed215e1fe24bba63410728984898d1950b1e63c8108c37aad4ff98c019651592e6e03c85dd5d4e5e1264c35bf3e66a57b03" />
+	</rsa:RSAPublicKey>
+
+
+
+</rdf:RDF>
