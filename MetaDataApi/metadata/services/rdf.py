@@ -8,11 +8,15 @@ class rdfService:
         "http://www.w3.org/2000/01/rdf-schema#"
         ]
     selfhosted = {
-            "http://xmlns.com/foaf/0.1/": 
+            "http://xmlns.com/foaf/0.1/": "https://raw.githubusercontent.com/Grusinator/MetaDataApi/master/schemas/foaf.rdf"
         }
 
     def rdfs_upload(self, rdf_data):
         g=rdflib.Graph()
+        
+        if rdf_data in self.selfhosted:
+            rdf_data = self.selfhosted[rdf_data]
+        
         if "http://" in rdf_data or "https://" in rdf_data:
             g.parse(rdf_data)
         else:  
