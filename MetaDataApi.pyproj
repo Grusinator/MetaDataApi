@@ -41,7 +41,16 @@
     <Compile Include="MetaDataApi\metadata\schema.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="MetaDataApi\metadata\services\rdf.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MetaDataApi\metadata\services\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="MetaDataApi\metadata\tests.py" />
+    <Compile Include="MetaDataApi\metadata\tests\test_services.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="MetaDataApi\metadata\views.py" />
     <Compile Include="MetaDataApi\metadata\__init__.py" />
     <Compile Include="MetaDataApi\schema.py">
@@ -66,6 +75,8 @@
     <Folder Include="MetaDataApi\" />
     <Folder Include="MetaDataApi\metadata\" />
     <Folder Include="MetaDataApi\metadata\migrations\" />
+    <Folder Include="MetaDataApi\metadata\tests\" />
+    <Folder Include="MetaDataApi\metadata\services\" />
     <Folder Include="MetaDataApi\metadata\templates\" />
     <Folder Include="MetaDataApi\metadata\templates\metadata\" />
     <Folder Include="MetaDataApi\users\" />

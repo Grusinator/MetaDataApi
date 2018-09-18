@@ -37,3 +37,13 @@ class Attribute(models.Model):
 
     class Meta:
         app_label = 'metadata'
+
+class ObjectRelation(models.Model):
+    name = models.TextField()
+    from_object = models.OneToOneField(Object, related_name='to_relations', on_delete=models.CASCADE) 
+    to_object = models.OneToOneField(Object, related_name='from_relations', on_delete=models.CASCADE) 
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        app_label = 'metadata'

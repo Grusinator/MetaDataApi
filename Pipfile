@@ -15,6 +15,7 @@ graphql-core = "*"
 django-graphql-jwt = "*"
 django-heroku = "*"
 gunicorn = "*"
+rdflib = "*"
 
 [dev-packages]
 
