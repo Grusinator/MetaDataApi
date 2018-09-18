@@ -1,15 +1,16 @@
 import rdflib
-from rdflib.namespace import RDF, FOAF, RDFS, DCTERMS, OWL
+from rdflib.namespace import RDF, FOAF, RDFS, DCTERMS, DC, OWL
 from MetaDataApi.metadata.models import Schema, Object, Attribute, ObjectRelation
+from urllib.error import URLError
 
 class rdfService:
-    ignorelist = [
-        'http://www.w3.org/XML/1998/namespace',
+    default_list = [
+        #'http://www.w3.org/XML/1998/namespace',
         "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
         "http://www.w3.org/2000/01/rdf-schema#",
         "http://purl.org/dc/elements/1.1/",
-        "http://xmlns.com/wot/0.1/",
-        "http://www.w3.org/2001/XMLSchema#",
+        #"http://xmlns.com/wot/0.1/",
+        #"http://www.w3.org/2001/XMLSchema#",
         "http://www.w3.org/2003/06/sw-vocab-status/ns#",
         "http://www.w3.org/2002/07/owl#"
         ]
@@ -20,21 +21,45 @@ class rdfService:
     def __init__(self):
         self.schema = None
 
+    def create_default_schemas(self):
 
-    def rdfs_upload(self, rdf_data, force=False):
-        g=rdflib.Graph()
-        rdf_data = self.selfhosted[rdf_data] if rdf_data in self.selfhosted else rdf_data
+        graph_list = list(map(self.create_graph, self.default_list))
         
+        schema_list = list(map(lambda x: self.create_schema_from_graph(*x), zip(graph_list, self.default_list)))
+
+        dummy = list(map(lambda x: self.create_objects_from_graph(*x), zip(graph_list, schema_list)))
+
+        map(self.create_object_references_from_graph, graph_list)
+
+    def create_graph(self, rdf_url):
+        g=rdflib.Graph()
         #cant load from raw github  ttl if format is not set 
-        format = "n3" if ".ttl" in rdf_data else None
+        format = "n3" if ".ttl" in rdf_url else None
+        schema_name = rdf_url
 
-        g.parse(rdf_data, format=format)
+        if rdf_url in self.selfhosted:
+            rdf_url = self.selfhosted[rdf_url]
 
-        missing_list = self.validate_dependencies(g)
+            #            #make sure we are comparing with the right one, else convert to self hosted
+            #namespace = self.selfhosted[namespace] if namespace in self.selfhosted else namespace
+        
+            #if namespace in self.ignorelist or not force: continue
+            #if namespace == schema_name: continue
+        try:
+            g.parse(rdf_url, format=format)
+        except URLError as e:
+            return None
+        return g
 
-        self.create_schema_from_graph(g)
+    def rdfs_upload(self, rdf_url):
 
-        self.create_objects_from_graph(g)
+        g = self.create_graph(rdf_url)
+
+        missing_list = self.validate_dependencies(g, schema_name)
+
+        schema = self.create_schema_from_graph(g)
+
+        self.create_objects_from_graph(g, schema)
 
         self.create_object_references_from_graph(g)
 
@@ -46,12 +71,6 @@ class rdfService:
         #recursively try to loo
         for format, namespace in g.namespaces():
             namespace = str(namespace)
-
-            #make sure we are comparing with the right one, else convert to self hosted
-            namespace = self.selfhosted[namespace] if namespace in self.selfhosted else namespace
-        
-            if namespace in self.ignorelist or not force: continue
-            if namespace == rdf_data: continue
             
             if not self.validate_namespace(namespace):
                 print("trying to load missing schema from url")
@@ -59,14 +78,24 @@ class rdfService:
         
         return missing_list
 
-    def create_schema_from_graph(self, g):
+    def create_schema_from_graph(self, g, rdf_url):
         #identify schema attributes
-        schema_subject = rdflib.term.URIRef(rdf_data)
+        schema_subject = rdflib.term.URIRef(rdf_url)
         label_predicate = rdflib.term.URIRef('http://www.w3.org/2000/01/rdf-schema#label')
         description_predicate = rdflib.term.URIRef('http://purl.org/dc/elements/1.1/description')
 
-        url,_,label = next(g.triples( (schema_subject,  label_predicate, None)))
-        url,_,description = next(g.triples( (schema_subject,  description_predicate, None)))
+        try:
+            url,_,label = next(g.triples( (schema_subject,  RDFS.label, None)))
+        except:
+            try:
+                url,_,label = next(g.triples( (schema_subject,  DC.title, None)))
+            except:
+                url = schema_subject
+                label = "Not found"
+        try:
+            url,_,description = next(g.triples( (schema_subject,  description_predicate, None)))
+        except:
+            description = "Not available"
 
         schema = Schema(
            label = str(label),
@@ -74,8 +103,9 @@ class rdfService:
            description = str(description)
         )
         schema.save()
+        return schema
 
-    def create_objects_from_graph(self, g):
+    def create_objects_from_graph(self, g, schema):
         #now create all objects 
         object_list = []
         for s,p,o in g.triples( (None,  RDFS.label, None)):
@@ -105,6 +135,8 @@ class rdfService:
                 )
 
         map(lambda x: x.save(), object_list)
+
+        return 0
 
     def create_object_references_from_graph(self):
         #now create all object references

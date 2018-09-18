@@ -11,7 +11,14 @@ class TestRdfService(TestCase):
     def setUpClass(cls):
         django.setup()
 
+    
+    def test_create_default_graphs(self):
+        from MetaDataApi.metadata.services.rdf import rdfService
+
+        service = rdfService()
         
+        service.create_default_schemas()
+
 
     def test_upload_rdf(self):
         from MetaDataApi.metadata.services.rdf import rdfService
