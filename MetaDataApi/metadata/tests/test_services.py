@@ -14,10 +14,13 @@ class TestRdfService(TestCase):
     
     def test_create_default_graphs(self):
         from MetaDataApi.metadata.services.rdf import rdfService
-
+        from MetaDataApi.metadata.models import Schema, Object, ObjectRelation, Attribute
+        
         service = rdfService()
         
         service.create_default_schemas()
+
+
 
 
     def test_upload_rdf(self):

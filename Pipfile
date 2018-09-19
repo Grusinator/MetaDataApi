@@ -16,9 +16,12 @@ django-graphql-jwt = "*"
 django-heroku = "*"
 gunicorn = "*"
 rdflib = "*"
-"html5lib" = "*"
+html5lib = "*"
 
 [dev-packages]
+pep8 = "*"
+autopep8 = "*"
+pylint = "*"
 
 [requires]
 python_version = "3.6"
