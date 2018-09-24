@@ -11,36 +11,58 @@ from django.contrib.auth.models import User
 
 from MetaDataApi.users.schema import UserType
 from MetaDataApi.metadata.models import Schema, Object, Attribute, ObjectRelation
+from MetaDataApi.metadata.services.rdf import rdfService
 
-#class SchemaExportType(DjangoObjectType):
-#    class Meta:
-#        response
 
 class SchemaNode(DjangoObjectType):
     class Meta:
         model = Schema
-        filter_fields = ['name', 'description']
+        filter_fields = ['label', 'description']
         interfaces = (graphene.relay.Node, )
+
 
 class ObjectNode(DjangoObjectType):
     class Meta:
         model = Object
-        filter_fields = ['name', 'description']
+        filter_fields = ['label', 'description']
         interfaces = (graphene.relay.Node, )
+
 
 class AttributeNode(DjangoObjectType):
     class Meta:
         model = Attribute
-        filter_fields = ['name',]
+        filter_fields = ['label', ]
         interfaces = (graphene.relay.Node, )
+
 
 class ObjectRelationNode(DjangoObjectType):
     class Meta:
         model = ObjectRelation
-        filter_fields = ['name',]
+        filter_fields = ['label', ]
         interfaces = (graphene.relay.Node, )
 
+
+class AddRdfSchema(graphene.Mutation):
+    succes = graphene.Boolean()
+    objects_added = graphene.Int()
+
+    class Arguments:
+        url = graphene.String()
+
+    # @login_required
+    def mutate(self, info, url):
+
+        try:
+            service = rdfService()
+            service.rdfs_upload(url)
+        except Exception as e:
+            raise GraphQLError(str(e))
+
+        return AddRdfSchema(succes=True)
+
+
 # wrap all queries and mutations
+
 class Query(graphene.ObjectType):
     schema = graphene.relay.Node.Field(SchemaNode)
     all_schemas = DjangoFilterConnectionField(SchemaNode)
@@ -54,38 +76,36 @@ class Query(graphene.ObjectType):
     object_relation = graphene.relay.Node.Field(ObjectRelationNode)
     all_object_relations = DjangoFilterConnectionField(ObjectRelationNode)
 
-    #@login_required
+    # # @login_required
+    # # schemas
 
-    #schemas
     def resolve_schema(self, info):
         return Schema.objects.first()
 
     def resolve_all_schema(self, info):
-        return Schema.Objects.All()
+        return Schema.objects.all()
 
-    #objects
-    def resolve_object(self, info): 
+    # objects
+    def resolve_object(self, info):
         return Object.objects.first()
 
-    def resolve_all_objects(self, info): 
-        return Object.objects.All()
+    def resolve_all_objects(self, info):
+        return Object.objects.all()
 
-    #attributes
+    # attributes
     def resolve_attribute(self, info):
         return Attribute.objects.first()
-    
-    def resolve_all_attributes(self, info):
-        return Attribute.objects.All()
 
-    #object relations
-    def resolve_object_relation(self, info): 
+    def resolve_all_attributes(self, info):
+        return Attribute.objects.all()
+
+    # object relations
+    def resolve_object_relation(self, info):
         return ObjectRelation.objects.first()
 
-    def resolve_all_object_relations(self, info): 
-        return ObjectRelation.objects.All()
-
+    def resolve_all_object_relations(self, info):
+        return ObjectRelation.objects.all()
 
 
 class Mutation(graphene.ObjectType):
-    pass
-
+    add_rdf_schema = AddRdfSchema.Field()

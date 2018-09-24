@@ -1,0 +1,24 @@
+{
+    "python.pythonPath": "C:\\Users\\William S. Hansen\\.virtualenvs\\MetaDataApi-e7UZIMJU",
+
+    "python.linting.pep8Enabled": true,
+    "python.linting.pylintPath": "C:\\Users\\William S. Hansen\\.virtualenvs\\MetaDataApi-e7UZIMJU\\Scripts\\pylint.exe",
+    "python.linting.pylintArgs": [
+            "--load-plugins",
+            "pylint_django"
+        ],
+    "python.linting.pylintEnabled": true,
+    "[python]": {
+        "editor.formatOnSave": true
+    },
+    "python.unitTest.unittestEnabled": true,
+    "python.unitTest.pyTestEnabled": true,
+    "python.unitTest.nosetestsEnabled": false,
+    "python.unitTest.unittestArgs": [
+    "-v",
+    "-s",
+    "C:\\Users\\William S. Hansen\\source\\repos\\web\\MetaDataApi\\MetaDataApi\\metadata\\tests",
+    "-p",
+    "test_*.py"
+ ]
+}
