@@ -3,6 +3,7 @@ from rdflib.namespace import RDF, FOAF, RDFS, DCTERMS, DC, OWL
 from MetaDataApi.metadata.models import Schema, Object, Attribute, ObjectRelation
 from urllib.error import URLError
 from rdflib.plugin import register, Serializer, Parser
+from graphql.error import GraphQLLocatedError
 
 
 class rdfService:
@@ -31,7 +32,7 @@ class rdfService:
             *x), zip(graph_list, self.default_list)))
 
         dummy = list(map(lambda x: self.create_objects_from_graph(
-            *x), zip(graph_list, schema_list)))
+            *x), zip(graph_list)))
 
         dummy = list(map(self.create_object_references_from_graph, graph_list))
         dummy = list(map(self.create_attributes_from_graph, graph_list))
@@ -69,7 +70,7 @@ class rdfService:
 
         schema = self.create_schema_from_graph(g, rdf_url)
 
-        self.create_objects_from_graph(g, schema)
+        self.create_objects_from_graph(g)
 
         self.create_object_references_from_graph(g)
 
@@ -90,42 +91,58 @@ class rdfService:
 
     def create_schema_from_graph(self, g, rdf_url):
         # identify schema attributes
-        schema_subject = rdflib.term.URIRef(rdf_url)
-        label_predicate = rdflib.term.URIRef(
-            'http://www.w3.org/2000/01/rdf-schema#label')
-        description_predicate = rdflib.term.URIRef(
-            'http://purl.org/dc/elements/1.1/description')
 
+                # some cases where the url is not the same as the uri
         try:
-            url, _, label = next(
-                g.triples((schema_subject,  RDFS.label, None)))
+            schema_subject, _, _ = next(
+                g.triples((None,  None, OWL.Ontology)))
         except:
+            schema_subject = rdflib.term.URIRef(rdf_url)
+
+        label_keys = [
+            RDFS.label,
+            DC.title,
+            DCTERMS.title
+        ]
+
+        description_keys = [
+            DC.description,
+            DCTERMS.description
+        ]
+
+        label = "Not available"
+        description = "Not available"
+
+        for key in label_keys:
             try:
-                url, _, label = next(
-                    g.triples((schema_subject,  DC.title, None)))
+                rdf_url, _, label = next(
+                    g.triples((schema_subject, key, None)))
+                break
             except:
-                url = schema_subject
-                label = "Not found"
-        try:
-            url, _, description = next(
-                g.triples((schema_subject,  description_predicate, None)))
-        except:
-            description = "Not available"
+                pass
+
+        for key in description_keys:
+            try:
+                rdf_url, _, description = next(
+                    g.triples((schema_subject, key, None)))
+                break
+            except:
+                pass
 
         # only save if it does not exists
-        schema = Schema.objects.get(url=str(url))
-        if(not schema):
+        try:
+            schema = Schema.objects.get(url=str(rdf_url))
+        except Exception as e:
             schema = Schema(
                 label=str(label),
-                url=str(url),
+                url=str(rdf_url),
                 description=str(description)
             )
-
             schema.save()
 
         return schema
 
-    def create_objects_from_graph(self, g, schema):
+    def create_objects_from_graph(self, g):
         # now create all objects
         for s, p, o in g.triples((None, None, RDFS.Class)):
             _s = str(s)
@@ -151,8 +168,7 @@ class rdfService:
                 schema = Schema.objects.get(url=schema_url)
             except Exception as e:
                 pass
-
-            if schema is not None:
+            else:
                 object = Object(
                     label=str(label),
                     description=str(comment),
