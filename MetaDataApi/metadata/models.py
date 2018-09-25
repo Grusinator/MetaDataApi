@@ -2,51 +2,62 @@ from django.db import models
 
 # Create your models here.
 
+
 class Schema(models.Model):
-    #source category and label should be unique
+    # source category and label should be unique
     label = models.TextField()
     description = models.TextField()
     url = models.URLField()
 
     def __str__(self):
-        return self.name
+        return self.label
 
     class Meta:
         app_label = 'metadata'
+
 
 class Object(models.Model):
-    #source category and label should be unique
+    # source category and label should be unique
     label = models.TextField()
     description = models.TextField()
-    schema = models.ForeignKey(Schema, related_name='objects', on_delete=models.CASCADE) 
+    schema = models.ForeignKey(
+        Schema, related_name='objects', on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.name
+        return "%s.%s" % (self.schema.label, self.label)
 
     class Meta:
         app_label = 'metadata'
-        
+
+
 class Attribute(models.Model):
-    #source category and label should be unique
+    # source category and label should be unique
     label = models.TextField()
     description = models.TextField()
     datatype = models.TextField()
-    object = models.ForeignKey(Object, related_name='attributes', on_delete=models.CASCADE) 
+    object = models.ForeignKey(
+        Object, related_name='attributes', on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.name
+        return "%s.%s" % (self.object.label, self.label)
 
     class Meta:
         app_label = 'metadata'
+
 
 class ObjectRelation(models.Model):
     label = models.TextField()
     url = models.TextField()
-    from_object = models.OneToOneField(Object, related_name='to_relations', on_delete=models.CASCADE) 
-    to_object = models.OneToOneField(Object, related_name='from_relations', on_delete=models.CASCADE) 
-    
+    from_object = models.ForeignKey(
+        Object, related_name='to_relations', on_delete=models.CASCADE)
+    to_object = models.ForeignKey(
+        Object, related_name='from_relations', on_delete=models.CASCADE)
+
     def __str__(self):
-        return self.name
+        return "%s - %s - %s" % (
+            self.to_object.label,
+            self.label,
+            self.from_object.label)
 
     class Meta:
         app_label = 'metadata'

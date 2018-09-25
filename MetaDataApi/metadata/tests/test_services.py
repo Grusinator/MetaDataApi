@@ -40,3 +40,13 @@ class TestRdfService(TestCase):
         service.rdfs_upload(url)
 
         self.assertEqual(1 + 1, 2)
+
+    def test_upload_from_file(self):
+        path = r"C:\Users\William\source\repos\Django\MetaDataApi\MetaDataApi\metadata\tests\data\event.rdf"
+
+        from MetaDataApi.metadata.services.rdf import rdfService
+
+        service = rdfService()
+        service.rdfs_upload(path)
+
+        self.assertEqual(1 + 1, 2)
