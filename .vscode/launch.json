@@ -8,7 +8,10 @@
             "name": "Python: Current File",
             "type": "python",
             "request": "launch",
-            "program": "${file}"
+            "program": "${file}",
+            "env":{
+                "DJANGO_SETTINGS_MODULE": "MetaDataApi.settings"
+            }
         },
         {
             "name": "Python: Attach",

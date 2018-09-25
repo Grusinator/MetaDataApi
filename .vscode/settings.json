@@ -2,7 +2,7 @@
     "python.pythonPath": "C:\\Users\\William\\.virtualenvs\\MetaDataApi-HJgcCufu",
     
     "python.linting.pep8Enabled": true,
-    "python.linting.pylintPath": "C:\\Users\\William\\.virtualenvs\\MetaDataApi-HJgcCufu\\bin\\pylint",
+    "python.linting.pylintPath": "C:\\Users\\William\\.virtualenvs\\MetaDataApi-HJgcCufu\\Scripts\\pylint.exe",
     "python.linting.pylintArgs": [
             "--load-plugins",
             "pylint_django"
@@ -11,6 +11,11 @@
 
     "[python]": {
         "editor.formatOnSave": true
-    }
+    },
 
+    "python.unitTest.unittestEnabled": true,
+    "python.unitTest.pyTestEnabled": true,
+    "python.unitTest.nosetestsEnabled": false,
+    
+    "python.unitTest.autoTestDiscoverOnSaveEnabled" : true
 }

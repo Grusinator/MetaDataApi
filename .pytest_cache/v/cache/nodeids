@@ -1,0 +1,4 @@
+[
+  "MetaDataApi/metadata/tests/test_services.py::TestRdfService::test_create_default_graphs",
+  "MetaDataApi/metadata/tests/test_services.py::TestRdfService::test_upload_rdf"
+]
