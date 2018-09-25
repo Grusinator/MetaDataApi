@@ -4,10 +4,10 @@ from django.db import models
 
 
 class Schema(models.Model):
-    # source category and label should be unique
+
     label = models.TextField()
     description = models.TextField()
-    url = models.URLField()
+    url = models.URLField(unique=True)
 
     def __str__(self):
         return self.label
@@ -17,7 +17,6 @@ class Schema(models.Model):
 
 
 class Object(models.Model):
-    # source category and label should be unique
     label = models.TextField()
     description = models.TextField()
     schema = models.ForeignKey(
@@ -31,7 +30,6 @@ class Object(models.Model):
 
 
 class Attribute(models.Model):
-    # source category and label should be unique
     label = models.TextField()
     description = models.TextField()
     datatype = models.TextField()

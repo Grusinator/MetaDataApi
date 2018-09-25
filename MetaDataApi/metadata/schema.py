@@ -42,6 +42,23 @@ class ObjectRelationNode(DjangoObjectType):
         interfaces = (graphene.relay.Node, )
 
 
+class DeleteSchema(graphene.Mutation):
+    success = graphene.Boolean()
+
+    class Arguments:
+        schema = graphene.String()
+
+    def mutate(self, info, schema):
+        if schema == "all":
+            schemas = Schema.objects.all()
+            [schema.delete() for schema in schemas]
+        else:
+            schema = Schema.objects.get(url=schema)
+            Schema.delete()
+
+        return DeleteSchema(success=True)
+
+
 class AddRdfSchema(graphene.Mutation):
     succes = graphene.Boolean()
     objects_added = graphene.Int()
@@ -51,12 +68,17 @@ class AddRdfSchema(graphene.Mutation):
 
     # @login_required
     def mutate(self, info, url):
-
-        try:
-            service = rdfService()
-            service.rdfs_upload(url)
-        except Exception as e:
-            raise GraphQLError(str(e))
+        service = rdfService()
+        if url == "baseschema":
+            try:
+                service.create_default_schemas()
+            except Exception as e:
+                raise GraphQLError(str(e))
+        else:
+            try:
+                service.rdfs_upload(url)
+            except Exception as e:
+                raise GraphQLError(str(e))
 
         return AddRdfSchema(succes=True)
 
@@ -109,3 +131,4 @@ class Query(graphene.ObjectType):
 
 class Mutation(graphene.ObjectType):
     add_rdf_schema = AddRdfSchema.Field()
+    delete_schema = DeleteSchema.Field()

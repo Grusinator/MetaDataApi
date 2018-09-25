@@ -16,15 +16,16 @@ class TestRdfService(TestCase):
         from MetaDataApi.metadata.services.rdf import rdfService
         from MetaDataApi.metadata.models import Schema, Object, ObjectRelation
 
-        service = rdfService()
+        # service = rdfService()
 
-        service.create_default_schemas()
+        # service.create_default_schemas()
 
         # schemas = list(map(lambda x: Schema.objects.first(
         #     url=x), service.default_list))
 
         try:
-            schemas = Schema.objects.All()
+            schemas = len(Object.objects.all())
+            schemas = len(Schema.objects.all())
         except AttributeError as e:
             print(e)
 

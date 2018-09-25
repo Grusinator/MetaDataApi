@@ -112,123 +112,132 @@ class rdfService:
         except:
             description = "Not available"
 
-        schema = Schema(
-            label=str(label),
-            url=str(url),
-            description=str(description)
-        )
         # only save if it does not exists
-        # a = Schema.objects.all()
-        # if(a != 0):
-        schema.save()
+        schema = Schema.objects.get(url=str(url))
+        if(not schema):
+            schema = Schema(
+                label=str(label),
+                url=str(url),
+                description=str(description)
+            )
+
+            schema.save()
 
         return schema
 
     def create_objects_from_graph(self, g, schema):
         # now create all objects
-        object_list = []
-        for s, p, o in g.triples((None,  RDFS.label, None)):
+        for s, p, o in g.triples((None, None, RDFS.Class)):
             _s = str(s)
             _o = str(o)
             _p = str(p)
 
-            url, label = self.split_rdfs_url(s)
+            # mandatory
+            try:
+                # Property label
+                label = next(g.triples((s,  RDFS.label, None)))[2]
+                # Property Class/domain
+                schema_url = next(g.triples((s, RDFS.isDefinedBy, None)))[2]
+            except Exception as e:
+                continue
 
-            # check if no object with that label is created
-            if not any(x.label == label for x in object_list):
+            # volentary
+            try:
+                # Property comment
+                comment = next(g.triples((s, RDFS.comment, None)))[2]
+            except:
+                pass
+            try:
+                schema = Schema.objects.get(url=schema_url)
+            except Exception as e:
+                pass
 
-                # now get description of current subject
-                _, _, comment = next(g.triples((s, RDFS.comment, None)))
-
-                label = str(o)
-
+            if schema is not None:
                 object = Object(
-                    label=label,
+                    label=str(label),
                     description=str(comment),
                     schema=schema
                 )
                 object.save()
-                object_list.append(object)
-
-        return 0
 
     def create_object_references_from_graph(self, g):
-        # now create all object references
-        def find_object(obj_in, object_list=[]):
+
+        def find_object2(g, subject):
             try:
-                url, label = self.split_rdfs_url(obj_in)
-                return next(filter(lambda x: x.label == label, object_list))
-            except:
-                try:
-                    return Object.objects.filter(label=label).first()
-                except Exception as e:
-                    return None
+                # Property label
+                label = next(g.triples((subject,  RDFS.label, None)))[2]
 
-        obj_relation_list = []
-        for s, p, o in g:
-            _s = str(s)
-            _o = str(o)
-            _p = str(p)
+                # find to_object
+                return Object.objects.filter(
+                    label=str(label)).first()
+            except Exception as e:
+                return None
+        # now create all object references
+        for s, p, o in g.triples((None, None, RDFS.Class)):
 
-            if not all(isinstance(x, rdflib.term.URIRef) for x in (s, o)):
+            # find the from_class in object table
+            from_object = find_object2(g, s)
+            if not from_object:
                 continue
 
-            # to be a reference both subject and object must be a object
-            # either in this list or in the database
-            to_obj = find_object(s)
-            from_obj = find_object(o)
+            for s_s, p_s, o_s in g.triples((s, None, None)):
 
-            if all((to_obj, from_obj)):
-                # get the predicate and split ino label and url
-                url, label = self.split_rdfs_url(s)
+                # must be URI otherwise it cant be a class
+                if not isinstance(o_s, rdflib.term.URIRef):
+                    continue
+
+                to_object = find_object2(g, o_s)
+                if not to_object:
+                    continue
+
+                # create relation
+                url, label = self.split_rdfs_url(p_s)
 
                 object_relation = ObjectRelation(
-                    from_object=from_obj,
-                    to_object=to_obj,
+                    from_object=from_object,
+                    to_object=to_object,
                     label=label,
                     url=url
                 )
                 object_relation.save()
-                obj_relation_list.append(object_relation)
 
     def create_attributes_from_graph(self, g):
-        attribute_list = []
-        for s, p, o in g.triples((None, None, None)):
+        valid_datatypes = [
+            RDFS.Literal
+        ]
+
+        for s, p, o in g.triples((None, None, RDF.Property)):
             _s = str(s)
             _o = str(o)
             _p = str(p)
 
-            if not all((
-                    isinstance(s, rdflib.term.URIRef),
-                    not isinstance(o, rdflib.term.URIRef))):
-                continue
-
             try:
-                obj_label = str(s).split("#")[1]
+                # Property label
+                label = next(g.triples((s,  RDFS.label, None)))[2]
+                # Property comment
+                comment = next(g.triples((s, RDFS.comment, None)))[2]
+                # Property Class/domain
+                domain = next(g.triples((s, RDFS.domain, None)))[2]
+                # Property datatype
+                range = next(g.triples((s, RDFS.range, None)))[2]
+
+                _, obj_label = self.split_rdfs_url(domain)
                 object = Object.objects.filter(label=obj_label).first()
             except Exception as e:
-                pass
-            finally:
-                # get the predicate and split ino label and url
-                _, label = str(p).split("#")
+                continue
 
-                datatype = str(type(o))
+            if object is None:
+                continue
 
-                attribute = Attribute(
-                    datatype=datatype,
-                    label=label,
-                    object=object
-                )
-                attribute.save()
-                attribute_list.append(attribute)
+            if range not in valid_datatypes:
+                continue
 
-            # literals = list(map(lambda x: x if isinstance(x, rdflib.term.URIRef) else None, (s,p,o)))
-            # if any(l is not None for l in literals):
-            #    literals
-
-            # _s = str(s)
-            # _o = str(o)
-            # _p = str(p)
+            attribute = Attribute(
+                datatype=self.split_rdfs_url(range)[1],
+                label=label,
+                object=object
+            )
+            attribute.save()
 
     def validate_namespace(self, namespace):
         try:

@@ -3,6 +3,7 @@ import inc_dec
 
 
 class Test_TestIncrementDecrement(unittest.TestCase):
+
     def test_increment(self):
         self.assertEquals(inc_dec.increment(3), 4)
 
