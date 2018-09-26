@@ -17,6 +17,7 @@ django-heroku = "*"
 gunicorn = "*"
 rdflib = "*"
 html5lib = "*"
+jsonschema = "*"
 
 [dev-packages]
 pep8 = "*"

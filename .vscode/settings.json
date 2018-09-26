@@ -1,8 +1,8 @@
 {
-    "python.pythonPath": "C:\\Users\\William\\.virtualenvs\\MetaDataApi-HJgcCufu",
+    "python.pythonPath": "C:\\Users\\William S. Hansen\\.virtualenvs\\MetaDataApi-e7UZIMJU",
     
     "python.linting.pep8Enabled": true,
-    "python.linting.pylintPath": "C:\\Users\\William\\.virtualenvs\\MetaDataApi-HJgcCufu\\Scripts\\pylint.exe",
+    "python.linting.pylintPath": "C:\\Users\\William S. Hansen\\.virtualenvs\\MetaDataApi-e7UZIMJU\\Scripts\\pylint.exe",
     "python.linting.pylintArgs": [
             "--load-plugins",
             "pylint_django"
