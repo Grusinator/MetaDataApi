@@ -1,5 +1,6 @@
 [
-  "MetaDataApi/metadata/tests/test_services.py::TestRdfService::test_create_default_graphs",
-  "MetaDataApi/metadata/tests/test_services.py::TestRdfService::test_upload_from_file",
-  "MetaDataApi/metadata/tests/test_services.py::TestRdfService::test_upload_rdf"
+  "MetaDataApi/metadata/tests/test_json_schema_service.py::TestRdfService::test_upload_json_schema",
+  "MetaDataApi/metadata/tests/test_rdf_service.py::TestRdfService::test_create_default_graphs",
+  "MetaDataApi/metadata/tests/test_rdf_service.py::TestRdfService::test_upload_from_file",
+  "MetaDataApi/metadata/tests/test_rdf_service.py::TestRdfService::test_upload_rdf"
 ]

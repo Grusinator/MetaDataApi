@@ -1,0 +1,24 @@
+import django
+from django.test import TestCase
+
+# TODO: Configure your database in settings.py and sync before running tests.
+
+
+class TestRdfService(TestCase):
+    """Tests for the application views."""
+
+    # Django requires an explicit setup() when running tests in PTVS
+    @classmethod
+    def setUpClass(cls):
+        django.setup()
+
+    def test_upload_json_schema(self):
+        from MetaDataApi.metadata.services.jsonschema import JsonSchemaService
+
+        url = "https://raw.githubusercontent.com/Grusinator/MetaDataApi/master/schemas/json/omh/body-height-1.0.json"
+
+        service = JsonSchemaService()
+
+        service.load_json_schema(url)
+
+        self.assertEqual(1 + 1, 2)
