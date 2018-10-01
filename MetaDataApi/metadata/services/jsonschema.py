@@ -1,8 +1,9 @@
 import json
 import os
-#from jsonschema import validate
+# from jsonschema import validate
 from urllib import request
-from MetaDataApi.metadata.models import Schema, Object, Attribute, ObjectRelation
+from MetaDataApi.metadata.models import (
+    Schema, Object, Attribute, ObjectRelation)
 
 
 class JsonSchemaService():
@@ -10,6 +11,15 @@ class JsonSchemaService():
     def __init__(self):
         self.schema = None
         self.baseurl = None
+        self.subtypes = ["oneOf", "allOf", "anyOf"]
+        self.skip_fields = [
+            "description",
+            "label",
+            "$schema",
+            "type",
+            "definitions"
+
+        ]
 
     def read_json_from_url(self, url):
 
@@ -33,13 +43,37 @@ class JsonSchemaService():
 
         return baseurl, filename
 
-    def identify_properties(self, properties, definitions, root_label, object):
-        objectslist = []
-        for key, value in properties.items():
-            if isinstance(value, dict):
-                new_objects = self.identify_properties(
-                    value, definitions, key, object)
+    def create_object_relations(self, object, new_objects):
+        for new_object in new_objects:
+            label = "%s has %s" % (object.label, new_object.label)
+            obj_rel = ObjectRelation(
+                from_object=object,
+                to_object=new_object,
+                url=self.schema.url,
+                label=label)
+            obj_rel.save()
+
+    def create_attributes(self, no_obj_attributes, current_object):
+        for no_obj_attribute in no_obj_attributes:
+            no_obj_attribute.object = current_object
+            no_obj_attribute.save()
+
+    def identify_properties(self, dict_data, root_label, current_object=None,
+                            definitions=None):
+
+        return_objects = []
+        # extend definitions each time
+        definitions = dict_data.get("definitions") or definitions
+
+        obj_type = dict_data.get("type")
+
+        description = dict_data.get("description")
+
+        for key, value in dict_data.items():
             # reference to new schema
+            if key in self.skip_fields:
+                continue
+
             elif key == "$ref":
                 if value[0] is "#":
                     def_name = value.split("/")[-1]
@@ -47,80 +81,93 @@ class JsonSchemaService():
                 else:
                     url = value
 
-                new_objects = self.identify_reference(url)
-            elif key is "value":
+                # load data and prepare to iterate trough
+                new_dict_data = self.read_json_from_url(url)
+
+                # definitions is not inherited trough references
+                new_objects = self.identify_properties(
+                    new_dict_data, root_label, current_object)
+
+            elif key in self.subtypes:
+                # this basicly ignores the oneof.. etc. structure
+                subdata = [dict_data.get(subtype) for subtype in self.subtypes]
+                if any(subdata):
+                    # get first that is not none
+                    subdata = next(d for d in subdata if d is not None)
+                    # merge list of dict to one dict
+                    subdata = dict(pair for d in subdata for pair in d.items())
+                    dict_data.update(subdata)
+                    # consider pop the sub list element
+
+            # probably a attribute but the one below will handle it
+            elif key == "unit":
+                pass
+            elif key == "enum":
+                pass
+            elif key == "value":
                 # this is an attribute
 
                 # try to find the unit
-                unit = properties.get("unit")
+                unit = dict_data.get("unit")
                 data_type = value.get("type")
                 description = value.get("description")
 
+                # here we just create it and return it
+                # saving is done after the object has been created
+                # if this dict contains "other classes"
                 attribute = Attribute(
                     label=root_label,
-                    datatype=data_type
+                    datatype=data_type,
+                    object=None
                 )
+                return_objects.append(attribute)
 
-    def identify_reference(self, url):
-        _, filename = self.infer_schema_info_from_url(url)
+            elif key == "properties":
 
-        data = self.read_json_from_url(url)
+                new_objects = self.identify_properties(
+                    value, root_label, current_object, definitions)
 
-        definitions = data.get("definitions")
+                # by iterating though properties we dont know if it is an object
+                # or just an attribute (if it only has unit and value)
+                if len(new_objects):
+                    no_obj_attributes = list(
+                        filter(lambda x: isinstance(Attribute), new_objects))
+                    objects = list(
+                        filter(lambda x: isinstance(Object), new_objects))
 
-        obj_type = data.get("type")
+                    # it is just an attribute
+                    if len(attributes) == 1 and len(objects) == 0:
+                        self.create_attributes(
+                            no_obj_attributes, current_object)
+                    # this is an object, so lets create it
+                    elif len(objects) != 0:
+                        # we know this is an object because it has properties
+                        current_object = Object(
+                            label=root_label,
+                            schema=self.schema,
+                            description=description)
+                        current_object.save()
 
-        description = data.get("description")
+                        # newly discovered objects should be added to return list
+                        return_objects.append(current_object)
 
-        # this basicly ignores the oneof.. etc. structure
-        subtypes = ["oneOf", "allOf", "anyOf"]
-        subdata = [data.get(subtype) for subtype in subtypes]
-        if any(subdata):
-            # get first that is not none
-            data = next(d for d in subdata if d is not None)
-            # merge list of dict to one dict
-            data = dict(pair for d in data for pair in d.items())
+                        self.create_object_relations(current_object, objects)
 
-        if "properties" in data:
-            properties = data["properties"]
-            navigation_dict = {filename: properties}
+            elif isinstance(value, dict):
+                # consider if the key is a new class
 
-            # we know this is an object because it has properties
+                new_objects = self.identify_properties(
+                    value, key, current_object, definitions)
 
-            object = Object(
-                label=filename,
-                schema=self.schema,
-                description=description)
-            object.save()
+                # self.create_object_relations(current_object, new_objects)
 
-            objectlist = self.identify_properties(
-                properties, definitions, filename, object)
-
-        # while len(navigation_dict) is not 0:
-        #     #
-        #     _, nav_object = navigation_dict.popitem()
-
-        #     for key, value in nav_object.items():
-
-        #         if key is "properties":
-        #             # figure out if it really is a property or a new class
-        #             # here the strategy is to go in depth until another file is found
-        #             objectlist = self.identify_properties(
-        #                 value, definitions, filename, object)
-
-        #             # if the element is a dict traverse it later
-        #         if isinstance(value, dict):
-        #             navigation_dict[key] = value
-        #             continue
-        #         # if element is a reference to another file
-        #         elif key is "$ref":
-        #             ref_url = self.baseurl + value
-        #             ref_data = self.read_json_from_url(ref_url)
-        #             navigation_dict[value] = ref_data
+        # we return the created objects from this branch in order
+        # to create the object relations
+        return return_objects
 
     def load_json_schema(self, url, schema_name):
         self.baseurl, filename = self.infer_schema_info_from_url(url)
-
+        label = filename.replace(".json", "")
         try:
             self.schema = Schema.objects.get(label=schema_name)
         except:
@@ -130,6 +177,17 @@ class JsonSchemaService():
             )
             self.schema.save()
 
+        data = self.read_json_from_url(url)
+
+        description = data.get("description")
+
+        first_object = Object(
+            label=label,
+            schema=self.schema,
+            description=description)
+        first_object.save()
+
+        self.identify_properties(data, label, first_object)
         self.identify_reference(url)
 
         # data = self.read_json_from_url(url)
