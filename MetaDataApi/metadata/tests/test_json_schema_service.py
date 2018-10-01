@@ -15,10 +15,10 @@ class TestRdfService(TestCase):
     def test_upload_json_schema(self):
         from MetaDataApi.metadata.services.jsonschema import JsonSchemaService
 
-        url = "https://raw.githubusercontent.com/Grusinator/MetaDataApi/master/schemas/json/omh/body-height-1.0.json"
+        url = "https://raw.githubusercontent.com/Grusinator/MetaDataApi/master/schemas/json/omh/acceleration-1.0.json"
 
         service = JsonSchemaService()
 
-        service.load_json_schema(url)
+        service.load_json_schema(url, "openMHealth")
 
         self.assertEqual(1 + 1, 2)
