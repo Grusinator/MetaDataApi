@@ -18,8 +18,8 @@ class JsonSchemaService():
             "$schema",
             "type",
             "definitions"
-
         ]
+        self.skip_fields.extend(self.subtypes)
 
     def read_json_from_url(self, url):
 
@@ -69,6 +69,16 @@ class JsonSchemaService():
 
         description = dict_data.get("description")
 
+        # this basicly ignores the oneof.. etc. structure
+        subdata = [dict_data.get(subtype) for subtype in self.subtypes]
+        if any(subdata):
+            # get first that is not none
+            subdata = next(d for d in subdata if d is not None)
+            # merge list of dict to one dict
+            subdata = dict(pair for d in subdata for pair in d.items())
+            dict_data.update(subdata)
+            # consider pop the sub list element
+
         for key, value in dict_data.items():
             # reference to new schema
             if key in self.skip_fields:
@@ -77,9 +87,13 @@ class JsonSchemaService():
             elif key == "$ref":
                 if value[0] is "#":
                     def_name = value.split("/")[-1]
+                    definition = definitions[def_name]
+                    if
+                    # FixMe: could be pattern instead of $ref
+                    # figure out what to do
                     url = self.baseurl + "/" + definitions[def_name]["$ref"]
                 else:
-                    url = value
+                    url = self.baseurl + "/" + value
 
                 # load data and prepare to iterate trough
                 new_dict_data = self.read_json_from_url(url)
@@ -87,17 +101,6 @@ class JsonSchemaService():
                 # definitions is not inherited trough references
                 new_objects = self.identify_properties(
                     new_dict_data, root_label, current_object)
-
-            elif key in self.subtypes:
-                # this basicly ignores the oneof.. etc. structure
-                subdata = [dict_data.get(subtype) for subtype in self.subtypes]
-                if any(subdata):
-                    # get first that is not none
-                    subdata = next(d for d in subdata if d is not None)
-                    # merge list of dict to one dict
-                    subdata = dict(pair for d in subdata for pair in d.items())
-                    dict_data.update(subdata)
-                    # consider pop the sub list element
 
             # probably a attribute but the one below will handle it
             elif key == "unit":
@@ -131,12 +134,12 @@ class JsonSchemaService():
                 # or just an attribute (if it only has unit and value)
                 if len(new_objects):
                     no_obj_attributes = list(
-                        filter(lambda x: isinstance(Attribute), new_objects))
+                        filter(lambda x: isinstance(x, Attribute), new_objects))
                     objects = list(
-                        filter(lambda x: isinstance(Object), new_objects))
+                        filter(lambda x: isinstance(x, Object), new_objects))
 
                     # it is just an attribute
-                    if len(attributes) == 1 and len(objects) == 0:
+                    if len(no_obj_attributes) == 1 and len(objects) == 0:
                         self.create_attributes(
                             no_obj_attributes, current_object)
                     # this is an object, so lets create it
@@ -154,12 +157,9 @@ class JsonSchemaService():
                         self.create_object_relations(current_object, objects)
 
             elif isinstance(value, dict):
-                # consider if the key is a new class
-
                 new_objects = self.identify_properties(
                     value, key, current_object, definitions)
-
-                # self.create_object_relations(current_object, new_objects)
+                return_objects.extend(new_objects)
 
         # we return the created objects from this branch in order
         # to create the object relations
