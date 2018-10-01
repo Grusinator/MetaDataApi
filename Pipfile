@@ -18,6 +18,8 @@ gunicorn = "*"
 rdflib = "*"
 html5lib = "*"
 jsonschema = "*"
+inflection = "*"
+gensim = "*"
 
 [dev-packages]
 pep8 = "*"

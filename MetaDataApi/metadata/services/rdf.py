@@ -1,6 +1,8 @@
 import rdflib
 from rdflib.namespace import RDF, FOAF, RDFS, DCTERMS, DC, OWL
-from MetaDataApi.metadata.models import Schema, Object, Attribute, ObjectRelation
+from MetaDataApi.metadata.models import (
+    Schema, Object,
+    Attribute, ObjectRelation)
 from urllib.error import URLError
 from rdflib.plugin import register, Serializer, Parser
 from graphql.error import GraphQLLocatedError
