@@ -23,19 +23,32 @@ class AttributeIdentification():
         for orm in self.orms:
             objects = orm.objects.filter(label=label)
 
-    def likelihood_score(object, data_type):
-        return 0
+    def likelihood_score(label, object, data_type):
+        v1 = self.compare_labels(label, object.label)
 
-    def compare_labels(label1, label2):
+        v2 = self.datatype_match(object, data_type)
+
+        v3 = self.relations_match()
+        return self.combine(v1, v2, v3)
+
+    def compare_labels(self, label1, label2):
         label1 = underscore(label1)
         label2 = underscore(label2)
 
-        self.model.similarity(label1, label2)
+        # probably need more preprocessing
+        return self.model.similarity(label1, label2)
 
-    def datatype_match(data_type,)
+    def datatype_match(self, object, data_type):
+        pass
+
+    def relations_match(self, object, json_desendent, json_parrent):
+        """
+        check if there are similarities with the structure
+        """
+        pass
 
 
 class DataType:
 
-    __init__(self, datatype, mean, std, *args, **kwargs):
+    def __init__(self, datatype, mean, std, *args, **kwargs):
         pass

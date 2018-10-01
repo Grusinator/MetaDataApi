@@ -52,9 +52,9 @@ class JsonSchemaService():
                 # this is an attribute
 
                 # try to find the unit
-                unit = properties["unit"]
-                data_type = value["type"]
-                description = value["description"]
+                unit = properties.get("unit")
+                data_type = value.get("type")
+                description = value.get("description")
 
                 attribute = Attribute(
                     label=root_label,
@@ -66,11 +66,20 @@ class JsonSchemaService():
 
         data = self.read_json_from_url(url)
 
-        definitions = data["definitions"]
+        definitions = data.get("definitions")
 
-        obj_type = data["type"]
+        obj_type = data.get("type")
 
-        description = data["description"]
+        description = data.get("description")
+
+        # this basicly ignores the oneof.. etc. structure
+        subtypes = ["oneOf", "allOf", "anyOf"]
+        subdata = [data.get(subtype) for subtype in subtypes]
+        if any(subdata):
+            # get first that is not none
+            data = next(d for d in subdata if d is not None)
+            # merge list of dict to one dict
+            data = dict(pair for d in data for pair in d.items())
 
         if "properties" in data:
             properties = data["properties"]
@@ -87,34 +96,27 @@ class JsonSchemaService():
             objectlist = self.identify_properties(
                 properties, definitions, filename, object)
 
-        elif "oneOf" in data:
-            pass
-        elif "allOf" in data:
-            pass
-        elif "anyOf" in data:
-            pass
+        # while len(navigation_dict) is not 0:
+        #     #
+        #     _, nav_object = navigation_dict.popitem()
 
-        while len(navigation_dict) is not 0:
-            #
-            _, nav_object = navigation_dict.popitem()
+        #     for key, value in nav_object.items():
 
-            for key, value in nav_object.items():
+        #         if key is "properties":
+        #             # figure out if it really is a property or a new class
+        #             # here the strategy is to go in depth until another file is found
+        #             objectlist = self.identify_properties(
+        #                 value, definitions, filename, object)
 
-                if key is "properties":
-                    # figure out if it really is a property or a new class
-                    # here the strategy is to go in depth until another file is found
-                    objectlist = self.identify_properties(
-                        value, definitions, filename, object)
-
-                    # if the element is a dict traverse it later
-                if isinstance(value, dict):
-                    navigation_dict[key] = value
-                    continue
-                # if element is a reference to another file
-                elif key is "$ref":
-                    ref_url = self.baseurl + value
-                    ref_data = self.read_json_from_url(ref_url)
-                    navigation_dict[value] = ref_data
+        #             # if the element is a dict traverse it later
+        #         if isinstance(value, dict):
+        #             navigation_dict[key] = value
+        #             continue
+        #         # if element is a reference to another file
+        #         elif key is "$ref":
+        #             ref_url = self.baseurl + value
+        #             ref_data = self.read_json_from_url(ref_url)
+        #             navigation_dict[value] = ref_data
 
     def load_json_schema(self, url, schema_name):
         self.baseurl, filename = self.infer_schema_info_from_url(url)
