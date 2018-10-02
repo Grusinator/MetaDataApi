@@ -10,6 +10,7 @@ class TestRdfService(TestCase):
     # Django requires an explicit setup() when running tests in PTVS
     @classmethod
     def setUpClass(cls):
+        super(TestRdfService, cls).setUpClass()
         django.setup()
 
     def test_upload_json_schema(self):
@@ -20,5 +21,3 @@ class TestRdfService(TestCase):
         service = JsonSchemaService()
 
         service.load_json_schema(url, "openMHealth")
-
-        self.assertEqual(1 + 1, 2)

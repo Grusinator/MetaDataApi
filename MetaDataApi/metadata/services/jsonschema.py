@@ -30,10 +30,13 @@ class JsonSchemaService():
             # validate data
             try:
                 data = json.loads(text)
-            except:
-                with request.urlopen(self.baseurl + "/" + text) as resp:
-                    text = resp.read().decode()
-                    data = json.loads(text)
+            except Exception as e:
+                if text[-5:] == ".json":
+                    with request.urlopen(self.baseurl + "/" + text) as resp:
+                        text = resp.read().decode()
+                        data = json.loads(text)
+                else:
+                    raise Exception(e)
 
         return data
 
@@ -57,6 +60,14 @@ class JsonSchemaService():
         for no_obj_attribute in no_obj_attributes:
             no_obj_attribute.object = current_object
             no_obj_attribute.save()
+        return no_obj_attributes
+
+    def validate_url(self, url):
+        urlmapper = {
+            'http://tools.ietf.org/html/rfc3339': None,
+        }
+        var1 = url in urlmapper
+        return urlmapper.get(url) if url in urlmapper else url
 
     def identify_properties(self, dict_data, root_label, current_object=None,
                             definitions=None):
@@ -88,12 +99,18 @@ class JsonSchemaService():
                 if value[0] is "#":
                     def_name = value.split("/")[-1]
                     definition = definitions[def_name]
-                    if
-                    # FixMe: could be pattern instead of $ref
-                    # figure out what to do
-                    url = self.baseurl + "/" + definitions[def_name]["$ref"]
+                    if "$ref" in definition:
+                        url = self.baseurl + "/" + \
+                            definition["$ref"]
+                    elif "references" in definition:
+                        url = definition.get("references")[0].get("url")
+
                 else:
                     url = self.baseurl + "/" + value
+
+                url = self.validate_url(url)
+                if not url:
+                    continue
 
                 # load data and prepare to iterate trough
                 new_dict_data = self.read_json_from_url(url)
@@ -132,29 +149,36 @@ class JsonSchemaService():
 
                 # by iterating though properties we dont know if it is an object
                 # or just an attribute (if it only has unit and value)
-                if len(new_objects):
-                    no_obj_attributes = list(
-                        filter(lambda x: isinstance(x, Attribute), new_objects))
-                    objects = list(
-                        filter(lambda x: isinstance(x, Object), new_objects))
 
-                    # it is just an attribute
-                    if len(no_obj_attributes) == 1 and len(objects) == 0:
-                        self.create_attributes(
-                            no_obj_attributes, current_object)
-                    # this is an object, so lets create it
-                    elif len(objects) != 0:
-                        # we know this is an object because it has properties
-                        current_object = Object(
-                            label=root_label,
-                            schema=self.schema,
-                            description=description)
-                        current_object.save()
+                no_obj_attributes = list(
+                    filter(lambda x: isinstance(x, Attribute), new_objects))
+                objects = list(
+                    filter(lambda x: isinstance(x, Object), new_objects))
 
-                        # newly discovered objects should be added to return list
-                        return_objects.append(current_object)
+                # it is an attribute
+                if len(no_obj_attributes) == 1 and len(objects) == 0:
+                    attributes = self.create_attributes(
+                        no_obj_attributes, current_object)
+                    return_objects.extend(attributes)
 
-                        self.create_object_relations(current_object, objects)
+                    # if this is caracterized as attrbute
+                    # it cannot be a class, maybe return instead
+                    continue
+
+                # this is an object, so lets create it
+
+                # we know this is an object because it has properties
+                current_object = Object(
+                    label=root_label,
+                    schema=self.schema,
+                    description=description)
+                current_object.save()
+
+                # newly discovered objects should be added to return list
+                return_objects.append(current_object)
+
+                # create the object relations with the current and the returned objects
+                self.create_object_relations(current_object, objects)
 
             elif isinstance(value, dict):
                 new_objects = self.identify_properties(
@@ -188,7 +212,6 @@ class JsonSchemaService():
         first_object.save()
 
         self.identify_properties(data, label, first_object)
-        self.identify_reference(url)
 
         # data = self.read_json_from_url(url)
 
