@@ -54,9 +54,9 @@ class ObjectRelation(models.Model):
 
     def __str__(self):
         return "%s - %s - %s" % (
-            self.to_object.label,
+            self.from_object.label,
             self.label,
-            self.from_object.label)
+            self.to_object.label)
 
     class Meta:
         app_label = 'metadata'

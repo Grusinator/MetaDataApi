@@ -46,30 +46,17 @@ class JsonSchemaService():
 
         return baseurl, filename
 
-    def create_object_relations(self, object, new_objects):
-        for new_object in new_objects:
-            label = "%s has %s" % (object.label, new_object.label)
+    def create_object_relations(self, b_object, new_objects, rel_name=None):
+        rel_names = rel_name or ["has" for i in range(len(new_objects))]
+        for new_object, rel_name in zip(new_objects, rel_names):
             obj_rel = ObjectRelation(
-                from_object=object,
+                from_object=b_object,
                 to_object=new_object,
                 url=self.schema.url,
-                label=label)
+                label=rel_name)
             obj_rel.save()
             # to check the objects that have been create
             self._debug_objects_list.append(obj_rel)
-
-    def create_attributes(self, no_obj_attributes, current_object):
-        for no_obj_attribute in no_obj_attributes:
-            no_obj_attribute.object = current_object
-            try:
-                no_obj_attribute.save()
-            except Exception as e:
-                # most likey if it allready exists
-                pass
-
-            # to check the objects that have been create
-            self._debug_objects_list.append(no_obj_attribute)
-        return no_obj_attributes
 
     def validate_url(self, url):
         urlmapper = {
@@ -83,8 +70,15 @@ class JsonSchemaService():
         return list(
             filter(lambda x: isinstance(x, object_class), obj_list))
 
-    def identify_properties(self, dict_data, root_label, current_object=None,
-                            definitions=None):
+    def get_rel_names(self, objects, property_dict):
+        returns = []
+        for item, obj_rel_name in zip(objects, property_dict.keys()):
+            if isinstance(item, Object):
+                returns.append(obj_rel_name)
+        return returns
+
+    def iterate_schema(self, dict_data, root_label, current_object=None,
+                       definitions=None):
 
         return_objects = []
         # extend definitions each time
@@ -103,6 +97,7 @@ class JsonSchemaService():
             current_object.save()
             # to check the objects that have been create
             self._debug_objects_list.append(current_object)
+            return_objects.append(current_object)
 
         # this basicly ignores the oneof.. etc. structure
         subdata = [dict_data.get(subtype) for subtype in self.subtypes]
@@ -147,7 +142,7 @@ class JsonSchemaService():
                 _, filename = self.infer_schema_info_from_url(url)
                 label = filename.replace(".json", "")
                 # definitions is not inherited trough references
-                new_objects = self.identify_properties(
+                new_objects = self.iterate_schema(
                     new_dict_data, label, current_object)
                 return_objects.extend(new_objects)
 
@@ -164,25 +159,21 @@ class JsonSchemaService():
                     data_type = value.get("type") or data_type
                     description = value.get("description") or description
 
-                # if we have allready found an attribute
-                if len(self.filt_type(return_objects, Attribute)):
-                    attribute = next(self.filt_type(return_objects, Attribute))
-                    # update missing info
-                    attribute.datatype = attribute.datatype or data_type
-                    attribute.description = attribute.description or description
-                    # root label should be okay
-                else:
-                    # here we just create it and return it
-                    # saving is done after the object has been created
-                    # if this dict contains "other classes"
-                    attribute = Attribute(
-                        label=root_label,
-                        datatype=data_type,
-                        description=description,
-                        object=current_object
-                    )
-                    # consider saving here if it gets an object with
-                    return_objects.append(attribute)
+                # here we just create it and return it
+                # saving is done after the object has been created
+                # if this dict contains "other classes"
+                attribute = Attribute(
+                    label=root_label,
+                    datatype=data_type,
+                    description=description,
+                    object=current_object
+                )
+                attribute.save()
+                # to check the objects that have been create
+                self._debug_objects_list.append(attribute)
+
+                # consider saving here if it gets an object with
+                return_objects.append(attribute)
 
             # this is an attribute, but if we allready have an attribute in the
             # return object, add these info to that one, else just create one maybe
@@ -193,53 +184,23 @@ class JsonSchemaService():
 
             elif key == "properties":
 
-                new_objects = self.identify_properties(
+                new_objects = self.iterate_schema(
                     value, root_label, current_object, definitions)
 
-                # by iterating though properties we dont know if it is an object
-                # or just an attribute (if it only has unit and value)
-
-                no_obj_attributes = self.filt_type(new_objects, Attribute)
+                # no_obj_attributes = self.filt_type(new_objects, Attribute)
                 objects = self.filt_type(new_objects, Object)
+                if len(objects):
 
-                # it is an attribute
-                if len(no_obj_attributes) >= 1 and len(objects) == 0:
-                    attributes = self.create_attributes(
-                        no_obj_attributes, current_object)
-                    # return_objects.extend(attributes)
-
-                    # if this is caracterized as attrbute
-                    # it cannot be a class, maybe return instead
-                    continue
-
-                # this is an object, so lets create it
-                if len(new_objects):
-                    # we know this is an object because it has properties
-                    current_object = Object(
-                        label=root_label,
-                        schema=self.schema,
-                        description=description)
-                    current_object.save()
-                    # to check the objects that have been create
-                    self._debug_objects_list.append(current_object)
-
-                    # newly discovered objects should be added to return list
-                    return_objects.append(current_object)
-
+                    relation_names = self.get_rel_names(new_objects, value)
                     # create the object relations with the current and the returned objects
-                    self.create_object_relations(current_object, objects)
-
-                # if there is no object this is a dead end. we dont want to create an object
-                # this also means that objects that have no attributes will not be created
-                # consider if this is what we want.
-
-                continue
+                    self.create_object_relations(
+                        current_object, objects, relation_names)
 
             elif isinstance(value, dict):
                 if len(self._debug_objects_list) >= 3:
                     pass
 
-                new_objects = self.identify_properties(
+                new_objects = self.iterate_schema(
                     value, key, current_object, definitions)
                 return_objects.extend(new_objects)
 
@@ -261,39 +222,6 @@ class JsonSchemaService():
 
         data = self.read_json_from_url(url)
 
-        description = data.get("description")
+        return_objects = self.iterate_schema(data, label)
 
-        first_object = Object(
-            label=label,
-            schema=self.schema,
-            description=description)
-        first_object.save()
-
-        self.identify_properties(data, label, first_object)
-
-        # data = self.read_json_from_url(url)
-
-        # navigation_dict = {filename: data}
-        # while len(navigation_dict) is not 0:
-        #     #
-        #     _, nav_object = navigation_dict.popitem()
-
-        #     for key, value in nav_object.items():
-
-        #         if key is "properties":
-        #             # figure out if it really is a property or a new class
-
-        #             # if the element is a dict traverse it later
-        #         if isinstance(value, dict):
-        #             navigation_dict[key] = value
-        #             continue
-        #         # if element is a reference to another file
-        #         elif key is "$ref":
-        #             ref_url = baseurl + value
-        #             ref_data = self.read_json_from_url(ref_url)
-        #             navigation_dict[value] = ref_data
-
-        #         elif key is "definitions":
-
-        #         elif isinstance(value, str):
-        #             pass
+        pass
