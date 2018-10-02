@@ -18,7 +18,7 @@ class JsonSchemaService():
             "$schema",
             "definitions"
         ]
-        self.skip_fields.extend(self.subtypes)
+        # self.skip_fields.extend(self.subtypes)
         self._debug_objects_list = []
 
     def read_json_from_url(self, url):
@@ -40,7 +40,7 @@ class JsonSchemaService():
 
         return data
 
-    def infer_schema_info_from_url(self, url):
+    def infer_info_split_url(self, url):
         filename = url.split("/")[-1]
         baseurl = "/".join(url.split("/")[:-1])
 
@@ -49,14 +49,15 @@ class JsonSchemaService():
     def create_object_relations(self, b_object, new_objects, rel_name=None):
         rel_names = rel_name or ["has" for i in range(len(new_objects))]
         for new_object, rel_name in zip(new_objects, rel_names):
-            obj_rel = ObjectRelation(
-                from_object=b_object,
-                to_object=new_object,
-                url=self.schema.url,
-                label=rel_name)
-            obj_rel.save()
-            # to check the objects that have been create
-            self._debug_objects_list.append(obj_rel)
+            if isinstance(new_object, Object):
+                obj_rel = ObjectRelation(
+                    from_object=b_object,
+                    to_object=new_object,
+                    url=self.schema.url,
+                    label=rel_name)
+                obj_rel.save()
+                # to check the objects that have been create
+                self._debug_objects_list.append(obj_rel)
 
     def validate_url(self, url):
         urlmapper = {
@@ -78,7 +79,7 @@ class JsonSchemaService():
         return returns
 
     def iterate_schema(self, dict_data, root_label, current_object=None,
-                       definitions=None):
+                       definitions=None, filename=None):
 
         return_objects = []
         # extend definitions each time
@@ -90,29 +91,45 @@ class JsonSchemaService():
 
         # first figure out if this is a class
         if dict_data.get("type") == "object":
-            current_object = Object(
-                label=root_label,
+            # create object -  if filename exists name it the filename
+            label = filename.replace(".json", "") if filename else root_label
+            new_object = Object(
+                label=label,
                 schema=self.schema,
                 description=description)
-            current_object.save()
+            new_object.save()
             # to check the objects that have been create
-            self._debug_objects_list.append(current_object)
-            return_objects.append(current_object)
+            self._debug_objects_list.append(new_object)
 
-        # this basicly ignores the oneof.. etc. structure
-        subdata = [dict_data.get(subtype) for subtype in self.subtypes]
-        if any(subdata):
-            # get first that is not none
-            subdata = next(d for d in subdata if d is not None)
-            # merge list of dict to one dict
-            subdata = dict(pair for d in subdata for pair in d.items())
-            dict_data.update(subdata)
-            # consider pop the sub list element
+            # make sure this single element is returned
+            return_objects.append(new_object)
+
+            # create the object relation
+            if current_object is not None:
+                # None is root - so no relation
+                obj_rel = ObjectRelation(
+                    from_object=current_object,
+                    to_object=new_object,
+                    url=self.schema.url,
+                    label=root_label)
+                obj_rel.save()
+                # to check the objects that have been create
+                self._debug_objects_list.append(obj_rel)
+
+            # update current object
+            current_object = new_object
 
         for key, value in dict_data.items():
             # reference to new schema
             if key in self.skip_fields:
                 continue
+
+            elif key in self.subtypes:
+                # assuming the value is a list of dicts then
+                for off_dict in value:
+                    new_objects = self.iterate_schema(
+                        off_dict, root_label, current_object, definitions)
+                    return_objects.extend(new_objects)
 
             elif key == "$ref":
                 if value[0] is "#":
@@ -139,11 +156,11 @@ class JsonSchemaService():
                 # when stepping into a new file the label should be
                 # the file name
 
-                _, filename = self.infer_schema_info_from_url(url)
-                label = filename.replace(".json", "")
+                _, filename = self.infer_info_split_url(url)
                 # definitions is not inherited trough references
                 new_objects = self.iterate_schema(
-                    new_dict_data, label, current_object)
+                    new_dict_data, root_label, current_object,
+                    filename=filename)
                 return_objects.extend(new_objects)
 
             # only select type if it is not an object type
@@ -187,19 +204,12 @@ class JsonSchemaService():
                 new_objects = self.iterate_schema(
                     value, root_label, current_object, definitions)
 
-                # no_obj_attributes = self.filt_type(new_objects, Attribute)
-                objects = self.filt_type(new_objects, Object)
-                if len(objects):
-
-                    relation_names = self.get_rel_names(new_objects, value)
-                    # create the object relations with the current and the returned objects
-                    self.create_object_relations(
-                        current_object, objects, relation_names)
+                # relation_names = self.get_rel_names(new_objects, value)
+                # # create the object relations with the current and the new_objects
+                # self.create_object_relations(
+                #     current_object, new_objects, relation_names)
 
             elif isinstance(value, dict):
-                if len(self._debug_objects_list) >= 3:
-                    pass
-
                 new_objects = self.iterate_schema(
                     value, key, current_object, definitions)
                 return_objects.extend(new_objects)
@@ -209,7 +219,7 @@ class JsonSchemaService():
         return return_objects
 
     def load_json_schema(self, url, schema_name):
-        self.baseurl, filename = self.infer_schema_info_from_url(url)
+        self.baseurl, filename = self.infer_info_split_url(url)
         label = filename.replace(".json", "")
         try:
             self.schema = Schema.objects.get(label=schema_name)
@@ -222,6 +232,6 @@ class JsonSchemaService():
 
         data = self.read_json_from_url(url)
 
-        return_objects = self.iterate_schema(data, label)
+        return_objects = self.iterate_schema(data, label, filename=filename)
 
         pass
