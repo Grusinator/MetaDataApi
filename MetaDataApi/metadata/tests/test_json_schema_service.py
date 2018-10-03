@@ -20,4 +20,4 @@ class TestRdfService(TestCase):
 
         service = JsonSchemaService()
 
-        service.load_json_schema(url, "openMHealth")
+        res = service.load_json_schema(url, "openMHealth")

@@ -12,6 +12,7 @@ from django.contrib.auth.models import User
 from MetaDataApi.users.schema import UserType
 from MetaDataApi.metadata.models import Schema, Object, Attribute, ObjectRelation
 from MetaDataApi.metadata.services.rdf import rdfService
+from MetaDataApi.metadata.services.jsonschema import JsonSchemaService
 
 
 class SchemaNode(DjangoObjectType):
@@ -57,6 +58,31 @@ class DeleteSchema(graphene.Mutation):
             Schema.delete()
 
         return DeleteSchema(success=True)
+
+
+class AddJsonSchema(graphene.Mutation):
+    succes = graphene.Boolean()
+    objects_added = graphene.Int()
+
+    class Arguments:
+        url = graphene.String()
+        name = graphene.String()
+
+    # @login_required
+    def mutate(self, info, url, name):
+        service = JsonSchemaService()
+        if url == "openMHealth":
+            try:
+                service.create_default_schemas()
+            except Exception as e:
+                raise GraphQLError(str(e))
+        else:
+            try:
+                service.load_json_schema(url, name)
+            except Exception as e:
+                raise GraphQLError(str(e))
+
+        return AddRdfSchema(succes=True)
 
 
 class AddRdfSchema(graphene.Mutation):
@@ -131,4 +157,5 @@ class Query(graphene.ObjectType):
 
 class Mutation(graphene.ObjectType):
     add_rdf_schema = AddRdfSchema.Field()
+    add_json_schema = AddJsonSchema.Field()
     delete_schema = DeleteSchema.Field()

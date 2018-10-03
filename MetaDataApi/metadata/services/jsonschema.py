@@ -5,6 +5,8 @@ from urllib import request
 from MetaDataApi.metadata.models import (
     Schema, Object, Attribute, ObjectRelation)
 
+from schemas.json.omh.schema_names import schema_names
+
 
 class JsonSchemaService():
 
@@ -234,4 +236,11 @@ class JsonSchemaService():
 
         return_objects = self.iterate_schema(data, label, filename=filename)
 
-        pass
+        return self._debug_objects_list
+
+    def create_default_schemas(self):
+        baseurl = "https://raw.githubusercontent.com/Grusinator/MetaDataApi/master/schemas/json/omh/schema/"
+
+        for name in schema_names:
+            obj_list = self.load_json_schema(baseurl + name)
+            print(len(obj_list))
