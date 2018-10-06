@@ -73,9 +73,14 @@ class AddJsonSchema(graphene.Mutation):
         service = JsonSchemaService()
         if url == "openMHealth":
             try:
-                service.create_default_schemas()
+
+                import threading
+                task = service.create_default_schemas
+                thr = threading.Thread(target=task)
+                thr.start()  # Will run
+
             except Exception as e:
-                raise GraphQLError(str(e))
+                raise GraphQLError(e)
         else:
             try:
                 service.load_json_schema(url, name)

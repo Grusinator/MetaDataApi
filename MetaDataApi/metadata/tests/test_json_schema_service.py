@@ -21,3 +21,10 @@ class TestRdfService(TestCase):
         service = JsonSchemaService()
 
         res = service.load_json_schema(url, "openMHealth")
+
+    def test_default_schemas(self):
+        from MetaDataApi.metadata.services.jsonschema import JsonSchemaService
+
+        service = JsonSchemaService()
+        service.create_default_schemas()
+        print("done")

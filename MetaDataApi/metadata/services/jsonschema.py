@@ -22,6 +22,27 @@ class JsonSchemaService():
         ]
         # self.skip_fields.extend(self.subtypes)
         self._debug_objects_list = []
+        self._error_list = []
+
+    def try_create_item(self, item):
+
+        item_type = type(item)
+        # test if exists
+        try:
+            item = item_type.objects.get(label=item.label)
+
+            return item
+        except:
+            pass
+
+        # try create object
+        try:
+            item.save()
+            self._debug_objects_list.append(item)
+            return item
+        except Exception as e:
+            self._error_list.append(str(e))
+            return None
 
     def read_json_from_url(self, url):
 
@@ -52,14 +73,14 @@ class JsonSchemaService():
         rel_names = rel_name or ["has" for i in range(len(new_objects))]
         for new_object, rel_name in zip(new_objects, rel_names):
             if isinstance(new_object, Object):
-                obj_rel = ObjectRelation(
-                    from_object=b_object,
-                    to_object=new_object,
-                    url=self.schema.url,
-                    label=rel_name)
-                obj_rel.save()
-                # to check the objects that have been create
-                self._debug_objects_list.append(obj_rel)
+                obj_rel = self.try_create_item(
+                    ObjectRelation(
+                        from_object=b_object,
+                        to_object=new_object,
+                        url=self.schema.url,
+                        label=rel_name
+                    )
+                )
 
     def validate_url(self, url):
         urlmapper = {
@@ -95,13 +116,13 @@ class JsonSchemaService():
         if dict_data.get("type") == "object":
             # create object -  if filename exists name it the filename
             label = filename.replace(".json", "") if filename else root_label
-            new_object = Object(
-                label=label,
-                schema=self.schema,
-                description=description)
-            new_object.save()
-            # to check the objects that have been create
-            self._debug_objects_list.append(new_object)
+            new_object = self.try_create_item(
+                Object(
+                    label=label,
+                    schema=self.schema,
+                    description=description
+                )
+            )
 
             # make sure this single element is returned
             return_objects.append(new_object)
@@ -114,9 +135,7 @@ class JsonSchemaService():
                     to_object=new_object,
                     url=self.schema.url,
                     label=root_label)
-                obj_rel.save()
-                # to check the objects that have been create
-                self._debug_objects_list.append(obj_rel)
+                self.try_create_item(obj_rel)
 
             # update current object
             current_object = new_object
@@ -141,6 +160,8 @@ class JsonSchemaService():
                         url = self.baseurl + "/" + \
                             definition["$ref"]
                     elif "references" in definition:
+                        continue
+                    else:
                         continue
                         # skip references
                         # url = definition.get("references")[0].get("url")
@@ -181,15 +202,12 @@ class JsonSchemaService():
                 # here we just create it and return it
                 # saving is done after the object has been created
                 # if this dict contains "other classes"
-                attribute = Attribute(
+                attribute = self.try_create_item(Attribute(
                     label=root_label,
                     datatype=data_type,
                     description=description,
                     object=current_object
-                )
-                attribute.save()
-                # to check the objects that have been create
-                self._debug_objects_list.append(attribute)
+                ))
 
                 # consider saving here if it gets an object with
                 return_objects.append(attribute)
@@ -223,14 +241,13 @@ class JsonSchemaService():
     def load_json_schema(self, url, schema_name):
         self.baseurl, filename = self.infer_info_split_url(url)
         label = filename.replace(".json", "")
-        try:
-            self.schema = Schema.objects.get(label=schema_name)
-        except:
-            self.schema = Schema(
+
+        self.schema = self.try_create_item(
+            Schema(
                 label=schema_name,
                 url=self.baseurl,
             )
-            self.schema.save()
+        )
 
         data = self.read_json_from_url(url)
 
@@ -239,8 +256,10 @@ class JsonSchemaService():
         return self._debug_objects_list
 
     def create_default_schemas(self):
-        baseurl = "https://raw.githubusercontent.com/Grusinator/MetaDataApi/master/schemas/json/omh/schema/"
+        baseurl = "https://raw.githubusercontent.com/Grusinator/MetaDataApi/master/schemas/json/omh/schemas/"
 
         for name in schema_names:
-            obj_list = self.load_json_schema(baseurl + name)
+            obj_list = self.load_json_schema(baseurl + name, "openMHealth")
             print(len(obj_list))
+
+        self._error_list
