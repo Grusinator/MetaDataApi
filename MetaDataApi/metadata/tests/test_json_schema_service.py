@@ -27,4 +27,3 @@ class TestRdfService(TestCase):
 
         service = JsonSchemaService()
         service.create_default_schemas()
-        print("done")

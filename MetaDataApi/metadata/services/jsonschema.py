@@ -1,5 +1,8 @@
 import json
 import os
+import re
+from django.db import transaction
+import inflection
 # from jsonschema import validate
 from urllib import request
 from MetaDataApi.metadata.models import (
@@ -24,16 +27,36 @@ class JsonSchemaService():
         self._debug_objects_list = []
         self._error_list = []
 
+    def standarize_string(self, string, remove_version=False):
+        string = inflection.underscore(string)
+        # remove any version numbers
+        if remove_version:
+            string = re.sub("(|_)\d+\.(\d+|x)", '', string)
+
+        # remove trailing and leading whitespace/underscore
+        #string = re.sub('/^[\W_]+|[\W_]+$/', '', string)
+
+        return string
+
     def try_create_item(self, item, update=False):
 
         item_type = type(item)
+        remove_version = not isinstance(item_type, Schema)
+
         # test if exists
+        item.label = self.standarize_string(
+            item.label, remove_version=remove_version)
         try:
-            return_item = item_type.objects.get(label=item.label)
-            if update:
-                return_item.delete()
-                item.save()
-                return_item = item
+            # this "with transaction.atomic():"
+            # is used to make tests run due to some
+            # random error, atomic something.
+            # it works fine when runs normally
+            with transaction.atomic():
+                return_item = item_type.objects.get(label=item.label)
+                if update:
+                    return_item.delete()
+                    item.save()
+                    return_item = item
 
             return return_item
         except Exception as e:
@@ -72,19 +95,6 @@ class JsonSchemaService():
         baseurl = "/".join(url.split("/")[:-1])
 
         return baseurl, filename
-
-    def create_object_relations(self, b_object, new_objects, rel_name=None):
-        rel_names = rel_name or ["has" for i in range(len(new_objects))]
-        for new_object, rel_name in zip(new_objects, rel_names):
-            if isinstance(new_object, Object):
-                obj_rel = self.try_create_item(
-                    ObjectRelation(
-                        from_object=b_object,
-                        to_object=new_object,
-                        url=self.schema.url,
-                        label=rel_name
-                    )
-                )
 
     def validate_url(self, url):
         urlmapper = {
@@ -231,11 +241,6 @@ class JsonSchemaService():
 
                 new_objects = self.iterate_schema(
                     value, root_label, current_object, definitions)
-
-                # relation_names = self.get_rel_names(new_objects, value)
-                # # create the object relations with the current and the new_objects
-                # self.create_object_relations(
-                #     current_object, new_objects, relation_names)
 
             elif isinstance(value, dict):
                 new_objects = self.iterate_schema(
