@@ -24,15 +24,19 @@ class JsonSchemaService():
         self._debug_objects_list = []
         self._error_list = []
 
-    def try_create_item(self, item):
+    def try_create_item(self, item, update=False):
 
         item_type = type(item)
         # test if exists
         try:
-            item = item_type.objects.get(label=item.label)
+            return_item = item_type.objects.get(label=item.label)
+            if update:
+                return_item.delete()
+                item.save()
+                return_item = item
 
-            return item
-        except:
+            return return_item
+        except Exception as e:
             pass
 
         # try create object
@@ -114,6 +118,7 @@ class JsonSchemaService():
 
         # first figure out if this is a class
         if dict_data.get("type") == "object":
+
             # create object -  if filename exists name it the filename
             label = filename.replace(".json", "") if filename else root_label
             new_object = self.try_create_item(
@@ -137,7 +142,8 @@ class JsonSchemaService():
                     label=root_label)
                 self.try_create_item(obj_rel)
 
-            # update current object
+            # update current and parrent object
+            parrent_object = current_object
             current_object = new_object
 
         for key, value in dict_data.items():
@@ -202,12 +208,14 @@ class JsonSchemaService():
                 # here we just create it and return it
                 # saving is done after the object has been created
                 # if this dict contains "other classes"
-                attribute = self.try_create_item(Attribute(
-                    label=root_label,
-                    datatype=data_type,
-                    description=description,
-                    object=current_object
-                ))
+                attribute = self.try_create_item(
+                    Attribute(
+                        label=root_label,
+                        datatype=data_type,
+                        description=description,
+                        object=current_object
+                    )
+                )
 
                 # consider saving here if it gets an object with
                 return_objects.append(attribute)
@@ -233,6 +241,40 @@ class JsonSchemaService():
                 new_objects = self.iterate_schema(
                     value, key, current_object, definitions)
                 return_objects.extend(new_objects)
+
+        # here we identify if the structure should be simplified: to avoid
+        # fx unit value objects attributes. If there is one class related
+        # to only one attribute. then remove the class and make the
+        # object relation a attribute label to the attribute
+        # this should only be tested each time we are finished with an object
+
+        # same test as earlier
+        if dict_data.get("type") == "object":
+            # fiugre out if this object only has one attribute and no relations
+            atts = Attribute.objects.filter(object=current_object).count()
+            rels = ObjectRelation.objects.filter(
+                from_object=current_object).count()
+            if atts == 1 and rels == 0:
+                # simplify
+                attribute = Attribute.objects.get(object=current_object)
+
+                # use parrent object as object instead
+                if parrent_object is None:
+                    # if None, consider delete object. attribute must have
+                    # object
+                    # or keep is as it is, to avoid deleting single object
+                    # attribute relations
+                    pass
+
+                else:
+                    # continue the process
+                    attribute.object = parrent_object
+                    attribute.description += " -> simplified: " + root_label
+                    self.try_create_item(attribute, update=True)
+                    current_object.delete()
+
+                    # return as if it was an attribute, which it now is
+                    return_objects = [attribute, ]
 
         # we return the created objects from this branch in order
         # to create the object relations
