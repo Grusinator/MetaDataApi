@@ -13,6 +13,7 @@ from MetaDataApi.users.schema import UserType
 from MetaDataApi.metadata.models import Schema, Object, Attribute, ObjectRelation
 from MetaDataApi.metadata.services.rdf import rdfService
 from MetaDataApi.metadata.services.jsonschema import JsonSchemaService
+from MetaDataApi.metadata.services.schema_identification import SchemaIdentification
 
 
 class SchemaNode(DjangoObjectType):
@@ -58,6 +59,21 @@ class DeleteSchema(graphene.Mutation):
             Schema.delete()
 
         return DeleteSchema(success=True)
+
+
+class IdentifyData(graphene.Mutation):
+    modified_data = graphene.String()
+
+    class Arguments:
+        input_data = graphene.String()
+
+    # @login_required
+    def mutate(self, info, input_data):
+        identify = SchemaIdentification()
+
+        modified_data = identify.identify_data(input_data)
+
+        return IdentifyData(modified_data=modified_data)
 
 
 class AddJsonSchema(graphene.Mutation):

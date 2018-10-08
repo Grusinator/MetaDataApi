@@ -31,10 +31,10 @@ class JsonSchemaService():
         string = inflection.underscore(string)
         # remove any version numbers
         if remove_version:
-            string = re.sub("(|_)\d+\.(\d+|x)", '', string)
+            string = re.sub("(|_)\d+\.(\d+|x)(|_)", '', string)
 
         # remove trailing and leading whitespace/underscore
-        #string = re.sub('/^[\W_]+|[\W_]+$/', '', string)
+        # string = re.sub('/^[\W_]+|[\W_]+$/', '', string)
 
         return string
 
