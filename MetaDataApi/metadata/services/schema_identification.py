@@ -24,9 +24,9 @@ class SchemaIdentification():
         for key, value in input_data.items():
             # this is likely a object
             if isinstance(value, dict):
-                self.find_label_in_metadata(key, )
+                self.find_label_in_metadata(key)
 
-    def find_label_in_metadata(self, str: label, data_type):
+    def find_label_in_metadata(self, str: label, data_type=None):
         # iterate through the vectorized  dataobjects,
         # mostly objects and attributes.
         # Add semantic vector to each object
