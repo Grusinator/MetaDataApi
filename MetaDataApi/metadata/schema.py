@@ -180,3 +180,4 @@ class Mutation(graphene.ObjectType):
     add_rdf_schema = AddRdfSchema.Field()
     add_json_schema = AddJsonSchema.Field()
     delete_schema = DeleteSchema.Field()
+    identify_data = IdentifyData.Field()

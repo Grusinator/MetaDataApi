@@ -1,4 +1,8 @@
 import json
+from urllib import request
+from django.core.validators import URLValidator
+from django.core.exceptions import ValidationError
+
 
 from inflection import underscore
 from gensim.models import word2vec
@@ -20,9 +24,14 @@ class SchemaIdentification():
         """ this is the main function that handles all the
         restructuring of the data.
         """
+        # test if this is an url
+        input_data = self.validate_url(input_data) or input_data
 
         input_data = json.loads(input_data)
 
+        json = self.iterate_data(input_data)
+
+    def iterate_data(self, input_data):
         # for each branch in the tree check match for labels,
         # attribute labels and relations labels
         for key, value in input_data.items():
@@ -30,11 +39,23 @@ class SchemaIdentification():
             # attributes or objects
             if isinstance(value, dict):
                 # check if the key is a label
-                obj = self.find_label_in_metadata(key)
+                obj = self.find_label_in_metadata(key, value)
             elif isinstance(value, [str, int, float]):
                 # it is probably an attribute
                 data_type = self.identify_datatype(value)
                 obj = self.find_label_in_metadata(key, data_type)
+
+    def multi2single_layerdict(self, dict):
+
+    def validate_url(self, url):
+        val = URLValidator()
+        try:
+            val(url)
+        except ValidationError as e:
+            return None
+
+        with request.urlopen(url) as resp:
+            return resp.read().decode()
 
     def identify_datatype(self, element):
         # even though it is a string,
@@ -55,7 +76,7 @@ class SchemaIdentification():
             # otherwise just return the type of
             return type(element)
 
-    def find_label_in_metadata(self, label, data_type=None):
+    def find_label_in_metadata(self, label, children=None, parrent=None):
         # iterate through the vectorized  dataobjects,
         # mostly objects and attributes.
         # Add semantic vector to each object
@@ -65,7 +86,7 @@ class SchemaIdentification():
         for orm in self.orms:
             objects = orm.objects.all()
             for obj in objects:
-                score = self.likelihood_score(label, obj, data_type)
+                score = self.likelihood_score(label, obj)
                 if score > 0.7:
                     candidates.append((obj, score))
 
@@ -77,7 +98,7 @@ class SchemaIdentification():
             v2 = self.datatype_match(obj, data_type)
         # if it is an object we can look at the relations
         # and see if it matches related objects or attributes
-        elif isinstance(obj, Object):
+        elif isinstance(obj, Object) and None:
             v2 = self.relations_match()
         else:
             v2 = 0
@@ -92,7 +113,8 @@ class SchemaIdentification():
             return 1
         else:
             # probably need more preprocessing
-            return self.model.similarity(label1, label2)
+            # return self.model.similarity(label1, label2)
+            return 0
 
     def datatype_match(self, object, data_type):
         return 0
