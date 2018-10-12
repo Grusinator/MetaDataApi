@@ -34,6 +34,7 @@ class Attribute(models.Model):
     label = models.TextField()
     description = models.TextField()
     datatype = models.TextField()
+    dataunit = models.TextField()
     object = models.ForeignKey(
         Object, related_name='attributes', on_delete=models.CASCADE)
 
@@ -60,3 +61,32 @@ class ObjectRelation(models.Model):
 
     class Meta:
         app_label = 'metadata'
+
+
+# instance classes
+
+class ObjectInstance(models.Model):
+    base = models.ForeignKey(
+        Object,
+        related_name='object_instances', on_delete=models.CASCADE)
+
+
+class ObjectRelationInstance(models.Model):
+    base = models.ForeignKey(
+        ObjectRelation,
+        related_name='object_relation_instances', on_delete=models.CASCADE)
+    from_object = models.ForeignKey(
+        ObjectInstance,
+        related_name='to_relations', on_delete=models.CASCADE)
+    to_object = models.ForeignKey(
+        ObjectInstance,
+        related_name='from_relations', on_delete=models.CASCADE)
+
+
+class AttributeInstance(models.Model):
+    base = models.ForeignKey(
+        Attribute,
+        related_name='attribute_instances', on_delete=models.CASCADE)
+    value = models.TextField()
+    object = models.ForeignKey(
+        ObjectInstance, related_name='attributes', on_delete=models.CASCADE)

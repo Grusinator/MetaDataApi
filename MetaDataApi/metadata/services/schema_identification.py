@@ -8,7 +8,10 @@ from inflection import underscore
 from gensim.models import word2vec
 from MetaDataApi.metadata.models import (
     Schema, Object,
-    Attribute, ObjectRelation)
+    Attribute, ObjectRelation,
+    ObjectInstance,
+    AttributeInstance,
+    ObjectRelationInstance)
 
 
 class SchemaIdentification():
@@ -16,7 +19,7 @@ class SchemaIdentification():
         # consider using sports articles for corpus
         # sentences = word2vec.Text8Corpus('text8')
 
-        self.orms = [Object, Attribute, ObjectRelation, Schema]
+        self.orms = [Object, Attribute]
 
         # self.model = word2vec.Word2Vec(sentences, size=200)
 
@@ -29,23 +32,128 @@ class SchemaIdentification():
 
         input_data = json.loads(input_data)
 
-        json = self.iterate_data(input_data)
+        # create a base person to relate the data to
+        person = ObjectInstance(
+            base=Object.objects.get(label="Person")
+        )
+        # TODO: Relate to logged in person object instead
 
-    def iterate_data(self, input_data):
+        modified_data = self.iterate_data(input_data, person)
+
+    def iterate_data(self, input_data, parrent_obj_inst):
         # for each branch in the tree check match for labels,
         # attribute labels and relations labels
+
+        instance_list = []
+
         for key, value in input_data.items():
             # this is likely a object if it contains other
             # attributes or objects
             if isinstance(value, dict):
-                # check if the key is a label
-                obj = self.find_label_in_metadata(key, value)
+                # test if value dict only contains
+                # "value", "unit" and whatever attr
+                if self.dict_contains_only_attr(value):
+                    look_only_for = [Attribute, ]
+
+                    # check if the key is a label
+                    att = self.find_label_in_metadata(
+                        key, value, look_only_for_items=look_only_for)
+
+                    if isinstance(att, Attribute):
+                        instance_list.append(
+                            AttributeInstance(
+                                base=att,
+                                object=parrent_obj_inst
+                            )
+                        )
+                    else:
+                        # attribute not found
+                        pass
+                    # TODO: handle this better
+
+                # its probably a object
+                else:
+                    # check if the key is a label
+                    obj = self.find_label_in_metadata(
+                        key, value)
+
+                    if isinstance(obj, Object):
+                        # test if relation between parrent exists
+                        obj_rel = self.relation_between_objects(
+                            parrent_obj_inst, obj)
+
+                        # create object instance of the one found from label
+                        obj_inst = instance_list.append(
+                            ObjectInstance(
+                                base=obj
+                            )
+                        )
+
+                        # if realation exist create instance
+                        if obj_rel:
+                            parrent_obj_inst = ObjectRelationInstance(
+                                from_obj=parrent_obj_inst,
+                                to_obj=obj_inst,
+                            )
+                            instance_list.append(parrent_obj_inst)
+
+                    elif isinstance(obj, ObjectRelation):
+                        # dont act here, it should be created when
+                        # an object is identified
+
+                        # just step down
+                        pass
+
+                    # then iterate down the object value
+                    # to find connected objects
+                    returned_objects = self.iterate_data(
+                        value, parrent_obj_inst)
+                    instance_list.extend(returned_objects)
+
+            # this must be an attribute
             elif isinstance(value, [str, int, float]):
                 # it is probably an attribute
                 data_type = self.identify_datatype(value)
-                obj = self.find_label_in_metadata(key, data_type)
+                att = self.find_label_in_metadata(
+                    key, data_type, look_only_for_items=[Attribute, ])
 
-    def multi2single_layerdict(self, dict):
+                if att:
+                    instance_list.append(
+                        AttributeInstance(
+                            base=att,
+                            object=object_instance
+                        )
+                    )
+
+        # when all objects are mapped return the instances
+        return instance_list
+
+    def relation_between_objects(from_obj, to_obj):
+        def convert_to_base(obj):
+            if isinstance(obj, ObjectInstance):
+                return obj.base
+            else:
+                return obj
+
+        from_obj = convert_to_base(from_obj)
+        to_obj = convert_to_base(to_obj)
+
+        try:
+            return ObjectRelation.objects.get(
+                from_obj=from_obj,
+                to_obj=to_obj
+            )
+        except:
+            return None
+
+    def dict_contains_only_attr(self, data):
+        data = data.copy()
+        if len(data) == 0:
+            return False
+        attr_names = ["value", "unit"]
+        attrs = [data.pop(name, None) for name in attr_names]
+
+        return len(data) == 0
 
     def validate_url(self, url):
         val = URLValidator()
@@ -76,19 +184,25 @@ class SchemaIdentification():
             # otherwise just return the type of
             return type(element)
 
-    def find_label_in_metadata(self, label, children=None, parrent=None):
+    def find_label_in_metadata(self, label, children=None, parrent=None,
+                               look_only_for_items=None):
         # iterate through the vectorized  dataobjects,
         # mostly objects and attributes.
         # Add semantic vector to each object
 
         candidates = []
         # first, test if label exists in each object
-        for orm in self.orms:
+        for orm in look_only_for_items or self.orms:
             objects = orm.objects.all()
             for obj in objects:
                 score = self.likelihood_score(label, obj)
                 if score > 0.7:
                     candidates.append((obj, score))
+        # get candidate with the max score
+        if len(candidates) == 0:
+            return None
+        else:
+            return max(candidates, key=lambda x: x[1])[0]
 
     def likelihood_score(self, label, obj, data_type=None):
         v1 = self.compare_labels(label, obj.label)

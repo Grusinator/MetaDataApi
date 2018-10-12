@@ -1,9 +1,13 @@
 from django.contrib import admin
 
 # Register your models here.
-from MetaDataApi.metadata.models import Schema, Object, Attribute, ObjectRelation
+from MetaDataApi.metadata.models import (
+    Schema, Object, Attribute, ObjectRelation,
+    ObjectInstance, ObjectRelationInstance,
+    AttributeInstance)
 
-list = [Schema, Object, Attribute, ObjectRelation]
+list = [Schema, Object, Attribute, ObjectRelation,
+        ObjectInstance, ObjectRelationInstance,
+        AttributeInstance]
 
-for model in list:
-    admin.site.register(model)
+[admin.site.register(model) for model in list]
