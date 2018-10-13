@@ -47,7 +47,8 @@ class Attribute(models.Model):
 
 class ObjectRelation(models.Model):
     label = models.TextField()
-    url = models.TextField()
+    schema = models.ForeignKey(
+        Schema, related_name='object_relations', on_delete=models.CASCADE)
     from_object = models.ForeignKey(
         Object, related_name='to_relations', on_delete=models.CASCADE)
     to_object = models.ForeignKey(

@@ -1,6 +1,7 @@
 import django
 from django.test import TestCase
 
+
 # TODO: Configure your database in settings.py and sync before running tests.
 
 
@@ -21,6 +22,19 @@ class TestRdfService(TestCase):
         service = JsonSchemaService()
 
         res = service.load_json_schema(url, "openMHealth")
+
+    def test_upload_json_schema_body_temp(self):
+        from MetaDataApi.metadata.services.jsonschema import JsonSchemaService
+        from MetaDataApi.metadata.models import (
+            Schema, Object, Attribute, ObjectRelation)
+
+        url = "https://raw.githubusercontent.com/Grusinator/MetaDataApi/master/schemas/json/omh/schemas/body-temperature-2.0.json"
+
+        service = JsonSchemaService()
+
+        res = service.load_json_schema(url, "openMHealth")
+
+        atts = filter(lambda x: isinstance(x, Attribute), res)
 
     def test_default_schemas(self):
         from MetaDataApi.metadata.services.jsonschema import JsonSchemaService

@@ -2,6 +2,8 @@ import json
 from urllib import request
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
+from datetime import datetime
+from dateutil import parser
 
 
 from inflection import underscore
@@ -89,7 +91,7 @@ class SchemaIdentification():
                             )
                         )
 
-                        # if realation exist create instance
+                        # if relation exist create instance
                         if obj_rel:
                             parrent_obj_inst = ObjectRelationInstance(
                                 from_obj=parrent_obj_inst,
@@ -111,7 +113,7 @@ class SchemaIdentification():
                     instance_list.extend(returned_objects)
 
             # this must be an attribute
-            elif isinstance(value, [str, int, float]):
+            elif isinstance(value, (str, int, float)):
                 # it is probably an attribute
                 data_type = self.identify_datatype(value)
                 att = self.find_label_in_metadata(
@@ -121,7 +123,7 @@ class SchemaIdentification():
                     instance_list.append(
                         AttributeInstance(
                             base=att,
-                            object=object_instance
+                            object=parrent_obj_inst
                         )
                     )
 
@@ -174,7 +176,12 @@ class SchemaIdentification():
                 val = float(element)
             except ValueError:
                 # its probably a string
-                return str
+                try:
+                    val = parser.parse(element)
+                    return datetime
+                except ValueError:
+                    pass
+            return str
 
             if element.contains("."):
                 return float

@@ -20,6 +20,7 @@ html5lib = "*"
 jsonschema = "*"
 inflection = "*"
 gensim = "*"
+python-dateutil = "*"
 
 [dev-packages]
 pep8 = "*"

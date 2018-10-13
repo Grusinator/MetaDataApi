@@ -14,6 +14,7 @@ from MetaDataApi.metadata.models import Schema, Object, Attribute, ObjectRelatio
 from MetaDataApi.metadata.services.rdf import rdfService
 from MetaDataApi.metadata.services.jsonschema import JsonSchemaService
 from MetaDataApi.metadata.services.schema_identification import SchemaIdentification
+from MetaDataApi.metadata.services.create_rdf import create_rdf
 
 
 class SchemaNode(DjangoObjectType):
@@ -59,6 +60,24 @@ class DeleteSchema(graphene.Mutation):
             Schema.delete()
 
         return DeleteSchema(success=True)
+
+
+class ExportSchema(graphene.Mutation):
+    schema_file = graphene.String()
+
+    class Arguments:
+        schema_name = graphene.String()
+
+    def mutate(self, info, schema_name):
+
+        outfilename = "./schemas/rdf/created/" + schema_name + ".ttl"
+
+        schema_file = create_rdf(schema_name)
+
+        with open(outfilename, 'wb') as file:
+            file.write(schema_file)
+
+        return ExportSchema(schema_file=schema_file)
 
 
 class IdentifyData(graphene.Mutation):
@@ -181,3 +200,4 @@ class Mutation(graphene.ObjectType):
     add_json_schema = AddJsonSchema.Field()
     delete_schema = DeleteSchema.Field()
     identify_data = IdentifyData.Field()
+    export_schema = ExportSchema.Field()

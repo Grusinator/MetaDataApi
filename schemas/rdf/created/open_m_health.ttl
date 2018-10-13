@@ -1,0 +1,285 @@
+@prefix ns1: <http://purl.org/dc/elements/1.1/> .
+@prefix open_m_health: <https://raw.githubusercontent.com/Grusinator/MetaDataApi/master/schemas/open_m_health#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+open_m_health:acceleration a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents accelerometer measurements. The assumption is a 2-axis accelerometer. For a 3-axis accelerometer, the z measurement should also be required." ;
+    "acceleration_x" open_m_health:acceleration_unit_value ;
+    "acceleration_y" open_m_health:acceleration_unit_value ;
+    "acceleration_z" open_m_health:acceleration_unit_value ;
+    "effective_time_frame" open_m_health:time_frame .
+
+open_m_health:ambient_temperature a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents the ambient temperature, either a single measurement, or the result of aggregating several measurements made over time (see Descriptive schema for a list of aggregate measures)" ;
+    "ambient_temperature" open_m_health:temperature_unit_value .
+
+open_m_health:area_unit_value a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents an area (measure of a surface)" ;
+    "area_unit_value" open_m_health:unit_value .
+
+open_m_health:blood_glucose a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents a person's blood glucose level, either a single blood glucose measurement, or the result of aggregating several measurements made over time (see Numeric descriptor schema for a list of aggregate measures)" ;
+    "blood_glucose" open_m_health:unit_value .
+
+open_m_health:blood_pressure a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents a person's blood pressure as a combination of systolic and diastolic blood pressure, either a single blood pressure measurement, or the result of aggregating several measurements made over time (see Numeric descriptor schema for a list of aggregate measures)" ;
+    "diastolic_blood_pressure" open_m_health:diastolic_blood_pressure ;
+    "systolic_blood_pressure" open_m_health:systolic_blood_pressure .
+
+open_m_health:body_fat_percentage a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents a person's body fat percentage." ;
+    "body_fat_percentage" open_m_health:unit_value .
+
+open_m_health:body_height a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents a person's body height, either a single body height measurement, or the result of aggregating several measurements made over time (see Numeric descriptor schema for a list of aggregate measures)" ;
+    "body_height" open_m_health:length_unit_value .
+
+open_m_health:body_mass_index a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents a person's body mass index (BMI), either a single BMI measurement, or the result of aggregating several measurements made over time (see Numeric descriptor schema for a list of aggregate measures)" ;
+    "body_mass_index" open_m_health:unit_value .
+
+open_m_health:body_temperature a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents a person's body temperature, either a single measurement, or the result of aggregating several measurements made over time (see Descriptive statistic schema for a list of aggregate measures)" ;
+    "body_temperature" open_m_health:temperature_unit_value .
+
+open_m_health:body_weight a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents a person's body weight, either a single body weight measurement, or for the result of aggregating several measurements made over time (see Numeric descriptor schema for a list of aggregate measures)" ;
+    "body_weight" open_m_health:mass_unit_value .
+
+open_m_health:breath_carbon_monoxide a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents the concentration of carbon monoxide (CO) in a person's expired breath, either a single measurement, or the result of aggregating several measurements made over time (see Descriptive statistic schema for a list of aggregate measures)" ;
+    "breath_carbon_monoxide" open_m_health:unit_value .
+
+open_m_health:calories_burned a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents a single measurement of amount of calories burned in kilocalories (kcal). The ability to represent descriptive statistics (e.g., mean, median) will be added shortly." ;
+    "kcal_burned" open_m_health:kcal_unit_value .
+
+open_m_health:data_point a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents a data point." ;
+    "body" open_m_health:body ;
+    "header" open_m_health:header .
+
+open_m_health:dose_administration_duration a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "The administration of a medication dose can last a certain length of time (duration), a certain range of time (duration range), a time frame (one day or a time interval) or as long as a certain condition (e.g., until pain abates)." .
+
+open_m_health:dose_duration a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "A medication prescription can last a certain length of time (duration), a certain range of time (duration range), a time frame (one day or a time interval) or as long as a certain condition (e.g., until skin lesion heals). The prescription for a chronic condition continues indeterminately and to indicate this 99 years is used." ;
+    "duration_range" open_m_health:duration_unit_value_range ;
+    "time_frame" open_m_health:time_frame .
+
+open_m_health:expiratory_time a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents the duration of a person's expiration (the time interval between the initiation of exhalation and the time at which no further lung volume reduction occurs), either a single measurement, or the result of aggregating several measurements made over time (see Descriptive statistic schema for a list of aggregate measures)" ;
+    "expiratory_time" open_m_health:duration_unit_value .
+
+open_m_health:frequency_unit_value a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents the frequency of an event as number of times over a duration, e.g., 1/14 d meaning once every 14 days, or a duration range." ;
+    "time_window" open_m_health:duration_unit_value .
+
+open_m_health:geoposition a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents a geographic position measurement." ;
+    "elevation" open_m_health:length_unit_value ;
+    "items" open_m_health:unit_value ;
+    "latitude" open_m_health:plane_angle_unit_value ;
+    "longitude" open_m_health:plane_angle_unit_value .
+
+open_m_health:heart_rate a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents a person's heart rate, either a single heart rate measurement, or the result of aggregating several measurements made over time (see Numeric descriptor schema for a list of aggregate measures)" ;
+    "heart_rate" open_m_health:unit_value .
+
+open_m_health:inspiratory_time a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents the duration of a person's inspiration (i.e., the time interval between the initiation of inhalation and the point at which no further lung volume expansion occurs), either a single measurement, or the result of aggregating several measurements made over time (see Descriptive statistic schema for a list of aggregate measures)" ;
+    "inspiratory_time" open_m_health:duration_unit_value .
+
+open_m_health:magnetic_force a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents magnetometer measurements." ;
+    "magnetic_field_strength_x" open_m_health:magnetic_flux_density_unit_value ;
+    "magnetic_field_strength_y" open_m_health:magnetic_flux_density_unit_value ;
+    "magnetic_field_strength_z" open_m_health:magnetic_flux_density_unit_value .
+
+open_m_health:medication_adherence_percent a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents summary adherence to a prescription as percent over a time period." ;
+    "medication_adherence_percent" open_m_health:unit_value ;
+    "medication_prescription" open_m_health:medication_prescription .
+
+open_m_health:medication_dose_unit_value_range a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents the dose of a therapeutic agent as a range." ;
+    "dose_range" open_m_health:unit_value_range ;
+    "medication_dose_unit_value_range" open_m_health:unit_value_range .
+
+open_m_health:minute_volume a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents the minute volume of a person's respiration, i.e., the volume of air inhaled (inhaled minute volume) and/or exhaled (exhaled minute volume) from a person’s lungs in one minute, either a single measurement, or the result of aggregating several measurements made over time (see Descriptive statistic schema for a list of aggregate measures). Note that although its name implies that it is a volume, minute volume is actually a flow (it represents a volume change over time)." ;
+    "minute_volume" open_m_health:unit_value .
+
+open_m_health:minutes_moderate_activity a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents a single measurement of minutes of moderate-intensity activity performed. The ability to represent descriptive statistics (e.g., mean, median) will be added shortly." ;
+    "minutes_moderate_activity" open_m_health:duration_unit_value .
+
+open_m_health:orientation a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents gyroscope measurements. The assumption is a 2-axis gyroscope. For a 3-axis gyroscope, the z measurement should also be required." ;
+    "angular_velocity_x" open_m_health:angular_velocity_unit_value ;
+    "angular_velocity_y" open_m_health:angular_velocity_unit_value ;
+    "angular_velocity_z" open_m_health:angular_velocity_unit_value .
+
+open_m_health:oxygen_saturation a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents the oxygen saturation." ;
+    "oxygen_saturation" open_m_health:unit_value ;
+    "supplemental_oxygen_flow_rate" open_m_health:unit_value .
+
+open_m_health:pace a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents (walking, running, biking, etc.) pace measurements, i.e. the time it takes to cover a certain distance (km or mile). This is NOT the traditional unit of length of the same name." ;
+    "pace" open_m_health:pace_unit_value .
+
+open_m_health:patient_medication_schedule a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents a medication schedule, based on the prescription e.g., atenolol 50 mg, 1 tablet at 8:00 and and 0.5 tablet at 8 pm for 30 days, with a window of +/- 1 hour." ;
+    "acceptable_window" open_m_health:acceptable_window ;
+    "patient_medication_schedule" open_m_health:medication_prescription .
+
+open_m_health:pharmacy_medication_dispensing a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents the dispensing by a pharmacy of medication based on a prescription e.g., atenolol 50 mg, 20 tab." ;
+    "amount_dispensed" open_m_health:unit_value ;
+    "time_frame_medication_dispensed" open_m_health:time_frame .
+
+open_m_health:physical_activity a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents a single episode of physical activity." ;
+    "distance" open_m_health:length_unit_value .
+
+open_m_health:reason_single_medication_dose_not_taken a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents the given reason for missing a single prescribed dose of a medication." .
+
+open_m_health:respiratory_rate a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents a person's respiratory rate (inhalation and exhalation), either a single respiratory rate measurement, or the result of aggregating several measurements made over time (see Descriptive statistic schema for a list of aggregate measures)" ;
+    "respiratory_rate" open_m_health:unit_value .
+
+open_m_health:rr_interval a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents the time measurement between the R wave of a person's successive heartbeats." ;
+    "rr_interval" open_m_health:duration_unit_value .
+
+open_m_health:single_medication_dose_taken a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents assumption of a single dose of a medication." ;
+    "dose" open_m_health:medication_dose_unit_value .
+
+open_m_health:sleep_duration a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents a single measurement of sleep duration. The ability to represent descriptive statistics (e.g., mean, median) will be added shortly." ;
+    "sleep_duration" open_m_health:duration_unit_value .
+
+open_m_health:sleep_episode a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents one sleep episode, which can be the main sleep event (i.e., a night sleep for most people) or a nap." ;
+    "latency_to_arising" open_m_health:duration_unit_value ;
+    "latency_to_sleep_onset" open_m_health:duration_unit_value ;
+    "sleep_maintenance_efficiency_percentage" open_m_health:unit_value ;
+    "total_sleep_time" open_m_health:duration_unit_value .
+
+open_m_health:speed a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents speed measurements (space over time)." ;
+    "speed" open_m_health:speed_unit_value .
+
+open_m_health:step_count a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents a single measurement of number of steps. The ability to represent descriptive statistics (e.g., mean, median) will be added shortly. " .
+
+open_m_health:ventilation_cycle_time a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents the duration of a person's complete respiration." ;
+    "ventilation_cycle_time" open_m_health:duration_unit_value .
+
+open_m_health:volume_unit_value a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents a volume." ;
+    "volume_unit_value" open_m_health:unit_value .
+
+open_m_health:acceptable_window a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "The amount of time before and after the set time during which it is still acceptable to take a dose of the medication. If missing, the dose must be taken at the exact time." ;
+    "after" open_m_health:duration_unit_value ;
+    "before" open_m_health:duration_unit_value .
+
+open_m_health:body a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "The body of the data point. This object should conform to the schema identifier in the header property." .
+
+open_m_health:diastolic_blood_pressure a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents a person's diastolic blood pressure." .
+
+open_m_health:duration_unit_value_range a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents a range of duration or length of time." ;
+    "duration_unit_value_range" open_m_health:unit_value_range .
+
+open_m_health:header a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents the header of a data transaction." ;
+    "schema_id" open_m_health:schema_id .
+
+open_m_health:kcal_unit_value a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents an amount (value) of kilocalories (unit of measure)." ;
+    "kcal_unit_value" open_m_health:unit_value .
+
+open_m_health:mass_unit_value a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents a mass." ;
+    "mass_unit_value" open_m_health:unit_value .
+
+open_m_health:medication a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents a therapeutic agent, single-active ingredient or combination." .
+
+open_m_health:medication_dose_unit_value a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents the dose of a therapeutic agent." ;
+    "medication_dose_unit_value" open_m_health:unit_value .
+
+open_m_health:pace_unit_value a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents a pace (time over distance)." ;
+    "pace_unit_value" open_m_health:unit_value .
+
+open_m_health:schema_id a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents a JSON Schema identifier." .
+
+open_m_health:speed_unit_value a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents a speed (distance over time)." ;
+    "speed_unit_value" open_m_health:unit_value .
+
+open_m_health:systolic_blood_pressure a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents a person's systolic blood pressure." .
+
+open_m_health:time_interval a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema describes an interval of time. In the absence of a precise start and/or end time, the time interval can be described as a date + a part of the day (morning, afternoon, evening, night). No commitments are made as to whether the start or end time point itself is included in the interval (i.e., whether the defined interval includes the boundary point(s) or not)." ;
+    "duration" open_m_health:duration_unit_value .
+
+open_m_health:medication_prescription a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents a medication prescription e.g., atenolol 50 mg, 1 tablet in the morning and 0.5 tablet in the evening for 30 days." ;
+    "medication" open_m_health:medication .
+
+open_m_health:plane_angle_unit_value a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents an angle on a plane." ;
+    "plane_angle_unit_value" open_m_health:unit_value .
+
+open_m_health:temperature_unit_value a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents a temperature (intensity of heat)" ;
+    "temperature_unit_value" open_m_health:unit_value .
+
+open_m_health:acceleration_unit_value a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents acceleration." ;
+    "acceleration_unit_value" open_m_health:unit_value .
+
+open_m_health:angular_velocity_unit_value a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents angular velocity." ;
+    "angular_velocity_unit_value" open_m_health:unit_value .
+
+open_m_health:length_unit_value a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents a length or a distance." ;
+    "length_unit_value" open_m_health:unit_value .
+
+open_m_health:magnetic_flux_density_unit_value a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents a magnetic flux density." ;
+    "magnetic_flux_density_unit_value" open_m_health:unit_value .
+
+open_m_health:time_frame a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema describes a time frame as a point in time or a time interval." ;
+    "time_interval" open_m_health:time_interval .
+
+open_m_health:unit_value_range a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents a range of numerical values with a unit of measure. The lower and upper boundaries are included in the interval." .
+
+open_m_health:duration_unit_value a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents a duration or length of time." ;
+    "duration_unit_value" open_m_health:unit_value ;
+    "time_frame_of_temporal_relationship_to_meal" open_m_health:unit_value ;
+    "time_frame_of_temporal_relationship_to_sleep" open_m_health:unit_value .
+
+open_m_health:unit_value a <http://www.w3.org/2002/07/owl#Class> ;
+    ns1:description "This schema represents a numerical value with a unit of measure." .
+
