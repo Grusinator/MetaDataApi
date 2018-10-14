@@ -215,7 +215,7 @@ class rdfService:
                     from_object=from_object,
                     to_object=to_object,
                     label=label,
-                    url=url
+                    schema=self.schema
                 )
                 object_relation.save()
 

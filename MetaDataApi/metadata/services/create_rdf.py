@@ -1,8 +1,12 @@
 from rdflib import Graph, Literal, URIRef
 from rdflib import Namespace
 from rdflib.namespace import RDF, FOAF, RDFS, DCTERMS, DC, OWL
+
+from django.core.files.base import ContentFile
+
 from MetaDataApi.metadata.models import (
     Schema, Object, Attribute, ObjectRelation)
+
 baseschemaurl = "https://raw.githubusercontent.com/Grusinator/MetaDataApi/master/schemas"
 
 
@@ -18,7 +22,7 @@ def create_rdf(schema_label):
     Ontology = Namespace(namespace)
     g.bind(schema_label, Ontology)
 
-    schema = URIRef(Ontology[schema_label])
+    rdf_schema = URIRef(Ontology[schema_label])
 
     for object in objects:
         obj_name = URIRef(Ontology[object.label])
@@ -44,4 +48,8 @@ def create_rdf(schema_label):
 
     ttl_data = g.serialize(format='turtle')
 
-    return ttl_data
+    content = ContentFile(ttl_data)
+    schema.rdf_file.save(schema_label + ".ttl", content)
+    schema.save()
+
+    return schema.rdf_file.url

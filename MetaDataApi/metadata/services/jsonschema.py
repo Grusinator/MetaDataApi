@@ -148,7 +148,7 @@ class JsonSchemaService():
                 obj_rel = ObjectRelation(
                     from_object=current_object,
                     to_object=new_object,
-                    url=self.schema.url,
+                    schema=self.schema,
                     label=root_label)
                 self.try_create_item(obj_rel)
 

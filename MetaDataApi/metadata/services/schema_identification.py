@@ -42,6 +42,16 @@ class SchemaIdentification():
 
         modified_data = self.iterate_data(input_data, person)
 
+        serialized_data = self.serialize_objects(modified_data)
+
+        return serialized_data
+
+    def serialize_objects(self, object_list):
+        # TODO: implement real serialization
+        dummy_string = ', '.join(str(x) for x in object_list)
+
+        return dummy_string
+
     def iterate_data(self, input_data, parrent_obj_inst):
         # for each branch in the tree check match for labels,
         # attribute labels and relations labels
@@ -65,7 +75,8 @@ class SchemaIdentification():
                         instance_list.append(
                             AttributeInstance(
                                 base=att,
-                                object=parrent_obj_inst
+                                object=parrent_obj_inst,
+                                value=value.get("value")
                             )
                         )
                     else:
@@ -123,7 +134,8 @@ class SchemaIdentification():
                     instance_list.append(
                         AttributeInstance(
                             base=att,
-                            object=parrent_obj_inst
+                            object=parrent_obj_inst,
+                            value=str(value)
                         )
                     )
 

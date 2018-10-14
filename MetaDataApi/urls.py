@@ -18,11 +18,14 @@ from django.urls import path
 from django.conf.urls import url
 from graphene_django.views import GraphQLView
 
+from django.conf.urls.static import static
+from django.conf import settings
+
 
 from django.views.generic.base import RedirectView
 
-urlpatterns = [ 
+urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^graphql/', GraphQLView.as_view(graphiql=True)),
-    url(r'^$', RedirectView.as_view(url='admin/', permanent=False), name='admin'),
-]
+    url(r'^$', RedirectView.as_view(url='admin/', permanent=False), name='admin')
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
