@@ -27,13 +27,17 @@ def create_rdf(schema_label):
     for object in objects:
         obj_name = URIRef(Ontology[object.label])
 
+        # type
         g.add((obj_name, RDF.type, OWL.Class))
+        # description
+        g.add((obj_name, RDFS.label, Literal(object.label)))
         g.add((obj_name, DC.description, Literal(object.description)))
+        # is defined by what schema
+        g.add((obj_name, RDFS.isDefinedBy, rdf_schema))
 
         relations = ObjectRelation.objects.filter(from_object=object)
 
         for relation in relations:
-
             to_object_name = URIRef(Ontology[relation.to_object.label])
             if relation.schema.label == schema_label:
                 relation_name = URIRef(Ontology[relation.label])
@@ -42,9 +46,22 @@ def create_rdf(schema_label):
                 # TODO create the ontology that it belongs to
                 relation_name = Literal(relation.label)
 
-            g.add((obj_name, relation_name, to_object_name))
+            # g.add((obj_name, relation_name, to_object_name))
 
         # add attributes
+        for attribute in object.attributes.all():
+            attribute_name = URIRef(Ontology[attribute.label])
+            g.add((attribute_name, RDF.type, RDF.Property))
+
+            # this one relates the attribute to the object
+            g.add((attribute_name, RDFS.domain, obj_name))
+
+            # label and description
+            g.add((attribute_name, RDFS.label, Literal(attribute.label)))
+            g.add((attribute_name, DC.description,
+                   Literal(attribute.description)))
+            # defined by
+            g.add((attribute_name, RDFS.isDefinedBy, rdf_schema))
 
     ttl_data = g.serialize(format='turtle')
 

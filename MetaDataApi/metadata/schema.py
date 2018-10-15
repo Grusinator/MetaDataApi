@@ -11,7 +11,7 @@ from django.contrib.auth.models import User
 
 from MetaDataApi.users.schema import UserType
 from MetaDataApi.metadata.models import Schema, Object, Attribute, ObjectRelation
-from MetaDataApi.metadata.services.rdf import rdfService
+from MetaDataApi.metadata.services.read_rdf import rdfService
 from MetaDataApi.metadata.services.jsonschema import JsonSchemaService
 from MetaDataApi.metadata.services.schema_identification import SchemaIdentification
 from MetaDataApi.metadata.services.create_rdf import create_rdf
