@@ -283,6 +283,8 @@ class JsonSchemaService():
         self.baseurl, filename = self.infer_info_split_url(input_url)
         label = filename.replace(".json", "")
 
+        data = self.read_json_from_url(input_url)
+
         schema_name = standarize_string(
             schema_name, remove_version=False)
 
@@ -290,6 +292,8 @@ class JsonSchemaService():
             schema = Schema.objects.get(label=schema_name)
         except:
             schema = Schema()
+            schema.label = schema_name
+            schema.description = "get somewhere else"
             # create a dummy file
             content = ContentFile("")
             schema.rdf_file.delete()
@@ -305,8 +309,6 @@ class JsonSchemaService():
             # folder hosting
             schema.url = WEB_DOMAIN + schema.rdf_file.url
             schema.save()
-
-        data = self.read_json_from_url(input_url)
 
         return_objects = self.iterate_schema(data, label, filename=filename)
 
