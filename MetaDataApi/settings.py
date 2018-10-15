@@ -159,3 +159,5 @@ MEDIA_URL = '/media/'
 
 # Activate Django-Heroku.
 django_heroku.settings(locals())
+
+WEB_DOMAIN = "https://meta-data-api.herokuapp.com"

@@ -2,7 +2,11 @@ import json
 import os
 import re
 from django.db import transaction
+from django.core.files.base import ContentFile
+
 import inflection
+from MetaDataApi.settings import WEB_DOMAIN
+
 # from jsonschema import validate
 from urllib import request
 from MetaDataApi.metadata.models import (
@@ -275,18 +279,34 @@ class JsonSchemaService():
         # to create the object relations
         return return_objects
 
-    def load_json_schema(self, url, schema_name):
-        self.baseurl, filename = self.infer_info_split_url(url)
+    def load_json_schema(self, input_url, schema_name):
+        self.baseurl, filename = self.infer_info_split_url(input_url)
         label = filename.replace(".json", "")
 
-        self.schema = self.try_create_item(
-            Schema(
-                label=schema_name,
-                url=self.baseurl,
-            )
-        )
+        schema_name = standarize_string(
+            schema_name, remove_version=False)
 
-        data = self.read_json_from_url(url)
+        try:
+            schema = Schema.objects.get(label=schema_name)
+        except:
+            schema = Schema()
+            # create a dummy file
+            content = ContentFile("")
+            schema.rdf_file.delete()
+
+            schema.rdf_file.save(schema_name + ".ttl", content)
+
+            # we have to save in order to get the url
+            # of the file right
+            schema.url = "dummy"
+            schema.save()
+
+            # the url should be the online location on the media
+            # folder hosting
+            schema.url = WEB_DOMAIN + schema.rdf_file.url
+            schema.save()
+
+        data = self.read_json_from_url(input_url)
 
         return_objects = self.iterate_schema(data, label, filename=filename)
 
