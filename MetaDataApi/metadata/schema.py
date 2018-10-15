@@ -75,7 +75,7 @@ class ExportSchema(graphene.Mutation):
 
         schema_file_url = create_rdf(schema_name)
 
-        schema_file_url = "http://localhost:8000" + schema_file_url
+        schema_file_url = "http://meta-data-api.herokuapp.com" + schema_file_url
 
         return ExportSchema(
             schema_file=schema_file_url,

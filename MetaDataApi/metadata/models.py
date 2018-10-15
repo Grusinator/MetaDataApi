@@ -1,4 +1,5 @@
 from django.db import models
+from app.storage import OverwriteStorage
 
 # Create your models here.
 
@@ -8,7 +9,9 @@ class Schema(models.Model):
     label = models.TextField()
     description = models.TextField()
     url = models.URLField(unique=True)
-    rdf_file = models.FileField(upload_to="schemas", null=True, blank=True)
+    rdf_file = models.FileField(
+        upload_to="schemas",
+        null=True, blank=True, storage=OverwriteStorage)
 
     def __str__(self):
         return "S:" + self.label
