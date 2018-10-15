@@ -57,7 +57,7 @@ class DeleteSchema(graphene.Mutation):
             [schema.delete() for schema in schemas]
         else:
             schema = Schema.objects.get(url=schema)
-            Schema.delete()
+            schema.delete()
 
         return DeleteSchema(success=True)
 

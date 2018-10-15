@@ -9,6 +9,7 @@ from MetaDataApi.metadata.models import (
     Schema, Object, Attribute, ObjectRelation)
 
 from schemas.json.omh.schema_names import schema_names
+from .base_functions import standarize_string
 
 
 class JsonSchemaService():
@@ -27,24 +28,13 @@ class JsonSchemaService():
         self._debug_objects_list = []
         self._error_list = []
 
-    def standarize_string(self, string, remove_version=False):
-        string = inflection.underscore(string)
-        # remove any version numbers
-        if remove_version:
-            string = re.sub("(|_)\d+\.(\d+|x)(|_)", '', string)
-
-        # remove trailing and leading whitespace/underscore
-        # string = re.sub('/^[\W_]+|[\W_]+$/', '', string)
-
-        return string
-
     def try_create_item(self, item, update=False):
 
         item_type = type(item)
         remove_version = not isinstance(item_type, Schema)
 
         # test if exists
-        item.label = self.standarize_string(
+        item.label = standarize_string(
             item.label, remove_version=remove_version)
         try:
             # this "with transaction.atomic():"

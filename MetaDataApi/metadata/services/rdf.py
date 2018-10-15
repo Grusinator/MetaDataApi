@@ -6,6 +6,7 @@ from MetaDataApi.metadata.models import (
 from urllib.error import URLError
 from rdflib.plugin import register, Serializer, Parser
 from graphql.error import GraphQLLocatedError
+from .base_functions import standarize_string
 
 
 class rdfService:
@@ -17,17 +18,18 @@ class rdfService:
         # "http://xmlns.com/wot/0.1/",
         # "http://www.w3.org/2001/XMLSchema#",
         "http://www.w3.org/2003/06/sw-vocab-status/ns#",
-        "http://www.w3.org/2002/07/owl#"
+        "http://www.w3.org/2002/07/owl#",
+        "http://xmlns.com/foaf/0.1/"
     ]
     selfhosted = {
-        "http://xmlns.com/foaf/0.1/": "https://raw.githubusercontent.com/Grusinator/MetaDataApi/master/schemas/foaf.ttl"
+        "http://xmlns.com/foaf/0.1/": "https://raw.githubusercontent.com/Grusinator/MetaDataApi/master/schemas/rdf/imported/foaf.ttl"
     }
 
     def __init__(self):
         self.schema = None
 
     def create_default_schemas(self):
-
+        # not very readable, consider to change to [_ for _ in _ ]
         graph_list = list(map(self.create_graph, self.default_list))
 
         schema_list = list(map(lambda x: self.create_schema_from_graph(
@@ -52,15 +54,10 @@ class rdfService:
 
         if rdf_url in self.selfhosted:
             rdf_url = self.selfhosted[rdf_url]
-
-            #            #make sure we are comparing with the right one, else convert to self hosted
-            # namespace = self.selfhosted[namespace] if namespace in self.selfhosted else namespace
-
-            # if namespace in self.ignorelist or not force: continue
-            # if namespace == schema_name: continue
         try:
             g.parse(rdf_url, format=format)
         except URLError as e:
+            print("could not fetch schema from url: " + rdf_url)
             return None
         return g
 
@@ -70,7 +67,7 @@ class rdfService:
 
         missing_list = self.validate_dependencies(g)
 
-        schema = self.create_schema_from_graph(g, rdf_url)
+        self.schema = self.create_schema_from_graph(g, rdf_url)
 
         self.create_objects_from_graph(g)
 
@@ -133,16 +130,15 @@ class rdfService:
 
         # only save if it does not exists
         try:
-            schema = Schema.objects.get(url=str(rdf_url))
+            self.schema = Schema.objects.get(url=str(rdf_url))
         except Exception as e:
-            schema = Schema(
-                label=str(label),
+            self.schema = Schema(
+                label=standarize_string(label, remove_version=True),
                 url=str(rdf_url),
                 description=str(description)
             )
-            schema.save()
-
-        return schema
+            self.schema.save()
+        return self.schema
 
     def create_objects_from_graph(self, g):
         # now create all objects
@@ -167,14 +163,14 @@ class rdfService:
             except:
                 pass
             try:
-                schema = Schema.objects.get(url=schema_url)
+                self.schema = Schema.objects.get(url=schema_url)
             except Exception as e:
                 pass
             else:
                 object = Object(
                     label=str(label),
                     description=str(comment),
-                    schema=schema
+                    schema=self.schema
                 )
                 object.save()
 
