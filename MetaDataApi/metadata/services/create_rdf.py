@@ -24,14 +24,19 @@ def create_rdf(schema_label):
 
     rdf_schema = URIRef(Ontology[schema_label])
 
+    # define the ontology
+    g.add((rdf_schema, RDF.type, OWL.Ontology))
+    g.add((rdf_schema, DC.title, Literal(schema.label)))
+    g.add((rdf_schema, DC.description, Literal(schema.description)))
+
     for object in objects:
         obj_name = URIRef(Ontology[object.label])
 
         # type
-        g.add((obj_name, RDF.type, OWL.Class))
+        g.add((obj_name, RDF.type, RDFS.Class))
         # description
         g.add((obj_name, RDFS.label, Literal(object.label)))
-        g.add((obj_name, DC.description, Literal(object.description)))
+        g.add((obj_name, RDFS.comment, Literal(object.description)))
         # is defined by what schema
         g.add((obj_name, RDFS.isDefinedBy, rdf_schema))
 
@@ -51,6 +56,7 @@ def create_rdf(schema_label):
         # add attributes
         for attribute in object.attributes.all():
             attribute_name = URIRef(Ontology[attribute.label])
+
             g.add((attribute_name, RDF.type, RDF.Property))
 
             # this one relates the attribute to the object
@@ -58,7 +64,7 @@ def create_rdf(schema_label):
 
             # label and description
             g.add((attribute_name, RDFS.label, Literal(attribute.label)))
-            g.add((attribute_name, DC.description,
+            g.add((attribute_name, RDFS.comment,
                    Literal(attribute.description)))
             # defined by
             g.add((attribute_name, RDFS.isDefinedBy, rdf_schema))
