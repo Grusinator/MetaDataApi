@@ -1,5 +1,7 @@
 from django.db import models
-from .storage import OverwriteStorage
+# the overwrite storage has been ommitted by
+# deleting the file in code
+# from .storage import OverwriteStorage
 
 # Create your models here.
 

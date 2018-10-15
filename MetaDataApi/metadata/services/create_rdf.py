@@ -66,7 +66,9 @@ def create_rdf(schema_label):
     ttl_data = g.serialize(format='turtle')
 
     content = ContentFile(ttl_data)
+    schema.rdf_file.delete()
     schema.rdf_file.save(schema_label + ".ttl", content)
+
     schema.save()
 
     return schema.rdf_file.url
