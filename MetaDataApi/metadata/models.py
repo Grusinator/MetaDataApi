@@ -7,7 +7,7 @@ from .custom_storages import MediaStorage
 class Schema(models.Model):
 
     label = models.TextField()
-    description = models.TextField()
+    description = models.TextField(null=True, blank=True)
     url = models.URLField(unique=True)
     rdf_file = models.FileField(
         upload_to="schemas",
@@ -22,7 +22,7 @@ class Schema(models.Model):
 
 class Object(models.Model):
     label = models.TextField()
-    description = models.TextField()
+    description = models.TextField(null=True, blank=True)
     # related name should not be objects, because that will cause problems
     schema = models.ForeignKey(
         Schema, related_name='object_list', on_delete=models.CASCADE)
@@ -36,7 +36,7 @@ class Object(models.Model):
 
 class Attribute(models.Model):
     label = models.TextField()
-    description = models.TextField()
+    description = models.TextField(null=True, blank=True)
     datatype = models.TextField()
     dataunit = models.TextField()
     object = models.ForeignKey(
@@ -51,6 +51,7 @@ class Attribute(models.Model):
 
 class ObjectRelation(models.Model):
     label = models.TextField()
+    description = models.TextField(null=True, blank=True)
     schema = models.ForeignKey(
         Schema, related_name='object_relations', on_delete=models.CASCADE)
     from_object = models.ForeignKey(
