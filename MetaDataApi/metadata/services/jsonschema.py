@@ -3,9 +3,8 @@ import os
 import re
 from django.db import transaction
 from django.core.files.base import ContentFile
-
+from MetaDataApi.metadata.services.create_rdf import create_rdf
 import inflection
-from MetaDataApi.settings import WEB_DOMAIN
 
 # from jsonschema import validate
 from urllib import request
@@ -293,30 +292,18 @@ class JsonSchemaService():
         except:
             self.schema = Schema()
             self.schema.label = schema_name
-            self.schema.description = "get somewhere else"
-
-            # delete previous file in order to keep filename
-            # constant, TODO: FIx by adding a storage that does
-            # it in the model.py
-            self.schema.rdf_file.delete()
-            self.schema.save()
+            self.schema.description
 
             # create a dummy file
             content = ContentFile("")
             self.schema.rdf_file.save(schema_name + ".ttl", content)
-
-            # we have to save in order to get the url
-            # of the file right, since url is required
-            # set to dummy
-            self.schema.url = "dummy"
-            self.schema.save()
-
-            # the url should be the online location on the media
-            # folder hosting
-            self.schema.url = WEB_DOMAIN + self.schema.rdf_file.url
+            self.schema.url = self.schema.rdf_file.url
             self.schema.save()
 
         return_objects = self.iterate_schema(data, label, filename=filename)
+
+        # just in order to update the media turtle file
+        create_rdf(self.schema.label)
 
         return self._debug_objects_list
 

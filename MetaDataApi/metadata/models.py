@@ -1,7 +1,5 @@
 from django.db import models
-# the overwrite storage has been ommitted by
-# deleting the file in code
-# from .storage import OverwriteStorage
+from .custom_storages import MediaStorage
 
 # Create your models here.
 
@@ -13,7 +11,7 @@ class Schema(models.Model):
     url = models.URLField(unique=True)
     rdf_file = models.FileField(
         upload_to="schemas",
-        null=True, blank=True)  # , storage=OverwriteStorage)
+        null=True, blank=True, storage=MediaStorage())
 
     def __str__(self):
         return "S:" + self.label

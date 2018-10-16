@@ -21,6 +21,8 @@ jsonschema = "*"
 inflection = "*"
 gensim = "*"
 python-dateutil = "*"
+django-storages = "*"
+"boto3" = "*"
 
 [dev-packages]
 pep8 = "*"

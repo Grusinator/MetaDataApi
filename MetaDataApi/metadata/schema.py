@@ -59,10 +59,13 @@ class DeleteSchema(graphene.Mutation):
             schemas = Schema.objects.all()
             [schema.delete() for schema in schemas]
 
-            media_schema_folder = os.path.join(MEDIA_ROOT, "schemas")
-            # delete all files in media/schemas folder
-            shutil.rmtree(media_schema_folder)
-            os.makedirs(media_schema_folder)
+            try:
+                media_schema_folder = os.path.join(MEDIA_ROOT, "schemas")
+                # delete all files in media/schemas folder
+                shutil.rmtree(media_schema_folder)
+                os.makedirs(media_schema_folder)
+            except:
+                print("does not work on AWS")
         else:
             schema = Schema.objects.get(url=schema)
             schema.delete()
@@ -82,8 +85,6 @@ class ExportSchema(graphene.Mutation):
         outfilename = "./schemas/rdf/created/" + schema_name + ".ttl"
 
         schema_file_url = create_rdf(schema_name)
-
-        schema_file_url = "http://meta-data-api.herokuapp.com" + schema_file_url
 
         return ExportSchema(
             schema_file=schema_file_url,
