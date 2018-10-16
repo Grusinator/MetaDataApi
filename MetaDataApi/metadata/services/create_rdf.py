@@ -1,3 +1,4 @@
+import os
 from rdflib import Graph, Literal, URIRef
 from rdflib import Namespace
 from rdflib.namespace import RDF, FOAF, RDFS, DCTERMS, DC, OWL
@@ -15,7 +16,7 @@ def create_rdf(schema_label):
 
     objects = Object.objects.filter(schema=schema)
 
-    namespace = schema.url + "/" + schema_label + "#"
+    namespace = schema.url.replace(".ttl", "#")
 
     Ontology = Namespace(namespace)
     g.bind(schema_label, Ontology)

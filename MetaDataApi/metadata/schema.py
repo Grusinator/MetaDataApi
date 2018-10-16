@@ -59,7 +59,7 @@ class DeleteSchema(graphene.Mutation):
             schemas = Schema.objects.all()
             [schema.delete() for schema in schemas]
 
-            media_schema_folder = MEDIA_ROOT + "/schema"
+            media_schema_folder = os.path.join(MEDIA_ROOT, "schemas")
             # delete all files in media/schemas folder
             shutil.rmtree(media_schema_folder)
             os.makedirs(media_schema_folder)

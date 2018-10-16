@@ -313,8 +313,8 @@ class JsonSchemaService():
 
             # the url should be the online location on the media
             # folder hosting
-            schema.url = WEB_DOMAIN + self.schema.rdf_file.url
-            schema.save()
+            self.schema.url = WEB_DOMAIN + self.schema.rdf_file.url
+            self.schema.save()
 
         return_objects = self.iterate_schema(data, label, filename=filename)
 
