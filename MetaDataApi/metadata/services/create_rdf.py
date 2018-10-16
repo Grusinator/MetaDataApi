@@ -55,7 +55,8 @@ def create_rdf(schema_label):
 
         # add attributes
         for attribute in object.attributes.all():
-            attribute_name = URIRef(Ontology[attribute.label])
+            # the "A_" is to avoid naming conflict with classes
+            attribute_name = URIRef(Ontology["A_" + attribute.label])
 
             g.add((attribute_name, RDF.type, RDF.Property))
 

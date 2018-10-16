@@ -289,25 +289,31 @@ class JsonSchemaService():
             schema_name, remove_version=False)
 
         try:
-            schema = Schema.objects.get(label=schema_name)
+            self.schema = Schema.objects.get(label=schema_name)
         except:
-            schema = Schema()
-            schema.label = schema_name
-            schema.description = "get somewhere else"
+            self.schema = Schema()
+            self.schema.label = schema_name
+            self.schema.description = "get somewhere else"
+
+            # delete previous file in order to keep filename
+            # constant, TODO: FIx by adding a storage that does
+            # it in the model.py
+            self.schema.rdf_file.delete()
+            self.schema.save()
+
             # create a dummy file
             content = ContentFile("")
-            schema.rdf_file.delete()
-
-            schema.rdf_file.save(schema_name + ".ttl", content)
+            self.schema.rdf_file.save(schema_name + ".ttl", content)
 
             # we have to save in order to get the url
-            # of the file right
-            schema.url = "dummy"
-            schema.save()
+            # of the file right, since url is required
+            # set to dummy
+            self.schema.url = "dummy"
+            self.schema.save()
 
             # the url should be the online location on the media
             # folder hosting
-            schema.url = WEB_DOMAIN + schema.rdf_file.url
+            schema.url = WEB_DOMAIN + self.schema.rdf_file.url
             schema.save()
 
         return_objects = self.iterate_schema(data, label, filename=filename)
