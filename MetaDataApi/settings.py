@@ -162,10 +162,7 @@ MEDIA_URL = '/media/'
 # Activate Django-Heroku.
 django_heroku.settings(locals())
 
-WEB_DOMAIN = "https://meta-data-api.herokuapp.com"
-
 # AWS
-
 AWS_STORAGE_BUCKET_NAME = 'meta-data-api-storage'
 AWS_S3_REGION_NAME = 'eu-central-1'  # e.g. us-east-2
 
