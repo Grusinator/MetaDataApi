@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 import os
 import django_heroku
 import posixpath
+import api_keys
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -168,8 +169,11 @@ WEB_DOMAIN = "https://meta-data-api.herokuapp.com"
 AWS_STORAGE_BUCKET_NAME = 'meta-data-api-storage'
 AWS_S3_REGION_NAME = 'eu-central-1'  # e.g. us-east-2
 
-AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+
+AWS_ACCESS_KEY_ID = os.environ.get(
+    'AWS_ACCESS_KEY_ID') or api_keys.LOCAL_AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY = os.environ.get(
+    'AWS_SECRET_ACCESS_KEY') or api_keys.LOCAL_AWS_SECRET_ACCESS_KEY
 
 # Tell django-storages the domain to use to refer to static files.
 AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
