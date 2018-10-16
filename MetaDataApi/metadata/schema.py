@@ -1,3 +1,5 @@
+import os
+import shutil
 import graphene
 from graphene_django.filter import DjangoFilterConnectionField
 from graphene_django.types import DjangoObjectType
@@ -7,6 +9,7 @@ from graphql.error import GraphQLError
 from graphql_jwt.decorators import login_required
 
 from django.contrib.auth.models import User
+from MetaDataApi.settings import MEDIA_ROOT
 
 
 from MetaDataApi.users.schema import UserType
@@ -55,6 +58,11 @@ class DeleteSchema(graphene.Mutation):
         if schema == "all":
             schemas = Schema.objects.all()
             [schema.delete() for schema in schemas]
+
+            media_schema_folder = MEDIA_ROOT + "/schema"
+            # delete all files in media/schemas folder
+            shutil.rmtree(media_schema_folder)
+            os.makedirs(media_schema_folder)
         else:
             schema = Schema.objects.get(url=schema)
             schema.delete()

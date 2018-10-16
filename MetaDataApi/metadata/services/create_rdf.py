@@ -7,8 +7,6 @@ from django.core.files.base import ContentFile
 from MetaDataApi.metadata.models import (
     Schema, Object, Attribute, ObjectRelation)
 
-baseschemaurl = "https://raw.githubusercontent.com/Grusinator/MetaDataApi/master/schemas"
-
 
 def create_rdf(schema_label):
     g = Graph()
@@ -17,7 +15,7 @@ def create_rdf(schema_label):
 
     objects = Object.objects.filter(schema=schema)
 
-    namespace = baseschemaurl + "/" + schema_label + "#"
+    namespace = schema.url + "/" + schema_label + "#"
 
     Ontology = Namespace(namespace)
     g.bind(schema_label, Ontology)
