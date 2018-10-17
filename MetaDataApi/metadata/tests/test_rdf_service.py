@@ -32,7 +32,7 @@ class TestRdfService(TestCase):
         assertNotEquals(schemas, None)
 
     def test_upload_rdf(self):
-        from MetaDataApi.metadata.services.rdf import rdfService
+        from MetaDataApi.metadata.services.read_rdf import rdfService
 
         url = "http://xmlns.com/foaf/0.1/"
 

@@ -10,23 +10,27 @@ from .base_functions import standarize_string
 
 
 class rdfService:
-    default_list = [
-        # 'http://www.w3.org/XML/1998/namespace',
-        "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
-        "http://www.w3.org/2000/01/rdf-schema#",
-        "http://purl.org/dc/elements/1.1/",
-        # "http://xmlns.com/wot/0.1/",
-        # "http://www.w3.org/2001/XMLSchema#",
-        "http://www.w3.org/2003/06/sw-vocab-status/ns#",
-        "http://www.w3.org/2002/07/owl#",
-        "http://xmlns.com/foaf/0.1/"
-    ]
-    selfhosted = {
-        "http://xmlns.com/foaf/0.1/": "https://raw.githubusercontent.com/Grusinator/MetaDataApi/master/schemas/rdf/imported/foaf.ttl"
-    }
-
     def __init__(self):
         self.schema = None
+
+        self.default_list = [
+            # 'http://www.w3.org/XML/1998/namespace',
+            "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+            "http://www.w3.org/2000/01/rdf-schema#",
+            "http://purl.org/dc/elements/1.1/",
+            # "http://xmlns.com/wot/0.1/",
+            # "http://www.w3.org/2001/XMLSchema#",
+            "http://www.w3.org/2003/06/sw-vocab-status/ns#",
+            "http://www.w3.org/2002/07/owl#",
+            "http://xmlns.com/foaf/0.1/"
+        ]
+        self.selfhosted = {
+            "http://xmlns.com/foaf/0.1/": "https://raw.githubusercontent.com/Grusinator/MetaDataApi/master/schemas/rdf/imported/foaf.ttl"
+        }
+
+        self.valid_datatypes = [
+            RDFS.Literal,
+        ]
 
     def create_default_schemas(self):
         # not very readable, consider to change to [_ for _ in _ ]
@@ -38,7 +42,8 @@ class rdfService:
         dummy = list(map(lambda x: self.create_objects_from_graph(
             *x), zip(graph_list)))
 
-        dummy = list(map(self.create_object_references_from_graph, graph_list))
+        dummy = list(
+            map(self.create_object_references_from_graphV2, graph_list))
         dummy = list(map(self.create_attributes_from_graph, graph_list))
 
     def create_graph(self, rdf_url):
@@ -71,7 +76,7 @@ class rdfService:
 
         self.create_objects_from_graph(g)
 
-        self.create_object_references_from_graph(g)
+        self.create_object_references_from_graphV2(g)
 
         self.create_attributes_from_graph(g)
 
@@ -215,10 +220,66 @@ class rdfService:
                 )
                 object_relation.save()
 
+    def create_object_references_from_graphV2(self, g):
+        # object references is in fact rather a
+        # property with range and domain pointing at
+        # 2 objects
+
+        # now create all object references
+        for s, p, o in g.triples((None, None, RDF.Property)):
+
+            # similar to property
+            try:
+                # Property label
+                label = next(g.triples((s,  RDFS.label, None)))[2]
+                # Property comment
+                comment = next(g.triples((s, RDFS.comment, None)))[2]
+                # Property Class/domain
+                domain = next(g.triples((s, RDFS.domain, None)))[2]
+                # Property datatype
+                o_range = next(g.triples((s, RDFS.range, None)))[2]
+
+                if o_range in self.valid_datatypes:
+                    pass
+
+                from_schema_url, from_obj_label = self.split_rdfs_url(domain)
+                to_schema_url, to_obj_label = self.split_rdfs_url(o_range)
+
+                # get the schema so that we can select the object from the
+                # right schema
+                liste = Schema.objects.all()
+
+                if self.schema.url == from_schema_url:
+                    from_schema = self.schema.url
+                else:
+                    from_schema = Schema.objects.get(
+                        url=from_schema_url)
+                if self.schema.url == to_schema_url:
+                    to_schema = self.schema.url
+                else:
+                    to_schema = Schema.objects.get(
+                        url=to_schema_url)
+
+                # TODO: consider the case if 2 objects has the same label?
+                from_object = Object.objects.filter(
+                    label=from_obj_label, schema=from_schema).first()
+                to_object = Object.objects.filter(
+                    label=to_obj_label, schema=to_schema).first()
+
+            # if no such 2 objects exists
+            except Exception as e:
+                continue
+            if from_object and to_object:
+                object_relation = ObjectRelation(
+                    from_object=from_object,
+                    to_object=to_object,
+                    label=label,
+                    schema=self.schema,
+                    description=comment
+                )
+                object_relation.save()
+
     def create_attributes_from_graph(self, g):
-        valid_datatypes = [
-            RDFS.Literal
-        ]
 
         for s, p, o in g.triples((None, None, RDF.Property)):
             _s = str(s)
