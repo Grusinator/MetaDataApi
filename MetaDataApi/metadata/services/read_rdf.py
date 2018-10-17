@@ -179,47 +179,6 @@ class rdfService:
                 )
                 object.save()
 
-    def create_object_references_from_graph(self, g):
-
-        def find_object2(g, subject):
-            try:
-                # Property label
-                label = next(g.triples((subject,  RDFS.label, None)))[2]
-
-                # find to_object
-                return Object.objects.filter(
-                    label=str(label)).first()
-            except Exception as e:
-                return None
-        # now create all object references
-        for s, p, o in g.triples((None, None, RDFS.Class)):
-
-            # find the from_class in object table
-            from_object = find_object2(g, s)
-            if not from_object:
-                continue
-
-            for s_s, p_s, o_s in g.triples((s, None, None)):
-
-                # must be URI otherwise it cant be a class
-                if not isinstance(o_s, rdflib.term.URIRef):
-                    continue
-
-                to_object = find_object2(g, o_s)
-                if not to_object:
-                    continue
-
-                # create relation
-                url, label = self.split_rdfs_url(p_s)
-
-                object_relation = ObjectRelation(
-                    from_object=from_object,
-                    to_object=to_object,
-                    label=label,
-                    schema=self.schema
-                )
-                object_relation.save()
-
     def create_object_references_from_graphV2(self, g):
         # object references is in fact rather a
         # property with range and domain pointing at
@@ -233,12 +192,19 @@ class rdfService:
                 # Property label
                 label = next(g.triples((s,  RDFS.label, None)))[2]
                 # Property comment
-                comment = next(g.triples((s, RDFS.comment, None)))[2]
+                try:
+                    comment = next(g.triples((s, RDFS.comment, None)))[2]
+                except:
+                    comment = "could not find"
+
                 # Property Class/domain
                 domain = next(g.triples((s, RDFS.domain, None)))[2]
                 # Property datatype
                 o_range = next(g.triples((s, RDFS.range, None)))[2]
 
+                # the purpose of this is just to identify
+                # data properties to avoid database lookup
+                # if not needed
                 if o_range in self.valid_datatypes:
                     pass
 
@@ -251,12 +217,12 @@ class rdfService:
 
                 # get the right url from either current schema or from other in db
                 if self.schema.url == from_schema_url:
-                    from_schema = self.schema.url
+                    from_schema = self.schema
                 else:
                     from_schema = Schema.objects.get(
                         url=from_schema_url)
                 if self.schema.url == to_schema_url:
-                    to_schema = self.schema.url
+                    to_schema = self.schema
                 else:
                     to_schema = Schema.objects.get(
                         url=to_schema_url)
@@ -305,7 +271,7 @@ class rdfService:
             if object is None:
                 continue
 
-            if range not in valid_datatypes:
+            if range not in self.valid_datatypes:
                 continue
 
             attribute = Attribute(
@@ -331,7 +297,7 @@ class rdfService:
             return None
 
         methodlist = [
-            lambda x: x.split("#"), ,
+            lambda x: x.split("#"),
             lambda x: ("/".join(x.split("/")[:-1]) + "/", x.split("/")[-1])
         ]
 
