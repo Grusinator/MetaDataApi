@@ -249,6 +249,7 @@ class rdfService:
                 # right schema
                 liste = Schema.objects.all()
 
+                # get the right url from either current schema or from other in db
                 if self.schema.url == from_schema_url:
                     from_schema = self.schema.url
                 else:
@@ -330,8 +331,8 @@ class rdfService:
             return None
 
         methodlist = [
-            lambda x: x.split("#"),
-            lambda x: ("/".join(x.split("/")[:-1]), x.split("/")[-1])
+            lambda x: x.split("#"), ,
+            lambda x: ("/".join(x.split("/")[:-1]) + "/", x.split("/")[-1])
         ]
 
         for method in methodlist:
@@ -339,6 +340,9 @@ class rdfService:
                 url, label = method(str(url))
                 if label == "":
                     continue
+
+                url += "/" if url[-1] != "/" else ""
+
                 return url, label
             except Exception as e:
                 pass
