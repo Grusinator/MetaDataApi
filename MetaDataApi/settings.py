@@ -19,8 +19,12 @@ import json
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-PROJECT_ROOT = os.path.dirname(os.path.realpath(__file__))
-FIXTURE_DIRS = (os.path.join(PROJECT_ROOT, 'metadata', 'fixtures'),)
+# PROJECT_ROOT = os.path.dirname(os.path.realpath(__file__))
+
+# app/fixtures is a default fixture dir and should not be added
+# FIXTURE_DIRS = (os.path.join(PROJECT_ROOT, 'fixtures'),)
+
+# from django.core.management import call_command
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
