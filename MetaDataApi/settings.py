@@ -122,16 +122,20 @@ GRAPHENE = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME': 'django.contrib.auth.password_validation.' +
+        'UserAttributeSimilarityValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME': 'django.contrib.auth.password_validation.' +
+        'MinimumLengthValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation.' +
+        'CommonPasswordValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation.' +
+        'NumericPasswordValidator',
     },
 ]
 
@@ -173,7 +177,7 @@ AWS_S3_REGION_NAME = 'eu-central-1'  # e.g. us-east-2
 try:
     with open('api_keys.json') as f:
         api_keys = json.load(f)
-except:
+except Exception as e:
     api_keys = {}
 
 AWS_ACCESS_KEY_ID = os.environ.get(
@@ -181,10 +185,14 @@ AWS_ACCESS_KEY_ID = os.environ.get(
 AWS_SECRET_ACCESS_KEY = os.environ.get(
     'AWS_SECRET_ACCESS_KEY') or api_keys.get("AWS_SECRET_ACCESS_KEY")
 
+# avoid warning about public bucket
+AWS_DEFAULT_ACL = 'public-read'
+
 # Tell django-storages the domain to use to refer to static files.
 AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
 
-# Tell the staticfiles app to use S3Boto3 storage when writing the collected static files (when
+# Tell the staticfiles app to use S3Boto3 storage when writing the collected
+#  static files (when
 # you run `collectstatic`).
 STATICFILES_LOCATION = 'static'
 STATICFILES_STORAGE = 'MetaDataApi.metadata.custom_storages.StaticStorage'

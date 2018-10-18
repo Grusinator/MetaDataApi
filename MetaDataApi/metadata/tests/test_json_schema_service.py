@@ -15,20 +15,24 @@ class TestRdfService(TestCase):
         django.setup()
 
     def test_upload_json_schema(self):
-        from MetaDataApi.metadata.services.json_schema_service import JsonSchemaService
+        from MetaDataApi.metadata.services.json_schema_service import (
+            JsonSchemaService)
 
-        url = "https://raw.githubusercontent.com/Grusinator/MetaDataApi/master/schemas/json/omh/schemas/acceleration-1.0.json"
+        url = "https://raw.githubusercontent.com/Grusinator/MetaDataApi/" +\
+            "master/schemas/json/omh/schemas/acceleration-1.0.json"
 
         service = JsonSchemaService()
 
         res = service.load_json_schema(url, "openMHealth")
 
     def test_upload_json_schema_body_temp(self):
-        from MetaDataApi.metadata.services.json_schema_service import JsonSchemaService
+        from MetaDataApi.metadata.services.json_schema_service import (
+            JsonSchemaService)
         from MetaDataApi.metadata.models import (
             Schema, Object, Attribute, ObjectRelation)
 
-        url = "https://raw.githubusercontent.com/Grusinator/MetaDataApi/master/schemas/json/omh/schemas/body-temperature-2.0.json"
+        url = "https://raw.githubusercontent.com/Grusinator/MetaDataApi/" +\
+            "master/schemas/json/omh/schemas/body-temperature-2.0.json"
 
         service = JsonSchemaService()
 
@@ -37,7 +41,9 @@ class TestRdfService(TestCase):
         atts = filter(lambda x: isinstance(x, Attribute), res)
 
     def test_default_schemas(self):
-        from MetaDataApi.metadata.services.json_schema_service import JsonSchemaService
+        from MetaDataApi.metadata.services.json_schema_service import (
+            JsonSchemaService)
 
         service = JsonSchemaService()
-        service.write_to_db_baseschema()
+        # Takes to long time to do full
+        service.write_to_db_baseschema(sample=True)

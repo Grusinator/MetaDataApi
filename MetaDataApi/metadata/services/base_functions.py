@@ -1,6 +1,5 @@
 import os
 import re
-from django.db import transaction
 import inflection
 # from jsonschema import validate
 from urllib import request
@@ -37,6 +36,18 @@ class BaseMetaDataService():
         # string = re.sub('/^[\W_]+|[\W_]+$/', '', string)
 
         return string
+
+    def _try_get_item(self, item_type, label):
+        try:
+            # this "with transaction.atomic():"
+            # is used to make tests run due to some
+            # random error, atomic something.
+            # it works fine when runs normally
+            with transaction.atomic():
+                return_item = item_type.objects.get(label=label)
+
+        except ObjectDoesNotExist as e:
+            # try create object
 
     def _try_create_item(self, item, update=False):
 

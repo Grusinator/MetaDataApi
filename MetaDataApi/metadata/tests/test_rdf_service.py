@@ -18,15 +18,16 @@ class TestRdfService(TestCase):
 
         # populate the database
         from MetaDataApi.metadata.services.rdfs_service import RdfService
-        from MetaDataApi.metadata.services.json_schema_service import JsonSchemaService
-
+        from MetaDataApi.metadata.services.json_schema_service import (
+            JsonSchemaService
+        )
         rdf_service = RdfService()
 
         rdf_service.write_to_db_baseschema()
 
         json_service = JsonSchemaService()
 
-        json_service.write_to_db_baseschema()
+        # json_service.write_to_db_baseschema()
 
     def test_create_default_graphs(self):
         from MetaDataApi.metadata.services.rdfs_service import RdfService
@@ -39,13 +40,9 @@ class TestRdfService(TestCase):
         # schemas = list(map(lambda x: Schema.objects.first(
         #     url=x), service.default_list))
 
-        try:
-            schemas = len(Object.objects.all())
-            schemas = len(Schema.objects.all())
-        except AttributeError as e:
-            print(e)
+        schemas_count = Schema.objects.all().count()
 
-        assertNotEquals(schemas, None)
+        assertNotEquals(schemas_count, 0)
 
     def test_upload_rdf(self):
         from MetaDataApi.metadata.services.rdfs_service import RdfService

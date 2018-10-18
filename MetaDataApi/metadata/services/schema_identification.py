@@ -15,9 +15,12 @@ from MetaDataApi.metadata.models import (
     AttributeInstance,
     ObjectRelationInstance)
 
+from .base_functions import BaseMetaDataService
 
-class SchemaIdentification():
+
+class SchemaIdentification(BaseMetaDataService):
     def __init__(self, *args, **kwargs):
+        super(SchemaIdentification, self).__init__()
         # consider using sports articles for corpus
         # sentences = word2vec.Text8Corpus('text8')
 
@@ -35,9 +38,12 @@ class SchemaIdentification():
         input_data = json.loads(input_data)
 
         # create a base person to relate the data to
-        person = ObjectInstance(
-            base=Object.objects.get(label="Person")
-        )
+        try:
+            person = ObjectInstance(
+                base=self._try_get_item(Object, label="person")
+            )
+        except:
+            raise Exception("foaf person was not found")
         # TODO: Relate to logged in person object instead
 
         modified_data = self.iterate_data(input_data, person)

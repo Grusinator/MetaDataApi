@@ -58,12 +58,17 @@ class JsonSchemaService(BaseMetaDataService):
 
         return self._objects_created_list
 
-    def write_to_db_baseschema(self):
-        baseurl = "https://raw.githubusercontent.com/Grusinator/MetaDataApi/master/schemas/json/omh/schemas/"
+    def write_to_db_baseschema(self, positive_list=None, sample=False):
+        baseurl = "https://raw.githubusercontent.com/Grusinator/" +\
+            "MetaDataApi/master/schemas/json/omh/schemas/"
 
-        for name in schema_names:
-            obj_list = self.load_json_schema(baseurl + name, "openMHealth")
-            print(len(obj_list))
+        # take subset if requested
+        _schema_names = schema_names[:10] if sample else schema_names
+
+        for name in _schema_names:
+            if not positive_list or (positive_list and name in positive_list):
+                obj_list = self.load_json_schema(baseurl + name, "openMHealth")
+                print(len(obj_list))
 
     def _read_json_from_url(self, url):
 
@@ -225,7 +230,8 @@ class JsonSchemaService(BaseMetaDataService):
                 return_objects.append(attribute)
 
             # this is an attribute, but if we allready have an attribute in the
-            # return object, add these info to that one, else just create one maybe
+            # return object, add these info to that one, else just create one
+            # maybe
             elif key == "unit":
                 pass
             elif key == "enum":
