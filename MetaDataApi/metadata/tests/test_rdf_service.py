@@ -42,7 +42,7 @@ class TestRdfService(TestCase):
 
         schemas_count = Schema.objects.all().count()
 
-        assertNotEquals(schemas_count, 0)
+        self.assertNotEqual(schemas_count, 0)
 
     def test_upload_rdf(self):
         from MetaDataApi.metadata.services.rdfs_service import RdfService

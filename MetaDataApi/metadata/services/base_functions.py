@@ -44,10 +44,11 @@ class BaseMetaDataService():
             # random error, atomic something.
             # it works fine when runs normally
             with transaction.atomic():
-                return_item = item_type.objects.get(label=label)
+                return item_type.objects.get(label=label)
 
         except ObjectDoesNotExist as e:
             # try create object
+            return None
 
     def _try_create_item(self, item, update=False):
 
