@@ -1,5 +1,7 @@
 import django
 from django.test import TestCase
+import collections
+from django.db import transaction
 
 
 # TODO: Configure your database in settings.py and sync before running tests.
@@ -12,12 +14,19 @@ class TestRdfService(TestCase):
     @classmethod
     def setUpClass(cls):
         django.setup()
+        super(TestRdfService, cls).setUpClass()
 
         # populate the database
         from MetaDataApi.metadata.services.rdfs_service import RdfService
-        service = RdfService()
+        from MetaDataApi.metadata.services.json_schema_service import JsonSchemaService
 
-        service.write_to_db_baseschema()
+        rdf_service = RdfService()
+
+        rdf_service.write_to_db_baseschema()
+
+        json_service = JsonSchemaService()
+
+        json_service.write_to_db_baseschema()
 
     def test_create_default_graphs(self):
         from MetaDataApi.metadata.services.rdfs_service import RdfService
@@ -50,7 +59,6 @@ class TestRdfService(TestCase):
         self.assertEqual(1 + 1, 2)
 
     def test_circle(self):
-
         from MetaDataApi.metadata.services.rdfs_service import RdfService
         from MetaDataApi.metadata.models import Schema, Object, ObjectRelation
 
@@ -62,10 +70,8 @@ class TestRdfService(TestCase):
             schema = service.export_schema_from_db(schema.label)
             before_list = service._objects_created_list.copy()
 
-            service.write_to_db(schema.rdfs_file)
+            service.write_to_db(schema.rdfs_file, overwrite=True)
             after_list = service._objects_created_list.copy()
 
-            before_list.sort()
-            after_list.sort()
-
-            self.assertEqual(before_list, after_list)
+            self.assertEqual(collections.Counter(before_list),
+                             collections.Counter(after_list))

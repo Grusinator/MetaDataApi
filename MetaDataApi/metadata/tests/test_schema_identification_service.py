@@ -16,12 +16,24 @@ class TestSchemaIdentificationService(TestCase):
     def setUpClass(cls):
         django.setup()
 
-        call_command(
-            'loaddata',
-            'metadata/fixtures/new_load.json',
-            verbosity=0
-        )
+        # call_command(
+        #     'loaddata',
+        #     'metadata/fixtures/new_load.json',
+        #     verbosity=0
+        # )
         # call_command('loaddata', 'fixtures/testdb.json', verbosity=1)
+
+        # populate the database
+        from MetaDataApi.metadata.services.rdfs_service import RdfService
+        from MetaDataApi.metadata.services.json_schema_service import JsonSchemaService
+
+        rdf_service = RdfService()
+
+        rdf_service.write_to_db_baseschema()
+
+        json_service = JsonSchemaService()
+
+        json_service.write_to_db_baseschema()
 
     def test_identify_json_data_sample(self):
         from MetaDataApi.metadata.services.schema_identification import \
@@ -39,7 +51,7 @@ class TestSchemaIdentificationService(TestCase):
 
         service = SchemaIdentification()
 
-        service.identify_data(text)
+        resp = service.identify_data(text)
 
         self.assertEqual(1 + 1, 2)
 

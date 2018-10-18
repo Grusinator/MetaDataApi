@@ -48,10 +48,18 @@ class RdfService(BaseMetaDataService):
 
     def export_schema_from_db(self, schema_label):
         g = Graph()
+        # reset objects created (exported)
+        self._objects_created_list = []
 
         schema = Schema.objects.get(label=schema_label)
 
+        # to know which have been exported
+        self._objects_created_list.append(schema)
+
         objects = Object.objects.filter(schema=schema)
+
+        # to know which have been exported
+        self._objects_created_list.extend(objects)
 
         namespace = schema.url.replace(".ttl", "#")
 
@@ -79,6 +87,8 @@ class RdfService(BaseMetaDataService):
             g.add((obj_name, RDFS.isDefinedBy, rdf_schema))
 
             relations = ObjectRelation.objects.filter(from_object=object)
+            # to know which have been exported
+            self._objects_created_list.extend(relations)
 
             for relation in relations:
                 to_obj_label_std = camelize(
@@ -114,8 +124,12 @@ class RdfService(BaseMetaDataService):
                 # defined by
                 g.add((relation_name, RDFS.isDefinedBy, rdf_schema))
 
+            attributes = object.attributes.all()
+            # to know which have been exported
+            self._objects_created_list.extend(attributes)
+
             # add attributes
-            for attribute in object.attributes.all():
+            for attribute in attributes:
 
                 # make sure that there is no space in the url
                 att_label_std = camelize(attribute.label.replace(" ", "_"))
@@ -162,7 +176,9 @@ class RdfService(BaseMetaDataService):
             map(self._create_object_references_from_graphV2, graph_list))
         dummy = list(map(self._create_attributes_from_graph, graph_list))
 
-    def write_to_db(self, rdf_url):
+    def write_to_db(self, rdf_url, overwrite=False):
+
+        self.overwrite_db_objects = overwrite
 
         g = self._create_graph_from_url(rdf_url)
 
@@ -306,7 +322,6 @@ class RdfService(BaseMetaDataService):
                         schema=self.schema
                     )
                 )
-                object.save()
 
     def _create_object_references_from_graphV2(self, g):
         # object references is in fact rather a
@@ -375,7 +390,6 @@ class RdfService(BaseMetaDataService):
                         description=comment
                     )
                 )
-                object_relation.save()
 
     def _create_attributes_from_graph(self, g):
 
@@ -412,7 +426,6 @@ class RdfService(BaseMetaDataService):
                     object=object
                 )
             )
-            attribute.save()
 
     def _validate_namespace(self, namespace):
         try:

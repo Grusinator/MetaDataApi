@@ -8,6 +8,8 @@ from MetaDataApi.metadata.models import (
     Schema, Object, Attribute, ObjectRelation)
 
 from schemas.json.omh.schema_names import schema_names
+from django.db import transaction
+from django.core.exceptions import ObjectDoesNotExist
 
 
 class BaseMetaDataService():
@@ -18,6 +20,7 @@ class BaseMetaDataService():
 
         self._objects_created_list = []
         self._error_list = []
+        self.overwrite_db_objects = False
 
     def standardize_string(self, string, remove_version=False):
         string = inflection.underscore(str(string))
@@ -50,7 +53,7 @@ class BaseMetaDataService():
             # it works fine when runs normally
             with transaction.atomic():
                 return_item = item_type.objects.get(label=item.label)
-                if update:
+                if update or self.overwrite_db_objects:
                     return_item.delete()
                     item.save()
                     # on update add to debug list
@@ -58,14 +61,18 @@ class BaseMetaDataService():
                     return_item = item
 
             return return_item
-        except Exception as e:
-            pass
 
-        # try create object
-        try:
-            item.save()
-            self._objects_created_list.append(item)
-            return item
+        except ObjectDoesNotExist as e:
+            # try create object
+            try:
+                item.save()
+                self._objects_created_list.append(item)
+                return item
+            except Exception as e:
+                self._error_list.append(str(e))
+                return None
+
+        except (transaction.TransactionManagementError,) as e:
+            return None
         except Exception as e:
-            self._error_list.append(str(e))
             return None

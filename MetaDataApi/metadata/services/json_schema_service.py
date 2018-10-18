@@ -1,7 +1,6 @@
 import json
 import os
 import re
-from django.db import transaction
 from django.core.files.base import ContentFile
 from MetaDataApi.metadata.services.rdfs_service import RdfService
 import inflection
@@ -65,8 +64,6 @@ class JsonSchemaService(BaseMetaDataService):
         for name in schema_names:
             obj_list = self.load_json_schema(baseurl + name, "openMHealth")
             print(len(obj_list))
-
-        self._error_list
 
     def _read_json_from_url(self, url):
 
