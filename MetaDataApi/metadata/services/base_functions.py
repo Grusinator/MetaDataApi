@@ -28,7 +28,7 @@ class BaseMetaDataService():
         # remove any version numbers
         if remove_version:
             string = re.sub(
-                "(|_version|_v|_v.)(|_)\d+\.(\d+|x)(|_)", '', string)
+                r"(|_version|_v|_v.)(|_)\d+\.(\d+|x)(|_)", '', string)
 
         string = re.sub("(|_)vocabulary(|_)", '', string)
 
@@ -49,6 +49,8 @@ class BaseMetaDataService():
         except ObjectDoesNotExist as e:
             # try create object
             return None
+        except Exception as e:
+            pass
 
     def _try_create_item(self, item, update=False):
 

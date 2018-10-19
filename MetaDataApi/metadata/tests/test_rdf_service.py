@@ -1,5 +1,5 @@
 import django
-from django.test import TestCase
+from django.test import TestCase, TransactionTestCase
 import collections
 from django.db import transaction
 
@@ -7,7 +7,7 @@ from django.db import transaction
 # TODO: Configure your database in settings.py and sync before running tests.
 
 
-class TestRdfService(TestCase):
+class TestRdfService(TransactionTestCase):
     """Tests for the application views."""
 
     # Django requires an explicit setup() when running tests in PTVS
@@ -27,7 +27,7 @@ class TestRdfService(TestCase):
 
         json_service = JsonSchemaService()
 
-        # json_service.write_to_db_baseschema()
+        json_service.write_to_db_baseschema(sample=True)
 
     def test_create_default_graphs(self):
         from MetaDataApi.metadata.services.rdfs_service import RdfService
@@ -36,9 +36,6 @@ class TestRdfService(TestCase):
         service = RdfService()
 
         service.write_to_db_baseschema()
-
-        # schemas = list(map(lambda x: Schema.objects.first(
-        #     url=x), service.default_list))
 
         schemas_count = Schema.objects.all().count()
 

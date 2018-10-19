@@ -1,11 +1,11 @@
 import django
-from django.test import TestCase
+from django.test import TestCase, TransactionTestCase
 from urllib import request
 from MetaDataApi.metadata.models import Object
 from django.core.management import call_command
 
 
-class TestSchemaIdentificationService(TestCase):
+class TestSchemaIdentificationService(TransactionTestCase):
     """Tests for the application views."""
     # fixtures = [
     #     'metadata/fixtures/new_load.json',

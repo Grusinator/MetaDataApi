@@ -128,7 +128,7 @@ class AddJsonSchema(graphene.Mutation):
                 raise GraphQLError(e)
         else:
             try:
-                service.load_json_schema(url, name)
+                service.write_to_db(url, name)
             except Exception as e:
                 raise GraphQLError(str(e))
 

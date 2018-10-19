@@ -1,7 +1,7 @@
 [
-  "MetaDataApi/metadata/tests/test_json_schema_service.py::TestRdfService::test_default_schemas",
-  "MetaDataApi/metadata/tests/test_json_schema_service.py::TestRdfService::test_upload_json_schema",
-  "MetaDataApi/metadata/tests/test_json_schema_service.py::TestRdfService::test_upload_json_schema_body_temp",
+  "MetaDataApi/metadata/tests/test_json_schema_service.py::TestJsonService::test_default_schemas",
+  "MetaDataApi/metadata/tests/test_json_schema_service.py::TestJsonService::test_json_write_to_db_body_temp",
+  "MetaDataApi/metadata/tests/test_json_schema_service.py::TestJsonService::test_upwrite_to_db",
   "MetaDataApi/metadata/tests/test_rdf_service.py::TestRdfService::test_circle",
   "MetaDataApi/metadata/tests/test_rdf_service.py::TestRdfService::test_create_default_graphs",
   "MetaDataApi/metadata/tests/test_rdf_service.py::TestRdfService::test_upload_rdf",

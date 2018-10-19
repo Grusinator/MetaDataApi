@@ -2,6 +2,9 @@ import json
 import os
 import re
 from django.core.files.base import ContentFile
+from django.core.exceptions import ObjectDoesNotExist
+from django.db import transaction
+
 from MetaDataApi.metadata.services.rdfs_service import RdfService
 import inflection
 
@@ -29,7 +32,7 @@ class JsonSchemaService(BaseMetaDataService):
         ]
         # self.skip_fields.extend(self.subtypes)
 
-    def load_json_schema(self, input_url, schema_name):
+    def write_to_db(self, input_url, schema_name):
         self.baseurl, filename = self._infer_info_split_url(input_url)
         label = filename.replace(".json", "")
 
@@ -39,8 +42,9 @@ class JsonSchemaService(BaseMetaDataService):
             schema_name, remove_version=False)
 
         try:
-            self.schema = Schema.objects.get(label=schema_name)
-        except:
+            with transaction.atomic():
+                self.schema = Schema.objects.get(label=schema_name)
+        except ObjectDoesNotExist as e:
             self.schema = Schema()
             self.schema.label = schema_name
             self.schema.description
@@ -50,11 +54,14 @@ class JsonSchemaService(BaseMetaDataService):
             self.schema.rdfs_file.save(schema_name + ".ttl", content)
             self.schema.url = self.schema.rdfs_file.url
             self.schema.save()
+        except Exception as e:
+            pass
 
         return_objects = self._iterate_schema(data, label, filename=filename)
 
         # just in order to update the media turtle file
-        RdfService().export_schema_from_db(self.schema.label)
+        # RdfService().export_schema_from_db(self.schema.label)
+        self.schema = None
 
         return self._objects_created_list
 
@@ -63,11 +70,11 @@ class JsonSchemaService(BaseMetaDataService):
             "MetaDataApi/master/schemas/json/omh/schemas/"
 
         # take subset if requested
-        _schema_names = schema_names[:10] if sample else schema_names
+        _schema_names = schema_names[0:6] if sample else schema_names
 
         for name in _schema_names:
             if not positive_list or (positive_list and name in positive_list):
-                obj_list = self.load_json_schema(baseurl + name, "openMHealth")
+                obj_list = self.write_to_db(baseurl + name, "openMHealth")
                 print(len(obj_list))
 
     def _read_json_from_url(self, url):
@@ -256,12 +263,17 @@ class JsonSchemaService(BaseMetaDataService):
         # same test as earlier
         if dict_data.get("type") == "object":
             # fiugre out if this object only has one attribute and no relations
-            atts = Attribute.objects.filter(object=current_object).count()
-            rels = ObjectRelation.objects.filter(
-                from_object=current_object).count()
+            with transaction.atomic():
+                atts = Attribute.objects.filter(object=current_object).count()
+
+            with transaction.atomic():
+                rels = ObjectRelation.objects.filter(
+                    from_object=current_object).count()
+
             if atts == 1 and rels == 0:
                 # simplify
-                attribute = Attribute.objects.get(object=current_object)
+                with transaction.atomic():
+                    attribute = Attribute.objects.get(object=current_object)
 
                 # use parrent object as object instead
                 if parrent_object is None:
