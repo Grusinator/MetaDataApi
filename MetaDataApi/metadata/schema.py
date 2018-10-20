@@ -14,10 +14,9 @@ from MetaDataApi.settings import MEDIA_ROOT
 
 from MetaDataApi.users.schema import UserType
 from MetaDataApi.metadata.models import Schema, Object, Attribute, ObjectRelation
-from MetaDataApi.metadata.services.read_rdf import rdfService
-from MetaDataApi.metadata.services.jsonschema import JsonSchemaService
+from MetaDataApi.metadata.services.rdfs_service import RdfService
+from MetaDataApi.metadata.services.json_schema_service import JsonSchemaService
 from MetaDataApi.metadata.services.schema_identification import SchemaIdentification
-from MetaDataApi.metadata.services.create_rdf import create_rdf
 
 
 class SchemaNode(DjangoObjectType):
@@ -81,10 +80,10 @@ class ExportSchema(graphene.Mutation):
         schema_name = graphene.String()
 
     def mutate(self, info, schema_name):
-
+        service = RdfService()
         outfilename = "./schemas/rdf/created/" + schema_name + ".ttl"
 
-        schema_file_url = create_rdf(schema_name)
+        schema_file_url = service.export_schema_from_db(schema_name)
 
         return ExportSchema(
             schema_file=schema_file_url,
@@ -97,7 +96,7 @@ class IdentifyData(graphene.Mutation):
     class Arguments:
         input_data = graphene.String()
 
-    # @login_required
+    @login_required
     def mutate(self, info, input_data):
         identify = SchemaIdentification()
 
@@ -114,14 +113,14 @@ class AddJsonSchema(graphene.Mutation):
         url = graphene.String()
         name = graphene.String()
 
-    # @login_required
+    @login_required
     def mutate(self, info, url, name):
         service = JsonSchemaService()
         if url == "openMHealth":
             try:
 
                 import threading
-                task = service.create_default_schemas
+                task = service.write_to_db_baseschema
                 thr = threading.Thread(target=task)
                 thr.start()  # Will run
 
@@ -143,17 +142,17 @@ class AddRdfSchema(graphene.Mutation):
     class Arguments:
         url = graphene.String()
 
-    # @login_required
+    @login_required
     def mutate(self, info, url):
-        service = rdfService()
+        service = RdfService()
         if url == "baseschema":
             try:
-                service.create_default_schemas()
+                service.write_to_db_baseschema()
             except Exception as e:
                 raise GraphQLError(str(e))
         else:
             try:
-                service.rdfs_upload(url)
+                service.write_to_db(url)
             except Exception as e:
                 raise GraphQLError(str(e))
 
@@ -174,9 +173,6 @@ class Query(graphene.ObjectType):
 
     object_relation = graphene.relay.Node.Field(ObjectRelationNode)
     all_object_relations = DjangoFilterConnectionField(ObjectRelationNode)
-
-    # # @login_required
-    # # schemas
 
     def resolve_schema(self, info):
         return Schema.objects.first()

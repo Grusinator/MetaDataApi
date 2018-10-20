@@ -2,15 +2,15 @@ import django
 
 django.setup()
 
-from MetaDataApi.metadata.services.rdf import rdfService
+from MetaDataApi.metadata.services.rdf import RdfService
 from MetaDataApi.metadata.models import Schema, Object, ObjectRelation
 
 
 def update_base_schema():
 
-    service = rdfService()
+    service = RdfService()
 
-    service.create_default_schemas()
+    service.write_to_db_baseschema()
 
     schema_list = Schema.objects.first()
 

@@ -9,7 +9,7 @@ class Schema(models.Model):
     label = models.TextField()
     description = models.TextField(null=True, blank=True)
     url = models.URLField(unique=True)
-    rdf_file = models.FileField(
+    rdfs_file = models.FileField(
         upload_to="schemas",
         null=True, blank=True, storage=MediaStorage())
 

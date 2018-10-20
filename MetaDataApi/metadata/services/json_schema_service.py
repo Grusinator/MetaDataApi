@@ -1,9 +1,8 @@
 import json
 import os
 import re
-from django.db import transaction
 from django.core.files.base import ContentFile
-from MetaDataApi.metadata.services.create_rdf import create_rdf
+from MetaDataApi.metadata.services.rdfs_service import RdfService
 import inflection
 
 # from jsonschema import validate
@@ -12,12 +11,13 @@ from MetaDataApi.metadata.models import (
     Schema, Object, Attribute, ObjectRelation)
 
 from schemas.json.omh.schema_names import schema_names
-from .base_functions import standarize_string
+from .base_functions import BaseMetaDataService
 
 
-class JsonSchemaService():
+class JsonSchemaService(BaseMetaDataService):
 
     def __init__(self):
+        super(JsonSchemaService, self).__init__()
         self.schema = None
         self.baseurl = None
         self.subtypes = ["oneOf", "allOf", "anyOf"]
@@ -28,43 +28,49 @@ class JsonSchemaService():
             "definitions"
         ]
         # self.skip_fields.extend(self.subtypes)
-        self._debug_objects_list = []
-        self._error_list = []
 
-    def try_create_item(self, item, update=False):
+    def load_json_schema(self, input_url, schema_name):
+        self.baseurl, filename = self._infer_info_split_url(input_url)
+        label = filename.replace(".json", "")
 
-        item_type = type(item)
-        remove_version = not isinstance(item_type, Schema)
+        data = self._read_json_from_url(input_url)
 
-        # test if exists
-        item.label = standarize_string(
-            item.label, remove_version=remove_version)
+        schema_name = self.standardize_string(
+            schema_name, remove_version=False)
+
         try:
-            # this "with transaction.atomic():"
-            # is used to make tests run due to some
-            # random error, atomic something.
-            # it works fine when runs normally
-            with transaction.atomic():
-                return_item = item_type.objects.get(label=item.label)
-                if update:
-                    return_item.delete()
-                    item.save()
-                    return_item = item
+            self.schema = Schema.objects.get(label=schema_name)
+        except:
+            self.schema = Schema()
+            self.schema.label = schema_name
+            self.schema.description
 
-            return return_item
-        except Exception as e:
-            pass
+            # create a dummy file
+            content = ContentFile("")
+            self.schema.rdfs_file.save(schema_name + ".ttl", content)
+            self.schema.url = self.schema.rdfs_file.url
+            self.schema.save()
 
-        # try create object
-        try:
-            item.save()
-            self._debug_objects_list.append(item)
-            return item
-        except Exception as e:
-            self._error_list.append(str(e))
-            return None
+        return_objects = self._iterate_schema(data, label, filename=filename)
 
-    def read_json_from_url(self, url):
+        # just in order to update the media turtle file
+        RdfService().export_schema_from_db(self.schema.label)
+
+        return self._objects_created_list
+
+    def write_to_db_baseschema(self, positive_list=None, sample=False):
+        baseurl = "https://raw.githubusercontent.com/Grusinator/" +\
+            "MetaDataApi/master/schemas/json/omh/schemas/"
+
+        # take subset if requested
+        _schema_names = schema_names[:10] if sample else schema_names
+
+        for name in _schema_names:
+            if not positive_list or (positive_list and name in positive_list):
+                obj_list = self.load_json_schema(baseurl + name, "openMHealth")
+                print(len(obj_list))
+
+    def _read_json_from_url(self, url):
 
         with request.urlopen(url) as resp:
 
@@ -83,13 +89,13 @@ class JsonSchemaService():
 
         return data
 
-    def infer_info_split_url(self, url):
+    def _infer_info_split_url(self, url):
         filename = url.split("/")[-1]
         baseurl = "/".join(url.split("/")[:-1])
 
         return baseurl, filename
 
-    def validate_url(self, url):
+    def _validate_url(self, url):
         urlmapper = {
             "http://tools.ietf.org/html/rfc3339": None,
             "http://purl.bioontology.org/ontology/SNOMEDCT/7389001": None
@@ -97,19 +103,19 @@ class JsonSchemaService():
         var1 = url in urlmapper
         return urlmapper.get(url) if url in urlmapper else url
 
-    def filt_type(self, obj_list, object_class):
+    def _filt_type(self, obj_list, object_class):
         return list(
             filter(lambda x: isinstance(x, object_class), obj_list))
 
-    def get_rel_names(self, objects, property_dict):
+    def _get_rel_names(self, objects, property_dict):
         returns = []
         for item, obj_rel_name in zip(objects, property_dict.keys()):
             if isinstance(item, Object):
                 returns.append(obj_rel_name)
         return returns
 
-    def iterate_schema(self, dict_data, root_label, current_object=None,
-                       definitions=None, filename=None):
+    def _iterate_schema(self, dict_data, root_label, current_object=None,
+                        definitions=None, filename=None):
 
         return_objects = []
         # extend definitions each time
@@ -124,7 +130,7 @@ class JsonSchemaService():
 
             # create object -  if filename exists name it the filename
             label = filename.replace(".json", "") if filename else root_label
-            new_object = self.try_create_item(
+            new_object = self._try_create_item(
                 Object(
                     label=label,
                     schema=self.schema,
@@ -143,7 +149,7 @@ class JsonSchemaService():
                     to_object=new_object,
                     schema=self.schema,
                     label=root_label)
-                self.try_create_item(obj_rel)
+                self._try_create_item(obj_rel)
 
             # update current and parrent object
             parrent_object = current_object
@@ -157,7 +163,7 @@ class JsonSchemaService():
             elif key in self.subtypes:
                 # assuming the value is a list of dicts then
                 for off_dict in value:
-                    new_objects = self.iterate_schema(
+                    new_objects = self._iterate_schema(
                         off_dict, root_label, current_object, definitions)
                     return_objects.extend(new_objects)
 
@@ -178,19 +184,19 @@ class JsonSchemaService():
                 else:
                     url = self.baseurl + "/" + value
 
-                url = self.validate_url(url)
+                url = self._validate_url(url)
                 if not url:
                     continue
 
                 # load data and prepare to iterate trough
-                new_dict_data = self.read_json_from_url(url)
+                new_dict_data = self._read_json_from_url(url)
 
                 # when stepping into a new file the label should be
                 # the file name
 
-                _, filename = self.infer_info_split_url(url)
+                _, filename = self._infer_info_split_url(url)
                 # definitions is not inherited trough references
-                new_objects = self.iterate_schema(
+                new_objects = self._iterate_schema(
                     new_dict_data, root_label, current_object,
                     filename=filename)
                 return_objects.extend(new_objects)
@@ -211,7 +217,7 @@ class JsonSchemaService():
                 # here we just create it and return it
                 # saving is done after the object has been created
                 # if this dict contains "other classes"
-                attribute = self.try_create_item(
+                attribute = self._try_create_item(
                     Attribute(
                         label=root_label,
                         datatype=data_type,
@@ -224,7 +230,8 @@ class JsonSchemaService():
                 return_objects.append(attribute)
 
             # this is an attribute, but if we allready have an attribute in the
-            # return object, add these info to that one, else just create one maybe
+            # return object, add these info to that one, else just create one
+            # maybe
             elif key == "unit":
                 pass
             elif key == "enum":
@@ -232,11 +239,11 @@ class JsonSchemaService():
 
             elif key == "properties":
 
-                new_objects = self.iterate_schema(
+                new_objects = self._iterate_schema(
                     value, root_label, current_object, definitions)
 
             elif isinstance(value, dict):
-                new_objects = self.iterate_schema(
+                new_objects = self._iterate_schema(
                     value, key, current_object, definitions)
                 return_objects.extend(new_objects)
 
@@ -268,7 +275,7 @@ class JsonSchemaService():
                     # continue the process
                     attribute.object = parrent_object
                     attribute.description += " -> simplified: " + root_label
-                    self.try_create_item(attribute, update=True)
+                    self._try_create_item(attribute, update=True)
                     current_object.delete()
 
                     # return as if it was an attribute, which it now is
@@ -277,41 +284,3 @@ class JsonSchemaService():
         # we return the created objects from this branch in order
         # to create the object relations
         return return_objects
-
-    def load_json_schema(self, input_url, schema_name):
-        self.baseurl, filename = self.infer_info_split_url(input_url)
-        label = filename.replace(".json", "")
-
-        data = self.read_json_from_url(input_url)
-
-        schema_name = standarize_string(
-            schema_name, remove_version=False)
-
-        try:
-            self.schema = Schema.objects.get(label=schema_name)
-        except:
-            self.schema = Schema()
-            self.schema.label = schema_name
-            self.schema.description
-
-            # create a dummy file
-            content = ContentFile("")
-            self.schema.rdf_file.save(schema_name + ".ttl", content)
-            self.schema.url = self.schema.rdf_file.url
-            self.schema.save()
-
-        return_objects = self.iterate_schema(data, label, filename=filename)
-
-        # just in order to update the media turtle file
-        create_rdf(self.schema.label)
-
-        return self._debug_objects_list
-
-    def create_default_schemas(self):
-        baseurl = "https://raw.githubusercontent.com/Grusinator/MetaDataApi/master/schemas/json/omh/schemas/"
-
-        for name in schema_names:
-            obj_list = self.load_json_schema(baseurl + name, "openMHealth")
-            print(len(obj_list))
-
-        self._error_list
