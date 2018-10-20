@@ -1,6 +1,5 @@
 from django.db import models
 from .custom_storages import MediaStorage
-
 # Create your models here.
 
 

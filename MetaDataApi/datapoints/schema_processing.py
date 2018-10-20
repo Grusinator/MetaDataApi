@@ -1,4 +1,4 @@
-from MetaDataApi.datapoints.models import CategoryTypes, DatapointV2, RawData, MetaData
+from MetaDataApi.datapoints.models import CategoryTypes, GenericAttributeInstance, RawData
 
 
 class ProcessRawData:
@@ -16,20 +16,20 @@ class ProcessRawData:
     def default_response(self, info, source, category, label, starttime, stoptime,
                          value, std, text):
 
-        metadata = MetaData.object.get(
-            source=source,
-            category=category,
-            label=label,
-            raw=false
-        )
+        # metadata = MetaData.object.get(
+        #     source=source,
+        #     category=category,
+        #     label=label,
+        #     raw=false
+        # )
 
         return [
-            DatapointV2(
+            GenericAttributeInstance(
                 starttime=starttime,
                 stoptime=stoptime,
                 value=value,
                 std=std,
-                metadata=metadata,
+                metadata=None,
                 owner=info.context.user
             ),
             RawData(

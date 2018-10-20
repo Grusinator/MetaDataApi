@@ -11,23 +11,25 @@ from graphql_jwt.decorators import login_required
 
 from MetaDataApi.users.schema import UserType
 
-#from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 
-
 from MetaDataApi.datapoints.models import (
-    DatapointV2, MetaData, RawData,
+    GenericAttributeInstance, RawData, CategoryTypes,
     ObjectInstance,
     ObjectRelationInstance,
     GenericAttributeInstance,
     TemporalFloatAttributeInstance,
     TemporalStringAttributeInstance)
 
+from MetaDataApi.metadata.models import (
+    Attribute, Object, ObjectRelation, Schema
+)
+
 from MetaDataApi.datapoints.schema_processing import ProcessRawData
 from MetaDataApi.users.models import Profile
 
 from MetaDataApi.services.google_speech_api import transcribe_file
-#from MetaDataApi.services.sound_processing_services import SoundClassifier
+# from MetaDataApi.services.sound_processing_services import SoundClassifier
 
 GrapheneCategoryTypes = Enum.from_enum(CategoryTypes)
 
@@ -50,8 +52,7 @@ class GenericAttributeType(DjangoObjectType):
 class AttributeType(DjangoObjectType):
     class Meta:
         # all common attribute properties here!
-        # model = GenericAttributeInstance
-        pass
+        model = GenericAttributeInstance
 
 
 class CreateDatapoint(graphene.Mutation):
@@ -63,26 +64,41 @@ class CreateDatapoint(graphene.Mutation):
         value = graphene.Float()
         std = graphene.Float()
 
+        meta_attribute = graphene.String()
+        meta_object = graphene.String()
+        meta_schema = graphene.String()
+
     @login_required
-    def mutate(self, info, source, category, label, value, std,
-               starttime, stoptime=None):
+    def mutate(self, info, meta_schema, meta_object, meta_attribute,
+               value, std, starttime, stoptime=None):
 
         # get the object type from metadata and create an instance
         try:
-            metadata = MetaData.objects.get(
-                source=source,
-                category=category,
-                label=label
-            )
+            schema = Schema.objects.get(label=meta_schema)
+            object = Object.objects.get(
+                label=meta_object,
+                schema=schema)
+            attribute = Attribute.objects.get(
+                label=meta_attribute,
+                object=object)
         except Exception as e:
             raise GraphQLError(
                 "no metadata object correspond to the combination of source, category and label")
+
+        object_inst = ObjectInstance(
+            base=object,
+            schema=schema,
+            owner=info.context.user
+        )
+
+        object_inst.save()
 
         datapoint = GenericAttributeInstance(
             starttime=starttime,
             stoptime=stoptime,
             value=value,
-            object=object,
+            object=object_inst,
+            base=attribute,
             owner=info.context.user
         )
 
@@ -116,12 +132,7 @@ class CreateRawData(graphene.Mutation):
     def mutate(self, info, source, category, label, starttime, stoptime=None,
                value=None, std=None, text=None, files=None):
 
-        metadata = MetaData.objects.get(
-            source=source,
-            category=category,
-            label=label,
-            raw=true
-        )
+        # handle metadata here
 
         # Raw data should be processed into datapoints
         try:
@@ -132,10 +143,10 @@ class CreateRawData(graphene.Mutation):
                                 files=None)
 
             for data in datalist:
-                if isinstance(DatapointV2):
+                if isinstance(GenericAttributeInstance):
                     data.save()
                 elif isinstance(RawData):
-                    data.metadata = metadata
+                    data.metadata = None
                     data.save()
                     # make sure that the raw data is passed to response
                     rawdata = data
@@ -151,7 +162,7 @@ class CreateRawData(graphene.Mutation):
                 value=value,
                 std=std,
                 text=text,
-                metadata=metadata,
+                metadata=None,
                 owner=info.context.user
             )
 
@@ -194,19 +205,21 @@ class Upload2Files(graphene.Mutation):
 
 
 class Query(graphene.ObjectType):
-    datapoint = graphene.Field(DatapointType)
+    datapoint = graphene.Field(AttributeType)
     all_rawdata = graphene.List(RawDataType)
-    all_datapoints = graphene.List(DatapointType)
+    all_datapoints = graphene.List(AttributeType)
 
     @login_required
     def resolve_datapoint(self, info):
 
-        datapoint = DatapointV2.objects.filter(owner=info.context.user).first()
+        datapoint = GenericAttributeInstance.objects.filter(
+            owner=info.context.user).first()
         return datapoint
 
     @login_required
     def resolve_all_datapoints(self, info):
-        datapointlist = DatapointV2.objects.filter(owner=info.context.user)
+        datapointlist = GenericAttributeInstance.objects.filter(
+            owner=info.context.user)
         return datapointlist
 
     @login_required

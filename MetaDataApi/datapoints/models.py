@@ -6,6 +6,24 @@ from MetaDataApi.metadata.models import (
     Attribute, Object, ObjectRelation, Schema
 )
 
+
+class CategoryTypes(Enum):
+    test = "test"
+    speech = "speech"
+    diet = "diet"
+    sleep = "sleep"
+    phys_act = "phys_act"
+    ment_act = "ment_act"
+    body_meas = "body_meas"
+
+    def force_value(self, input):
+        for category in CategoryTypes:
+            if input == category.name:
+                return category.value
+            elif input == category.value:
+                return category.value
+
+
 # Create your models here.
 """ used for uploading data before processed into structured data"""
 
@@ -20,14 +38,11 @@ class RawData(models.Model):
     value = models.FloatField(null=True, blank=True)
     std = models.FloatField(null=True, blank=True)
     text = models.TextField(null=True, blank=True)
-    metadata = models.ForeignKey(MetaData, on_delete=models.CASCADE)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL,
                               null=True, on_delete=models.CASCADE)
 
     def __str__(self):
-        return "%s - %s - %s - %s " % (
-            self.metadata.category,
-            self.metadata.label,
+        return "%s - %s " % (
             self.owner.username,
             self.starttime.strftime("%Y-%m-%d %H:%M:%S"))
 

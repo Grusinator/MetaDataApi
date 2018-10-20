@@ -2,7 +2,7 @@ from django.contrib import admin
 
 # Register your models here.
 from MetaDataApi.datapoints.models import (
-    DatapointV2, MetaData, RawData,
+    RawData,
     ObjectInstance,
     ObjectRelationInstance,
     GenericAttributeInstance,
@@ -10,7 +10,7 @@ from MetaDataApi.datapoints.models import (
     TemporalStringAttributeInstance)
 
 models = (
-    DatapointV2, MetaData, RawData,
+    RawData,
     ObjectInstance,
     ObjectRelationInstance,
     GenericAttributeInstance,

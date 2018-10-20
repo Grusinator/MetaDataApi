@@ -10,11 +10,12 @@ from inflection import underscore
 from gensim.models import word2vec
 from MetaDataApi.metadata.models import (
     Schema, Object,
-    Attribute, ObjectRelation,
-    ObjectInstance,
-    AttributeInstance,
-    ObjectRelationInstance)
+    Attribute, ObjectRelation)
 
+from MetaDataApi.datapoints.models import (
+    ObjectInstance,
+    GenericAttributeInstance,
+    ObjectRelationInstance)
 from .base_functions import BaseMetaDataService
 
 
@@ -79,7 +80,7 @@ class SchemaIdentification(BaseMetaDataService):
 
                     if isinstance(att, Attribute):
                         instance_list.append(
-                            AttributeInstance(
+                            GenericAttributeInstance(
                                 base=att,
                                 object=parrent_obj_inst,
                                 value=value.get("value")
