@@ -15,7 +15,14 @@ from MetaDataApi.users.schema import UserType
 from django.contrib.auth.models import User
 
 
-from MetaDataApi.datapoints.models import CategoryTypes, DatapointV2, MetaData, RawData
+from MetaDataApi.datapoints.models import (
+    DatapointV2, MetaData, RawData,
+    ObjectInstance,
+    ObjectRelationInstance,
+    GenericAttributeInstance,
+    TemporalFloatAttributeInstance,
+    TemporalStringAttributeInstance)
+
 from MetaDataApi.datapoints.schema_processing import ProcessRawData
 from MetaDataApi.users.models import Profile
 
@@ -24,15 +31,12 @@ from MetaDataApi.services.google_speech_api import transcribe_file
 
 GrapheneCategoryTypes = Enum.from_enum(CategoryTypes)
 
+# specific ( only for query )
 
-class MetaDataType(DjangoObjectType):
+
+class GenericAttributeType(DjangoObjectType):
     class Meta:
-        model = MetaData
-
-
-class DatapointType(DjangoObjectType):
-    class Meta:
-        model = DatapointV2
+        model = GenericAttributeInstance
         # Allow for some more advanced filtering here
         #interfaces = (graphene.Node, )
         # filter_fields = {
@@ -40,9 +44,18 @@ class DatapointType(DjangoObjectType):
         #    'notes': ['exact', 'icontains'],
         # }
 
+# common
+
+
+class AttributeType(DjangoObjectType):
+    class Meta:
+        # all common attribute properties here!
+        # model = GenericAttributeInstance
+        pass
+
 
 class CreateDatapoint(graphene.Mutation):
-    datapoint = Field(DatapointType)
+    datapoint = Field(AttributeType)
 
     class Arguments:
         starttime = graphene.DateTime()
@@ -50,15 +63,11 @@ class CreateDatapoint(graphene.Mutation):
         value = graphene.Float()
         std = graphene.Float()
 
-        # meta params
-        source = graphene.String()
-        category = GrapheneCategoryTypes()
-        label = graphene.String()
-
     @login_required
     def mutate(self, info, source, category, label, value, std,
                starttime, stoptime=None):
 
+        # get the object type from metadata and create an instance
         try:
             metadata = MetaData.objects.get(
                 source=source,
@@ -69,12 +78,11 @@ class CreateDatapoint(graphene.Mutation):
             raise GraphQLError(
                 "no metadata object correspond to the combination of source, category and label")
 
-        datapoint = DatapointV2(
+        datapoint = GenericAttributeInstance(
             starttime=starttime,
             stoptime=stoptime,
             value=value,
-            std=std,
-            metadata=metadata,
+            object=object,
             owner=info.context.user
         )
 
