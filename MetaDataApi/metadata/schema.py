@@ -89,8 +89,9 @@ class ExportSchema(graphene.Mutation):
         service = RdfService()
         outfilename = "./schemas/rdf/created/" + schema_name + ".ttl"
 
-        schema_file_url = service.export_schema_from_db(schema_name)
+        schema = service.export_schema_from_db(schema_name)
 
+        schema_file_url = schema.rdfs_file.url
         return ExportSchema(
             schema_file=schema_file_url,
             visualization_url="http://visualdataweb.de/webvowl/#iri=" +
