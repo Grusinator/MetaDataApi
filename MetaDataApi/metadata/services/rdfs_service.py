@@ -361,7 +361,8 @@ class RdfService(BaseMetaDataService):
                 # right schema
                 liste = Schema.objects.all()
 
-                # get the right url from either current schema or from other in db
+                # get the right url from either current schema or from other
+                # in db
                 if self.schema.url == from_schema_url:
                     from_schema = self.schema
                 else:

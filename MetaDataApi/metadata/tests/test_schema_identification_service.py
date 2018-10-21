@@ -32,15 +32,13 @@ class TestSchemaIdentificationService(TransactionTestCase):
 
         rdf_service = RdfService()
 
-        rdf_service.write_to_db_baseschema()
+        # just take foaf
+        rdf_service.write_to_db(rdf_url="http://xmlns.com/foaf/0.1/")
 
         json_service = JsonSchemaService()
 
-        # this takes to long time
+        # this takes to long time if doing full
         json_service.write_to_db_baseschema(positive_list=[
-            "acceleration-1.x.json",
-            "body-temperature-1.0.json",
-            "body-temperature-1.x.json",
             "body-temperature-2.0.json",
             "body-temperature-2.x.json",
         ])

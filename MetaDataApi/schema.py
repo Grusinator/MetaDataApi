@@ -1,5 +1,6 @@
 import MetaDataApi.metadata.schema
 import MetaDataApi.users.schema
+import MetaDataApi.datapoints.schema
 import graphene
 import graphql_jwt
 
@@ -10,6 +11,7 @@ from graphene_django.debug import DjangoDebug
 class Query(
         MetaDataApi.users.schema.Query,
         MetaDataApi.metadata.schema.Query,
+        MetaDataApi.datapoints.schema.Query,
         graphene.ObjectType):
 
     debug = graphene.Field(DjangoDebug, name='__debug')
@@ -18,6 +20,7 @@ class Query(
 class Mutation(
         MetaDataApi.users.schema.Mutation,
         MetaDataApi.metadata.schema.Mutation,
+        MetaDataApi.datapoints.schema.Mutation,
         graphene.ObjectType):
 
     token_auth = graphql_jwt.ObtainJSONWebToken.Field()

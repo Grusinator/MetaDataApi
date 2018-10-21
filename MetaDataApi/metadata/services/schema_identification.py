@@ -10,11 +10,12 @@ from inflection import underscore
 from gensim.models import word2vec
 from MetaDataApi.metadata.models import (
     Schema, Object,
-    Attribute, ObjectRelation,
-    ObjectInstance,
-    AttributeInstance,
-    ObjectRelationInstance)
+    Attribute, ObjectRelation)
 
+from MetaDataApi.datapoints.models import (
+    ObjectInstance,
+    GenericAttributeInstance,
+    ObjectRelationInstance)
 from .base_functions import BaseMetaDataService
 
 
@@ -46,11 +47,11 @@ class SchemaIdentification(BaseMetaDataService):
             raise Exception("foaf person was not found")
         # TODO: Relate to logged in person object instead
 
-        modified_data = self.iterate_data(input_data, person)
+        objects, modified_data = self.iterate_data(input_data, person)
 
-        serialized_data = self.serialize_objects(modified_data)
+        serialized_data = self.serialize_objects(objects)
 
-        return serialized_data
+        return modified_data
 
     def serialize_objects(self, object_list):
         # TODO: implement real serialization
@@ -61,6 +62,8 @@ class SchemaIdentification(BaseMetaDataService):
     def iterate_data(self, input_data, parrent_obj_inst):
         # for each branch in the tree check match for labels,
         # attribute labels and relations labels
+
+        modified_data = input_data.copy()
 
         instance_list = []
 
@@ -79,12 +82,15 @@ class SchemaIdentification(BaseMetaDataService):
 
                     if isinstance(att, Attribute):
                         instance_list.append(
-                            AttributeInstance(
+                            GenericAttributeInstance(
                                 base=att,
                                 object=parrent_obj_inst,
                                 value=value.get("value")
                             )
                         )
+                        # modify input data to include the attribute
+                        self.add_object_label_to_dict(modified_data,
+                                                      att, key)
                     else:
                         # attribute not found
                         pass
@@ -97,16 +103,19 @@ class SchemaIdentification(BaseMetaDataService):
                         key, value)
 
                     if isinstance(obj, Object):
-                        # test if relation between parrent exists
-                        obj_rel = self.relation_between_objects(
-                            parrent_obj_inst, obj)
-
                         # create object instance of the one found from label
                         obj_inst = instance_list.append(
                             ObjectInstance(
                                 base=obj
                             )
                         )
+
+                        self.add_object_label_to_dict(modified_data,
+                                                      obj, key)
+
+                        # test if relation between parrent exists
+                        obj_rel = self.relation_between_objects(
+                            parrent_obj_inst, obj)
 
                         # if relation exist create instance
                         if obj_rel:
@@ -115,6 +124,9 @@ class SchemaIdentification(BaseMetaDataService):
                                 to_obj=obj_inst,
                             )
                             instance_list.append(parrent_obj_inst)
+
+                            self.add_object_label_to_dict(modified_data,
+                                                          obj_rel, key)
 
                     elif isinstance(obj, ObjectRelation):
                         # dont act here, it should be created when
@@ -125,9 +137,12 @@ class SchemaIdentification(BaseMetaDataService):
 
                     # then iterate down the object value
                     # to find connected objects
-                    returned_objects = self.iterate_data(
+                    returned_objects, returned_data = self.iterate_data(
                         value, parrent_obj_inst)
                     instance_list.extend(returned_objects)
+
+                    # update the branch to the modified
+                    modified_data[key] = returned_data
 
             # this must be an attribute
             elif isinstance(value, (str, int, float)):
@@ -138,15 +153,34 @@ class SchemaIdentification(BaseMetaDataService):
 
                 if att:
                     instance_list.append(
-                        AttributeInstance(
+                        GenericAttributeInstance(
                             base=att,
                             object=parrent_obj_inst,
                             value=str(value)
                         )
                     )
 
+                    self.add_object_label_to_dict(modified_data,
+                                                  att, key)
+
         # when all objects are mapped return the instances
-        return instance_list
+        return instance_list, modified_data
+
+    def add_object_label_to_dict(self, input_dict, item, key):
+        conv = {
+            Attribute: "A",
+            Object: "O",
+            ObjectRelation: "R"
+        }
+
+        # modify input data to include the attribute
+        new_key = "%s -> %s:%s" % (
+            key,
+            conv.get(type(item)),
+            item.label)
+        # update the key
+        input_dict[new_key] = input_dict.pop(key)
+        return input_dict
 
     def relation_between_objects(from_obj, to_obj):
         def convert_to_base(obj):

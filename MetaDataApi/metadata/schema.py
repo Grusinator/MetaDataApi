@@ -13,10 +13,12 @@ from MetaDataApi.settings import MEDIA_ROOT
 
 
 from MetaDataApi.users.schema import UserType
-from MetaDataApi.metadata.models import Schema, Object, Attribute, ObjectRelation
+from MetaDataApi.metadata.models import (
+    Schema, Object, Attribute, ObjectRelation)
 from MetaDataApi.metadata.services.rdfs_service import RdfService
 from MetaDataApi.metadata.services.json_schema_service import JsonSchemaService
-from MetaDataApi.metadata.services.schema_identification import SchemaIdentification
+from MetaDataApi.metadata.services.schema_identification import (
+    SchemaIdentification)
 
 
 class SchemaNode(DjangoObjectType):
@@ -87,7 +89,8 @@ class ExportSchema(graphene.Mutation):
 
         return ExportSchema(
             schema_file=schema_file_url,
-            visualization_url="http://visualdataweb.de/webvowl/#iri=" + schema_file_url)
+            visualization_url="http://visualdataweb.de/webvowl/#iri=" +
+            schema_file_url)
 
 
 class IdentifyData(graphene.Mutation):
@@ -96,7 +99,7 @@ class IdentifyData(graphene.Mutation):
     class Arguments:
         input_data = graphene.String()
 
-    # @login_required
+    @login_required
     def mutate(self, info, input_data):
         identify = SchemaIdentification()
 
@@ -113,7 +116,7 @@ class AddJsonSchema(graphene.Mutation):
         url = graphene.String()
         name = graphene.String()
 
-    # @login_required
+    @login_required
     def mutate(self, info, url, name):
         service = JsonSchemaService()
         if url == "openMHealth":
@@ -142,7 +145,7 @@ class AddRdfSchema(graphene.Mutation):
     class Arguments:
         url = graphene.String()
 
-    # @login_required
+    @login_required
     def mutate(self, info, url):
         service = RdfService()
         if url == "baseschema":
@@ -173,9 +176,6 @@ class Query(graphene.ObjectType):
 
     object_relation = graphene.relay.Node.Field(ObjectRelationNode)
     all_object_relations = DjangoFilterConnectionField(ObjectRelationNode)
-
-    # # @login_required
-    # # schemas
 
     def resolve_schema(self, info):
         return Schema.objects.first()
