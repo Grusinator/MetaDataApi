@@ -39,7 +39,9 @@ class RdfService(BaseMetaDataService):
             "http://xmlns.com/foaf/0.1/"
         ]
         self.selfhosted = {
-            "http://xmlns.com/foaf/0.1/": "https://raw.githubusercontent.com/Grusinator/MetaDataApi/master/schemas/rdf/imported/foaf.ttl"
+            "http://xmlns.com/foaf/0.1/":
+            "https://raw.githubusercontent.com/Grusinator/" +
+            "MetaDataApi/master/schemas/rdf/imported/foaf.ttl"
         }
 
         self.valid_datatypes = [
@@ -359,7 +361,8 @@ class RdfService(BaseMetaDataService):
                 # right schema
                 liste = Schema.objects.all()
 
-                # get the right url from either current schema or from other in db
+                # get the right url from either current schema or from other
+                # in db
                 if self.schema.url == from_schema_url:
                     from_schema = self.schema
                 else:

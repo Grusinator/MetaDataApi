@@ -48,6 +48,11 @@ CORS_ORIGIN_WHITELIST = (
 )
 
 
+AUTHENTICATION_BACKENDS = [
+    'graphql_jwt.backends.JSONWebTokenBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -60,9 +65,11 @@ INSTALLED_APPS = [
     # 'service_objects',
     'graphene_django',
     'corsheaders',
+    'storages',
+    'graphene_file_upload',
+    'MetaDataApi.datapoints.apps.datapointsConfig',
+    'MetaDataApi.users.apps.usersConfig',
     'MetaDataApi.metadata.apps.metadataConfig',
-    # 'MetaDataApi.users.apps.usersConfig',
-    'storages'
 ]
 
 MIDDLEWARE = [
@@ -109,12 +116,24 @@ DATABASES = {
     }
 }
 
+# DATABASES = {
+#    'default': {
+#        'ENGINE': 'djongo',
+#        'NAME': 'personal-data',
+#    }
+# }
+
 GRAPHENE = {
     'SCHEMA': 'MetaDataApi.schema.schema',
     'MIDDLEWARE': (
         'graphene_django.debug.DjangoDebugMiddleware',
     )
 }
+
+settings_dir = os.path.dirname(__file__)
+PROJECT_ROOT = os.path.abspath(os.path.dirname(settings_dir))
+ML_models_dir = os.path.join(
+    PROJECT_ROOT, "MetaDataApi/services/sound_classification/models")
 
 
 # Password validation
