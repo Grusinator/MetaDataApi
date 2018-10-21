@@ -13,10 +13,12 @@ from MetaDataApi.settings import MEDIA_ROOT
 
 
 from MetaDataApi.users.schema import UserType
-from MetaDataApi.metadata.models import Schema, Object, Attribute, ObjectRelation
+from MetaDataApi.metadata.models import (
+    Schema, Object, Attribute, ObjectRelation)
 from MetaDataApi.metadata.services.rdfs_service import RdfService
 from MetaDataApi.metadata.services.json_schema_service import JsonSchemaService
-from MetaDataApi.metadata.services.schema_identification import SchemaIdentification
+from MetaDataApi.metadata.services.schema_identification import (
+    SchemaIdentification)
 
 
 class SchemaNode(DjangoObjectType):
@@ -87,7 +89,8 @@ class ExportSchema(graphene.Mutation):
 
         return ExportSchema(
             schema_file=schema_file_url,
-            visualization_url="http://visualdataweb.de/webvowl/#iri=" + schema_file_url)
+            visualization_url="http://visualdataweb.de/webvowl/#iri=" +
+            schema_file_url)
 
 
 class IdentifyData(graphene.Mutation):

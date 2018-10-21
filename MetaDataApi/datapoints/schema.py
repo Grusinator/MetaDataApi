@@ -1,5 +1,6 @@
 import graphene
-from graphene import AbstractType, Node, Mutation, String, ObjectType, Field, List, Date, Enum, Float
+from graphene import (AbstractType, Node, Mutation, String,
+                      ObjectType, Field, List, Date, Enum, Float)
 
 from graphene_django.filter import DjangoFilterConnectionField
 from graphene_django.types import DjangoObjectType
@@ -40,7 +41,7 @@ class GenericAttributeType(DjangoObjectType):
     class Meta:
         model = GenericAttributeInstance
         # Allow for some more advanced filtering here
-        #interfaces = (graphene.Node, )
+        # interfaces = (graphene.Node, )
         # filter_fields = {
         #    'name': ['exact', 'icontains', 'istartswith'],
         #    'notes': ['exact', 'icontains'],
@@ -83,7 +84,8 @@ class CreateDatapoint(graphene.Mutation):
                 object=object)
         except Exception as e:
             raise GraphQLError(
-                "no metadata object correspond to the combination of source, category and label")
+                """no metadata object correspond to the
+                combination of source, category and label""")
 
         object_inst = ObjectInstance(
             base=object,
@@ -183,7 +185,7 @@ class UploadFile(graphene.Mutation):
         uploaded_file = info.context.FILES.get(file)
         # do something with your file
 
-        return UploadFile(success=uploaded_file != None)
+        return UploadFile(success=uploaded_file is not None)
 
 
 class Upload2Files(graphene.Mutation):
@@ -199,7 +201,7 @@ class Upload2Files(graphene.Mutation):
         uploaded_file2 = info.context.FILES.get(files[1])
         # do something with your file
 
-        return UploadFile(success=uploaded_file != None)
+        return UploadFile(success=uploaded_file is not None)
 
 # wrap all queries and mutations
 
