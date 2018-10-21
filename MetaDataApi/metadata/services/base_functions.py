@@ -9,11 +9,13 @@ from MetaDataApi.metadata.models import (
 from schemas.json.omh.schema_names import schema_names
 from django.db import transaction
 from django.core.exceptions import ObjectDoesNotExist
+from service_objects.services import Service
 
 
 class BaseMetaDataService():
 
     def __init__(self):
+        # super(BaseMetaDataService, self).__init__()
         self.schema = None
         self.baseurl = None
 
@@ -90,3 +92,23 @@ class BaseMetaDataService():
             return None
         except Exception as e:
             return None
+
+    def is_objects_connected(self, obj_from, obj_to, objects):
+        relations = obj_from.from_relations.all()
+
+        related_objects = list(map(lambda x: x.to_object.get(), relations))
+
+        related_objects = list(filter(lambda x: x in objects, related_objects))
+
+        for obj in related_objects:
+            if obj == obj_to:
+                return True
+            elif self.is_objects_connected(obj, obj_to, objects):
+                return True
+
+        return False
+
+    def get_foaf_person(self):
+        schema = Schema.objects.get(label="friend_of_a_friend_(foaf)")
+        find_obj = Object.objects.get(label="person", schema=schema)
+        return find_obj

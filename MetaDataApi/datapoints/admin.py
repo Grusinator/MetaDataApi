@@ -6,15 +6,15 @@ from MetaDataApi.datapoints.models import (
     ObjectInstance,
     ObjectRelationInstance,
     GenericAttributeInstance,
-    TemporalFloatAttributeInstance,
-    TemporalStringAttributeInstance)
+    FloatAttributeInstance,
+    StringAttributeInstance)
 
 models = (
     RawData,
     ObjectInstance,
     ObjectRelationInstance,
     GenericAttributeInstance,
-    TemporalFloatAttributeInstance,
-    TemporalStringAttributeInstance)
+    FloatAttributeInstance,
+    StringAttributeInstance)
 
 [admin.site.register(model) for model in models]

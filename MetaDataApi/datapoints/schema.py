@@ -19,8 +19,8 @@ from MetaDataApi.datapoints.models import (
     ObjectInstance,
     ObjectRelationInstance,
     GenericAttributeInstance,
-    TemporalFloatAttributeInstance,
-    TemporalStringAttributeInstance)
+    FloatAttributeInstance,
+    StringAttributeInstance)
 
 from MetaDataApi.metadata.models import (
     Attribute, Object, ObjectRelation, Schema

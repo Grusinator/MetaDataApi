@@ -58,7 +58,7 @@ class SchemaIdentification(BaseMetaDataService):
         return modified_data
 
     def connect_objects_to_foaf(self, objects):
-        foaf = self.get_foaf()
+        foaf = self.get_foaf_person_person()
         objects_has_foaf = foaf in objects
 
         # objects_has_foaf = True
@@ -78,21 +78,6 @@ class SchemaIdentification(BaseMetaDataService):
             else:
                 failed.append(obj)
         return extra_objects, failed
-
-    def is_objects_connected(self, obj_from, obj_to, objects):
-        relations = obj_from.from_relations.all()
-
-        related_objects = list(map(lambda x: x.to_object.get(), relations))
-
-        related_objects = list(filter(lambda x: x in objects, related_objects))
-
-        for obj in related_objects:
-            if obj == obj_to:
-                return True
-            elif self.is_objects_connected(obj, obj_to, objects):
-                return True
-
-        return False
 
     def serialize_objects(self, object_list):
         # TODO: implement real serialization
@@ -293,16 +278,10 @@ class SchemaIdentification(BaseMetaDataService):
             # otherwise just return the type of
             return type(element)
 
-    def get_foaf(self):
-
-        schema = Schema.objects.get(label="friend_of_a_friend_(foaf)")
-        find_obj = Object.objects.get(label="person", schema=schema)
-        return find_obj
-
     def find_shortest_path_to_foaf_person(self, base_object):
 
         foaf_found, _ = self.iterate_find_related_obj(
-            base_object, self.get_foaf(), discovered_objects=[])
+            base_object, self.get_foaf_person(), discovered_objects=[])
 
         return foaf_found
 

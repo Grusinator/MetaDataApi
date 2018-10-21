@@ -20,6 +20,10 @@ from MetaDataApi.metadata.services.json_schema_service import JsonSchemaService
 from MetaDataApi.metadata.services.schema_identification import (
     SchemaIdentification)
 
+from MetaDataApi.metadata.services.data_cleaning_service import (
+    DataCleaningService
+)
+
 
 class SchemaNode(DjangoObjectType):
     class Meta:
@@ -162,7 +166,26 @@ class AddRdfSchema(graphene.Mutation):
         return AddRdfSchema(succes=True)
 
 
+class AddPersonReference(graphene.Mutation):
+    succes = graphene.Boolean()
+    objects_added = graphene.Int()
+
+    class Arguments:
+        url = graphene.String()
+
+    @login_required
+    def mutate(self, info, url):
+        service = DataCleaningService()
+        try:
+            objects = service.relate_root_classes_to_foaf(url)
+        except Exception as e:
+            raise GraphQLError(str(e))
+
+        return AddPersonReference(succes=True, objects_added=len(objects))
+
+
 # wrap all queries and mutations
+
 
 class Query(graphene.ObjectType):
     schema = graphene.relay.Node.Field(SchemaNode)
@@ -211,3 +234,4 @@ class Mutation(graphene.ObjectType):
     delete_schema = DeleteSchema.Field()
     identify_data = IdentifyData.Field()
     export_schema = ExportSchema.Field()
+    add_person_reference = AddPersonReference.Field()

@@ -81,40 +81,47 @@ class GenericAttributeInstance(models.Model):
         app_label = 'datapoints'
 
 
-class TemporalFloatAttributeInstance(models.Model):
+class DateTimeAttributeInstance(models.Model):
     # must have timestamp and value
-    starttime = models.DateTimeField(auto_now=False)
-    # stoptime defines the interval if any
-    stoptime = models.DateTimeField(null=True, blank=True)
-    value = models.FloatField()
-    std = models.FloatField(null=True, blank=True)
+    value = models.DateTimeField()
     base = models.ForeignKey(
-        Attribute, related_name="temporal_float_attributes_insts",
+        Attribute, related_name="datetime_attributes_insts",
         on_delete=models.CASCADE)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL,
                               null=True, on_delete=models.CASCADE)
     object = models.ForeignKey(
-        ObjectInstance, related_name='temp_float_attributes',
+        ObjectInstance, related_name='datetime_attributes',
         on_delete=models.CASCADE)
 
     class Meta:
         app_label = 'datapoints'
 
 
-class TemporalStringAttributeInstance(models.Model):
-    # must have timestamp and value
-    starttime = models.DateTimeField(auto_now=False)
-    # stoptime defines the interval if any
-    stoptime = models.DateTimeField(null=True, blank=True)
+class FloatAttributeInstance(models.Model):
     value = models.FloatField()
     std = models.FloatField(null=True, blank=True)
     base = models.ForeignKey(
-        Attribute, related_name="temporal_string_attribute_insts",
+        Attribute, related_name="float_attributes_insts",
         on_delete=models.CASCADE)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL,
                               null=True, on_delete=models.CASCADE)
     object = models.ForeignKey(
-        ObjectInstance, related_name='temp_string_attributes',
+        ObjectInstance, related_name='float_attributes',
+        on_delete=models.CASCADE)
+
+    class Meta:
+        app_label = 'datapoints'
+
+
+class StringAttributeInstance(models.Model):
+    value = models.TextField()
+    base = models.ForeignKey(
+        Attribute, related_name="string_attribute_insts",
+        on_delete=models.CASCADE)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL,
+                              null=True, on_delete=models.CASCADE)
+    object = models.ForeignKey(
+        ObjectInstance, related_name='string_attributes',
         on_delete=models.CASCADE)
 
     def __str__(self):
