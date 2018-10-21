@@ -3,6 +3,9 @@ from django.test import TestCase, TransactionTestCase
 from urllib import request
 from MetaDataApi.metadata.models import Object
 from django.core.management import call_command
+from MetaDataApi.metadata.services.data_cleaning_service import (
+    DataCleaningService
+)
 
 
 class TestSchemaIdentificationService(TransactionTestCase):
@@ -42,6 +45,10 @@ class TestSchemaIdentificationService(TransactionTestCase):
             "body-temperature-2.0.json",
             "body-temperature-2.x.json",
         ])
+
+        dc_service = DataCleaningService()
+
+        dc_service.relate_root_classes_to_foaf("open_m_health")
 
     def test_identify_json_data_sample(self):
         from MetaDataApi.metadata.services.schema_identification import (

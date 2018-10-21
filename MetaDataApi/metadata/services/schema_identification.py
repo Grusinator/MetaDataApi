@@ -49,16 +49,19 @@ class SchemaIdentification(BaseMetaDataService):
 
         objects, modified_data = self.iterate_data(input_data, person)
 
-        # filter(lambda x: x.label objects
+        # only objects, remove attributes and relations
+        ony_obj_objects = filter(lambda x: isinstance(x, ObjectInstance),
+                                 objects)
+
         # relate to foaf
-        objects, failed = self.connect_objects_to_foaf(objects)
+        objects, failed = self.connect_objects_to_foaf(ony_obj_objects)
 
         serialized_data = self.serialize_objects(objects)
 
         return modified_data
 
     def connect_objects_to_foaf(self, objects):
-        foaf = self.get_foaf_person_person()
+        foaf = self.get_foaf_person()
         objects_has_foaf = foaf in objects
 
         # objects_has_foaf = True
@@ -287,17 +290,12 @@ class SchemaIdentification(BaseMetaDataService):
 
     def iterate_find_related_obj(self, parrent_obj, find_obj,
                                  discovered_objects=[]):
-        # all is good, continue
-        if isinstance(parrent_obj, Object):
-            pass
-        else:
-            # use
-            if isinstance(parrent_obj, (ObjectInstance,
-                                        GenericAttributeInstance)):
-                parrent_obj = parrent_obj.base
-            # only relevant for first iteration, if the obj is an attribute
-            if isinstance(parrent_obj, Attribute):
-                parrent_obj = parrent_obj.object
+        if isinstance(parrent_obj, (ObjectInstance,
+                                    GenericAttributeInstance)):
+            parrent_obj = parrent_obj.base
+        # only relevant for first iteration, if the obj is an attribute
+        if isinstance(parrent_obj, Attribute):
+            parrent_obj = parrent_obj.object
 
         # dont look for allready searched objects
         connected_objects = filter(
