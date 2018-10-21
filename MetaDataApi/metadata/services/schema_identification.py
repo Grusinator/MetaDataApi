@@ -49,9 +49,50 @@ class SchemaIdentification(BaseMetaDataService):
 
         objects, modified_data = self.iterate_data(input_data, person)
 
+        # filter(lambda x: x.label objects
+        # relate to foaf
+        objects, failed = self.connect_objects_to_foaf(objects)
+
         serialized_data = self.serialize_objects(objects)
 
         return modified_data
+
+    def connect_objects_to_foaf(self, objects):
+        foaf = self.get_foaf()
+        objects_has_foaf = foaf in objects
+
+        # objects_has_foaf = True
+
+        extra_objects = []
+        failed = []
+
+        for obj in objects:
+            # test if connected
+            if objects_has_foaf and \
+                    self.is_objects_connected(obj, foaf, objects):
+                continue
+            chain = self.find_shortest_path_to_foaf_person(obj)
+
+            if chain:
+                extra_objects.extend(chain)
+            else:
+                failed.append(obj)
+        return extra_objects, failed
+
+    def is_objects_connected(self, obj_from, obj_to, objects):
+        relations = obj_from.from_relations.all()
+
+        related_objects = list(map(lambda x: x.to_object.get(), relations))
+
+        related_objects = list(filter(lambda x: x in objects, related_objects))
+
+        for obj in related_objects:
+            if obj == obj_to:
+                return True
+            elif self.is_objects_connected(obj, obj_to, objects):
+                return True
+
+        return False
 
     def serialize_objects(self, object_list):
         # TODO: implement real serialization
@@ -70,98 +111,102 @@ class SchemaIdentification(BaseMetaDataService):
         for key, value in input_data.items():
             # this is likely a object if it contains other
             # attributes or objects
-            if isinstance(value, dict):
-                # test if value dict only contains
-                # "value", "unit" and whatever attr
-                if self.dict_contains_only_attr(value):
-                    look_only_for = [Attribute, ]
-
-                    # check if the key is a label
-                    att = self.find_label_in_metadata(
-                        key, value, look_only_for_items=look_only_for)
-
-                    if isinstance(att, Attribute):
-                        instance_list.append(
-                            GenericAttributeInstance(
-                                base=att,
-                                object=parrent_obj_inst,
-                                value=value.get("value")
-                            )
-                        )
-                        # modify input data to include the attribute
-                        self.add_object_label_to_dict(modified_data,
-                                                      att, key)
-                    else:
-                        # attribute not found
-                        pass
-                    # TODO: handle this better
-
-                # its probably a object
-                else:
-                    # check if the key is a label
-                    obj = self.find_label_in_metadata(
-                        key, value)
-
-                    if isinstance(obj, Object):
-                        # create object instance of the one found from label
-                        obj_inst = instance_list.append(
-                            ObjectInstance(
-                                base=obj
-                            )
-                        )
-
-                        self.add_object_label_to_dict(modified_data,
-                                                      obj, key)
-
-                        # test if relation between parrent exists
-                        obj_rel = self.relation_between_objects(
-                            parrent_obj_inst, obj)
-
-                        # if relation exist create instance
-                        if obj_rel:
-                            parrent_obj_inst = ObjectRelationInstance(
-                                from_obj=parrent_obj_inst,
-                                to_obj=obj_inst,
-                            )
-                            instance_list.append(parrent_obj_inst)
-
-                            self.add_object_label_to_dict(modified_data,
-                                                          obj_rel, key)
-
-                    elif isinstance(obj, ObjectRelation):
-                        # dont act here, it should be created when
-                        # an object is identified
-
-                        # just step down
-                        pass
-
-                    # then iterate down the object value
-                    # to find connected objects
-                    returned_objects, returned_data = self.iterate_data(
-                        value, parrent_obj_inst)
-                    instance_list.extend(returned_objects)
-
-                    # update the branch to the modified
-                    modified_data[key] = returned_data
 
             # this must be an attribute
-            elif isinstance(value, (str, int, float)):
-                # it is probably an attribute
-                data_type = self.identify_datatype(value)
+            # test if value dict only contains
+            # "value", "unit" and whatever attr
+            if isinstance(value, (str, int, float)) or \
+                    (isinstance(value, dict) and
+                     self.dict_contains_only_attr(value)):
+                    # it is probably an attribute
+
+                    # prepare the variables for the lookup
+                if isinstance(value, dict):
+                    att_value = value.get("value")
+                else:
+                    att_value = str(value)
+
+                data_type = self.identify_datatype(att_value)
+
+                # the key is the label
                 att = self.find_label_in_metadata(
                     key, data_type, look_only_for_items=[Attribute, ])
 
                 if att:
+                    # if the parrent object is not the "real" parrent
+                    # of the attribute, then create it
+                    if att.object != parrent_obj_inst.base:
+                        real_parrent = ObjectInstance(
+                            base=att.object,
+                        )
+                        instance_list.append(real_parrent)
+                    else:
+                        real_parrent = parrent_obj_inst
+
                     instance_list.append(
                         GenericAttributeInstance(
                             base=att,
-                            object=parrent_obj_inst,
-                            value=str(value)
+                            object=real_parrent,
+                            value=att_value
+                        )
+                    )
+
+                    # modify input data to include the attribute
+                    self.add_object_label_to_dict(modified_data,
+                                                  att, key)
+
+                else:
+                    # attribute not found
+                    pass
+                # TODO: handle this better
+
+            # its probably a object
+            else:
+                # check if the key is a label
+                obj = self.find_label_in_metadata(
+                    key, value)
+
+                if isinstance(obj, Object):
+                    # create object instance of the one found from label
+                    obj_inst = instance_list.append(
+                        ObjectInstance(
+                            base=obj
                         )
                     )
 
                     self.add_object_label_to_dict(modified_data,
-                                                  att, key)
+                                                  obj, key)
+
+                    # test if relation between parrent exists
+                    obj_rel = self.relation_between_objects(
+                        parrent_obj_inst, obj)
+
+                    # if relation exist create instance
+                    if obj_rel:
+                        parrent_obj_inst = ObjectRelationInstance(
+                            from_obj=parrent_obj_inst,
+                            to_obj=obj_inst,
+                        )
+                        instance_list.append(parrent_obj_inst)
+
+                        self.add_object_label_to_dict(modified_data,
+                                                      obj_rel, key)
+
+                elif isinstance(obj, ObjectRelation):
+                    # dont act here, it should be created when
+                    # an object is identified
+
+                    # just step down
+                    pass
+
+                # then iterate down the object value
+                # to find connected objects
+                returned_objects, returned_data = self.iterate_data(
+                    value, parrent_obj_inst)
+                instance_list.extend(returned_objects)
+
+                # update the branch to the modified
+                modified_data[key] = returned_data
 
         # when all objects are mapped return the instances
         return instance_list, modified_data
@@ -201,6 +246,11 @@ class SchemaIdentification(BaseMetaDataService):
             return None
 
     def dict_contains_only_attr(self, data):
+        # if its not a dict, then its not an
+        # attribute
+        if not isinstance(data, dict):
+            return False
+
         data = data.copy()
         if len(data) == 0:
             return False
@@ -242,6 +292,59 @@ class SchemaIdentification(BaseMetaDataService):
         else:
             # otherwise just return the type of
             return type(element)
+
+    def get_foaf(self):
+
+        schema = Schema.objects.get(label="friend_of_a_friend_(foaf)")
+        find_obj = Object.objects.get(label="person", schema=schema)
+        return find_obj
+
+    def find_shortest_path_to_foaf_person(self, base_object):
+
+        foaf_found, _ = self.iterate_find_related_obj(
+            base_object, self.get_foaf(), discovered_objects=[])
+
+        return foaf_found
+
+    def iterate_find_related_obj(self, parrent_obj, find_obj,
+                                 discovered_objects=[]):
+        # all is good, continue
+        if isinstance(parrent_obj, Object):
+            pass
+        else:
+            # use
+            if isinstance(parrent_obj, (ObjectInstance,
+                                        GenericAttributeInstance)):
+                parrent_obj = parrent_obj.base
+            # only relevant for first iteration, if the obj is an attribute
+            if isinstance(parrent_obj, Attribute):
+                parrent_obj = parrent_obj.object
+
+        # dont look for allready searched objects
+        connected_objects = filter(
+            lambda x: x not in discovered_objects,
+            parrent_obj.from_relations.all())
+
+        # should maybe not be hardcoded
+        for obj in connected_objects:
+            if obj.label == find_obj.label and \
+                    obj.schema.label == find_obj.schema.label:
+                return [obj, ]
+
+            obj_found, discovered_objects = self.iterate_find_related_obj(
+                obj, discovered_objects)
+            # if we have found something, just collapse and add the current
+            # object
+            if obj_found:
+                obj_found.append(obj)
+                return obj_found
+
+            # discovered list as well
+
+            discovered_objects.append(obj)
+
+        # foaf person was not found, return what was discovered
+        return None, discovered_objects
 
     def find_label_in_metadata(self, label, children=None, parrent=None,
                                look_only_for_items=None):

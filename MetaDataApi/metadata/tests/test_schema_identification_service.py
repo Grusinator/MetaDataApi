@@ -44,8 +44,9 @@ class TestSchemaIdentificationService(TransactionTestCase):
         ])
 
     def test_identify_json_data_sample(self):
-        from MetaDataApi.metadata.services.schema_identification import \
-            SchemaIdentification
+        from MetaDataApi.metadata.services.schema_identification import (
+            SchemaIdentification)
+
         from MetaDataApi.metadata.models import Schema, Object
 
         url = "https://raw.githubusercontent.com/Grusinator/MetaDataApi" + \
