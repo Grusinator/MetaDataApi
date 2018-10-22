@@ -146,7 +146,7 @@ class RdfService(BaseMetaDataService):
             # a relation is a property with the domain of the object
             # and range another object
             # from_object
-            g.add((relation_name, RDFS.domain, obj_name))
+            g.add((relation_name, RDFS.domain, from_object_name))
 
             # to_object
             g.add((relation_name, RDFS.range, to_object_name))
@@ -228,7 +228,10 @@ class RdfService(BaseMetaDataService):
                 format = None if ".xml" in rdf_url else "n3"
 
                 # make sure that the parser is reading from the beginning
-                rdf_url.seek(0)
+                try:
+                    rdf_url.seek(0)
+                except:
+                    pass
 
                 g.parse(rdf_url, format=format)
                 return g

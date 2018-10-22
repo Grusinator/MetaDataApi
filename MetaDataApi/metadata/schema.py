@@ -79,8 +79,9 @@ class DeleteSchema(graphene.Mutation):
 
 
 class ExportSchema(graphene.Mutation):
-    schema_file = graphene.String()
+    schema_file_url = graphene.String()
     visualization_url = graphene.String()
+    data = graphene.String()
 
     class Arguments:
         schema_name = graphene.String()
@@ -92,10 +93,16 @@ class ExportSchema(graphene.Mutation):
         schema = service.export_schema_from_db(schema_name)
 
         schema_file_url = schema.rdfs_file.url
+
+        g = service._create_graph_from_url(schema_file_url)
+
+        data = g.serialize(format='turtle')
+
         return ExportSchema(
-            schema_file=schema_file_url,
+            schema_file_url=schema_file_url,
             visualization_url="http://visualdataweb.de/webvowl/#iri=" +
-            schema_file_url)
+            schema_file_url,
+            data=data)
 
 
 class IdentifyData(graphene.Mutation):
