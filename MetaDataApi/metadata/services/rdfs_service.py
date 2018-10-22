@@ -88,48 +88,7 @@ class RdfService(BaseMetaDataService):
             # is defined by what schema
             g.add((obj_name, RDFS.isDefinedBy, rdf_schema))
 
-            relations = ObjectRelation.objects.filter(from_object=object)
-            # to know which have been exported
-            self._objects_created_list.extend(relations)
-
-            for relation in relations:
-                to_obj_label_std = camelize(
-                    relation.to_object.label.replace(" ", "_"))
-                to_object_name = URIRef(Ontology[to_obj_label_std])
-
-                # make sure that there is no space in the url
-                rel_label_std = camelize(relation.label.replace(" ", "_"))
-                if relation.schema.label == schema_label:
-
-                    # the "R_" is to avoid naming conflict with classes
-                    relation_name = URIRef(Ontology["R_" + rel_label_std])
-
-                else:
-                    # TODO create the ontology that it belongs to
-                    relation_name = Literal(rel_label_std)
-
-                # here a realtion object is created
-                g.add((relation_name, RDF.type, RDF.Property))
-
-                # a relation is a property with the domain of the object
-                # and range another object
-                # from_object
-                g.add((relation_name, RDFS.domain, obj_name))
-
-                # to_object
-                g.add((relation_name, RDFS.range, to_object_name))
-
-                # label and description
-                g.add((relation_name, RDFS.label, Literal(relation.label)))
-                g.add((relation_name, RDFS.comment,
-                       Literal(relation.description)))
-                # defined by
-                g.add((relation_name, RDFS.isDefinedBy, rdf_schema))
-
             attributes = object.attributes.all()
-            # to know which have been exported
-            self._objects_created_list.extend(attributes)
-
             # add attributes
             for attribute in attributes:
 
@@ -154,6 +113,51 @@ class RdfService(BaseMetaDataService):
                 # defined by
                 g.add((attribute_name, RDFS.isDefinedBy, rdf_schema))
 
+                # to know which have been exported
+                self._objects_created_list.extend(attributes)
+
+        relations = ObjectRelation.objects.filter(schema=schema)
+        # to know which have been exported
+        self._objects_created_list.extend(relations)
+
+        for relation in relations:
+            from_obj_label_std = camelize(
+                relation.from_object.label.replace(" ", "_"))
+            from_object_name = URIRef(Ontology[from_obj_label_std])
+
+            to_obj_label_std = camelize(
+                relation.to_object.label.replace(" ", "_"))
+            to_object_name = URIRef(Ontology[to_obj_label_std])
+
+            # make sure that there is no space in the url
+            rel_label_std = camelize(relation.label.replace(" ", "_"))
+            if relation.schema.label == schema_label:
+
+                # the "R_" is to avoid naming conflict with classes
+                relation_name = URIRef(Ontology["R_" + rel_label_std])
+
+            else:
+                # TODO create the ontology that it belongs to
+                relation_name = Literal(rel_label_std)
+
+            # here a realtion object is created
+            g.add((relation_name, RDF.type, RDF.Property))
+
+            # a relation is a property with the domain of the object
+            # and range another object
+            # from_object
+            g.add((relation_name, RDFS.domain, obj_name))
+
+            # to_object
+            g.add((relation_name, RDFS.range, to_object_name))
+
+            # label and description
+            g.add((relation_name, RDFS.label, Literal(relation.label)))
+            g.add((relation_name, RDFS.comment,
+                   Literal(relation.description)))
+            # defined by
+            g.add((relation_name, RDFS.isDefinedBy, rdf_schema))
+
         ttl_data = g.serialize(format='turtle')
 
         content = ContentFile(ttl_data)
@@ -168,15 +172,28 @@ class RdfService(BaseMetaDataService):
         # not very readable, consider to change to [_ for _ in _ ]
         graph_list = list(map(self._create_graph_from_url, self.default_list))
 
-        schema_list = list(map(lambda x: self._create_schema_from_graph(
-            *x), zip(graph_list, self.default_list)))
+        schema_list = list(map(self._create_schema_from_graph, graph_list))
 
-        dummy = list(map(lambda x: self._create_objects_from_graph(
-            *x), zip(graph_list)))
+        dummy = list(map(self._create_objects_from_graph, graph_list))
 
         dummy = list(
             map(self._create_object_references_from_graphV2, graph_list))
         dummy = list(map(self._create_attributes_from_graph, graph_list))
+
+    def read_objects_from_rdfs(self, rdf_url):
+        self.save_to_db = False
+
+        g = self._create_graph_from_url(rdf_url)
+
+        self.schema = self._create_schema_from_graph(g)
+
+        self._create_objects_from_graph(g)
+
+        self._create_object_references_from_graphV2(g)
+
+        self._create_attributes_from_graph(g)
+
+        return self._objects_created_list
 
     def write_to_db(self, rdf_url, overwrite=False):
 
@@ -186,7 +203,7 @@ class RdfService(BaseMetaDataService):
 
         missing_list = self._validate_dependencies(g)
 
-        self.schema = self._create_schema_from_graph(g, rdf_url)
+        self.schema = self._create_schema_from_graph(g)
 
         self._create_objects_from_graph(g)
 
@@ -196,12 +213,23 @@ class RdfService(BaseMetaDataService):
 
     def _create_graph_from_url(self, rdf_url):
         g = rdflib.Graph()
+
+        # this is needed for the parser to be able to read files
+        register(
+            # 'text/rdf+n3', Parser,
+            'text/plain', Parser,
+            'rdflib.plugins.parsers.notation3', 'N3Parser')
+
         # if not a string, its not an url
         # assume its a file
         if hasattr(rdf_url, 'read') or rdf_url[-4:] in [".ttl", ".xml"]:
             try:
                 # default is n3 (ttl) if not xml (ttl is default)
                 format = None if ".xml" in rdf_url else "n3"
+
+                # make sure that the parser is reading from the beginning
+                rdf_url.seek(0)
+
                 g.parse(rdf_url, format=format)
                 return g
             except Exception as e:
@@ -210,11 +238,6 @@ class RdfService(BaseMetaDataService):
         # cant load from raw github  ttl if format is not set
         format = "n3" if ".ttl" in rdf_url else None
         schema_name = rdf_url
-
-        register(
-            # 'text/rdf+n3', Parser,
-            'text/plain', Parser,
-            'rdflib.plugins.parsers.notation3', 'N3Parser')
 
         if rdf_url in self.selfhosted:
             rdf_url = self.selfhosted[rdf_url]
@@ -238,19 +261,39 @@ class RdfService(BaseMetaDataService):
 
         return missing_list
 
-    def _create_schema_from_graph(self, g, rdf_url):
+    def _create_schema_from_graph(self, g):
         # identify schema attributes
-
+        # TODO: identify rdf_url from graph instead
                 # some cases where the url is not the same as the uri
-        try:
-            schema_subject, _, _ = next(
-                g.triples((None,  None, OWL.Ontology)))
-        except:
-            schema_subject = rdflib.term.URIRef(rdf_url)
+
+        get_schema_keys = [
+            OWL.Ontology,
+            RDFS.Class,
+            RDF.Property,
+            None
+        ]
+
+        rdf_url = None
+
+        for key in get_schema_keys:
+            try:
+                schema_subject, _, _ = next(
+                    g.triples((None,  RDF.type, key)))
+                rdf_url = str(schema_subject)
+                break
+            except Exception as e:
+                pass
+
+        if rdf_url is None:
+            for s, p, o in g:
+                s = str(s)
+                p = str(p)
+                o = str(o)
+            return None
 
         label_keys = [
-            RDFS.label,
             DC.title,
+            RDFS.label,
             DCTERMS.title
         ]
 
@@ -287,7 +330,8 @@ class RdfService(BaseMetaDataService):
                 url=str(rdf_url),
                 description=str(description)
             )
-            self.schema.save()
+            if self.save_to_db:
+                self.schema.save()
         return self.schema
 
     def _create_objects_from_graph(self, g):
@@ -374,11 +418,24 @@ class RdfService(BaseMetaDataService):
                     to_schema = Schema.objects.get(
                         url=to_schema_url)
 
+                # standardize the labels to match what has been created
+                from_obj_label = self.standardize_string(from_obj_label)
+                to_obj_label = self.standardize_string(to_obj_label)
+
+                # first try find the objects in the created list
+                from_object = next(filter(lambda x: x.label == from_obj_label,
+                                          self._objects_created_list), None)
+
+                to_object = next(filter(lambda x: x.label == to_obj_label,
+                                        self._objects_created_list), None)
+
                 # TODO: consider the case if 2 objects has the same label?
-                from_object = Object.objects.filter(
-                    label=from_obj_label, schema=from_schema).first()
-                to_object = Object.objects.filter(
-                    label=to_obj_label, schema=to_schema).first()
+                if not from_object:
+                    from_object = Object.objects.filter(
+                        label=from_obj_label, schema=from_schema).first()
+                if not to_object:
+                    to_object = Object.objects.filter(
+                        label=to_obj_label, schema=to_schema).first()
 
             # if no such 2 objects exists
             except Exception as e:
@@ -412,7 +469,16 @@ class RdfService(BaseMetaDataService):
                 range = next(g.triples((s, RDFS.range, None)))[2]
 
                 _, obj_label = self._split_rdfs_url(domain)
-                object = Object.objects.filter(label=obj_label).first()
+
+                obj_label = self.standardize_string(obj_label)
+
+                # find the object in the created list first
+                object = next(filter(lambda x: x.label == obj_label,
+                                     self._objects_created_list), None)
+
+                # if not found look in the database
+                if object is None:
+                    object = Object.objects.filter(label=obj_label).first()
             except Exception as e:
                 continue
 

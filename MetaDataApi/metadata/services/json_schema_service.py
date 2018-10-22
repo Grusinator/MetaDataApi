@@ -221,9 +221,16 @@ class JsonSchemaService(BaseMetaDataService):
                     data_type = value.get("type") or data_type
                     description = value.get("description") or description
 
-                # here we just create it and return it
-                # saving is done after the object has been created
-                # if this dict contains "other classes"
+                # this is mostly when there is only one attribute in one
+                # schema, either an object should be created, or just ignored
+                # ignored because the object is problably referenced somewhere else
+
+                if current_object is None:
+                    continue
+                    # here we just create it and return it
+                    # saving is done after the object has been created
+                    # if this dict contains "other classes"
+
                 attribute = self._try_create_item(
                     Attribute(
                         label=root_label,
@@ -253,6 +260,8 @@ class JsonSchemaService(BaseMetaDataService):
                 new_objects = self._iterate_schema(
                     value, key, current_object, definitions)
                 return_objects.extend(new_objects)
+
+        # End of dict loop
 
         # here we identify if the structure should be simplified: to avoid
         # fx unit value objects attributes. If there is one class related

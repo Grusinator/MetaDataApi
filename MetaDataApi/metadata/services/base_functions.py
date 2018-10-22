@@ -21,7 +21,10 @@ class BaseMetaDataService():
 
         self._objects_created_list = []
         self._error_list = []
+        # one switch to force overwrite the objects when
         self.overwrite_db_objects = False
+        # -- same -- but to disable saving to db
+        self.save_to_db = True
 
     def standardize_string(self, string, remove_version=False):
         string = inflection.underscore(str(string))
@@ -34,6 +37,9 @@ class BaseMetaDataService():
 
         string = re.sub("(|_)vocabulary(|_)", '', string)
 
+        # remove parenthesis with content
+        string = re.sub(r'(|_)\([^)]*\)', '', string)
+
         # remove trailing and leading whitespace/underscore
         # string = re.sub('/^[\W_]+|[\W_]+$/', '', string)
 
@@ -45,6 +51,7 @@ class BaseMetaDataService():
             # is used to make tests run due to some
             # random error, atomic something.
             # it works fine when runs normally
+
             with transaction.atomic():
                 return item_type.objects.get(label=label)
 
@@ -70,18 +77,22 @@ class BaseMetaDataService():
             with transaction.atomic():
                 return_item = item_type.objects.get(label=item.label)
                 if update or self.overwrite_db_objects:
-                    return_item.delete()
-                    item.save()
-                    # on update add to debug list
-                    self._objects_created_list.append(item)
+                    if self.save_to_db:
+                        return_item.delete()
+                        item.save()
+                    # return the saved item instead of the fetched one
+                    # that is now deleted
                     return_item = item
 
+            # on update add to debug list
+            self._objects_created_list.append(item)
             return return_item
 
         except ObjectDoesNotExist as e:
             # try create object
             try:
-                item.save()
+                if self.save_to_db:
+                    item.save()
                 self._objects_created_list.append(item)
                 return item
             except Exception as e:

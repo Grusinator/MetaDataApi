@@ -52,6 +52,34 @@ class TestRdfService(TransactionTestCase):
 
         self.assertEqual(1 + 1, 2)
 
+    def test_export_rdf(self):
+        from MetaDataApi.metadata.services.rdfs_service import RdfService
+
+        schema_label = "friend_of_a_friend"
+
+        service = RdfService()
+
+        schema = service.export_schema_from_db(schema_label)
+
+        read_service = RdfService()
+        objects = read_service.read_objects_from_rdfs(schema.rdfs_file)
+
+        labels = list(map(lambda x: x.label, objects))
+
+        labels_compare = [
+            "organization", "project", "online_e_commerce_account",
+            "online_chat_account", "online_gaming_account", "document",
+            "membership_class", "person", "image", "online_account",
+            "work_info_homepage", "knows", "interest", "image",
+            "thumbnail", "workplace_homepage", "account_service_homepage",
+            "publications", "school_homepage", "first_name", "account_name",
+            "plan", "myers_briggs", "geekcode", "surname", "family_name"]
+
+        labels.sort()
+        labels_compare.sort()
+
+        self.assertListEqual(labels, labels_compare)
+
     def test_circle(self):
         from MetaDataApi.metadata.services.rdfs_service import RdfService
         from MetaDataApi.metadata.models import Schema, Object, ObjectRelation

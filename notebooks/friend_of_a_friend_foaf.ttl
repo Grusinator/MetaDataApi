@@ -1,0 +1,61 @@
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix ns1: <http://purl.org/dc/elements/1.1/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+foaf:Document a rdfs:Class ;
+    rdfs:label "document" ;
+    rdfs:comment "A document." ;
+    rdfs:isDefinedBy foaf: .
+
+foaf:Image a rdfs:Class ;
+    rdfs:label "image" ;
+    rdfs:comment "An image." ;
+    rdfs:isDefinedBy foaf: .
+
+foaf:MembershipClass a rdfs:Class ;
+    rdfs:label "membership_class" ;
+    rdfs:comment "Indicates the class of individuals that are a member of a Group" ;
+    rdfs:isDefinedBy foaf: .
+
+foaf:OnlineAccount a rdfs:Class ;
+    rdfs:label "online_account" ;
+    rdfs:comment "An online account." ;
+    rdfs:isDefinedBy foaf: .
+
+foaf:OnlineChatAccount a rdfs:Class ;
+    rdfs:label "online_chat_account" ;
+    rdfs:comment "An online chat account." ;
+    rdfs:isDefinedBy foaf: .
+
+foaf:OnlineECommerceAccount a rdfs:Class ;
+    rdfs:label "online_e_commerce_account" ;
+    rdfs:comment "An online e-commerce account." ;
+    rdfs:isDefinedBy foaf: .
+
+foaf:OnlineGamingAccount a rdfs:Class ;
+    rdfs:label "online_gaming_account" ;
+    rdfs:comment "An online gaming account." ;
+    rdfs:isDefinedBy foaf: .
+
+foaf:Organization a rdfs:Class ;
+    rdfs:label "organization" ;
+    rdfs:comment "An organization." ;
+    rdfs:isDefinedBy foaf: .
+
+foaf:Person a rdfs:Class ;
+    rdfs:label "person" ;
+    rdfs:comment "A person." ;
+    rdfs:isDefinedBy foaf: .
+
+foaf:Project a rdfs:Class ;
+    rdfs:label "project" ;
+    rdfs:comment "A project (a collective endeavour of some kind)." ;
+    rdfs:isDefinedBy foaf: .
+
+foaf: a <http://www.w3.org/2002/07/owl#Ontology> ;
+    ns1:description "The Friend of a Friend (FOAF) RDF vocabulary, described using W3C RDF Schema and the Web Ontology Language." ;
+    ns1:title "foaf" .
+
