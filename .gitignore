@@ -266,5 +266,5 @@ __pycache__/
 
 db.sqlite3
 api_keys.json
-MetaDataApi/services/sound_classification/models/
+MetaDataApi/datapoints/services/sound_classification/models/
 /db.sqlite3
