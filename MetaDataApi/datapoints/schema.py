@@ -29,31 +29,33 @@ from MetaDataApi.metadata.models import (
 from MetaDataApi.datapoints.schema_processing import ProcessRawData
 from MetaDataApi.users.models import Profile
 
-from MetaDataApi.services.google_speech_api import transcribe_file
-# from MetaDataApi.services.sound_processing_services import SoundClassifier
+from MetaDataApi.datapoints.services.google_speech_api import transcribe_file
+# from MetaDataApi.datapoints.services.sound_processing_services import SoundClassifier
 
 GrapheneCategoryTypes = Enum.from_enum(CategoryTypes)
 
 # specific ( only for query )
 
 
+class RawDataType(DjangoObjectType):
+    class Meta:
+        model = RawData
+        interfaces = (graphene.relay.Node, )
+
+
 class GenericAttributeType(DjangoObjectType):
     class Meta:
         model = GenericAttributeInstance
         # Allow for some more advanced filtering here
-        # interfaces = (graphene.Node, )
-        # filter_fields = {
-        #    'name': ['exact', 'icontains', 'istartswith'],
-        #    'notes': ['exact', 'icontains'],
-        # }
-
-# common
+        interfaces = (graphene.relay.Node, )
+        filter_fields = ['name', ]
 
 
 class AttributeType(DjangoObjectType):
     class Meta:
         # all common attribute properties here!
         model = GenericAttributeInstance
+        interfaces = (graphene.relay.Node, )
 
 
 class CreateDatapoint(graphene.Mutation):
@@ -107,11 +109,6 @@ class CreateDatapoint(graphene.Mutation):
         datapoint.save()
 
         return CreateDatapoint(datapoint)
-
-
-class RawDataType(DjangoObjectType):
-    class Meta:
-        model = RawData
 
 
 class CreateRawData(graphene.Mutation):

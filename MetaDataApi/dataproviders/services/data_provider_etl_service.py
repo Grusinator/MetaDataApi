@@ -17,11 +17,6 @@ from MetaDataApi.dataproviders.default_3rd_data_providers import (
     default_data_providers)
 
 
-def load_default_data_providers():
-    for dp in default_data_providers:
-        dp.save()
-
-
 class DataProviderEtlService():  # BaseMetaDataService):
 
     def __init__(self, dataprovider):
@@ -29,4 +24,4 @@ class DataProviderEtlService():  # BaseMetaDataService):
         self.dataprovider = dataprovider
 
     def validate_endpoints(self):
-        self.dataprovider.
+        self.dataprovider

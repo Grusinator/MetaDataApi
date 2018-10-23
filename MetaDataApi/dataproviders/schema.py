@@ -49,8 +49,8 @@ class AddDataProvider(graphene.Mutation):
 
 
 class Query(graphene.ObjectType):
-    data_provider = graphene.relay.Node.Field(SchemaNode)
-    all_data_providers = DjangoFilterConnectionField(SchemaNode)
+    data_provider = graphene.relay.Node.Field(DataProviderNode)
+    all_data_providers = DjangoFilterConnectionField(DataProviderNode)
 
     def resolve_data_provider(self, info):
         return ThirdPartyDataProvider.objects.first()

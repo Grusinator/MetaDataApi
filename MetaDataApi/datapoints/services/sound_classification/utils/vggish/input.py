@@ -19,7 +19,7 @@
 import numpy as np
 import resampy
 
-from MetaDataApi.services.sound_classification import params
+from MetaDataApi.datapoints.services.sound_classification import params
 from . import mel_features
 
 
