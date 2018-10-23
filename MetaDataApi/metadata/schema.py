@@ -123,6 +123,7 @@ class IdentifyData(graphene.Mutation):
 class AddJsonSchema(graphene.Mutation):
     succes = graphene.Boolean()
     objects_added = graphene.Int()
+    objects_failed = graphene.Int()
 
     class Arguments:
         url = graphene.String()
@@ -149,7 +150,10 @@ class AddJsonSchema(graphene.Mutation):
             except Exception as e:
                 raise GraphQLError(str(e))
 
-        return AddRdfSchema(succes=True)
+        return AddJsonSchema(
+            succes=True,
+            objects_added=len(service._objects_created_list),
+            objects_failed=len(service._error_list))
 
 
 class AddRdfSchema(graphene.Mutation):

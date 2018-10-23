@@ -131,9 +131,14 @@ class JsonSchemaService(BaseMetaDataService):
 
         description = dict_data.get("description")
 
-        # first figure out if this is a class
-        if dict_data.get("type") == "object":
+        # if the object is the same as the previous one
+        # skip
+        same_as_previous = current_object and \
+            root_label == current_object.label
 
+        # first figure out if this is a class
+        if dict_data.get("type") == "object" and \
+                not same_as_previous:
             # use root label if possible
             label = root_label or filename.replace(".json", "")
             new_object = self._try_create_item(
@@ -150,12 +155,12 @@ class JsonSchemaService(BaseMetaDataService):
             # create the object relation
             if current_object is not None:
                 # None is root - so no relation
-                obj_rel = ObjectRelation(
-                    from_object=current_object,
-                    to_object=new_object,
+                self._try_create_item(ObjectRelation(
+                    from_object=self._try_get_item(current_object),
+                    to_object=self._try_get_item(new_object),
                     schema=self.schema,
                     label=root_label)
-                self._try_create_item(obj_rel)
+                )
 
             # update current and parrent object
             parrent_object = current_object
@@ -235,7 +240,7 @@ class JsonSchemaService(BaseMetaDataService):
                         label=root_label,
                         datatype=data_type,
                         description=description,
-                        object=current_object
+                        object=self._try_get_item(current_object)
                     )
                 )
 

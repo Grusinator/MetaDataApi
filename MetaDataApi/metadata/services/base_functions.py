@@ -120,7 +120,7 @@ class BaseMetaDataService():
                             item.save()
                     except Exception as e:
                         # on update add to debug list
-                        self._error_list.append(str(e))
+                        self._error_list.append((str(e), item))
                         return None
 
             # on success return the item, either fetched, or saved
