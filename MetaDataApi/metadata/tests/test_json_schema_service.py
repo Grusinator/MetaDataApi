@@ -36,7 +36,7 @@ class TestJsonService(TransactionTestCase):
 
         service = JsonSchemaService()
 
-        res = service.write_to_db(url, "openMHealth")
+        res = service.write_to_db(url, "open_m_health")
 
     def test_json_write_to_db_body_temp(self):
         from MetaDataApi.metadata.services.json_schema_service import (
@@ -49,7 +49,7 @@ class TestJsonService(TransactionTestCase):
 
         service = JsonSchemaService()
 
-        res = service.write_to_db(url, "openMHealth")
+        res = service.write_to_db(url, "open_m_health")
 
         atts = filter(lambda x: isinstance(x, Attribute), res)
 

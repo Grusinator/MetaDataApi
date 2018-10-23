@@ -131,7 +131,8 @@ class AddJsonSchema(graphene.Mutation):
     @login_required
     def mutate(self, info, url, name):
         service = JsonSchemaService()
-        if url == "openMHealth":
+        service.allways_create_new = True
+        if url == "open_m_health":
             try:
 
                 import threading

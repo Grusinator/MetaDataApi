@@ -10,6 +10,7 @@ from schemas.json.omh.schema_names import schema_names
 from django.db import transaction
 from django.core.exceptions import ObjectDoesNotExist
 from service_objects.services import Service
+import uuid
 
 
 class BaseMetaDataService():
@@ -25,6 +26,9 @@ class BaseMetaDataService():
         self.overwrite_db_objects = False
         # -- same -- but to disable saving to db
         self.save_to_db = True
+
+        # dont use the same if it allready exists
+        self.allways_create_new = False
 
     def standardize_string(self, string, remove_version=False):
         string = inflection.underscore(str(string))
@@ -76,7 +80,11 @@ class BaseMetaDataService():
             # it works fine when runs normally
             with transaction.atomic():
                 return_item = item_type.objects.get(label=item.label)
-                if update or self.overwrite_db_objects:
+                if self.allways_create_new:
+                    return_item.label += uuid.uuid4()[:5]
+
+                if update or self.overwrite_db_objects or \
+                        self.allways_create_new:
                     if self.save_to_db:
                         return_item.delete()
                         item.save()
@@ -120,6 +128,6 @@ class BaseMetaDataService():
         return False
 
     def get_foaf_person(self):
-        schema = Schema.objects.get(label="friend_of_a_friend_(foaf)")
+        schema = Schema.objects.get(label="friend_of_a_friend")
         find_obj = Object.objects.get(label="person", schema=schema)
         return find_obj

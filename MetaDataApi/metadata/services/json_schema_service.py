@@ -279,7 +279,8 @@ class JsonSchemaService(BaseMetaDataService):
                 rels = ObjectRelation.objects.filter(
                     from_object=current_object).count()
 
-            if atts == 1 and rels == 0:
+            # simplify_disabled
+            if atts == 1 and rels == 0 and None:
                 # simplify
                 with transaction.atomic():
                     attribute = Attribute.objects.get(object=current_object)
