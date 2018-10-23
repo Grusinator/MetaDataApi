@@ -67,9 +67,10 @@ INSTALLED_APPS = [
     'corsheaders',
     'storages',
     'graphene_file_upload',
-    'MetaDataApi.datapoints.apps.datapointsConfig',
-    'MetaDataApi.users.apps.usersConfig',
-    'MetaDataApi.metadata.apps.metadataConfig',
+    'MetaDataApi.datapoints.apps.DatapointsConfig',
+    'MetaDataApi.users.apps.UsersConfig',
+    'MetaDataApi.metadata.apps.MetadataConfig',
+    'MetaDataApi.dataproviders.apps.DataprovidersConfig',
 ]
 
 MIDDLEWARE = [

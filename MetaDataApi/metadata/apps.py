@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class metadataConfig(AppConfig):
+class MetadataConfig(AppConfig):
     name = 'MetaDataApi.metadata'

@@ -193,15 +193,15 @@ class RdfService(BaseMetaDataService):
 
     def write_to_db_baseschema(self):
         # not very readable, consider to change to [_ for _ in _ ]
-        graph_list = list(map(self._create_graph_from_url, self.default_list))
+        graph_list = [self._create_graph_from_url(
+            url) for url in self.default_list]
 
-        schema_list = list(map(self._create_schema_from_graph, graph_list))
+        [self._create_schema_from_graph(g) for g in graph_list]
 
-        dummy = list(map(self._create_objects_from_graph, graph_list))
+        [self._create_objects_from_graph(g) for g in graph_list]
 
-        dummy = list(
-            map(self._create_object_references_from_graphV2, graph_list))
-        dummy = list(map(self._create_attributes_from_graph, graph_list))
+        [self._create_object_references_from_graphV2(g) for g in graph_list]
+        [self._create_attributes_from_graph(g) for g in graph_list]
 
     def read_objects_from_rdfs(self, rdf_url):
         self.save_to_db = False

@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class usersConfig(AppConfig):
+class UsersConfig(AppConfig):
     name = 'MetaDataApi.users'
