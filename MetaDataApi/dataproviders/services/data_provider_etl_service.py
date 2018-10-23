@@ -4,7 +4,7 @@ import re
 from django.core.files.base import ContentFile
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
-
+import urllib2
 
 import inflection
 
@@ -25,3 +25,10 @@ class DataProviderEtlService():  # BaseMetaDataService):
 
     def validate_endpoints(self):
         self.dataprovider
+
+    def read_data_from_endpoint(self, endpoint):
+
+        url = self.dataprovider.api_endpoint + endpoint
+        request = urllib2.Request(url)
+        request.add_header('User-Agent', 'some fake agent string')
+        request.add_header('Referer', 'fake referrer')
