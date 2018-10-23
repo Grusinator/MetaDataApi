@@ -20,6 +20,8 @@ from MetaDataApi.metadata.models import (
 
 from .base_functions import BaseMetaDataService
 
+import uuid
+
 
 class RdfService(BaseMetaDataService):
     def __init__(self):
@@ -53,17 +55,17 @@ class RdfService(BaseMetaDataService):
         # reset objects created (exported)
         self._objects_created_list = []
 
-        schema = Schema.objects.get(label=schema_label)
+        self.schema = Schema.objects.get(label=schema_label)
 
         # to know which have been exported
-        self._objects_created_list.append(schema)
+        self._objects_created_list.append(self.schema)
 
-        objects = Object.objects.filter(schema=schema)
+        objects = Object.objects.filter(schema=self.schema)
 
         # to know which have been exported
         self._objects_created_list.extend(objects)
 
-        namespace = schema.url.replace(".ttl", "#")
+        namespace = self.schema.url.replace(".ttl", "#")
 
         Ontology = Namespace(namespace)
         g.bind(schema_label, Ontology)
@@ -72,31 +74,27 @@ class RdfService(BaseMetaDataService):
 
         # define the ontology
         g.add((rdf_schema, RDF.type, OWL.Ontology))
-        g.add((rdf_schema, DC.title, Literal(schema.label)))
-        g.add((rdf_schema, DC.description, Literal(schema.description)))
+        g.add((rdf_schema, DC.title, Literal(self.schema.label)))
+        g.add((rdf_schema, DC.description, Literal(self.schema.description)))
 
-        for object in objects:
-            # make sure that there is no space in the url
-            obj_label_std = camelize(object.label.replace(" ", "_"))
-            obj_name = URIRef(Ontology[obj_label_std])
+        for obj in objects:
+            # make sure that there is no space in the url, and the object is unique
+            obj_name = self.create_uri_ref(obj)
 
             # type
             g.add((obj_name, RDF.type, RDFS.Class))
             # description
-            g.add((obj_name, RDFS.label, Literal(object.label)))
-            g.add((obj_name, RDFS.comment, Literal(object.description)))
+            g.add((obj_name, RDFS.label, Literal(obj.label)))
+            g.add((obj_name, RDFS.comment, Literal(obj.description)))
             # is defined by what schema
             g.add((obj_name, RDFS.isDefinedBy, rdf_schema))
 
-            attributes = object.attributes.all()
+            attributes = obj.attributes.all()
             # add attributes
             for attribute in attributes:
 
                 # make sure that there is no space in the url
-                att_label_std = camelize(attribute.label.replace(" ", "_"))
-
-                # the "A_" is to avoid naming conflict with classes
-                attribute_name = URIRef(Ontology["A_" + att_label_std])
+                attribute_name = self.create_uri_ref(attribute)
 
                 g.add((attribute_name, RDF.type, RDF.Property))
 
@@ -116,29 +114,22 @@ class RdfService(BaseMetaDataService):
                 # to know which have been exported
                 self._objects_created_list.extend(attributes)
 
-        relations = ObjectRelation.objects.filter(schema=schema)
+        relations = ObjectRelation.objects.filter(schema=self.schema)
         # to know which have been exported
         self._objects_created_list.extend(relations)
 
         for relation in relations:
-            from_obj_label_std = camelize(
-                relation.from_object.label.replace(" ", "_"))
-            from_object_name = URIRef(Ontology[from_obj_label_std])
 
-            to_obj_label_std = camelize(
-                relation.to_object.label.replace(" ", "_"))
-            to_object_name = URIRef(Ontology[to_obj_label_std])
+            # the "R_" is to avoid naming conflict with classes
+            relation_name = self.create_uri_ref(relation)
 
             # make sure that there is no space in the url
-            rel_label_std = camelize(relation.label.replace(" ", "_"))
-            if relation.schema.label == schema_label:
 
-                # the "R_" is to avoid naming conflict with classes
-                relation_name = URIRef(Ontology["R_" + rel_label_std])
+            from_object_name = self.create_uri_ref(
+                relation.from_object)
 
-            else:
-                # TODO create the ontology that it belongs to
-                relation_name = Literal(rel_label_std)
+            to_object_name = self.create_uri_ref(
+                relation.to_object)
 
             # here a realtion object is created
             g.add((relation_name, RDF.type, RDF.Property))
@@ -162,11 +153,43 @@ class RdfService(BaseMetaDataService):
 
         content = ContentFile(ttl_data)
         # schema.rdfs_file.delete()
-        schema.rdfs_file.save(schema_label + ".ttl", content)
+        self.schema.rdfs_file.save(schema_label + ".ttl", content)
 
-        schema.save()
+        self.schema.save()
 
-        return schema
+        return self.schema
+
+    def create_uri_ref(self, item):
+        # this is just for labeling with letter in uri
+        conv = {
+            Attribute: "A",
+            Object: "O",
+            ObjectRelation: "R",
+        }
+        # this is to know where to find the schema
+
+        schema = item.object.schema if isinstance(
+            item, Attribute) else item.schema
+
+        namespace = schema.url.replace(".ttl", "")
+        namespace += "#"
+
+        # create the corresponding ontology
+        ontology = Namespace(namespace)
+
+        # make sure that there is no space in the url
+        label = camelize(item.label.replace(" ", "_"))
+
+        if self.schema.url != schema.url:
+            return URIRef(ontology[label])
+
+        # the first letter is to avoid naming conflict with other
+        # objects
+        return URIRef(ontology["%s-%s_%s" % (
+            conv[type(item)],
+            item.pk,
+            label)
+        ])
 
     def write_to_db_baseschema(self):
         # not very readable, consider to change to [_ for _ in _ ]

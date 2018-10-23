@@ -30,6 +30,9 @@ class JsonSchemaService(BaseMetaDataService):
             "$schema",
             "definitions"
         ]
+
+        # Json schemas should have unique subclasses
+        self.allways_create_new = True
         # self.skip_fields.extend(self.subtypes)
 
     def write_to_db(self, input_url, schema_name):
@@ -41,21 +44,17 @@ class JsonSchemaService(BaseMetaDataService):
         schema_name = self.standardize_string(
             schema_name, remove_version=False)
 
-        try:
-            with transaction.atomic():
-                self.schema = Schema.objects.get(label=schema_name)
-        except ObjectDoesNotExist as e:
+        self.schema = self._try_get_item(Schema(label=schema_name))
+        if not self.schema:
             self.schema = Schema()
             self.schema.label = schema_name
-            self.schema.description
+            self.schema.description = ""
 
             # create a dummy file
             content = ContentFile("")
             self.schema.rdfs_file.save(schema_name + ".ttl", content)
             self.schema.url = self.schema.rdfs_file.url
             self.schema.save()
-        except Exception as e:
-            pass
 
         return_objects = self._iterate_schema(data, label, filename=filename)
 
@@ -135,8 +134,8 @@ class JsonSchemaService(BaseMetaDataService):
         # first figure out if this is a class
         if dict_data.get("type") == "object":
 
-            # create object -  if filename exists name it the filename
-            label = filename.replace(".json", "") if filename else root_label
+            # use root label if possible
+            label = root_label or filename.replace(".json", "")
             new_object = self._try_create_item(
                 Object(
                     label=label,
@@ -297,6 +296,7 @@ class JsonSchemaService(BaseMetaDataService):
                     # continue the process
                     attribute.object = parrent_object
                     attribute.description += " -> simplified: " + root_label
+                    # update because description is being updated
                     self._try_create_item(attribute, update=True)
                     current_object.delete()
 

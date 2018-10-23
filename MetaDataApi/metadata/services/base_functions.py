@@ -49,7 +49,24 @@ class BaseMetaDataService():
 
         return string
 
-    def _try_get_item(self, item_type, label):
+    def _try_get_item(self, item):
+
+        # allways use the label
+        search_args = {
+            "label": item.label,
+        }
+
+        item_type = type(item)
+
+        if isinstance(item, Attribute):
+            search_args["object"] = item.object
+        elif isinstance(item, Object):
+            search_args["schema"] = item.schema
+            # search_args["from_relations"] = item.from_relations
+        elif isinstance(item, ObjectRelation):
+            search_args["from_object"] = item.from_object
+            search_args["to_object"] = item.to_object
+
         try:
             # this "with transaction.atomic():"
             # is used to make tests run due to some
@@ -57,10 +74,9 @@ class BaseMetaDataService():
             # it works fine when runs normally
 
             with transaction.atomic():
-                return item_type.objects.get(label=label)
+                return item_type.objects.get(**search_args)
 
         except ObjectDoesNotExist as e:
-            # try create object
             return None
         except Exception as e:
             pass
@@ -79,33 +95,38 @@ class BaseMetaDataService():
             # random error, atomic something.
             # it works fine when runs normally
             with transaction.atomic():
-                return_item = item_type.objects.get(label=item.label)
-                if self.allways_create_new:
-                    return_item.label += uuid.uuid4()[:5]
 
-                if update or self.overwrite_db_objects or \
-                        self.allways_create_new:
-                    if self.save_to_db:
-                        return_item.delete()
-                        item.save()
-                    # return the saved item instead of the fetched one
-                    # that is now deleted
-                    return_item = item
+                # we want to be able to tell uniquely if this is the same
+                # object, so test on all objects, not only the label,
+                # so that it is possible to know if we are overwriting
+                # objects that shouldnt
+                return_item = self._try_get_item(item)
 
-            # on update add to debug list
+                # the object exists,
+                if return_item:
+                    if update or self.overwrite_db_objects:
+                        if self.save_to_db:
+                            return_item.delete()
+                            item.save()
+
+                        else:
+                            # if not updated, return the fetched one
+                            item = return_item
+
+                # does not exists, create it!
+                else:
+                    try:
+                        if self.save_to_db:
+                            item.save()
+                    except Exception as e:
+                        # on update add to debug list
+                        self._error_list.append(str(e))
+                        return None
+
+            # on success return the item, either fetched, or saved
+            # so that the referenced object lives in the database
             self._objects_created_list.append(item)
-            return return_item
-
-        except ObjectDoesNotExist as e:
-            # try create object
-            try:
-                if self.save_to_db:
-                    item.save()
-                self._objects_created_list.append(item)
-                return item
-            except Exception as e:
-                self._error_list.append(str(e))
-                return None
+            return item
 
         except (transaction.TransactionManagementError,) as e:
             return None

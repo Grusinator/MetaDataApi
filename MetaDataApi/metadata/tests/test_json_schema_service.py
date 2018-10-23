@@ -25,7 +25,7 @@ class TestJsonService(TransactionTestCase):
 
         service = JsonSchemaService()
         # Takes to long time to do full
-        service.write_to_db_baseschema(sample=True)
+        # service.write_to_db_baseschema(sample=True)
 
     def test_upwrite_to_db(self):
         from MetaDataApi.metadata.services.json_schema_service import (
@@ -36,7 +36,25 @@ class TestJsonService(TransactionTestCase):
 
         service = JsonSchemaService()
 
-        res = service.write_to_db(url, "open_m_health")
+        objects = service.write_to_db(url, "open_m_health")
+
+        labels = list(map(lambda x: x.label, objects))
+
+        labels_compare = [
+            "open_m_health", "acceleration", "acceleration_x",
+            "acceleration_x", "acceleration_x", "acceleration_y",
+            "acceleration_y", "acceleration_y", "acceleration_z",
+            "acceleration_z", "acceleration_z", "effective_time_frame",
+            "effective_time_frame", "date_time", "time_interval",
+            "time_interval", "start_date_time", "duration", "duration",
+            "duration", "end_date_time", "duration", "duration",
+            "start_date_time", "end_date_time", "part_of_day",
+            "sensor_body_location", "descriptive_statistic"]
+
+        labels.sort()
+        labels_compare.sort()
+
+        self.assertListEqual(labels, labels_compare)
 
     def test_json_write_to_db_body_temp(self):
         from MetaDataApi.metadata.services.json_schema_service import (

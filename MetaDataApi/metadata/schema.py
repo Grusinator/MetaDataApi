@@ -131,7 +131,6 @@ class AddJsonSchema(graphene.Mutation):
     @login_required
     def mutate(self, info, url, name):
         service = JsonSchemaService()
-        service.allways_create_new = True
         if url == "open_m_health":
             try:
 
@@ -142,6 +141,8 @@ class AddJsonSchema(graphene.Mutation):
 
             except Exception as e:
                 raise GraphQLError(e)
+        elif url == "open_m_health_sample":
+            service.write_to_db_baseschema(sample=True)
         else:
             try:
                 service.write_to_db(url, name)
