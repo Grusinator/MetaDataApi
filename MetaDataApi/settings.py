@@ -18,6 +18,7 @@ import json
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+PROJECT_DIR = os.path.dirname(__file__)
 
 # PROJECT_ROOT = os.path.dirname(os.path.realpath(__file__))
 
@@ -64,6 +65,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # 'service_objects',
     'graphene_django',
+    'oauth2_provider',
     'corsheaders',
     'storages',
     'graphene_file_upload',
@@ -91,7 +93,7 @@ ROOT_URLCONF = 'MetaDataApi.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['MetaDataApi.templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

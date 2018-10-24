@@ -23,9 +23,11 @@ from django.conf import settings
 
 
 from django.views.generic.base import RedirectView
+from MetaDataApi.dataproviders.views import data_provider_list
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    path('results/', data_provider_list, name='results'),
     url(r'^graphql/', GraphQLView.as_view(graphiql=True)),
     url(r'^$', RedirectView.as_view(url='admin/', permanent=False), name='admin')
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

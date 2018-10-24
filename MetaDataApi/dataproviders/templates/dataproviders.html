@@ -1,0 +1,11 @@
+<div>
+    <h1><a href="/">Data Providers</a></h1>
+</div>
+
+{% for dp in dataproviders %}
+<div>
+    <h1>{{ dp.name }}</h1>
+    <h2><a href = "{{ dp.authorize_url }}?client_id={{ dp.client_id }}&redirect_uri=https://oauthdebugger.com/debug&scope={{ dp.scope }}&response_type=code&response_mode=form_post&nonce=vdw9gk13fh">Authorize</a></h2>
+    {% comment %} <p>{{ dp.text|linebreaksbr }}</p> {% endcomment %}
+</div>
+{% endfor %}
