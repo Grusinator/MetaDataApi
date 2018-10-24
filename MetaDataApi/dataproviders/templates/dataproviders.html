@@ -5,7 +5,11 @@
 {% for dp in dataproviders %}
 <div>
     <h1>{{ dp.name }}</h1>
-    <h2><a href = "{{ dp.authorize_url }}?client_id={{ dp.client_id }}&redirect_uri=https://oauthdebugger.com/debug&scope={{ dp.scope }}&response_type=code&response_mode=form_post&nonce=vdw9gk13fh">Authorize</a></h2>
+    <h2><a href = {{ dp.authorize_url }}?client_id={{ dp.client_id }}&redirect_uri={{ dp.redirect_uri }}&scope={{ dp.scope }}&response_type=code&response_mode=form_post&nonce=vdw9gk13fh&state={{dp.name}}>Authorize</a></h2>
+    <p>{{dp.access_token_url}}</p>
+    <p>{{dp.client_id}}</p>
+    <p>{{dp.client_secret}}</p>
+    <p>{{dp.scope}}</p>
     {% comment %} <p>{{ dp.text|linebreaksbr }}</p> {% endcomment %}
 </div>
 {% endfor %}

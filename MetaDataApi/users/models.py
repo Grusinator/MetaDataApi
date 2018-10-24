@@ -23,7 +23,8 @@ class Profile(models.Model):
     profile_description = models.TextField(blank=True)
 
     user = models.OneToOneField(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+        settings.AUTH_USER_MODEL, related_name="profile",
+        on_delete=models.CASCADE)
 
     def __str__(self):
         return "%i - %s - %s" % (self.id, self.user.username,  self.language)
@@ -36,7 +37,8 @@ class ThirdPartyProfile(models.Model):
     # consider if this shoud be a foreignkey to provider or enum
     provider = models.ForeignKey(
         ThirdPartyDataProvider, on_delete=models.CASCADE)
-    profile = models.ForeignKey(Profile, null=False, on_delete=models.CASCADE)
+    profile = models.ForeignKey(Profile, related_name="thirdparty_profiles",
+                                null=False, on_delete=models.CASCADE)
     access_token = models.TextField(null=False, blank=False)
     profile_json_field = models.TextField(null=False, blank=False)
 

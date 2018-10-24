@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from django.conf.urls import url
 from graphene_django.views import GraphQLView
 
@@ -23,11 +23,14 @@ from django.conf import settings
 
 
 from django.views.generic.base import RedirectView
-from MetaDataApi.dataproviders.views import data_provider_list
+from MetaDataApi.dataproviders.views import data_provider_list, oauth2redirect
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    path('accounts/', include('django.contrib.auth.urls')),
     path('results/', data_provider_list, name='results'),
+    url(r'^oauth2redirect/$', oauth2redirect, name='oauth2redirect'),
     url(r'^graphql/', GraphQLView.as_view(graphiql=True)),
-    url(r'^$', RedirectView.as_view(url='admin/', permanent=False), name='admin')
+    url(r'^$', RedirectView.as_view(
+        url='accounts/login?next=/results/', permanent=False), name='login')
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

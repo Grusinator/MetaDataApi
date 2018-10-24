@@ -43,6 +43,12 @@ class RawDataType(DjangoObjectType):
         interfaces = (graphene.relay.Node, )
 
 
+class ObjectInstanceType(DjangoObjectType):
+    class Meta:
+        model = ObjectInstance
+        interfaces = (graphene.relay.Node, )
+
+
 class GenericAttributeType(DjangoObjectType):
     class Meta:
         model = GenericAttributeInstance

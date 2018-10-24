@@ -4,14 +4,14 @@ from django.db import models
 
 
 class ThirdPartyDataProvider(models.Model):
-    name = models.TextField()
+    name = models.TextField(unique=True)
     api_endpoint = models.TextField()
     authorize_url = models.TextField()
     access_token_url = models.TextField()
     client_id = models.TextField()
     client_secret = models.TextField()
     scope = models.TextField()
-    redirect_url = models.TextField()
+    redirect_uri = models.TextField()
     rest_endpoints_list = models.TextField()
     json_schema_file_url = models.TextField()
 

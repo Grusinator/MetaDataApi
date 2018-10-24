@@ -9,7 +9,7 @@ default_data_providers = [
         client_id="",
         client_secret="",
         scope="",
-        redirect_url="",
+        redirect_uri="",
         rest_endpoints_list="",
         json_schema_file_url=""
     ),
@@ -21,19 +21,19 @@ default_data_providers = [
         client_id="",
         client_secret="",
         scope="",
-        redirect_url="",
+        redirect_uri="http://localhost:8000/oauth2redirect",
         rest_endpoints_list="",
         json_schema_file_url=""
     ),
     ThirdPartyDataProvider(
-        name="Nokia",
+        name="Withings",
         api_endpoint="",
-        authorize_url="https://account.health.nokia.com/oauth2_user/authorize2",
-        access_token_url="https://account.health.nokia.com/oauth2/token",
+        authorize_url="https://account.withings.com/oauth2_user/authorize2",
+        access_token_url="https://account.withings.com/oauth2/token",
         client_id="a80378abe1059ef7c415cf79b09b1270f828c4a0fbfdc52dbec06ae5f71b4bb6",
         client_secret="1f1d852451385469a56ef6494cbd2e94c07421c3ee5ffbfca63216079fd36d1a",
         scope="user.info",
-        redirect_url="http://localhost:/oauth2redirect",
+        redirect_uri="http://localhost:8000/oauth2redirect",
         rest_endpoints_list="",
         json_schema_file_url=""
     ),
@@ -45,8 +45,8 @@ default_data_providers = [
         client_id="28148",
         client_secret="ed5f469f798830c7214fc8efad54790799fc3ae1",
         scope="view_private",
-        redirect_url="http://localhost:/oauth2redirect",
-        rest_endpoints_list="",
+        redirect_uri="http://localhost:8000/oauth2redirect",
+        rest_endpoints_list=str(["activities"]),
         json_schema_file_url=""
     ),
 ]
