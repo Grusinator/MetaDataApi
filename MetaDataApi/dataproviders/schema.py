@@ -57,21 +57,50 @@ class LoadAllDataFromProvider(graphene.Mutation):
     data = graphene.List(graphene.String)
 
     class Arguments:
-        name = graphene.String()
+        provider_name = graphene.String()
 
     @login_required
-    def mutate(self, info, name):
+    def mutate(self, info, provider_name):
         # get the dataprovider
-        data_provider = ThirdPartyDataProvider.objects.get(provider_name=name)
+        data_provider = ThirdPartyDataProvider.objects.get(
+            provider_name=provider_name)
         # init service
         service = DataProviderEtlService(data_provider)
-        # get the profile, with the access token matching the name
+        # get the profile, with the access token matching the provider_name
         thirdpartyprofiles = info.context.user.profile.data_provider_profiles
-        thirdpartyprofile = thirdpartyprofiles.get(provider__name=name)
+        thirdpartyprofile = thirdpartyprofiles.get(
+            provider__provider_name=provider_name)
 
         # request
         data = service.read_data_from_all_rest_endpoints(
             thirdpartyprofile.access_token)
+
+        return LoadAllDataFromProvider(
+            data=data)
+
+
+class LoadDataFromProviderEndpoint(graphene.Mutation):
+    data = graphene.List(graphene.String)
+
+    class Arguments:
+        provider_name = graphene.String()
+        endpoint = graphene.String()
+
+    @login_required
+    def mutate(self, info, provider_name, endpoint):
+        # get the dataprovider
+        data_provider = ThirdPartyDataProvider.objects.get(
+            provider_name=provider_name)
+        # init service
+        service = DataProviderEtlService(data_provider)
+        # get the profile, with the access token matching the provider_name
+        thirdpartyprofiles = info.context.user.profile.data_provider_profiles
+        thirdpartyprofile = thirdpartyprofiles.get(
+            provider__provider_name=provider_name)
+
+        # request
+        data = service.read_data_from_endpoint(
+            endpoint, thirdpartyprofile.access_token)
 
         return LoadAllDataFromProvider(
             data=data)
@@ -91,3 +120,4 @@ class Query(graphene.ObjectType):
 class Mutation(graphene.ObjectType):
     add_data_provider = AddDataProvider.Field()
     load_all_data_from_dataprovider = LoadAllDataFromProvider.Field()
+    load_data_from_dataprovider_endpoint = LoadDataFromProviderEndpoint.Field()

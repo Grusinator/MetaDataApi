@@ -13,6 +13,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from service_objects.services import Service
 import uuid
 import dateutil
+from datetime import datetime
 
 
 class BaseMetaDataService():
@@ -89,6 +90,20 @@ class BaseMetaDataService():
             raise Exception()
 
         return False
+
+    def dict_contains_only_attr(self, data):
+        # if its not a dict, then its not an
+        # attribute
+        if not isinstance(data, dict):
+            return False
+
+        data = data.copy()
+        if len(data) == 0:
+            return False
+        attr_names = ["value", "unit"]
+        attrs = [data.pop(name, None) for name in attr_names]
+
+        return len(data) == 0
 
         # def compare_rel(
         #     x): return x.from_relations in item.from_relations.all()

@@ -18,7 +18,7 @@ from MetaDataApi.metadata.models import (
 from MetaDataApi.metadata.services.rdfs_service import RdfService
 from MetaDataApi.metadata.services.json_schema_service import JsonSchemaService
 from MetaDataApi.metadata.services.schema_identification import (
-    SchemaIdentification)
+    SchemaIdentification, SchemaIdentificationV2)
 
 from MetaDataApi.metadata.services.data_cleaning_service import (
     DataCleaningService
@@ -147,6 +147,29 @@ class IdentifyDataFromProvider(graphene.Mutation):
 
         return IdentifyDataFromProvider(modified_data=modified_data,
                                         identified_objects=len(objects))
+
+
+class IdentifySchemaFromProviderEndpoint(graphene.Mutation):
+    identified_objects = graphene.Int()
+
+    class Arguments:
+        provider_name = graphene.String()
+        endpoint = graphene.String()
+
+    @login_required
+    def mutate(self, info, provider_name, endpoint):
+        identify = SchemaIdentificationV2()
+        provider = DataProviderEtlService(provider_name)
+
+        profile = info.context.user.profile
+        access_token = profile.get_data_provider_auth_token(provider_name)
+
+        data = provider.read_data_from_endpoint(endpoint, access_token)
+
+        objects = identify.identify_schema_from_data(
+            data, provider_name)
+
+        return IdentifyDataFromProvider(identified_objects=len(objects))
 
 
 class AddJsonSchema(graphene.Mutation):
@@ -279,3 +302,5 @@ class Mutation(graphene.ObjectType):
     export_schema = ExportSchema.Field()
     add_person_reference = AddPersonReference.Field()
     identify_data_from_provider = IdentifyDataFromProvider.Field()
+    identify_schema_from_provider_endpoint = \
+        IdentifySchemaFromProviderEndpoint.Field()

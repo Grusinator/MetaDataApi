@@ -9,5 +9,6 @@
   "MetaDataApi/metadata/tests/test_rdf_service.py::TestRdfService::test_export_rdf",
   "MetaDataApi/metadata/tests/test_rdf_service.py::TestRdfService::test_upload_rdf",
   "MetaDataApi/metadata/tests/test_schema_identification_service.py::TestSchemaIdentificationService::test_identify_json_data_sample",
-  "MetaDataApi/metadata/tests/test_schema_identification_service.py::NoDataTestSchemaIdentificationService::test_identify_datatype"
+  "MetaDataApi/metadata/tests/test_schema_identification_service.py::NoDataTestSchemaIdentificationService::test_identify_datatype",
+  "MetaDataApi/metadata/tests/test_schema_identification_service.py::NoDataTestSchemaIdentificationService::test_identify_json_data_strava_test"
 ]

@@ -22,8 +22,6 @@ from .base_functions import BaseMetaDataService
 class SchemaIdentificationV2(BaseMetaDataService):
     def __init__(self, *args, **kwargs):
         super(SchemaIdentificationV2, self).__init__()
-        # consider using sports articles for corpus
-        # sentences = word2vec.Text8Corpus('text8')
 
         self.orms = [Object, Attribute]
 
@@ -38,9 +36,7 @@ class SchemaIdentificationV2(BaseMetaDataService):
             self.schema = self.create_new_empty_schema(schema_name)
 
         try:
-            person = ObjectInstance(
-                base=self.get_foaf_person()
-            )
+            person = self.get_foaf_person()
         except Exception as e:
             raise Exception("foaf person was not found")
         # TODO: Relate to logged in person object instead
@@ -68,11 +64,13 @@ class SchemaIdentificationV2(BaseMetaDataService):
                 self.iterate_identify_schema_from_data(
                     elm, parrent_object)
 
+            return
+
         # it must be some sort of value, this might only happen
         # if the parrent structure is a list, because if it is a dict
         # the value of the dict is tested for being an attribute
         elif not isinstance(input_data, dict):
-            pass
+            return
 
         for key, value in input_data.items():
             # this is likely a object if it contains other
@@ -95,6 +93,7 @@ class SchemaIdentificationV2(BaseMetaDataService):
                 )
                 if not self.validate_if_metaitem_is_in_list(
                         att, self.meta_data_list):
+                    self._try_create_item(att)
                     self.meta_data_list.append(att)
             # its probably a object
             else:
@@ -104,15 +103,18 @@ class SchemaIdentificationV2(BaseMetaDataService):
                 )
                 if not self.validate_if_metaitem_is_in_list(
                         obj, self.meta_data_list):
+                    self._try_create_item(obj)
                     self.meta_data_list.append(obj)
 
                 obj_rel = ObjectRelation(
                     label="%s->%s" % (parrent_object.label, obj.label),
                     from_object=parrent_object,
-                    to_object=obj
+                    to_object=obj,
+                    schema=self.schema
                 )
                 if not self.validate_if_metaitem_is_in_list(
                         obj_rel, self.meta_data_list):
+                    self._try_create_item(obj_rel)
                     self.meta_data_list.append(obj_rel)
 
                 # then iterate down the object value
@@ -418,20 +420,6 @@ class SchemaIdentification(BaseMetaDataService):
             )
         except:
             return None
-
-    def dict_contains_only_attr(self, data):
-        # if its not a dict, then its not an
-        # attribute
-        if not isinstance(data, dict):
-            return False
-
-        data = data.copy()
-        if len(data) == 0:
-            return False
-        attr_names = ["value", "unit"]
-        attrs = [data.pop(name, None) for name in attr_names]
-
-        return len(data) == 0
 
     def validate_url(self, url):
         if not isinstance(url, str):

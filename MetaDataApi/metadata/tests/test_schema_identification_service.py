@@ -1,4 +1,6 @@
 import django
+import os
+import json
 from django.test import TestCase, TransactionTestCase
 from urllib import request
 from MetaDataApi.metadata.models import Object
@@ -6,6 +8,7 @@ from django.core.management import call_command
 from MetaDataApi.metadata.services.data_cleaning_service import (
     DataCleaningService
 )
+from django.conf import settings
 
 
 class TestSchemaIdentificationService(TransactionTestCase):
@@ -111,3 +114,33 @@ class NoDataTestSchemaIdentificationService(TransactionTestCase):
         resp = [service.identify_datatype(elm) for elm in inputd]
 
         self.assertListEqual(list(resp), list(expected))
+
+    def test_identify_json_data_strava_test(self):
+        from MetaDataApi.metadata.services.schema_identification import (
+            SchemaIdentificationV2)
+        from MetaDataApi.metadata.services.rdfs_service import RdfService
+
+        from MetaDataApi.metadata.models import Schema, Object
+
+        rdf_service = RdfService()
+
+        # just take foaf
+        rdf_service.write_to_db(rdf_url="http://xmlns.com/foaf/0.1/")
+
+        testfile = os.path.join(
+            settings.BASE_DIR,
+            "MetaDataApi/metadata/tests/data/json/strava_activities.json")
+        with open(testfile) as f:
+            data = json.loads(f.read())
+
+        service = SchemaIdentificationV2()
+
+        schema_name = "Strava"
+
+        resp = service.identify_schema_from_data(data, schema_name)
+
+        rdf_service.export_schema_from_db(schema_name)
+
+        print(service.schema.url)
+
+        self.assertGreater(len(resp), 10)
