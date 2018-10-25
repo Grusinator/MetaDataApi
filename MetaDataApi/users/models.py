@@ -29,6 +29,11 @@ class Profile(models.Model):
     def __str__(self):
         return "%i - %s - %s" % (self.id, self.user.username,  self.language)
 
+    def get_data_provider_auth_token(self, provider_name):
+        tpdp_profile = self.data_provider_profiles.get(
+            provider__provider_name=provider_name)
+        return tpdp_profile.access_token
+
     class Meta:
         app_label = 'users'
 
@@ -37,7 +42,7 @@ class ThirdPartyProfile(models.Model):
     # consider if this shoud be a foreignkey to provider or enum
     provider = models.ForeignKey(
         ThirdPartyDataProvider, on_delete=models.CASCADE)
-    profile = models.ForeignKey(Profile, related_name="thirdparty_profiles",
+    profile = models.ForeignKey(Profile, related_name="data_provider_profiles",
                                 null=False, on_delete=models.CASCADE)
     access_token = models.TextField(null=False, blank=False)
     profile_json_field = models.TextField(null=False, blank=False)

@@ -32,7 +32,7 @@ from MetaDataApi.dataproviders.services.data_provider_etl_service \
 class DataProviderNode(DjangoObjectType):
     class Meta:
         model = ThirdPartyDataProvider
-        filter_fields = ['name', ]
+        filter_fields = ['provider_name', ]
         interfaces = (graphene.relay.Node, )
 
 
@@ -62,11 +62,11 @@ class LoadAllDataFromProvider(graphene.Mutation):
     @login_required
     def mutate(self, info, name):
         # get the dataprovider
-        data_provider = ThirdPartyDataProvider.objects.get(name=name)
+        data_provider = ThirdPartyDataProvider.objects.get(provider_name=name)
         # init service
         service = DataProviderEtlService(data_provider)
         # get the profile, with the access token matching the name
-        thirdpartyprofiles = info.context.user.profile.thirdparty_profiles
+        thirdpartyprofiles = info.context.user.profile.data_provider_profiles
         thirdpartyprofile = thirdpartyprofiles.get(provider__name=name)
 
         # request

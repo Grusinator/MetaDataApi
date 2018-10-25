@@ -15,13 +15,18 @@ from MetaDataApi.metadata.models import (
 
 from MetaDataApi.dataproviders.default_3rd_data_providers import (
     default_data_providers)
+from MetaDataApi.dataproviders.models import (
+    ThirdPartyDataProvider)
 
 
 class DataProviderEtlService():  # BaseMetaDataService):
 
     def __init__(self, dataprovider):
         # super(JsonSchemaService, self).__init__()
-        self.dataprovider = dataprovider
+
+        self.dataprovider = dataprovider if \
+            isinstance(dataprovider, ThirdPartyDataProvider) else \
+            ThirdPartyDataProvider.objects.get(provider_name=dataprovider)
 
     def validate_endpoints(self):
         self.dataprovider
@@ -37,6 +42,10 @@ class DataProviderEtlService():  # BaseMetaDataService):
     def read_data_from_endpoint(self, endpoint, auth_token=None):
         # remove first slash if exists
         endpoint = endpoint[1:] if endpoint[0] == "/" else endpoint
+
+        if endpoint not in self.dataprovider.rest_endpoints_list:
+            print("warning: This is not a known %s endpoint - \"%s\" " %
+                  (self.dataprovider.provider_name, endpoint))
 
         url = parse.urljoin(self.dataprovider.api_endpoint, endpoint)
         header = {"Authorization": "Bearer %s" % auth_token}

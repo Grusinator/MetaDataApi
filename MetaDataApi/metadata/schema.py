@@ -24,6 +24,9 @@ from MetaDataApi.metadata.services.data_cleaning_service import (
     DataCleaningService
 )
 
+from MetaDataApi.dataproviders.services.data_provider_etl_service import (
+    DataProviderEtlService)
+
 
 class SchemaNode(DjangoObjectType):
     class Meta:
@@ -107,6 +110,7 @@ class ExportSchema(graphene.Mutation):
 
 class IdentifyData(graphene.Mutation):
     modified_data = graphene.String()
+    identified_objects = graphene.Int()
 
     class Arguments:
         input_data = graphene.String()
@@ -115,9 +119,34 @@ class IdentifyData(graphene.Mutation):
     def mutate(self, info, input_data):
         identify = SchemaIdentification()
 
-        modified_data = identify.identify_data(input_data)
+        modified_data, objects = identify.identify_data(input_data)
 
-        return IdentifyData(modified_data=modified_data)
+        return IdentifyData(modified_data=modified_data,
+                            identified_objects=len(objects))
+
+
+class IdentifyDataFromProvider(graphene.Mutation):
+    modified_data = graphene.String()
+    identified_objects = graphene.Int()
+
+    class Arguments:
+        provider_name = graphene.String()
+        endpoint = graphene.String()
+
+    @login_required
+    def mutate(self, info, provider_name, endpoint):
+        identify = SchemaIdentification()
+        provider = DataProviderEtlService(provider_name)
+
+        profile = info.context.user.profile
+        access_token = profile.get_data_provider_auth_token(provider_name)
+
+        data = provider.read_data_from_endpoint(endpoint, access_token)
+
+        modified_data, objects = identify.identify_data(data)
+
+        return IdentifyDataFromProvider(modified_data=modified_data,
+                                        identified_objects=len(objects))
 
 
 class AddJsonSchema(graphene.Mutation):
@@ -249,3 +278,4 @@ class Mutation(graphene.ObjectType):
     identify_data = IdentifyData.Field()
     export_schema = ExportSchema.Field()
     add_person_reference = AddPersonReference.Field()
+    identify_data_from_provider = IdentifyDataFromProvider.Field()

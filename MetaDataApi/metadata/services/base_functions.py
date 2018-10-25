@@ -5,12 +5,14 @@ import inflection
 from urllib import request
 from MetaDataApi.metadata.models import (
     Schema, Object, Attribute, ObjectRelation)
+from django.core.files.base import ContentFile
 
 from schemas.json.omh.schema_names import schema_names
 from django.db import transaction
 from django.core.exceptions import ObjectDoesNotExist
 from service_objects.services import Service
 import uuid
+import dateutil
 
 
 class BaseMetaDataService():
@@ -48,6 +50,85 @@ class BaseMetaDataService():
         # string = re.sub('/^[\W_]+|[\W_]+$/', '', string)
 
         return string
+
+    def create_new_empty_schema(self, schema_name):
+        self.schema = Schema()
+        self.schema.label = schema_name
+        self.schema.description = ""
+
+        # create a dummy file
+        content = ContentFile("")
+        self.schema.rdfs_file.save(schema_name + ".ttl", content)
+        self.schema.url = self.schema.rdfs_file.url
+        self.schema.save()
+
+        return self.schema
+
+    def validate_if_metaitem_is_in_list(self, item, item_list):
+
+        same_labels = filter(lambda x: item.label == x.label, item_list)
+
+        if isinstance(item, Object):
+            for same_label in same_labels:
+                if same_label.to_relations.all().count() == 0:
+                    return True
+                for relation in same_label.to_relations.all():
+                    item_to_relation_objects = [
+                        rel.to_object for rel in item.from_relations.all()]
+                    if relation.to_object in item_to_relation_objects:
+                        return True
+        elif isinstance(item, Attribute):
+            for same_label in same_labels:
+                if same_label.object == item.object:
+                    return True
+        elif isinstance(item, ObjectRelation):
+            for in_list in item_list:
+                if in_list.label == item.label:
+                    return True
+        else:
+            raise Exception()
+
+        return False
+
+        # def compare_rel(
+        #     x): return x.from_relations in item.from_relations.all()
+
+        # def func(x): return any(filter(compare_rel, x.from_relations.all()))
+        # any([func(x) for x in same_labels])
+
+        # else:
+
+    def identify_datatype(self, element):
+        # even though it is a string,
+        # it might really be a int or float
+        # so if string verify!!
+
+        def test_float(elm):
+
+            assert ("." in elm), "does not contain decimal separator"
+            return float(elm)
+
+        if isinstance(element, str):
+            conv_functions = {
+                float: lambda elm: test_float(elm),
+                int: lambda elm: int(elm),
+                datetime: lambda elm: dateutil.parser.parse(elm),
+                str: lambda elm: str()
+            }
+
+            order = [float, int, datetime, str]
+
+            for typ in order:
+                try:
+                    # try the converting function of that type
+                    # if it doesnt fail, thats our type
+                    return type(conv_functions[typ](element))
+                except (ValueError, AssertionError) as e:
+                    pass
+
+        elif isinstance(element, (float, int)):
+            # otherwise just return the type of
+            return type(element)
 
     def _try_get_item(self, item):
 

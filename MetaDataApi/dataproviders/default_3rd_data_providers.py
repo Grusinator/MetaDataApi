@@ -2,7 +2,7 @@ from MetaDataApi.users.models import ThirdPartyDataProvider
 
 default_data_providers = [
     ThirdPartyDataProvider(
-        name="dummy",
+        provider_name="dummy",
         api_endpoint="",
         authorize_url="",
         access_token_url="",
@@ -14,7 +14,7 @@ default_data_providers = [
         json_schema_file_url=""
     ),
     ThirdPartyDataProvider(
-        name="Endomondo",
+        provider_name="Endomondo",
         api_endpoint="https://api.endomondo.com/api/1/",
         authorize_url="https://www.endomondo.com/oauth/authorize",
         access_token_url="https://api.endomondo.com/oauth/access_token",
@@ -26,7 +26,7 @@ default_data_providers = [
         json_schema_file_url=""
     ),
     ThirdPartyDataProvider(
-        name="Withings",
+        provider_name="Withings",
         api_endpoint="",
         authorize_url="https://account.withings.com/oauth2_user/authorize2",
         access_token_url="https://account.withings.com/oauth2/token",
@@ -38,7 +38,7 @@ default_data_providers = [
         json_schema_file_url=""
     ),
     ThirdPartyDataProvider(
-        name="Strava",
+        provider_name="Strava",
         api_endpoint="https://www.strava.com/api/v3/",
         authorize_url="https://www.strava.com/oauth/authorize",
         access_token_url="https://www.strava.com/oauth/token",

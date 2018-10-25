@@ -46,15 +46,7 @@ class JsonSchemaService(BaseMetaDataService):
 
         self.schema = self._try_get_item(Schema(label=schema_name))
         if not self.schema:
-            self.schema = Schema()
-            self.schema.label = schema_name
-            self.schema.description = ""
-
-            # create a dummy file
-            content = ContentFile("")
-            self.schema.rdfs_file.save(schema_name + ".ttl", content)
-            self.schema.url = self.schema.rdfs_file.url
-            self.schema.save()
+            self.schema = self.create_new_empty_schema(schema_name)
 
         return_objects = self._iterate_schema(data, label, filename=filename)
 

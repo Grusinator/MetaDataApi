@@ -25,7 +25,7 @@ def oauth2redirect(request):
         scope = request.GET.get('scope')
         state = request.GET.get('state')
 
-        dp = ThirdPartyDataProvider.objects.get(name=state)
+        dp = ThirdPartyDataProvider.objects.get(provider_name=state)
 
         data = {
             "grant_type": "authorization_code",

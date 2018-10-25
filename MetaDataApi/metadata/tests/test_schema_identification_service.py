@@ -72,6 +72,42 @@ class TestSchemaIdentificationService(TransactionTestCase):
 
         service = SchemaIdentification()
 
-        resp = service.identify_data(url)
+        resp, _ = service.identify_data(url)
 
         self.assertEqual(1 + 1, 2)
+
+
+class NoDataTestSchemaIdentificationService(TransactionTestCase):
+    """Tests for the application views."""
+    # fixtures = [
+    #     'metadata/fixtures/new_load.json',
+    # ]
+
+    # Django requires an explicit setup() when running tests in PTVS
+    @classmethod
+    def setUpClass(cls):
+        super(NoDataTestSchemaIdentificationService, cls).setUpClass()
+        django.setup()
+
+    def test_identify_datatype(self):
+        from MetaDataApi.metadata.services.schema_identification import (
+            SchemaIdentification)
+        from datetime import datetime
+
+        input_vs_expected = [
+            ("20.40", float),
+            (2.4, float),
+            ("2012-01-19 17:21:00", datetime),
+            # ("2019-20-04:20:30:59", datetime),
+            (2, int),
+            ("1", int),
+            ("test", str)
+        ]
+
+        inputd, expected = zip(*input_vs_expected)
+
+        service = SchemaIdentification()
+
+        resp = [service.identify_datatype(elm) for elm in inputd]
+
+        self.assertListEqual(list(resp), list(expected))

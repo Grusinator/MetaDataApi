@@ -4,7 +4,7 @@ from django.db import models
 
 
 class ThirdPartyDataProvider(models.Model):
-    name = models.TextField(unique=True)
+    provider_name = models.TextField(unique=True)
     api_endpoint = models.TextField()
     authorize_url = models.TextField()
     access_token_url = models.TextField()
@@ -16,7 +16,7 @@ class ThirdPartyDataProvider(models.Model):
     json_schema_file_url = models.TextField()
 
     def __str__(self):
-        return "%s - %s" % (self.name, self.api_endpoint)
+        return "%s - %s" % (self.provider_name, self.api_endpoint)
 
     class Meta:
         app_label = 'dataproviders'

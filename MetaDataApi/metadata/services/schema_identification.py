@@ -3,7 +3,7 @@ from urllib import request
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
 from datetime import datetime
-from dateutil import parser
+import dateutil
 
 
 from inflection import underscore
@@ -19,6 +19,108 @@ from MetaDataApi.datapoints.models import (
 from .base_functions import BaseMetaDataService
 
 
+class SchemaIdentificationV2(BaseMetaDataService):
+    def __init__(self, *args, **kwargs):
+        super(SchemaIdentificationV2, self).__init__()
+        # consider using sports articles for corpus
+        # sentences = word2vec.Text8Corpus('text8')
+
+        self.orms = [Object, Attribute]
+
+        self.meta_data_list = []
+        self.schema = None
+
+    def identify_schema_from_data(self, input_data, schema_name):
+        # create a base person to relate the data to
+
+        self.schema = self._try_get_item(Schema(label=schema_name))
+        if not self.schema:
+            self.schema = self.create_new_empty_schema(schema_name)
+
+        try:
+            person = ObjectInstance(
+                base=self.get_foaf_person()
+            )
+        except Exception as e:
+            raise Exception("foaf person was not found")
+        # TODO: Relate to logged in person object instead
+
+        self.iterate_identify_schema_from_data(
+            input_data, parrent_object=person)
+
+        return self.meta_data_list
+
+    def iterate_identify_schema_from_data(self, input_data,
+                                          parrent_object=None):
+
+        self.meta_data_list = []
+
+        if isinstance(input_data, list):
+            # if its a list, there is no key, all we can do is to step
+            # down but add all the data within to a new list
+            def func(x): return isinstance(x, (dict, list))
+
+            if any([func(x) for x in input_data]):
+                pass
+
+            for elm in input_data:
+                # if isinstance(elm, (dict, list)):
+                self.iterate_identify_schema_from_data(
+                    elm, parrent_object)
+
+        # it must be some sort of value, this might only happen
+        # if the parrent structure is a list, because if it is a dict
+        # the value of the dict is tested for being an attribute
+        elif not isinstance(input_data, dict):
+            pass
+
+        for key, value in input_data.items():
+            # this is likely a object if it contains other
+            # attributes or objects
+
+            # this must be an attribute
+            # test if value dict only contains
+            # "value", "unit" and whatever attr
+            if isinstance(value, (str, int, float)) or \
+                    (isinstance(value, dict) and
+                     self.dict_contains_only_attr(value)):
+                    # it is probably an attribute
+
+                datatype = self.identify_datatype(value)
+
+                att = Attribute(
+                    label=key,
+                    datatype=str(datatype),
+                    object=parrent_object
+                )
+                if not self.validate_if_metaitem_is_in_list(
+                        att, self.meta_data_list):
+                    self.meta_data_list.append(att)
+            # its probably a object
+            else:
+                obj = Object(
+                    label=key,
+                    schema=self.schema
+                )
+                if not self.validate_if_metaitem_is_in_list(
+                        obj, self.meta_data_list):
+                    self.meta_data_list.append(obj)
+
+                obj_rel = ObjectRelation(
+                    label="%s->%s" % (parrent_object.label, obj.label),
+                    from_object=parrent_object,
+                    to_object=obj
+                )
+                if not self.validate_if_metaitem_is_in_list(
+                        obj_rel, self.meta_data_list):
+                    self.meta_data_list.append(obj_rel)
+
+                # then iterate down the object value
+                # to find connected objects
+                self.iterate_identify_schema_from_data(
+                    value, parrent_object=obj)
+
+
 class SchemaIdentification(BaseMetaDataService):
     def __init__(self, *args, **kwargs):
         super(SchemaIdentification, self).__init__()
@@ -29,36 +131,44 @@ class SchemaIdentification(BaseMetaDataService):
 
         # self.model = word2vec.Word2Vec(sentences, size=200)
 
-    def identify_data(self, input_data):
+    def identify_data(self, input_data, parrent_label=None):
         """ this is the main function that handles all the
         restructuring of the data.
         """
         # test if this is an url
-        input_data = self.validate_url(input_data) or input_data
+        url_data = self.validate_url(input_data)
 
-        input_data = json.loads(input_data)
+        # try to get the last dir of the url if applicable
+        parrent_label = parrent_label or (
+            url_data and "/".split(input_data)[-1])
+
+        input_data = url_data or input_data
+        # json data can either be list or dict
+        if not isinstance(input_data, (dict, list)):
+            input_data = json.loads(input_data)
 
         # create a base person to relate the data to
         try:
             person = ObjectInstance(
-                base=self._try_get_item(Object, label="person")
+                base=self.get_foaf_person()
             )
-        except:
+        except Exception as e:
             raise Exception("foaf person was not found")
         # TODO: Relate to logged in person object instead
 
-        objects, modified_data = self.iterate_data(input_data, person)
+        objects, modified_data = self.iterate_data(
+            input_data, person, parrent_label=parrent_label)
 
         # only objects, remove attributes and relations
-        ony_obj_objects = filter(lambda x: isinstance(x, ObjectInstance),
-                                 objects)
+        only_obj_objects = filter(lambda x: isinstance(x, ObjectInstance),
+                                  objects)
 
         # relate to foaf
-        objects, failed = self.connect_objects_to_foaf(ony_obj_objects)
+        conn_objects, failed = self.connect_objects_to_foaf(only_obj_objects)
 
-        serialized_data = self.serialize_objects(objects)
+        # serialized_data = self.serialize_objects(objects)
 
-        return modified_data
+        return modified_data, objects
 
     def connect_objects_to_foaf(self, objects):
         foaf = self.get_foaf_person()
@@ -88,13 +198,49 @@ class SchemaIdentification(BaseMetaDataService):
 
         return dummy_string
 
-    def iterate_data(self, input_data, parrent_obj_inst):
+    def iterate_data(self, input_data, parrent_obj_inst, parrent_label=None):
         # for each branch in the tree check match for labels,
         # attribute labels and relations labels
 
-        modified_data = input_data.copy()
-
         instance_list = []
+
+        if isinstance(input_data, list):
+            # if its a list, there is no key, all we can do is to step
+            # down but add all the data within to a new list
+            modified_data = []
+            for elm in input_data:
+
+                # if isinstance(elm, (dict, list)):
+                objects, list_elm_data = self.iterate_data(
+                    elm, parrent_obj_inst)
+
+                instance_list.extend(objects)
+                modified_data.append(list_elm_data)
+
+            # loop through and return data
+            return instance_list, modified_data
+
+        # it must be some sort of value, this might only happen
+        # if the parrent structure is a list, because if it is a dict
+        # the value of the dict is tested for being an attribute
+        elif not isinstance(input_data, dict):
+            modified_data = input_data
+
+            # look for the parrent
+            label = parrent_obj_inst.base.label if parrent_label is None \
+                else parrent_label
+            att, instance_list = self._identify_and_create_attribute(
+                label, input_data, parrent_obj_inst, instance_list)
+
+            if att:
+                # modify input data to include the attribute
+                # return tuple with the att label that was found
+                modified_data = (str(att.base), input_data)
+
+            return instance_list, modified_data
+
+        # cant copy values such as float
+        modified_data = input_data.copy()
 
         for key, value in input_data.items():
             # this is likely a object if it contains other
@@ -112,37 +258,16 @@ class SchemaIdentification(BaseMetaDataService):
                 if isinstance(value, dict):
                     att_value = value.get("value")
                 else:
-                    att_value = str(value)
+                    att_value = value
 
-                data_type = self.identify_datatype(att_value)
-
-                # the key is the label
-                att = self.find_label_in_metadata(
-                    key, data_type, look_only_for_items=[Attribute, ])
+                # the key is the label we are looking for here
+                att, instance_list = self._identify_and_create_attribute(
+                    key, att_value, parrent_obj_inst, instance_list)
 
                 if att:
-                    # if the parrent object is not the "real" parrent
-                    # of the attribute, then create it
-                    if att.object != parrent_obj_inst.base:
-                        real_parrent = ObjectInstance(
-                            base=att.object,
-                        )
-                        instance_list.append(real_parrent)
-                    else:
-                        real_parrent = parrent_obj_inst
-
-                    instance_list.append(
-                        GenericAttributeInstance(
-                            base=att,
-                            object=real_parrent,
-                            value=att_value
-                        )
-                    )
-
                     # modify input data to include the attribute
-                    self.add_object_label_to_dict(modified_data,
-                                                  att, key)
-
+                    self._add_object_label_to_dict_key(modified_data,
+                                                       att, key)
                 else:
                     # attribute not found
                     pass
@@ -150,9 +275,10 @@ class SchemaIdentification(BaseMetaDataService):
 
             # its probably a object
             else:
+
                 # check if the key is a label
                 obj = self.find_label_in_metadata(
-                    key, value)
+                    key, value, parrent=parrent_obj_inst)
 
                 if isinstance(obj, Object):
                     # create object instance of the one found from label
@@ -162,8 +288,16 @@ class SchemaIdentification(BaseMetaDataService):
                         )
                     )
 
-                    self.add_object_label_to_dict(modified_data,
-                                                  obj, key)
+                    self._add_object_label_to_dict_key(modified_data,
+                                                       obj, key)
+
+                    # update parrent object instance, since we are stepping
+                    # down the branch after testing the relation
+                    parrent_obj_inst = obj_inst
+                    # since we have parrent now, clar the parrent label
+                    # it should only be set when we dont have a parrent
+                    # ( no grand parrents count here)
+                    parrent_label = None
 
                     # test if relation between parrent exists
                     obj_rel = self.relation_between_objects(
@@ -171,14 +305,14 @@ class SchemaIdentification(BaseMetaDataService):
 
                     # if relation exist create instance
                     if obj_rel:
-                        parrent_obj_inst = ObjectRelationInstance(
+                        obj_rel_inst = ObjectRelationInstance(
                             from_obj=parrent_obj_inst,
                             to_obj=obj_inst,
                         )
-                        instance_list.append(parrent_obj_inst)
+                        instance_list.append(obj_rel_inst)
 
-                        self.add_object_label_to_dict(modified_data,
-                                                      obj_rel, key)
+                        self._add_object_label_to_dict_key(modified_data,
+                                                           obj_rel, key)
 
                 elif isinstance(obj, ObjectRelation):
                     # dont act here, it should be created when
@@ -186,11 +320,16 @@ class SchemaIdentification(BaseMetaDataService):
 
                     # just step down
                     pass
+                else:
+                    # nothing was found, the most recent key "label" should be
+                    # used for further identification, especially for lists of
+                    # values
+                    parrent_label = key
 
                 # then iterate down the object value
                 # to find connected objects
                 returned_objects, returned_data = self.iterate_data(
-                    value, parrent_obj_inst)
+                    value, parrent_obj_inst, parrent_label=parrent_label)
                 instance_list.extend(returned_objects)
 
                 # update the branch to the modified
@@ -199,7 +338,54 @@ class SchemaIdentification(BaseMetaDataService):
         # when all objects are mapped return the instances
         return instance_list, modified_data
 
-    def add_object_label_to_dict(self, input_dict, item, key):
+    def _validate_and_create_if_real_parrent(self, attribute_inst,
+                                             assumed_parrent):
+        if attribute_inst:
+            # if the parrent object is not the "real" parrent
+            # of the attribute, then create it
+            if attribute_inst.base.object != assumed_parrent.base:
+                real_parrent = ObjectInstance(
+                    base=attribute_inst.base.object,
+                )
+            else:
+                real_parrent = assumed_parrent
+
+            attribute_inst.object = real_parrent
+
+        return real_parrent
+
+    def _identify_and_create_attribute(self, label, att_value,
+                                       parrent_obj_inst,
+                                       instance_list):
+        data_type = self.identify_datatype(att_value)
+
+        # the key is the label
+        att = self.find_label_in_metadata(
+            label, data_type, look_only_for_items=[Attribute, ])
+
+        if att:
+            att_inst = GenericAttributeInstance(
+                base=att,
+                object=parrent_obj_inst,
+                value=att_value
+            )
+
+            real_parrent = self._validate_and_create_if_real_parrent(
+                att_inst, parrent_obj_inst
+            )
+            if real_parrent != parrent_obj_inst:
+                instance_list.append(real_parrent)
+
+            instance_list.append(att_inst)
+
+            return att, instance_list
+
+        else:
+            # attribute not found
+            return None, instance_list
+        # TODO: handle this better
+
+    def _add_object_label_to_dict_key(self, input_dict, item, key):
         conv = {
             Attribute: "A",
             Object: "O",
@@ -248,6 +434,8 @@ class SchemaIdentification(BaseMetaDataService):
         return len(data) == 0
 
     def validate_url(self, url):
+        if not isinstance(url, str):
+            return None
         val = URLValidator()
         try:
             val(url)
@@ -261,23 +449,31 @@ class SchemaIdentification(BaseMetaDataService):
         # even though it is a string,
         # it might really be a int or float
         # so if string verify!!
-        if isinstance(element, str):
-            try:
-                val = float(element)
-            except ValueError:
-                # its probably a string
-                try:
-                    val = parser.parse(element)
-                    return datetime
-                except ValueError:
-                    pass
-            return str
 
-            if element.contains("."):
-                return float
-            else:
-                return int
-        else:
+        def test_float(elm):
+
+            assert ("." in elm), "does not contain decimal separator"
+            return float(elm)
+
+        if isinstance(element, str):
+            conv_functions = {
+                float: lambda elm: test_float(elm),
+                int: lambda elm: int(elm),
+                datetime: lambda elm: dateutil.parser.parse(elm),
+                str: lambda elm: str()
+            }
+
+            order = [float, int, datetime, str]
+
+            for typ in order:
+                try:
+                    # try the converting function of that type
+                    # if it doesnt fail, thats our type
+                    return type(conv_functions[typ](element))
+                except (ValueError, AssertionError) as e:
+                    pass
+
+        elif isinstance(element, (float, int)):
             # otherwise just return the type of
             return type(element)
 
