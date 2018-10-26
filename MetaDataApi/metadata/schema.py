@@ -60,10 +60,11 @@ class DeleteSchema(graphene.Mutation):
     success = graphene.Boolean()
 
     class Arguments:
-        schema = graphene.String()
+        schema_name = graphene.String()
 
-    def mutate(self, info, schema):
-        if schema == "all":
+    @login_required
+    def mutate(self, info, schema_name):
+        if schema_name == "all":
             schemas = Schema.objects.all()
             [schema.delete() for schema in schemas]
 
@@ -73,9 +74,9 @@ class DeleteSchema(graphene.Mutation):
                 shutil.rmtree(media_schema_folder)
                 os.makedirs(media_schema_folder)
             except:
-                print("does not work on AWS")
+                print("does not work on AWS, and neither needed")
         else:
-            schema = Schema.objects.get(url=schema)
+            schema = Schema.objects.get(label=schema_name)
             schema.delete()
 
         return DeleteSchema(success=True)
@@ -91,7 +92,6 @@ class ExportSchema(graphene.Mutation):
 
     def mutate(self, info, schema_name):
         service = RdfService()
-        outfilename = "./schemas/rdf/created/" + schema_name + ".ttl"
 
         schema = service.export_schema_from_db(schema_name)
 
@@ -166,8 +166,10 @@ class IdentifySchemaFromProviderEndpoint(graphene.Mutation):
 
         data = provider.read_data_from_endpoint(endpoint, access_token)
 
+        parrent_label = identify.rest_endpoint_to_label(endpoint)
+
         objects = identify.identify_schema_from_data(
-            data, provider_name)
+            data, provider_name, parrent_label)
 
         return IdentifyDataFromProvider(identified_objects=len(objects))
 
@@ -204,7 +206,7 @@ class AddJsonSchema(graphene.Mutation):
 
         return AddJsonSchema(
             succes=True,
-            objects_added=len(service._objects_created_list),
+            objects_added=len(service.touched_meta_items),
             objects_failed=len(service._error_list))
 
 
@@ -266,32 +268,32 @@ class Query(graphene.ObjectType):
     object_relation = graphene.relay.Node.Field(ObjectRelationNode)
     all_object_relations = DjangoFilterConnectionField(ObjectRelationNode)
 
-    def resolve_schema(self, info):
-        return Schema.objects.first()
+    # def resolve_schema(self, info):
+    #     return Schema.objects.first()
 
-    def resolve_all_schema(self, info):
-        return Schema.objects.all()
+    # def resolve_all_schema(self, info):
+    #     return Schema.objects.all()
 
-    # objects
-    def resolve_object(self, info):
-        return Object.objects.first()
+    # # objects
+    # def resolve_object(self, info):
+    #     return Object.objects.first()
 
-    def resolve_all_objects(self, info):
-        return Object.objects.all()
+    # def resolve_all_objects(self, info):
+    #     return Object.objects.all()
 
-    # attributes
-    def resolve_attribute(self, info):
-        return Attribute.objects.first()
+    # # attributes
+    # def resolve_attribute(self, info):
+    #     return Attribute.objects.first()
 
-    def resolve_all_attributes(self, info):
-        return Attribute.objects.all()
+    # def resolve_all_attributes(self, info):
+    #     return Attribute.objects.all()
 
-    # object relations
-    def resolve_object_relation(self, info):
-        return ObjectRelation.objects.first()
+    # # object relations
+    # def resolve_object_relation(self, info):
+    #     return ObjectRelation.objects.first()
 
-    def resolve_all_object_relations(self, info):
-        return ObjectRelation.objects.all()
+    # def resolve_all_object_relations(self, info):
+    #     return ObjectRelation.objects.all()
 
 
 class Mutation(graphene.ObjectType):

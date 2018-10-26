@@ -29,6 +29,7 @@ class TestMetadataBaseFunctionService(TransactionTestCase):
         service = BaseMetaDataService()
         schema = service.create_new_empty_schema("test")
 
+        # self
         test_list = [
             Object(
                 schema=schema,
@@ -66,11 +67,12 @@ class TestMetadataBaseFunctionService(TransactionTestCase):
             ]
         )
 
-        resp = [service.validate_if_metaitem_is_in_list(
-            elm, test_list) for elm in test_list]
+        resp = [service.is_meta_item_in_created_list(
+            elm, test_list) is not None for elm in test_list]
 
         self.assertListEqual(resp, [True] * len(resp))
 
+        # fail
         expected_to_fail = [
             Attribute(
                 label="att3",
@@ -85,7 +87,30 @@ class TestMetadataBaseFunctionService(TransactionTestCase):
                 label="obj4")
         ]
 
-        resp = [service.validate_if_metaitem_is_in_list(
-            elm, test_list) for elm in expected_to_fail]
+        resp = [service.is_meta_item_in_created_list(
+            elm, test_list) is not None for elm in expected_to_fail]
 
         self.assertListEqual(resp, [False] * len(resp))
+
+        # pass
+        expected_to_pass = [
+            Attribute(
+                label="att1",
+                object=Object(
+                    schema=schema,
+                    label="obj1"
+                )
+            ),
+            Attribute(
+                label="att2",
+                object=test_list[2]
+            ),
+            Object(
+                schema=schema,
+                label="obj4")
+        ]
+
+        resp = [service.is_meta_item_in_created_list(
+            elm, test_list) is not None for elm in expected_to_pass]
+
+        self.assertListEqual(resp, [True] * len(resp))

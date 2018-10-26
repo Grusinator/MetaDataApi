@@ -28,7 +28,8 @@ class SchemaIdentificationV2(BaseMetaDataService):
         self.meta_data_list = []
         self.schema = None
 
-    def identify_schema_from_data(self, input_data, schema_name):
+    def identify_schema_from_data(self, input_data, schema_name,
+                                  parrent_label=None):
         # create a base person to relate the data to
 
         self.schema = self._try_get_item(Schema(label=schema_name))
@@ -37,27 +38,31 @@ class SchemaIdentificationV2(BaseMetaDataService):
 
         try:
             person = self.get_foaf_person()
+            self.touched_meta_items.append(person)
         except Exception as e:
             raise Exception("foaf person was not found")
         # TODO: Relate to logged in person object instead
 
+        if parrent_label:
+            input_data = {
+                parrent_label: input_data
+            }
+
         self.iterate_identify_schema_from_data(
             input_data, parrent_object=person)
 
-        return self.meta_data_list
+        return self.touched_meta_items
 
     def iterate_identify_schema_from_data(self, input_data,
                                           parrent_object=None):
 
-        self.meta_data_list = []
-
         if isinstance(input_data, list):
             # if its a list, there is no key, all we can do is to step
             # down but add all the data within to a new list
-            def func(x): return isinstance(x, (dict, list))
+            # def func(x): return isinstance(x, (dict, list))
 
-            if any([func(x) for x in input_data]):
-                pass
+            # if any([func(x) for x in input_data]):
+            #     pass
 
             for elm in input_data:
                 # if isinstance(elm, (dict, list)):
@@ -70,6 +75,23 @@ class SchemaIdentificationV2(BaseMetaDataService):
         # if the parrent structure is a list, because if it is a dict
         # the value of the dict is tested for being an attribute
         elif not isinstance(input_data, dict):
+            datatype = self.identify_datatype(input_data)
+
+            # create the attribute with the parrent
+            # label since its a list of values
+            # we dont know what it is called
+
+            if parrent_object:
+                att = Attribute(
+                    label=parrent_object.label,
+                    datatype=str(datatype),
+                    object=parrent_object
+                )
+
+                att = self._try_create_item(att)
+            else:
+                a = 1
+
             return
 
         for key, value in input_data.items():
@@ -86,41 +108,44 @@ class SchemaIdentificationV2(BaseMetaDataService):
 
                 datatype = self.identify_datatype(value)
 
+                att_obj = self._try_get_item(parrent_object)
+
+                if att_obj.schema != self.schema:
+                    raise Exception(
+                        "dont create attributes connected to other schemas")
+
                 att = Attribute(
                     label=key,
                     datatype=str(datatype),
-                    object=parrent_object
-                )
-                if not self.validate_if_metaitem_is_in_list(
-                        att, self.meta_data_list):
-                    self._try_create_item(att)
-                    self.meta_data_list.append(att)
+                    object=att_obj)
+
+                att = self._try_create_item(att)
+
             # its probably a object
             else:
                 obj = Object(
                     label=key,
                     schema=self.schema
                 )
-                if not self.validate_if_metaitem_is_in_list(
-                        obj, self.meta_data_list):
-                    self._try_create_item(obj)
-                    self.meta_data_list.append(obj)
 
-                obj_rel = ObjectRelation(
-                    label="%s->%s" % (parrent_object.label, obj.label),
-                    from_object=parrent_object,
-                    to_object=obj,
-                    schema=self.schema
-                )
-                if not self.validate_if_metaitem_is_in_list(
-                        obj_rel, self.meta_data_list):
-                    self._try_create_item(obj_rel)
-                    self.meta_data_list.append(obj_rel)
+                # we need to add the object to the
+                obj = self._try_create_item(
+                    obj, parrent_label=parrent_object.label)
+
+                if parrent_object:
+                    obj_rel = ObjectRelation(
+                        label="%s__to__%s" % (parrent_object.label, obj.label),
+                        from_object=self._try_get_item(parrent_object),
+                        to_object=self._try_get_item(obj),
+                        schema=self.schema
+                    )
+
+                    obj_rel = self._try_create_item(obj_rel)
 
                 # then iterate down the object value
                 # to find connected objects
                 self.iterate_identify_schema_from_data(
-                    value, parrent_object=obj)
+                    value, parrent_object=obj or parrent_object)
 
 
 class SchemaIdentification(BaseMetaDataService):
@@ -342,7 +367,7 @@ class SchemaIdentification(BaseMetaDataService):
 
     def _validate_and_create_if_real_parrent(self, attribute_inst,
                                              assumed_parrent):
-        if attribute_inst:
+        if attribute_inst is not None:
             # if the parrent object is not the "real" parrent
             # of the attribute, then create it
             if attribute_inst.base.object != assumed_parrent.base:
@@ -403,7 +428,7 @@ class SchemaIdentification(BaseMetaDataService):
         input_dict[new_key] = input_dict.pop(key)
         return input_dict
 
-    def relation_between_objects(from_obj, to_obj):
+    def relation_between_objects(self, from_obj, to_obj):
         def convert_to_base(obj):
             if isinstance(obj, ObjectInstance):
                 return obj.base

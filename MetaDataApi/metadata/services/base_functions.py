@@ -23,7 +23,8 @@ class BaseMetaDataService():
         self.schema = None
         self.baseurl = None
 
-        self._objects_created_list = []
+        self.added_meta_items = []
+        self.touched_meta_items = []
         self._error_list = []
         # one switch to force overwrite the objects when
         self.overwrite_db_objects = False
@@ -52,6 +53,11 @@ class BaseMetaDataService():
 
         return string
 
+    def rest_endpoint_to_label(self, endpoint):
+        # TODO the last might not be the most relevant
+        last_elm = endpoint.split("/")[-1]
+        return self.standardize_string(last_elm)
+
     def create_new_empty_schema(self, schema_name):
         self.schema = Schema()
         self.schema.label = schema_name
@@ -63,10 +69,17 @@ class BaseMetaDataService():
         self.schema.url = self.schema.rdfs_file.url
         self.schema.save()
 
+        self.touched_meta_items.append(self.schema)
+
         return self.schema
 
-    def validate_if_metaitem_is_in_list(self, item, item_list):
+    def is_meta_item_in_created_list(self, item, item_list=None):
+        item_list = item_list or self.touched_meta_items
 
+        # new __eq__implementation
+        return next(filter(item.__eq__, item_list), None)
+
+        # old rubbish
         same_labels = filter(lambda x: item.label == x.label, item_list)
 
         if isinstance(item, Object):
@@ -145,9 +158,12 @@ class BaseMetaDataService():
             # otherwise just return the type of
             return type(element)
 
-    def _try_get_item(self, item):
+    def _try_get_item(self, item, parrent_label=None):
 
-        # allways use the label
+        # if self.is_meta_item_in_created_list(item):
+        #     return next(filter(item.__eq__, self.touched_meta_items))
+
+            # allways use the label
         search_args = {
             "label": item.label,
         }
@@ -155,9 +171,15 @@ class BaseMetaDataService():
         item_type = type(item)
 
         if isinstance(item, Attribute):
-            search_args["object"] = item.object
+            search_args["object__label"] = item.object.label
         elif isinstance(item, Object):
             search_args["schema"] = item.schema
+            # adds the option to search for objects dependent
+            # on from relations
+            if parrent_label and parrent_label == "None":
+                search_args["from_relations"] = None
+            elif parrent_label:
+                search_args["from_relations__from_object__label"] = parrent_label
             # search_args["from_relations"] = item.from_relations
         elif isinstance(item, ObjectRelation):
             search_args["from_object"] = item.from_object
@@ -177,7 +199,7 @@ class BaseMetaDataService():
         except Exception as e:
             pass
 
-    def _try_create_item(self, item, update=False):
+    def _try_create_item(self, item, update=False, parrent_label=None):
 
         item_type = type(item)
         remove_version = not isinstance(item_type, Schema)
@@ -196,7 +218,8 @@ class BaseMetaDataService():
                 # object, so test on all objects, not only the label,
                 # so that it is possible to know if we are overwriting
                 # objects that shouldnt
-                return_item = self._try_get_item(item)
+                return_item = self._try_get_item(
+                    item, parrent_label=parrent_label)
 
                 # the object exists,
                 if return_item:
@@ -208,20 +231,23 @@ class BaseMetaDataService():
                         else:
                             # if not updated, return the fetched one
                             item = return_item
-
+                    else:
+                        item = return_item
                 # does not exists, create it!
                 else:
                     try:
                         if self.save_to_db:
                             item.save()
+                            self.added_meta_items.append(item)
+
                     except Exception as e:
                         # on update add to debug list
-                        self._error_list.append((str(e), item))
+                        self._error_list.append((item, e))
                         return None
 
             # on success return the item, either fetched, or saved
             # so that the referenced object lives in the database
-            self._objects_created_list.append(item)
+            self.touched_meta_items.append(item)
             return item
 
         except (transaction.TransactionManagementError,) as e:

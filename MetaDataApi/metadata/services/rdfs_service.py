@@ -53,17 +53,17 @@ class RdfService(BaseMetaDataService):
     def export_schema_from_db(self, schema_label):
         g = Graph()
         # reset objects created (exported)
-        self._objects_created_list = []
+        self.touched_meta_items = []
 
         self.schema = Schema.objects.get(label=schema_label)
 
         # to know which have been exported
-        self._objects_created_list.append(self.schema)
+        self.touched_meta_items.append(self.schema)
 
         objects = Object.objects.filter(schema=self.schema)
 
         # to know which have been exported
-        self._objects_created_list.extend(objects)
+        self.touched_meta_items.extend(objects)
 
         namespace = self.schema.url.replace(".ttl", "#")
 
@@ -112,11 +112,11 @@ class RdfService(BaseMetaDataService):
                 g.add((attribute_name, RDFS.isDefinedBy, rdf_schema))
 
                 # to know which have been exported
-                self._objects_created_list.extend(attributes)
+                self.touched_meta_items.extend(attributes)
 
         relations = ObjectRelation.objects.filter(schema=self.schema)
         # to know which have been exported
-        self._objects_created_list.extend(relations)
+        self.touched_meta_items.extend(relations)
 
         for relation in relations:
 
@@ -216,7 +216,7 @@ class RdfService(BaseMetaDataService):
 
         self._create_attributes_from_graph(g)
 
-        return self._objects_created_list
+        return self.touched_meta_items
 
     def write_to_db(self, rdf_url, overwrite=False):
 
@@ -450,10 +450,10 @@ class RdfService(BaseMetaDataService):
 
                 # first try find the objects in the created list
                 from_object = next(filter(lambda x: x.label == from_obj_label,
-                                          self._objects_created_list), None)
+                                          self.touched_meta_items), None)
 
                 to_object = next(filter(lambda x: x.label == to_obj_label,
-                                        self._objects_created_list), None)
+                                        self.touched_meta_items), None)
 
                 # TODO: consider the case if 2 objects has the same label?
                 if not from_object:
@@ -500,7 +500,7 @@ class RdfService(BaseMetaDataService):
 
                 # find the object in the created list first
                 object = next(filter(lambda x: x.label == obj_label,
-                                     self._objects_created_list), None)
+                                     self.touched_meta_items), None)
 
                 # if not found look in the database
                 if object is None:

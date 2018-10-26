@@ -54,7 +54,7 @@ class JsonSchemaService(BaseMetaDataService):
         # RdfService().export_schema_from_db(self.schema.label)
         self.schema = None
 
-        return self._objects_created_list
+        return self.touched_meta_items
 
     def write_to_db_baseschema(self, positive_list=None, sample=False):
         baseurl = "https://raw.githubusercontent.com/Grusinator/" +\

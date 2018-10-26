@@ -27,4 +27,4 @@ class DataCleaningService(BaseMetaDataService):
                     label=label
                 )
             )
-        return self._objects_created_list
+        return self.touched_meta_items

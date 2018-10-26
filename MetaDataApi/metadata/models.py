@@ -15,6 +15,16 @@ class Schema(models.Model):
     def __str__(self):
         return "S:" + self.label
 
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return self.url == other.url and \
+                self.label == other.label
+        else:
+            return False
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
     class Meta:
         app_label = 'metadata'
 
@@ -28,6 +38,38 @@ class Object(models.Model):
 
     def __str__(self):
         return "O:%s.%s" % (self.schema.label, self.label)
+
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            # return self.__dict__ == other.__dict__
+
+            def inner_join_by_label(from1, from2):
+                from1 = [elm.label for elm in from1]
+                from2 = [elm.label for elm in from2]
+
+                commons = list(set(from1) & set(from2))
+                return any(commons)
+
+            sel_f = hasattr(self, "from_objects")
+            oth_f = hasattr(other, "from_objects")
+
+            if sel_f and oth_f:
+                from_obj_match = inner_join_by_label(
+                    self.from_objects,
+                    other.from_objects)
+            else:
+                # if they are not equal
+                from_obj_match = sel_f == oth_f
+
+            return self.schema == other.schema and \
+                self.label == other.label and \
+                from_obj_match
+
+        else:
+            return False
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
     class Meta:
         app_label = 'metadata'
@@ -43,6 +85,15 @@ class Attribute(models.Model):
 
     def __str__(self):
         return "A:%s.%s" % (self.object.label, self.label)
+
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return self.__dict__ == other.__dict__
+        else:
+            return False
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
     class Meta:
         app_label = 'metadata'
@@ -63,6 +114,15 @@ class ObjectRelation(models.Model):
             self.from_object.label,
             self.label,
             self.to_object.label)
+
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return self.__dict__ == other.__dict__
+        else:
+            return False
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
     class Meta:
         app_label = 'metadata'

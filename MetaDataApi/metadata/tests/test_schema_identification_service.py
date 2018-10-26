@@ -137,7 +137,8 @@ class NoDataTestSchemaIdentificationService(TransactionTestCase):
 
         schema_name = "Strava"
 
-        resp = service.identify_schema_from_data(data, schema_name)
+        resp = service.identify_schema_from_data(
+            data, schema_name, "activities")
 
         rdf_service.export_schema_from_db(schema_name)
 
