@@ -29,10 +29,10 @@ class Profile(models.Model):
     def __str__(self):
         return "%i - %s - %s" % (self.id, self.user.username,  self.language)
 
-    def get_data_provider_auth_token(self, provider_name):
+    def get_data_provider_profile(self, provider_name):
         tpdp_profile = self.data_provider_profiles.get(
             provider__provider_name=provider_name)
-        return tpdp_profile.access_token
+        return tpdp_profile
 
     class Meta:
         app_label = 'users'

@@ -28,9 +28,9 @@ from MetaDataApi.dataproviders.views import data_provider_list, oauth2redirect
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),
-    path('results/', data_provider_list, name='results'),
+    path('providers/', data_provider_list, name='providers'),
     url(r'^oauth2redirect/$', oauth2redirect, name='oauth2redirect'),
     url(r'^graphql/', GraphQLView.as_view(graphiql=True)),
     url(r'^$', RedirectView.as_view(
-        url='accounts/login?next=/results/', permanent=False), name='login')
+        url='accounts/login?next=providers/', permanent=False), name='login')
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

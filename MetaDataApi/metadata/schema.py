@@ -1,6 +1,7 @@
 import os
 import shutil
 import graphene
+import json
 from graphene_django.filter import DjangoFilterConnectionField
 from graphene_django.types import DjangoObjectType
 
@@ -139,9 +140,10 @@ class IdentifyDataFromProvider(graphene.Mutation):
         provider = DataProviderEtlService(provider_name)
 
         profile = info.context.user.profile
-        access_token = profile.get_data_provider_auth_token(provider_name)
+        provider_profile = profile.get_data_provider_profile(provider_name)
 
-        data = provider.read_data_from_endpoint(endpoint, access_token)
+        data = provider.read_data_from_endpoint(
+            endpoint, provider_profile.access_token)
 
         modified_data, objects = identify.identify_data(data)
 
@@ -149,7 +151,7 @@ class IdentifyDataFromProvider(graphene.Mutation):
                                         identified_objects=len(objects))
 
 
-class IdentifySchemaFromProviderEndpoint(graphene.Mutation):
+class IdentifySchemaFromProvider(graphene.Mutation):
     identified_objects = graphene.Int()
 
     class Arguments:
@@ -157,21 +159,30 @@ class IdentifySchemaFromProviderEndpoint(graphene.Mutation):
         endpoint = graphene.String()
 
     @login_required
-    def mutate(self, info, provider_name, endpoint):
+    def mutate(self, info, provider_name, endpoint=None):
         identify = SchemaIdentificationV2()
-        provider = DataProviderEtlService(provider_name)
+        provider_service = DataProviderEtlService(provider_name)
 
         profile = info.context.user.profile
-        access_token = profile.get_data_provider_auth_token(provider_name)
+        provider_profile = profile.get_data_provider_profile(provider_name)
 
-        data = provider.read_data_from_endpoint(endpoint, access_token)
+        if endpoint == "all" or endpoint is None:
+            endpoints = json.loads(
+                provider_service.dataprovider.rest_endpoints_list)
+        else:
+            endpoints = [endpoint, ]
+        n_objs = 0
+        for endpoint in endpoints:
+            data = provider_service.read_data_from_endpoint(
+                endpoint, provider_profile.access_token)
 
-        parrent_label = identify.rest_endpoint_to_label(endpoint)
+            parrent_label = identify.rest_endpoint_to_label(endpoint)
 
-        objects = identify.identify_schema_from_data(
-            data, provider_name, parrent_label)
+            objects = identify.identify_schema_from_data(
+                data, provider_name, parrent_label)
+            n_objs += len(objects)
 
-        return IdentifyDataFromProvider(identified_objects=len(objects))
+        return IdentifyDataFromProvider(identified_objects=n_objs)
 
 
 class AddJsonSchema(graphene.Mutation):
@@ -304,5 +315,4 @@ class Mutation(graphene.ObjectType):
     export_schema = ExportSchema.Field()
     add_person_reference = AddPersonReference.Field()
     identify_data_from_provider = IdentifyDataFromProvider.Field()
-    identify_schema_from_provider_endpoint = \
-        IdentifySchemaFromProviderEndpoint.Field()
+    identify_schema_from_provider = IdentifySchemaFromProvider.Field()

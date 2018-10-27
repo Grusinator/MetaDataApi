@@ -9,7 +9,8 @@ from django.core.files.base import ContentFile
 
 from schemas.json.omh.schema_names import schema_names
 from django.db import transaction
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import (
+    ObjectDoesNotExist, MultipleObjectsReturned)
 from service_objects.services import Service
 import uuid
 import dateutil
@@ -179,7 +180,8 @@ class BaseMetaDataService():
             if parrent_label and parrent_label == "None":
                 search_args["from_relations"] = None
             elif parrent_label:
-                search_args["from_relations__from_object__label"] = parrent_label
+                search_args["from_relations__from_object__label"] \
+                    = parrent_label
             # search_args["from_relations"] = item.from_relations
         elif isinstance(item, ObjectRelation):
             search_args["from_object"] = item.from_object
@@ -196,6 +198,22 @@ class BaseMetaDataService():
 
         except ObjectDoesNotExist as e:
             return None
+        except MultipleObjectsReturned as e:
+            self._error_list.append((item, e))
+            if hasattr(item, "schema"):
+                schema_label = item.schema.label
+            else:
+                schema_label = item.object.schema.label
+            print("""Warning, this is most likely wrong wrong, the object
+                found:  %s  objects, but the first was chosen.
+                -- label: %s schema: %s""" % (
+                item_type.objects.filter(**search_args).count(),
+                item.label,
+                schema_label,
+            ))
+
+            return item_type.objects.filter(**search_args).first()
+
         except Exception as e:
             pass
 
