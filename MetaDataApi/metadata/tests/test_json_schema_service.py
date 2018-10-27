@@ -51,6 +51,9 @@ class TestJsonService(TransactionTestCase):
             "start_date_time", "end_date_time", "part_of_day",
             "sensor_body_location", "descriptive_statistic"]
 
+        labels = list(set(labels))
+        labels_compare = list(set(labels_compare))
+
         labels.sort()
         labels_compare.sort()
 

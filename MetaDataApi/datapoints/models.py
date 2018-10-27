@@ -97,6 +97,38 @@ class DateTimeAttributeInstance(models.Model):
         app_label = 'datapoints'
 
 
+class BoolAttributeInstance(models.Model):
+    # must have timestamp and value
+    value = models.BooleanField()
+    base = models.ForeignKey(
+        Attribute, related_name="bool_attributes_insts",
+        on_delete=models.CASCADE)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL,
+                              null=True, on_delete=models.CASCADE)
+    object = models.ForeignKey(
+        ObjectInstance, related_name='bool_attributes',
+        on_delete=models.CASCADE)
+
+    class Meta:
+        app_label = 'datapoints'
+
+
+class IntAttributeInstance(models.Model):
+    # must have timestamp and value
+    value = models.IntegerField()
+    base = models.ForeignKey(
+        Attribute, related_name="int_attributes_insts",
+        on_delete=models.CASCADE)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL,
+                              null=True, on_delete=models.CASCADE)
+    object = models.ForeignKey(
+        ObjectInstance, related_name='int_attributes',
+        on_delete=models.CASCADE)
+
+    class Meta:
+        app_label = 'datapoints'
+
+
 class FloatAttributeInstance(models.Model):
     value = models.FloatField()
     std = models.FloatField(null=True, blank=True)

@@ -77,6 +77,9 @@ class TestRdfService(TransactionTestCase):
             "publications", "school_homepage", "first_name", "account_name",
             "plan", "myers_briggs", "geekcode", "surname", "family_name"]
 
+        labels = list(set(labels))
+        labels_compare = list(set(labels_compare))
+
         labels.sort()
         labels_compare.sort()
 

@@ -44,7 +44,7 @@ class ThirdPartyDataProvider(models.Model):
         }
 
         if any([not bool(value.strip(" ")) for value in args.values()]):
-            return None
+            return ""
 
         args_string = urllib.parse.urlencode(tuple(args.items()))
 

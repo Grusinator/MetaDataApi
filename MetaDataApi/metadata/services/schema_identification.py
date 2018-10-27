@@ -84,7 +84,7 @@ class SchemaIdentificationV2(BaseMetaDataService):
             if parrent_object:
                 att = Attribute(
                     label=parrent_object.label,
-                    datatype=str(datatype),
+                    datatype=Attribute.data_type_map(datatype),
                     object=parrent_object
                 )
 
@@ -116,7 +116,7 @@ class SchemaIdentificationV2(BaseMetaDataService):
 
                 att = Attribute(
                     label=key,
-                    datatype=str(datatype),
+                    datatype=Attribute.data_type_map(datatype),
                     object=att_obj)
 
                 att = self._try_create_item(att)

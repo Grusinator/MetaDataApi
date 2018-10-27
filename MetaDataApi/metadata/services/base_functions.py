@@ -7,7 +7,7 @@ from MetaDataApi.metadata.models import (
     Schema, Object, Attribute, ObjectRelation)
 from django.core.files.base import ContentFile
 
-from schemas.json.omh.schema_names import schema_names
+from schemas.json.omh.schema_names import filtered_schema_names as schema_names
 from django.db import transaction
 from django.core.exceptions import (
     ObjectDoesNotExist, MultipleObjectsReturned)

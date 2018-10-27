@@ -1,5 +1,6 @@
 from django.db import models
 from .custom_storages import MediaStorage
+from datetime import datetime
 # Create your models here.
 
 
@@ -76,9 +77,19 @@ class Object(models.Model):
 
 
 class Attribute(models.Model):
+    data_type_map = {
+        datetime: "datetime",
+        float: "float",
+        int: "int",
+        bool: "bool",
+        str: "string",
+        None: "unknown"
+    }
+    data_type_choises = [(x, x) for x in data_type_map.values()]
+
     label = models.TextField()
     description = models.TextField(null=True, blank=True)
-    datatype = models.TextField()
+    datatype = models.TextField(choices=data_type_choises)
     dataunit = models.TextField()
     object = models.ForeignKey(
         Object, related_name='attributes', on_delete=models.CASCADE)

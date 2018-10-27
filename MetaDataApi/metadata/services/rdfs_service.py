@@ -1,16 +1,13 @@
-import rdflib
-from rdflib.namespace import RDF, FOAF, RDFS, DCTERMS, DC, OWL
-from MetaDataApi.metadata.models import (
-    Schema, Object,
-    Attribute, ObjectRelation)
 from urllib.error import URLError
-from rdflib.plugin import register, Serializer, Parser
+
 from graphql.error import GraphQLLocatedError
 
 import os
-from rdflib import Graph, Literal, URIRef
-from rdflib import Namespace
-from rdflib.namespace import RDF, FOAF, RDFS, DCTERMS, DC, OWL
+
+from rdflib import Namespace, Graph, Literal, URIRef
+from rdflib.namespace import RDF, FOAF, RDFS, DCTERMS, DC, OWL, XSD
+from rdflib.plugin import register, Serializer, Parser
+
 from inflection import camelize
 
 from django.core.files.base import ContentFile
@@ -21,6 +18,7 @@ from MetaDataApi.metadata.models import (
 from .base_functions import BaseMetaDataService
 
 import uuid
+from datetime import datetime
 
 
 class RdfService(BaseMetaDataService):
@@ -46,9 +44,18 @@ class RdfService(BaseMetaDataService):
                 "master/schemas/rdf/imported/foaf.ttl"
         }
 
+        self.rdfs_data_type_map = {
+            XSD.datetime: datetime,
+            XSD.float: float,
+            XSD.int: int,
+            XSD.bool: bool,
+            XSD.string: str,
+        }
+
         self.valid_datatypes = [
             RDFS.Literal,
         ]
+        self.valid_datatypes.extend(self.rdfs_data_type_map.keys())
 
     def export_schema_from_db(self, schema_label):
         g = Graph()
@@ -78,7 +85,8 @@ class RdfService(BaseMetaDataService):
         g.add((rdf_schema, DC.description, Literal(self.schema.description)))
 
         for obj in objects:
-            # make sure that there is no space in the url, and the object is unique
+            # make sure that there is no space in the url, and the object is
+            # unique
             obj_name = self.create_uri_ref(obj)
 
             # type
@@ -101,8 +109,10 @@ class RdfService(BaseMetaDataService):
                 # this one relates the attribute to the object or domain
                 g.add((attribute_name, RDFS.domain, obj_name))
 
+                rdf_datatype = self.att_type_to_rdfs_uri(attribute.datatype)
+
                 # datatype
-                g.add((attribute_name, RDFS.range, RDFS.Literal))
+                g.add((attribute_name, RDFS.range, rdf_datatype))
 
                 # label and description
                 g.add((attribute_name, RDFS.label, Literal(attribute.label)))
@@ -235,7 +245,7 @@ class RdfService(BaseMetaDataService):
         self._create_attributes_from_graph(g)
 
     def _create_graph_from_url(self, rdf_url):
-        g = rdflib.Graph()
+        g = Graph()
 
         # this is needed for the parser to be able to read files
         register(
@@ -516,7 +526,7 @@ class RdfService(BaseMetaDataService):
 
             attribute = self._try_create_item(
                 Attribute(
-                    datatype=self._split_rdfs_url(range)[1],
+                    datatype=self.rdfs_data_type_map(range),
                     label=label,
                     object=object
                 )
@@ -551,3 +561,27 @@ class RdfService(BaseMetaDataService):
             except Exception as e:
                 pass
         return None
+
+    def rdfs_to_att_type(self, type_name):
+        # self._split_rdfs_url(range)[1]
+        try:
+            dtype = self.rdfs_type_map.get(type_name)
+            return Attribute.data_type_map[dtype]
+        except:
+            return Attribute.data_type_map.get(None)
+
+    def att_type_to_rdfs_uri(self, attr_type):
+
+        def inverse_dict(dicti, value):
+            keys = list(dicti.keys())
+            values = list(dicti.values())
+            index = values.index(value)
+            return keys[index]
+
+        # inverse of data_type_map
+        dtype = inverse_dict(Attribute.data_type_map, attr_type)
+
+        # default to string if none
+        dtype = dtype or str
+        # inverse self.rdfs_data_type_map lookup
+        return inverse_dict(self.rdfs_data_type_map, dtype)

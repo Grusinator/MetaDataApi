@@ -13,8 +13,10 @@ from urllib import request
 from MetaDataApi.metadata.models import (
     Schema, Object, Attribute, ObjectRelation)
 
-from schemas.json.omh.schema_names import schema_names
+from schemas.json.omh.schema_names import filtered_schema_names as schema_names
 from .base_functions import BaseMetaDataService
+
+from datetime import datetime
 
 
 class JsonSchemaService(BaseMetaDataService):
@@ -34,6 +36,14 @@ class JsonSchemaService(BaseMetaDataService):
         # Json schemas should have unique subclasses
         self.allways_create_new = True
         # self.skip_fields.extend(self.subtypes)
+
+        self.json_type_map = {
+            "datetime": datetime,
+            "number": float,
+            "int": int,
+            "bool": bool,
+            "string": str,
+        }
 
     def write_to_db(self, input_url, schema_name):
         self.baseurl, filename = self._infer_info_split_url(input_url)
@@ -219,7 +229,8 @@ class JsonSchemaService(BaseMetaDataService):
 
                 # this is mostly when there is only one attribute in one
                 # schema, either an object should be created, or just ignored
-                # ignored because the object is problably referenced somewhere else
+                # ignored because the object is problably referenced somewhere
+                # else
 
                 if current_object is None:
                     continue
@@ -230,7 +241,7 @@ class JsonSchemaService(BaseMetaDataService):
                 attribute = self._try_create_item(
                     Attribute(
                         label=root_label,
-                        datatype=data_type,
+                        datatype=self.json_to_att_type(data_type),
                         description=description,
                         object=self._try_get_item(current_object)
                     )
@@ -303,3 +314,22 @@ class JsonSchemaService(BaseMetaDataService):
         # we return the created objects from this branch in order
         # to create the object relations
         return return_objects
+
+    def json_to_att_type(self, type_name):
+        try:
+            dtype = self.json_type_map.get(type_name)
+            return Attribute.data_type_map[dtype]
+        except:
+            return Attribute.data_type_map.get(None)
+
+    def att_type_to_json_type(self, attr_type):
+        def inverse_dict(dicti, value):
+            return list(dicti.keys())[list(dicti.values()).index(value)]
+
+        # inverse of data_type_map
+        dtype = inverse_dict(Attribute.data_type_map, attr_type)
+
+        # default to string if none
+        dtype = dtype or str
+        # inverse self.json_type_map lookup
+        return inverse_dict(self.json_type_map, dtype)

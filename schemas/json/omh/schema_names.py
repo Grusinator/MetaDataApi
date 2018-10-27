@@ -194,3 +194,5 @@ schema_names = [
     "volume-unit-value-1.0.json",
     "volume-unit-value-1.x.json"
 ]
+
+filtered_schema_names = list(filter(lambda x: "unit-value" in x, schema_names))
