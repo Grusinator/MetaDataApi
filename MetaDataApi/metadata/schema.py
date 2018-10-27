@@ -118,9 +118,13 @@ class IdentifyData(graphene.Mutation):
 
     @login_required
     def mutate(self, info, input_data):
-        identify = SchemaIdentification()
+        identify = SchemaIdentificationV2()
 
-        modified_data, objects = identify.identify_data(input_data)
+        # here we have no idea about the origin if not specified
+        # TODO: consider if its better to do something else
+
+        modified_data, objects = identify.create_instances_from_data(
+            input_data)
 
         return IdentifyData(modified_data=modified_data,
                             identified_objects=len(objects))
@@ -136,19 +140,30 @@ class IdentifyDataFromProvider(graphene.Mutation):
 
     @login_required
     def mutate(self, info, provider_name, endpoint):
-        identify = SchemaIdentification()
-        provider = DataProviderEtlService(provider_name)
+        identify = SchemaIdentificationV2()
+        provider_service = DataProviderEtlService(provider_name)
 
         profile = info.context.user.profile
         provider_profile = profile.get_data_provider_profile(provider_name)
 
-        data = provider.read_data_from_endpoint(
-            endpoint, provider_profile.access_token)
+        if endpoint == "all" or endpoint is None:
+            endpoints = json.loads(
+                provider_service.dataprovider.rest_endpoints_list)
+        else:
+            endpoints = [endpoint, ]
+        n_objs = 0
+        for endpoint in endpoints:
+            data = provider_service.read_data_from_endpoint(
+                endpoint, provider_profile.access_token)
 
-        modified_data, objects = identify.identify_data(data)
+            parrent_label = identify.rest_endpoint_to_label(endpoint)
+
+            modified_data, objects = identify.create_instances_from_data(
+                data, provider_name, parrent_label)
+            n_objs += len(objects)
 
         return IdentifyDataFromProvider(modified_data=modified_data,
-                                        identified_objects=len(objects))
+                                        identified_objects=n_objs)
 
 
 class IdentifySchemaFromProvider(graphene.Mutation):

@@ -137,3 +137,12 @@ class ObjectRelation(models.Model):
 
     class Meta:
         app_label = 'metadata'
+
+
+class UnmappedObject(models.Model):
+    label = models.TextField()
+    parrent_label = models.TextField()
+    childrens = models.TextField()
+
+    class Meta:
+        app_label = 'metadata'
