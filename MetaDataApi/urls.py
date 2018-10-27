@@ -29,6 +29,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),
     path('providers/', data_provider_list, name='providers'),
+    #path("provider_list", provider_list_view.as_view(), name='provider_list'),
     url(r'^oauth2redirect/$', oauth2redirect, name='oauth2redirect'),
     url(r'^graphql/', GraphQLView.as_view(graphiql=True)),
     url(r'^$', RedirectView.as_view(

@@ -1,12 +1,17 @@
 from django.db import models
-
+import json
+import urllib
 # Create your models here.
+
+api_type_choises = [(x, x) for x in [
+    "Oauth2-rest",
+    "Oauth2-graphql",
+    "Token-rest"]]
 
 
 class ThirdPartyDataProvider(models.Model):
     provider_name = models.TextField(unique=True)
-    api_type = models.TextField(
-        choices=["Oauth2-rest", "Oauth2-graphql", "Token-rest"])
+    api_type = models.TextField(choices=api_type_choises)
     api_endpoint = models.TextField()
     authorize_url = models.TextField()
     access_token_url = models.TextField()
@@ -19,6 +24,33 @@ class ThirdPartyDataProvider(models.Model):
 
     def __str__(self):
         return "%s - %s" % (self.provider_name, self.api_endpoint)
+
+    def build_auth_url(self):
+
+        try:
+            scopes = json.loads(self.scope)
+            scopes = " ".join(scopes)
+        except:
+            scopes = ""
+
+        args = {
+            "client_id": self.client_id,
+            "redirect_uri": self.redirect_uri,
+            "scope": scopes,
+            "nounce": "sdfkjlhasdfdhfas",
+            "response_type": "code",
+            "response_mode": "form_post",
+            "state": self.provider_name,
+        }
+
+        if any([not bool(value.strip(" ")) for value in args.values()]):
+            return None
+
+        args_string = urllib.parse.urlencode(tuple(args.items()))
+
+        url = "%s?%s" % (self.authorize_url, args_string)
+
+        return url
 
     class Meta:
         app_label = 'dataproviders'

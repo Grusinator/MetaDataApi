@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+<form method="post" action={{dataprovider.authorize_url}} >
+        <div>
+            <input type="hidden" name="response_type" value="code" />
+            <input type="hidden" name="response_mode" value="form_post" />
+            <input type="hidden" name="client_id" value={{dataprovider.client_id}} />
+            <input type="hidden" name="redirect_uri" value={{dataprovider.redirect_uri}} />
+            <input type="hidden" name="state" value={{dataprovider.provider_name}}/>
+            <input type="hidden" name="nounce" value="vdw9gk13fh"/>
+    
+            {% for scope in {{dataprovider.scope|split}}) %}
+            <input type="hidden" name="scope" value={{scope}} />
+            {% endfor %}
+    
+            {{ dataprovider.scope }}
+            
+            <input type="submit" value="go" />
+        </div>
+        <input type="submit" value="Authorize {{dataprovider.provider_name" />
+    </form>

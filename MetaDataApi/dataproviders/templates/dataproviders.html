@@ -1,15 +1,21 @@
+{% extends "base.html" %}
+{% load data_provider_tags %}
 <div>
     <h1><a href="/">Data Providers</a></h1>
 </div>
 
+
+{% block content %}
+
+
+
+
 {% for dp in dataproviders %}
 <div>
     <h1>{{ dp.name }}</h1>
-    <h2><a href = {{ dp.authorize_url }}?client_id={{ dp.client_id }}&redirect_uri={{ dp.redirect_uri }}&scope={{ dp.scope }}&response_type=code&response_mode=form_post&nonce=vdw9gk13fh&state={{dp.provider_name}}>Authorize</a></h2>
-    <p>{{dp.access_token_url}}</p>
-    <p>{{dp.client_id}}</p>
-    <p>{{dp.client_secret}}</p>
+    <h3><a href = {{ dp.build_auth_url }}>Authorize {{dp.provider_name}}</a></h2> <p>{{dp.access_token_url}}</p>
     <p>{{dp.scope}}</p>
-    {% comment %} <p>{{ dp.text|linebreaksbr }}</p> {% endcomment %}
-</div>
+</div> 
 {% endfor %}
+
+{% endblock %}

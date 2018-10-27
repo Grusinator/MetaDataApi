@@ -73,6 +73,7 @@ INSTALLED_APPS = [
     'MetaDataApi.users.apps.UsersConfig',
     'MetaDataApi.metadata.apps.MetadataConfig',
     'MetaDataApi.dataproviders.apps.DataprovidersConfig',
+    'MetaDataApi.app'
 ]
 
 MIDDLEWARE = [

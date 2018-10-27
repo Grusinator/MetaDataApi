@@ -6,6 +6,7 @@ import requests
 from django.conf import settings
 from django.shortcuts import redirect
 from django.http import HttpResponse
+from django.views.generic import ListView
 # Create your views here.
 
 
@@ -19,11 +20,18 @@ def data_provider_list(request):
                   {"dataproviders": data_providers})
 
 
+def provider_list_view(ListView):
+    queryset = ThirdPartyDataProvider.objects.all()
+
+
 def oauth2redirect(request):
+    if not request.user.is_authenticated:
+        return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
+
     try:
-        code = request.GET.get('code')
-        scope = request.GET.get('scope')
-        state = request.GET.get('state')
+        code = request.GET.get('code') or request.POST.get('code')
+        scope = request.GET.get('scope') or request.POST.get('scope')
+        state = request.GET.get('state') or request.POST.get('state')
 
         dp = ThirdPartyDataProvider.objects.get(provider_name=state)
 
@@ -55,7 +63,8 @@ def oauth2redirect(request):
         )
         tpp.save()
 
-        return HttpResponse("successfully connected your profile with %s"
+        return HttpResponse("""successfully connected your profile with %s
+                            <a href= "http://localhost:8000/provider/"> back <a> """
                             % state)
     except Exception as e:
         return HttpResponse("upps... something went wrong! (%s)" % str(e))
