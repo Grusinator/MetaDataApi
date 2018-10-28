@@ -20,7 +20,7 @@ from MetaDataApi.datapoints.models import (
     RDFDataDump
 )
 from MetaDataApi.metadata.models import (
-    Schema, Object, Attribute, ObjectRelation)
+    Schema, Object, Attribute, ObjectRelation, UnmappedObject)
 
 from .base_functions import BaseMetaDataService
 
@@ -34,6 +34,11 @@ class RdfInstanceService(BaseRdfSchemaService):
         super(RdfInstanceService, self).__init__()
 
     def export_instances_to_rdf_file(self, schema_label, instance_list):
+
+        # remove unmapped objects
+        instance_list = filter(lambda x: not isinstance(
+            x, UnmappedObject), instance_list)
+
         rdf_data = self.export_instances_from_list(schema_label, instance_list)
 
         content = ContentFile(rdf_data)

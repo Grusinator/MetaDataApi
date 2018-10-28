@@ -432,19 +432,20 @@ class SchemaIdentificationV2(BaseMetaDataService):
                 value=att_value
             )
 
-            real_parrent = self._validate_and_create_if_real_parrent(
-                att_inst, parrent_obj_inst
-            )
+            # real_parrent = self._validate_and_create_if_real_parrent(
+            #     att_inst, parrent_obj_inst
+            # )
+
             # make sure the connection is to the real parrent,
             # but this adobtion thing should not be done
             # TODO: handle this better, in native schemas it should
             # not be a problem
-            att_inst.object = real_parrent
+
             att_inst.save()
 
-            if real_parrent != parrent_obj_inst:
+            # if real_parrent != parrent_obj_inst:
 
-                instance_list.append(real_parrent)
+            #     instance_list.append(real_parrent)
 
             instance_list.append(att_inst)
 
