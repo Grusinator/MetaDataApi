@@ -71,7 +71,7 @@ class ObjectInstance(models.Model):
                               null=True, on_delete=models.CASCADE)
 
     def __str__(self):
-        return "O:%s.%s" % (self.base.schema.label, self.base.label)
+        return "Oi:%s.%s" % (self.base.schema.label, self.base.label)
 
     class Meta:
         app_label = 'datapoints'
@@ -91,7 +91,7 @@ class ObjectRelationInstance(models.Model):
                               null=True, on_delete=models.CASCADE)
 
     def __str__(self):
-        return "R:%s - %s - %s" % (
+        return "Ri:%s - %s - %s" % (
             self.base.from_object.label,
             self.base.label,
             self.base.to_object.label)
@@ -109,8 +109,8 @@ class GenericAttributeInstance(models.Model):
         ObjectInstance, related_name='attributes', on_delete=models.CASCADE)
 
     def __str__(self):
-        return "A:%s.%s:%s" % (self.base.object.label, self.base.label,
-                               self.value)
+        return "Ai:%s.%s:%s" % (self.base.object.label, self.base.label,
+                                self.value)
 
     class Meta:
         app_label = 'datapoints'
@@ -128,6 +128,13 @@ class DateTimeAttributeInstance(models.Model):
         ObjectInstance, related_name='datetime_attributes',
         on_delete=models.CASCADE)
 
+    def __str__(self):
+        return "%s: %s" % (
+            self.base.label,
+            str(self.value),
+            # self.owner.username
+        )
+
     class Meta:
         app_label = 'datapoints'
 
@@ -143,6 +150,13 @@ class BoolAttributeInstance(models.Model):
     object = models.ForeignKey(
         ObjectInstance, related_name='bool_attributes',
         on_delete=models.CASCADE)
+
+    def __str__(self):
+        return "%s: %s" % (
+            self.base.label,
+            self.value,
+            # self.owner.username
+        )
 
     class Meta:
         app_label = 'datapoints'
@@ -160,6 +174,13 @@ class IntAttributeInstance(models.Model):
         ObjectInstance, related_name='int_attributes',
         on_delete=models.CASCADE)
 
+    def __str__(self):
+        return "%s: %i" % (
+            self.base.label,
+            self.value,
+            # self.owner.username
+        )
+
     class Meta:
         app_label = 'datapoints'
 
@@ -175,6 +196,13 @@ class FloatAttributeInstance(models.Model):
     object = models.ForeignKey(
         ObjectInstance, related_name='float_attributes',
         on_delete=models.CASCADE)
+
+    def __str__(self):
+        return "%s: %d" % (
+            self.base.label,
+            self.value,
+            # self.owner.username
+        )
 
     class Meta:
         app_label = 'datapoints'
@@ -192,11 +220,11 @@ class StringAttributeInstance(models.Model):
         on_delete=models.CASCADE)
 
     def __str__(self):
-        return "%s - %s - %s - %s " % (
-            self.metadata.category,
-            self.metadata.label,
-            self.owner.username,
-            self.starttime.strftime("%Y-%m-%d %H:%M:%S"))
+        return "%s: %s" % (
+            self.base.label,
+            self.value,
+            # self.owner.username
+        )
 
     class Meta:
         app_label = 'datapoints'

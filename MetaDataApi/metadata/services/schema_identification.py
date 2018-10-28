@@ -177,6 +177,10 @@ class SchemaIdentificationV2(BaseMetaDataService):
             raise Exception("foaf person was not found")
         # TODO: Relate to logged in foaf person object instance instead
 
+        if parrent_label is not None:
+            input_data = {parrent_label: input_data, }
+            parrent_label = None
+
         objects, modified_data = self.iterate_create_instances_from_data(
             input_data, person, parrent_label=parrent_label)
 
@@ -304,14 +308,6 @@ class SchemaIdentificationV2(BaseMetaDataService):
                     self._add_object_label_to_dict_key(modified_data,
                                                        obj, key)
 
-                    # update parrent object instance, since we are stepping
-                    # down the branch after testing the relation
-                    parrent_obj_inst = obj_inst
-                    # since we have parrent now, clar the parrent label
-                    # it should only be set when we dont have a parrent
-                    # ( no grand parrents count here)
-                    parrent_label = None
-
                     # test if relation between parrent exists
                     obj_rel = self.relation_between_objects(
                         parrent_obj_inst, obj)
@@ -319,14 +315,24 @@ class SchemaIdentificationV2(BaseMetaDataService):
                     # if relation exist create instance
                     if obj_rel:
                         obj_rel_inst = ObjectRelationInstance(
-                            from_obj=parrent_obj_inst,
-                            to_obj=obj_inst,
+                            from_object=parrent_obj_inst,
+                            to_object=obj_inst,
+                            base=obj_rel
                         )
-                        obj_rel.save()
+                        obj_rel_inst.save()
                         instance_list.append(obj_rel_inst)
 
-                        self._add_object_label_to_dict_key(modified_data,
-                                                           obj_rel, key)
+                    # TODO consider if it would be better if the object
+                    # was not created in case the object relation does not
+                    # exist
+
+                    # update parrent object instance, since we are stepping
+                    # down the branch after testing the relation
+                    # parrent_obj_inst = obj_inst
+                    # since we have parrent now, clar the parrent label
+                    # it should only be set when we dont have a parrent
+                    # ( no grand parrents count here)
+                    # parrent_label = None
 
                 # elif isinstance(obj, ObjectRelation):
                 #     # dont act here, it should be created when
@@ -354,7 +360,7 @@ class SchemaIdentificationV2(BaseMetaDataService):
                 # to find connected objects
                 returned_objects, returned_data = \
                     self.iterate_create_instances_from_data(
-                        value, parrent_obj_inst, parrent_label=parrent_label)
+                        value, obj_inst, parrent_label=None)
                 instance_list.extend(returned_objects)
 
                 # update the branch to the modified
@@ -485,10 +491,10 @@ class SchemaIdentificationV2(BaseMetaDataService):
 
         try:
             return ObjectRelation.objects.get(
-                from_obj=from_obj,
-                to_obj=to_obj
+                from_object=from_obj,
+                to_object=to_obj
             )
-        except:
+        except Exception as e:
             return None
 
     def validate_url(self, url):
