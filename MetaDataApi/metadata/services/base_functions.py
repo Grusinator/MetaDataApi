@@ -17,6 +17,14 @@ import dateutil
 from datetime import datetime
 
 
+from MetaDataApi.datapoints.models import (
+    ObjectInstance, ObjectRelationInstance,
+    GenericAttributeInstance, StringAttributeInstance,
+    DateTimeAttributeInstance, BoolAttributeInstance,
+    FloatAttributeInstance, IntAttributeInstance
+)
+
+
 class BaseMetaDataService():
 
     def __init__(self):
@@ -34,6 +42,24 @@ class BaseMetaDataService():
 
         # dont use the same if it allready exists
         self.allways_create_new = False
+
+        self.att_inst_to_type_map = {
+            # GenericAttributeInstance: str,
+            StringAttributeInstance: str,
+            DateTimeAttributeInstance: datetime,
+            FloatAttributeInstance: float,
+            IntAttributeInstance: int,
+            BoolAttributeInstance: bool
+        }
+
+    def inverse_dict(self, dicti, value):
+        try:
+            keys = list(dicti.keys())
+            values = list(dicti.values())
+            index = values.index(value)
+            return keys[index]
+        except Exception as e:
+            return None
 
     def standardize_string(self, string, remove_version=False):
         string = inflection.underscore(str(string))

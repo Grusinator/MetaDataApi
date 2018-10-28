@@ -14,7 +14,7 @@ from MetaDataApi.metadata.models import (
 
 from MetaDataApi.datapoints.models import (
     ObjectInstance,
-    GenericAttributeInstance,
+    StringAttributeInstance,
     ObjectRelationInstance)
 from .base_functions import BaseMetaDataService
 
@@ -181,15 +181,15 @@ class SchemaIdentificationV2(BaseMetaDataService):
             input_data, person, parrent_label=parrent_label)
 
         # only objects, remove attributes and relations
-        unmapped_objects = filter(lambda x: isinstance(x, UnmappedObject),
-                                  objects)
+        unmapped_objects = list(filter(lambda x: isinstance(x, UnmappedObject),
+                                       objects))
 
         # only objects, remove attributes and relations
-        only_obj_objects = filter(lambda x: isinstance(x, ObjectInstance),
-                                  objects)
+        only_obj_objects = list(filter(lambda x: isinstance(x, ObjectInstance),
+                                       objects))
 
         # relate to foaf
-        conn_objects, failed = self.connect_objects_to_foaf(only_obj_objects)
+        # conn_objects, failed = self.connect_objects_to_foaf(only_obj_objects)
 
         # serialized_data = self.serialize_objects(objects)
 
@@ -226,15 +226,23 @@ class SchemaIdentificationV2(BaseMetaDataService):
             modified_data = input_data
 
             # look for the parrent
-            label = parrent_obj_inst.base.label if parrent_label is None \
-                else parrent_label
-            att, instance_list = self._identify_and_create_attribute(
+            label = parrent_label or parrent_obj_inst.base.label
+
+            att_inst, instance_list = self._identify_and_create_attribute(
                 label, input_data, parrent_obj_inst, instance_list)
 
-            if att:
+            if att_inst:
                 # modify input data to include the attribute
                 # return tuple with the att label that was found
-                modified_data = (str(att.base), input_data)
+                modified_data = (str(att_inst.base), input_data)
+            else:
+                instance_list.append(
+                    UnmappedObject(
+                        label=parrent_label,
+                        parrent_label=label,
+                        childrens=None
+                    )
+                )
 
             return instance_list, modified_data
 
@@ -260,20 +268,20 @@ class SchemaIdentificationV2(BaseMetaDataService):
                     att_value = value
 
                 # the key is the label we are looking for here
-                att, instance_list = self._identify_and_create_attribute(
+                att_inst, instance_list = self._identify_and_create_attribute(
                     key, att_value, parrent_obj_inst, instance_list)
 
-                if att:
+                if att_inst:
                     # modify input data to include the attribute
                     self._add_object_label_to_dict_key(modified_data,
-                                                       att, key)
+                                                       att_inst.base, key)
                 else:
                     instance_list.append(
                         UnmappedObject(
                             label=key,
                             parrent_label=parrent_label or
                             parrent_obj_inst.base.label,
-                            children=value
+                            childrens=value
                         )
                     )
                     # attribute not found
@@ -289,11 +297,9 @@ class SchemaIdentificationV2(BaseMetaDataService):
 
                 if isinstance(obj, Object):
                     # create object instance of the one found from label
-                    obj_inst = instance_list.append(
-                        ObjectInstance(
-                            base=obj
-                        )
-                    )
+                    obj_inst = ObjectInstance(base=obj)
+                    obj_inst.save()
+                    instance_list.append(obj_inst)
 
                     self._add_object_label_to_dict_key(modified_data,
                                                        obj, key)
@@ -316,17 +322,18 @@ class SchemaIdentificationV2(BaseMetaDataService):
                             from_obj=parrent_obj_inst,
                             to_obj=obj_inst,
                         )
+                        obj_rel.save()
                         instance_list.append(obj_rel_inst)
 
                         self._add_object_label_to_dict_key(modified_data,
                                                            obj_rel, key)
 
-                elif isinstance(obj, ObjectRelation):
-                    # dont act here, it should be created when
-                    # an object is identified
+                # elif isinstance(obj, ObjectRelation):
+                #     # dont act here, it should be created when
+                #     # an object is identified
 
-                    # just step down
-                    pass
+                #     # just step down
+                #     pass
                 else:
 
                     # nothing was found, the most recent key "label" should be
@@ -338,7 +345,7 @@ class SchemaIdentificationV2(BaseMetaDataService):
                             label=key,
                             parrent_label=parrent_label or
                             parrent_obj_inst.base.label,
-                            children=list(value.keys())
+                            childrens=list(value.keys())
                         )
                     )
                     parrent_label = key
@@ -386,17 +393,19 @@ class SchemaIdentificationV2(BaseMetaDataService):
 
     def _validate_and_create_if_real_parrent(self, attribute_inst,
                                              assumed_parrent):
-        if attribute_inst is not None:
-            # if the parrent object is not the "real" parrent
-            # of the attribute, then create it
-            if attribute_inst.base.object != assumed_parrent.base:
-                real_parrent = ObjectInstance(
-                    base=attribute_inst.base.object,
-                )
-            else:
-                real_parrent = assumed_parrent
+        # if the parrent object is not the "real" parrent
+        # of the attribute, then create it
+        if assumed_parrent is None or \
+                attribute_inst.base.object != assumed_parrent.base:
 
-            attribute_inst.object = real_parrent
+            real_parrent = ObjectInstance(
+                base=attribute_inst.base.object,
+            )
+            real_parrent.save()
+        else:
+            real_parrent = assumed_parrent
+
+        attribute_inst.object = real_parrent
 
         return real_parrent
 
@@ -410,8 +419,14 @@ class SchemaIdentificationV2(BaseMetaDataService):
         att = self.find_label_in_metadata(
             label, data_type, look_only_for_items=[Attribute, ])
 
-        if att:
-            att_inst = GenericAttributeInstance(
+        if att and att_value is not None:
+            # select which attribute instance type to use
+            AttributeInstance = self.inverse_dict(
+                self.att_inst_to_type_map, data_type)
+
+            # default to string if None
+            AttributeInstance = AttributeInstance or StringAttributeInstance
+            att_inst = AttributeInstance(
                 base=att,
                 object=parrent_obj_inst,
                 value=att_value
@@ -420,12 +435,20 @@ class SchemaIdentificationV2(BaseMetaDataService):
             real_parrent = self._validate_and_create_if_real_parrent(
                 att_inst, parrent_obj_inst
             )
+            # make sure the connection is to the real parrent,
+            # but this adobtion thing should not be done
+            # TODO: handle this better, in native schemas it should
+            # not be a problem
+            att_inst.object = real_parrent
+            att_inst.save()
+
             if real_parrent != parrent_obj_inst:
+
                 instance_list.append(real_parrent)
 
             instance_list.append(att_inst)
 
-            return att, instance_list
+            return att_inst, instance_list
 
         else:
 
@@ -609,220 +632,217 @@ class SchemaIdentificationV2(BaseMetaDataService):
         return 0
 
 
-class SchemaIdentification(SchemaIdentificationV2):
-    # allmost deprecated
-    def __init__(self, *args, **kwargs):
-        super(SchemaIdentification, self).__init__()
-        # consider using sports articles for corpus
-        # sentences = word2vec.Text8Corpus('text8')
+# class SchemaIdentification(SchemaIdentificationV2):
+#     # allmost deprecated
+#     def __init__(self, *args, **kwargs):
+#         super(SchemaIdentification, self).__init__()
+#         # consider using sports articles for corpus
+#         # sentences = word2vec.Text8Corpus('text8')
 
-        self.orms = [Object, Attribute]
+#         self.orms = [Object, Attribute]
 
-        # self.model = word2vec.Word2Vec(sentences, size=200)
+#         # self.model = word2vec.Word2Vec(sentences, size=200)
 
-    def identify_data(self, input_data, parrent_label=None):
-        """ this is the main function that handles all the
-        restructuring of the data.
-        """
-        # test if this is an url
-        url_data = self.validate_url(input_data)
+#     def identify_data(self, input_data, parrent_label=None):
+#         """ this is the main function that handles all the
+#         restructuring of the data.
+#         """
+#         # test if this is an url
+#         url_data = self.validate_url(input_data)
 
-        # try to get the last dir of the url if applicable
-        parrent_label = parrent_label or (
-            url_data and "/".split(input_data)[-1])
+#         # try to get the last dir of the url if applicable
+#         parrent_label = parrent_label or (
+#             url_data and "/".split(input_data)[-1])
 
-        input_data = url_data or input_data
-        # json data can either be list or dict
-        if not isinstance(input_data, (dict, list)):
-            input_data = json.loads(input_data)
+#         input_data = url_data or input_data
+#         # json data can either be list or dict
+#         if not isinstance(input_data, (dict, list)):
+#             input_data = json.loads(input_data)
 
-        # create a base person to relate the data to
-        try:
-            person = ObjectInstance(
-                base=self.get_foaf_person()
-            )
-        except Exception as e:
-            raise Exception("foaf person was not found")
-        # TODO: Relate to logged in person object instead
+#         # create a base person to relate the data to
+#         try:
+#             person = ObjectInstance(
+#                 base=self.get_foaf_person()
+#             )
+#         except Exception as e:
+#             raise Exception("foaf person was not found")
+#         # TODO: Relate to logged in person object instead
 
-        objects, modified_data = self.iterate_data(
-            input_data, person, parrent_label=parrent_label)
+#         objects, modified_data = self.iterate_data(
+#             input_data, person, parrent_label=parrent_label)
 
-        # only objects, remove attributes and relations
-        only_obj_objects = filter(lambda x: isinstance(x, ObjectInstance),
-                                  objects)
+#         # only objects, remove attributes and relations
+#         only_obj_objects = filter(lambda x: isinstance(x, ObjectInstance),
+#                                   objects)
 
-        # relate to foaf
-        conn_objects, failed = self.connect_objects_to_foaf(only_obj_objects)
+#         # relate to foaf
+#         conn_objects, failed = self.connect_objects_to_foaf(only_obj_objects)
 
-        # serialized_data = self.serialize_objects(objects)
+#         # serialized_data = self.serialize_objects(objects)
 
-        return modified_data, objects
+#         return modified_data, objects
 
-    def connect_objects_to_foaf(self, objects):
-        foaf = self.get_foaf_person()
-        objects_has_foaf = foaf in objects
+#     def connect_objects_to_foaf(self, objects):
+#         foaf = self.get_foaf_person()
+#         objects_has_foaf = foaf in objects
 
-        # objects_has_foaf = True
+#         # objects_has_foaf = True
 
-        extra_objects = []
-        failed = []
+#         extra_objects = []
+#         failed = []
 
-        for obj in objects:
-            # test if connected
-            if objects_has_foaf and \
-                    self.is_objects_connected(obj, foaf, objects):
-                continue
-            chain = self.find_shortest_path_to_foaf_person(obj)
+#         for obj in objects:
+#             # test if connected
+#             if objects_has_foaf and \
+#                     self.is_objects_connected(obj, foaf, objects):
+#                 continue
+#             chain = self.find_shortest_path_to_foaf_person(obj)
 
-            if chain:
-                extra_objects.extend(chain)
-            else:
-                failed.append(obj)
-        return extra_objects, failed
+#             if chain:
+#                 extra_objects.extend(chain)
+#             else:
+#                 failed.append(obj)
+#         return extra_objects, failed
 
-    def serialize_objects(self, object_list):
-        # TODO: implement real serialization
-        dummy_string = ', '.join(str(x) for x in object_list)
+#     def serialize_objects(self, object_list):
+#         # TODO: implement real serialization
+#         dummy_string = ', '.join(str(x) for x in object_list)
 
-        return dummy_string
+#         return dummy_string
 
-    def iterate_data(self, input_data, parrent_obj_inst, parrent_label=None):
-        # for each branch in the tree check match for labels,
-        # attribute labels and relations labels
+#     def iterate_data(self, input_data, parrent_obj_inst, parrent_label=None):
+#         # for each branch in the tree check match for labels,
+#         # attribute labels and relations labels
 
-        instance_list = []
+#         instance_list = []
 
-        if isinstance(input_data, list):
-            # if its a list, there is no key, all we can do is to step
-            # down but add all the data within to a new list
-            modified_data = []
-            for elm in input_data:
+#         if isinstance(input_data, list):
+#             # if its a list, there is no key, all we can do is to step
+#             # down but add all the data within to a new list
+#             modified_data = []
+#             for elm in input_data:
 
-                # if isinstance(elm, (dict, list)):
-                objects, list_elm_data = self.iterate_data(
-                    elm, parrent_obj_inst)
+#                 # if isinstance(elm, (dict, list)):
+#                 objects, list_elm_data = self.iterate_data(
+#                     elm, parrent_obj_inst)
 
-                instance_list.extend(objects)
-                modified_data.append(list_elm_data)
+#                 instance_list.extend(objects)
+#                 modified_data.append(list_elm_data)
 
-            # loop through and return data
-            return instance_list, modified_data
+#             # loop through and return data
+#             return instance_list, modified_data
 
-        # it must be some sort of value, this might only happen
-        # if the parrent structure is a list, because if it is a dict
-        # the value of the dict is tested for being an attribute
-        elif not isinstance(input_data, dict):
-            modified_data = input_data
+#         # it must be some sort of value, this might only happen
+#         # if the parrent structure is a list, because if it is a dict
+#         # the value of the dict is tested for being an attribute
+#         elif not isinstance(input_data, dict):
+#             modified_data = input_data
 
-            # look for the parrent
-            label = parrent_obj_inst.base.label if parrent_label is None \
-                else parrent_label
-            att, instance_list = self._identify_and_create_attribute(
-                label, input_data, parrent_obj_inst, instance_list)
+#             # look for the parrent
+#             label = parrent_obj_inst.base.label if parrent_label is None \
+#                 else parrent_label
+#             att_inst, instance_list = self._identify_and_create_attribute(
+#                 label, input_data, parrent_obj_inst, instance_list)
 
-            if att:
-                # modify input data to include the attribute
-                # return tuple with the att label that was found
-                modified_data = (str(att.base), input_data)
+#             if att_inst:
+#                 # modify input data to include the attribute
+#                 # return tuple with the att label that was found
+#                 modified_data = (str(att_inst.base), input_data)
 
-            return instance_list, modified_data
+#             return instance_list, modified_data
 
-        # cant copy values such as float
-        modified_data = input_data.copy()
+#         # cant copy values such as float
+#         modified_data = input_data.copy()
 
-        for key, value in input_data.items():
-            # this is likely a object if it contains other
-            # attributes or objects
+#         for key, value in input_data.items():
+#             # this is likely a object if it contains other
+#             # attributes or objects
 
-            # this must be an attribute
-            # test if value dict only contains
-            # "value", "unit" and whatever attr
-            if isinstance(value, (str, int, float)) or \
-                    (isinstance(value, dict) and
-                     self.dict_contains_only_attr(value)):
-                    # it is probably an attribute
+#             # this must be an attribute
+#             # test if value dict only contains
+#             # "value", "unit" and whatever attr
+#             if isinstance(value, (str, int, float)) or \
+#                     (isinstance(value, dict) and
+#                      self.dict_contains_only_attr(value)):
+#                     # it is probably an attribute
 
-                    # prepare the variables for the lookup
-                if isinstance(value, dict):
-                    att_value = value.get("value")
-                else:
-                    att_value = value
+#                     # prepare the variables for the lookup
+#                 if isinstance(value, dict):
+#                     att_value = value.get("value")
+#                 else:
+#                     att_value = value
 
-                # the key is the label we are looking for here
-                att, instance_list = self._identify_and_create_attribute(
-                    key, att_value, parrent_obj_inst, instance_list)
+#                 # the key is the label we are looking for here
+#                 at_inst, instance_list = self._identify_and_create_attribute(
+#                     key, att_value, parrent_obj_inst, instance_list)
 
-                if att:
-                    # modify input data to include the attribute
-                    self._add_object_label_to_dict_key(modified_data,
-                                                       att, key)
-                else:
-                    # attribute not found
-                    pass
-                # TODO: handle this better
+#                 if att_inst:
+#                     # modify input data to include the attribute
+#                     self._add_object_label_to_dict_key(modified_data,
+#                                                        att_inst, key)
+#                 else:
+#                     # attribute not found
+#                     pass
+#                 # TODO: handle this better
 
-            # its probably a object
-            else:
+#             # its probably a object
+#             else:
 
-                # check if the key is a label
-                obj = self.find_label_in_metadata(
-                    key, value, parrent=parrent_obj_inst)
+#                 # check if the key is a label
+#                 obj = self.find_label_in_metadata(
+#                     key, value, parrent=parrent_obj_inst)
 
-                if isinstance(obj, Object):
-                    # create object instance of the one found from label
-                    obj_inst = instance_list.append(
-                        ObjectInstance(
-                            base=obj
-                        )
-                    )
+#                 if isinstance(obj, Object):
+#                     # create object instance of the one found from label
+#                     obj_inst = ObjectInstance(base=obj)
+#                     instance_list.append(obj_inst)
 
-                    self._add_object_label_to_dict_key(modified_data,
-                                                       obj, key)
+#                     self._add_object_label_to_dict_key(modified_data,
+#                                                        obj, key)
 
-                    # update parrent object instance, since we are stepping
-                    # down the branch after testing the relation
-                    parrent_obj_inst = obj_inst
-                    # since we have parrent now, clar the parrent label
-                    # it should only be set when we dont have a parrent
-                    # ( no grand parrents count here)
-                    parrent_label = None
+#                     # update parrent object instance, since we are stepping
+#                     # down the branch after testing the relation
+#                     parrent_obj_inst = obj_inst
+#                     # since we have parrent now, clar the parrent label
+#                     # it should only be set when we dont have a parrent
+#                     # ( no grand parrents count here)
+#                     parrent_label = None
 
-                    # test if relation between parrent exists
-                    obj_rel = self.relation_between_objects(
-                        parrent_obj_inst, obj)
+#                     # test if relation between parrent exists
+#                     obj_rel = self.relation_between_objects(
+#                         parrent_obj_inst, obj)
 
-                    # if relation exist create instance
-                    if obj_rel:
-                        obj_rel_inst = ObjectRelationInstance(
-                            from_obj=parrent_obj_inst,
-                            to_obj=obj_inst,
-                        )
-                        instance_list.append(obj_rel_inst)
+#                     # if relation exist create instance
+#                     if obj_rel:
+#                         obj_rel_inst = ObjectRelationInstance(
+#                             from_obj=parrent_obj_inst,
+#                             to_obj=obj_inst,
+#                         )
+#                         instance_list.append(obj_rel_inst)
 
-                        self._add_object_label_to_dict_key(modified_data,
-                                                           obj_rel, key)
+#                         self._add_object_label_to_dict_key(modified_data,
+#                                                            obj_rel, key)
 
-                elif isinstance(obj, ObjectRelation):
-                    # dont act here, it should be created when
-                    # an object is identified
+#                 elif isinstance(obj, ObjectRelation):
+#                     # dont act here, it should be created when
+#                     # an object is identified
 
-                    # just step down
-                    pass
-                else:
-                    # nothing was found, the most recent key "label" should be
-                    # used for further identification, especially for lists of
-                    # values
-                    parrent_label = key
+#                     # just step down
+#                     pass
+#                 else:
+#                     # nothing was found, the most recent key "label" should be
+#                     # used for further identification, especially for lists of
+#                     # values
+#                     parrent_label = key
 
-                # then iterate down the object value
-                # to find connected objects
-                returned_objects, returned_data = self.iterate_data(
-                    value, parrent_obj_inst, parrent_label=parrent_label)
-                instance_list.extend(returned_objects)
+#                 # then iterate down the object value
+#                 # to find connected objects
+#                 returned_objects, returned_data = self.iterate_data(
+#                     value, parrent_obj_inst, parrent_label=parrent_label)
+#                 instance_list.extend(returned_objects)
 
-                # update the branch to the modified
-                modified_data[key] = returned_data
+#                 # update the branch to the modified
+#                 modified_data[key] = returned_data
 
-        # when all objects are mapped return the instances
-        return instance_list, modified_data
+#         # when all objects are mapped return the instances
+#         return instance_list, modified_data

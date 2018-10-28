@@ -2,6 +2,8 @@ from django.db import models
 from django.conf import settings
 from enum import Enum
 
+from MetaDataApi.metadata.custom_storages import MediaStorage
+
 from MetaDataApi.metadata.models import (
     Attribute, Object, ObjectRelation, Schema
 )
@@ -49,6 +51,15 @@ class RawData(models.Model):
     class Meta:
         app_label = 'datapoints'
 
+
+class RDFDataDump(models.Model):
+    datetime = models.DateTimeField(auto_now=True)
+    rdf_file = models.FileField(
+        upload_to='datapoints/audio', storage=MediaStorage())
+    schema = models.ForeignKey(
+        Schema, related_name='data_dumps', on_delete=models.CASCADE)
+
+
 # instance classes
 
 
@@ -66,6 +77,29 @@ class ObjectInstance(models.Model):
         app_label = 'datapoints'
 
 
+class ObjectRelationInstance(models.Model):
+    base = models.ForeignKey(
+        ObjectRelation,
+        related_name='object_relation_instances', on_delete=models.CASCADE)
+    from_object = models.ForeignKey(
+        ObjectInstance,
+        related_name='to_relations', on_delete=models.CASCADE)
+    to_object = models.ForeignKey(
+        ObjectInstance,
+        related_name='from_relations', on_delete=models.CASCADE)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL,
+                              null=True, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return "R:%s - %s - %s" % (
+            self.base.from_object.label,
+            self.base.label,
+            self.base.to_object.label)
+
+    class Meta:
+        app_label = 'datapoints'
+
+
 class GenericAttributeInstance(models.Model):
     base = models.ForeignKey(
         Attribute,
@@ -75,7 +109,8 @@ class GenericAttributeInstance(models.Model):
         ObjectInstance, related_name='attributes', on_delete=models.CASCADE)
 
     def __str__(self):
-        return "A:%s.%s:%s" % (self.base.object.label, self.base.label, self.value)
+        return "A:%s.%s:%s" % (self.base.object.label, self.base.label,
+                               self.value)
 
     class Meta:
         app_label = 'datapoints'
@@ -162,29 +197,6 @@ class StringAttributeInstance(models.Model):
             self.metadata.label,
             self.owner.username,
             self.starttime.strftime("%Y-%m-%d %H:%M:%S"))
-
-    class Meta:
-        app_label = 'datapoints'
-
-
-class ObjectRelationInstance(models.Model):
-    base = models.ForeignKey(
-        ObjectRelation,
-        related_name='object_relation_instances', on_delete=models.CASCADE)
-    from_object = models.ForeignKey(
-        ObjectInstance,
-        related_name='to_relations', on_delete=models.CASCADE)
-    to_object = models.ForeignKey(
-        ObjectInstance,
-        related_name='from_relations', on_delete=models.CASCADE)
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL,
-                              null=True, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return "R:%s - %s - %s" % (
-            self.base.from_object.label,
-            self.base.label,
-            self.base.to_object.label)
 
     class Meta:
         app_label = 'datapoints'

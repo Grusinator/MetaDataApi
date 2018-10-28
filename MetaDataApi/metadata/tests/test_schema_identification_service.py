@@ -31,12 +31,12 @@ class TestSchemaIdentificationService(TransactionTestCase):
         # call_command('loaddata', 'fixtures/testdb.json', verbosity=1)
 
         # populate the database
-        from MetaDataApi.metadata.services.rdfs_service import RdfService
+        from MetaDataApi.metadata.services.rdf_schema_service import RdfSchemaService
         from MetaDataApi.metadata.services.json_schema_service import (
             JsonSchemaService
         )
 
-        rdf_service = RdfService()
+        rdf_service = RdfSchemaService()
 
         # just take foaf
         rdf_service.write_to_db(rdf_url="http://xmlns.com/foaf/0.1/")
@@ -55,7 +55,7 @@ class TestSchemaIdentificationService(TransactionTestCase):
 
     def test_identify_json_data_sample(self):
         from MetaDataApi.metadata.services.schema_identification import (
-            SchemaIdentification)
+            SchemaIdentificationV2)
 
         from MetaDataApi.metadata.models import Schema, Object
 
@@ -73,7 +73,7 @@ class TestSchemaIdentificationService(TransactionTestCase):
         with request.urlopen(url) as resp:
             text = resp.read().decode()
 
-        service = SchemaIdentification()
+        service = SchemaIdentificationV2()
 
         resp, _ = service.identify_data(url)
 
@@ -94,7 +94,7 @@ class NoDataTestSchemaIdentificationService(TransactionTestCase):
 
     def test_identify_datatype(self):
         from MetaDataApi.metadata.services.schema_identification import (
-            SchemaIdentification)
+            SchemaIdentificationV2)
         from datetime import datetime
 
         input_vs_expected = [
@@ -109,7 +109,7 @@ class NoDataTestSchemaIdentificationService(TransactionTestCase):
 
         inputd, expected = zip(*input_vs_expected)
 
-        service = SchemaIdentification()
+        service = SchemaIdentificationV2()
 
         resp = [service.identify_datatype(elm) for elm in inputd]
 
@@ -118,11 +118,11 @@ class NoDataTestSchemaIdentificationService(TransactionTestCase):
     def test_identify_json_data_strava_test(self):
         from MetaDataApi.metadata.services.schema_identification import (
             SchemaIdentificationV2)
-        from MetaDataApi.metadata.services.rdfs_service import RdfService
+        from MetaDataApi.metadata.services.rdf_schema_service import RdfSchemaService
 
         from MetaDataApi.metadata.models import Schema, Object
 
-        rdf_service = RdfService()
+        rdf_service = RdfSchemaService()
 
         # just take foaf
         rdf_service.write_to_db(rdf_url="http://xmlns.com/foaf/0.1/")

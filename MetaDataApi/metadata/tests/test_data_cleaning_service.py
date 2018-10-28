@@ -14,12 +14,12 @@ class TestDataCleaningService(TransactionTestCase):
         django.setup()
 
         # populate the database
-        from MetaDataApi.metadata.services.rdfs_service import RdfService
+        from MetaDataApi.metadata.services.rdf_schema_service import RdfSchemaService
         from MetaDataApi.metadata.services.json_schema_service import (
             JsonSchemaService
         )
 
-        rdf_service = RdfService()
+        rdf_service = RdfSchemaService()
 
         # just take foaf
         rdf_service.write_to_db(rdf_url="http://xmlns.com/foaf/0.1/")

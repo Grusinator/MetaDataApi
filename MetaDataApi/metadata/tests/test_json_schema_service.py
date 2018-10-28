@@ -15,11 +15,11 @@ class TestJsonService(TransactionTestCase):
         super(TestJsonService, cls).setUpClass()
 
         # populate the database
-        from MetaDataApi.metadata.services.rdfs_service import RdfService
+        from MetaDataApi.metadata.services.rdf_schema_service import RdfSchemaService
         from MetaDataApi.metadata.services.json_schema_service import (
             JsonSchemaService
         )
-        rdf_service = RdfService()
+        rdf_service = RdfSchemaService()
 
         rdf_service.write_to_db_baseschema()
 

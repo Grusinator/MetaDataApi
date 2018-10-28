@@ -1,5 +1,5 @@
 from django.db import models
-from .custom_storages import MediaStorage
+from MetaDataApi.metadata.custom_storages import MediaStorage
 from datetime import datetime
 # Create your models here.
 

@@ -4,7 +4,7 @@ from graphql.error import GraphQLLocatedError
 
 import os
 
-from rdflib import Namespace, Graph, Literal, URIRef
+from rdflib import Namespace, Graph, Literal, URIRef, term
 from rdflib.namespace import RDF, FOAF, RDFS, DCTERMS, DC, OWL, XSD
 from rdflib.plugin import register, Serializer, Parser
 
@@ -15,47 +15,15 @@ from django.core.files.base import ContentFile
 from MetaDataApi.metadata.models import (
     Schema, Object, Attribute, ObjectRelation)
 
-from .base_functions import BaseMetaDataService
+from .base_rdf_service import BaseRdfSchemaService
 
 import uuid
 from datetime import datetime
 
 
-class RdfService(BaseMetaDataService):
+class RdfSchemaService(BaseRdfSchemaService):
     def __init__(self):
-        super(RdfService, self).__init__()
-
-        self.schema = None
-
-        self.default_list = [
-            # 'http://www.w3.org/XML/1998/namespace',
-            "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
-            "http://www.w3.org/2000/01/rdf-schema#",
-            "http://purl.org/dc/elements/1.1/",
-            # "http://xmlns.com/wot/0.1/",
-            # "http://www.w3.org/2001/XMLSchema#",
-            "http://www.w3.org/2003/06/sw-vocab-status/ns#",
-            "http://www.w3.org/2002/07/owl#",
-            "http://xmlns.com/foaf/0.1/"
-        ]
-        self.selfhosted = {
-            "http://xmlns.com/foaf/0.1/":
-            "https://raw.githubusercontent.com/Grusinator/MetaDataApi/" +
-                "master/schemas/rdf/imported/foaf.ttl"
-        }
-
-        self.rdfs_data_type_map = {
-            XSD.datetime: datetime,
-            XSD.float: float,
-            XSD.int: int,
-            XSD.bool: bool,
-            XSD.string: str,
-        }
-
-        self.valid_datatypes = [
-            RDFS.Literal,
-        ]
-        self.valid_datatypes.extend(self.rdfs_data_type_map.keys())
+        super(RdfSchemaService, self).__init__()
 
     def export_schema_from_db(self, schema_label):
         g = Graph()
@@ -169,38 +137,6 @@ class RdfService(BaseMetaDataService):
 
         return self.schema
 
-    def create_uri_ref(self, item):
-        # this is just for labeling with letter in uri
-        conv = {
-            Attribute: "A",
-            Object: "O",
-            ObjectRelation: "R",
-        }
-        # this is to know where to find the schema
-
-        schema = item.object.schema if isinstance(
-            item, Attribute) else item.schema
-
-        namespace = schema.url.replace(".ttl", "")
-        namespace += "#"
-
-        # create the corresponding ontology
-        ontology = Namespace(namespace)
-
-        # make sure that there is no space in the url
-        label = camelize(item.label.replace(" ", "_"))
-
-        if self.schema.url != schema.url:
-            return URIRef(ontology[label])
-
-        # the first letter is to avoid naming conflict with other
-        # objects
-        return URIRef(ontology["%s-%s_%s" % (
-            conv[type(item)],
-            item.pk,
-            label)
-        ])
-
     def write_to_db_baseschema(self):
         # not very readable, consider to change to [_ for _ in _ ]
         graph_list = [self._create_graph_from_url(
@@ -292,7 +228,6 @@ class RdfService(BaseMetaDataService):
             namespace = str(namespace)
 
             if not self._validate_namespace(namespace):
-                print("trying to load missing schema from url")
                 missing_list.append(namespace)
 
         return missing_list
@@ -526,7 +461,7 @@ class RdfService(BaseMetaDataService):
 
             attribute = self._try_create_item(
                 Attribute(
-                    datatype=self.rdfs_data_type_map(range),
+                    datatype=self.rdfs_data_type_map[range],
                     label=label,
                     object=object
                 )
@@ -536,12 +471,11 @@ class RdfService(BaseMetaDataService):
         try:
             Schema.objects.Get(url=str(namespace))
         except Exception as e:
-            print("schema does not exists")
             return False
         return True
 
     def _split_rdfs_url(self, url):
-        if not isinstance(url, (rdflib.term.URIRef, rdflib.URIRef)):
+        if not isinstance(url, (term.URIRef, URIRef)):
             return None
 
         methodlist = [
@@ -561,27 +495,3 @@ class RdfService(BaseMetaDataService):
             except Exception as e:
                 pass
         return None
-
-    def rdfs_to_att_type(self, type_name):
-        # self._split_rdfs_url(range)[1]
-        try:
-            dtype = self.rdfs_type_map.get(type_name)
-            return Attribute.data_type_map[dtype]
-        except:
-            return Attribute.data_type_map.get(None)
-
-    def att_type_to_rdfs_uri(self, attr_type):
-
-        def inverse_dict(dicti, value):
-            keys = list(dicti.keys())
-            values = list(dicti.values())
-            index = values.index(value)
-            return keys[index]
-
-        # inverse of data_type_map
-        dtype = inverse_dict(Attribute.data_type_map, attr_type)
-
-        # default to string if none
-        dtype = dtype or str
-        # inverse self.rdfs_data_type_map lookup
-        return inverse_dict(self.rdfs_data_type_map, dtype)

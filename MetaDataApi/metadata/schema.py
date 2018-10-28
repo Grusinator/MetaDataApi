@@ -16,10 +16,14 @@ from MetaDataApi.settings import MEDIA_ROOT
 from MetaDataApi.users.schema import UserType
 from MetaDataApi.metadata.models import (
     Schema, Object, Attribute, ObjectRelation)
-from MetaDataApi.metadata.services.rdfs_service import RdfService
+from MetaDataApi.metadata.services.rdf_schema_service import RdfSchemaService
+from MetaDataApi.metadata.services.rdf_instance_service import (
+    RdfInstanceService)
+
 from MetaDataApi.metadata.services.json_schema_service import JsonSchemaService
 from MetaDataApi.metadata.services.schema_identification import (
-    SchemaIdentification, SchemaIdentificationV2)
+    SchemaIdentificationV2)
+
 
 from MetaDataApi.metadata.services.data_cleaning_service import (
     DataCleaningService
@@ -92,7 +96,7 @@ class ExportSchema(graphene.Mutation):
         schema_name = graphene.String()
 
     def mutate(self, info, schema_name):
-        service = RdfService()
+        service = RdfSchemaService()
 
         schema = service.export_schema_from_db(schema_name)
 
@@ -133,6 +137,7 @@ class IdentifyData(graphene.Mutation):
 class IdentifyDataFromProvider(graphene.Mutation):
     modified_data = graphene.String()
     identified_objects = graphene.Int()
+    rdf_dump_url = graphene.String()
 
     class Arguments:
         provider_name = graphene.String()
@@ -142,16 +147,20 @@ class IdentifyDataFromProvider(graphene.Mutation):
     def mutate(self, info, provider_name, endpoint):
         identify = SchemaIdentificationV2()
         provider_service = DataProviderEtlService(provider_name)
+        rdf_service = RdfInstanceService()
 
         profile = info.context.user.profile
         provider_profile = profile.get_data_provider_profile(provider_name)
 
+        # select which endpoints
         if endpoint == "all" or endpoint is None:
             endpoints = json.loads(
                 provider_service.dataprovider.rest_endpoints_list)
         else:
             endpoints = [endpoint, ]
-        n_objs = 0
+
+        # identify objects for each endpoint
+        object_list = []
         for endpoint in endpoints:
             data = provider_service.read_data_from_endpoint(
                 endpoint, provider_profile.access_token)
@@ -160,10 +169,15 @@ class IdentifyDataFromProvider(graphene.Mutation):
 
             modified_data, objects = identify.create_instances_from_data(
                 data, provider_name, parrent_label)
-            n_objs += len(objects)
+            object_list.extend(objects)
+
+        # generate rdf file from data
+        rdf_file = rdf_service.export_instances_to_rdf_file(
+            provider_name, objects)
 
         return IdentifyDataFromProvider(modified_data=modified_data,
-                                        identified_objects=n_objs)
+                                        identified_objects=len(object_list),
+                                        rdf_dump_url=rdf_file.url)
 
 
 class IdentifySchemaFromProvider(graphene.Mutation):
@@ -245,7 +259,7 @@ class AddRdfSchema(graphene.Mutation):
 
     @login_required
     def mutate(self, info, url):
-        service = RdfService()
+        service = RdfSchemaService()
         if url == "baseschema":
             try:
                 service.write_to_db_baseschema()

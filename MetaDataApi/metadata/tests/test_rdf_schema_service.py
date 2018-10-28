@@ -7,21 +7,21 @@ from django.db import transaction
 # TODO: Configure your database in settings.py and sync before running tests.
 
 
-class TestRdfService(TransactionTestCase):
+class TestRdfSchemaService(TransactionTestCase):
     """Tests for the application views."""
 
     # Django requires an explicit setup() when running tests in PTVS
     @classmethod
     def setUpClass(cls):
         django.setup()
-        super(TestRdfService, cls).setUpClass()
+        super(TestRdfSchemaService, cls).setUpClass()
 
         # populate the database
-        from MetaDataApi.metadata.services.rdfs_service import RdfService
+        from MetaDataApi.metadata.services.rdf_schema_service import RdfSchemaService
         from MetaDataApi.metadata.services.json_schema_service import (
             JsonSchemaService
         )
-        rdf_service = RdfService()
+        rdf_service = RdfSchemaService()
 
         rdf_service.write_to_db_baseschema()
 
@@ -30,10 +30,10 @@ class TestRdfService(TransactionTestCase):
         json_service.write_to_db_baseschema(sample=True)
 
     def test_create_default_graphs(self):
-        from MetaDataApi.metadata.services.rdfs_service import RdfService
+        from MetaDataApi.metadata.services.rdf_schema_service import RdfSchemaService
         from MetaDataApi.metadata.models import Schema, Object, ObjectRelation
 
-        service = RdfService()
+        service = RdfSchemaService()
 
         service.write_to_db_baseschema()
 
@@ -42,28 +42,28 @@ class TestRdfService(TransactionTestCase):
         self.assertNotEqual(schemas_count, 0)
 
     def test_upload_rdf(self):
-        from MetaDataApi.metadata.services.rdfs_service import RdfService
+        from MetaDataApi.metadata.services.rdf_schema_service import RdfSchemaService
 
         url = "http://xmlns.com/foaf/0.1/"
 
-        service = RdfService()
+        service = RdfSchemaService()
 
         service.write_to_db(url)
 
         self.assertEqual(1 + 1, 2)
 
     def test_export_rdf(self):
-        from MetaDataApi.metadata.services.rdfs_service import RdfService
+        from MetaDataApi.metadata.services.rdf_schema_service import RdfSchemaService
 
         schema_label = "friend_of_a_friend"
 
-        service = RdfService()
+        service = RdfSchemaService()
         # just take foaf
         service.write_to_db(rdf_url="http://xmlns.com/foaf/0.1/")
 
         schema = service.export_schema_from_db(schema_label)
 
-        read_service = RdfService()
+        read_service = RdfSchemaService()
         objects = read_service.read_objects_from_rdfs(schema.rdfs_file)
 
         labels = list(map(lambda x: x.label, objects))
@@ -83,13 +83,13 @@ class TestRdfService(TransactionTestCase):
         labels.sort()
         labels_compare.sort()
 
-        # self.assertListEqual(labels, labels_compare)
+        self.assertListEqual(labels, labels_compare)
 
     def test_circle(self):
-        from MetaDataApi.metadata.services.rdfs_service import RdfService
+        from MetaDataApi.metadata.services.rdf_schema_service import RdfSchemaService
         from MetaDataApi.metadata.models import Schema, Object, ObjectRelation
 
-        service = RdfService()
+        service = RdfSchemaService()
 
         schemas = Schema.objects.all()
 
