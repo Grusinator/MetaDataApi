@@ -27,8 +27,8 @@ def provider_list_view(ListView):
 
 
 def oauth2redirect(request):
-    if not request.user.is_authenticated:
-        return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
+    # if not request.user.is_authenticated:
+    #     return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
 
     try:
         code = request.GET.get('code') or request.POST.get('code')
