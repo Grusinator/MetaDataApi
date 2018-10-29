@@ -25,7 +25,13 @@ class ThirdPartyDataProvider(models.Model):
     def __str__(self):
         return "%s - %s" % (self.provider_name, self.api_endpoint)
 
-    def build_auth_url(self):
+    def build_auth_url(self, logged_in_user=None):
+
+        try:
+            user_id = str(logged_in_user.pk)
+        except:
+            user_id = "AnonomousUser"
+        state = "%s:%s" % (self.provider_name, user_id)
 
         try:
             scopes = json.loads(self.scope)
@@ -40,7 +46,7 @@ class ThirdPartyDataProvider(models.Model):
             "nounce": "sdfkjlhasdfdhfas",
             "response_type": "code",
             "response_mode": "form_post",
-            "state": self.provider_name,
+            "state": state,
         }
 
         if any([not bool(value.strip(" ")) for value in args.values()]):

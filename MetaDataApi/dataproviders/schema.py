@@ -43,6 +43,7 @@ class AddDataProvider(graphene.Mutation):
     class Arguments:
         url = graphene.String()
 
+    @login_required
     def mutate(self, info, url):
         if url == "all":
             for dp in default_data_providers:

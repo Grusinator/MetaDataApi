@@ -7,6 +7,8 @@ from django.conf import settings
 from django.shortcuts import redirect
 from django.http import HttpResponse
 from django.views.generic import ListView
+
+from MetaDataApi.users.models import Profile
 # Create your views here.
 
 
@@ -33,7 +35,9 @@ def oauth2redirect(request):
         scope = request.GET.get('scope') or request.POST.get('scope')
         state = request.GET.get('state') or request.POST.get('state')
 
-        dp = ThirdPartyDataProvider.objects.get(provider_name=state)
+        provider_name, user_id = state.split(":")
+
+        dp = ThirdPartyDataProvider.objects.get(provider_name=provider_name)
 
         data = {
             "grant_type": "authorization_code",
@@ -55,10 +59,15 @@ def oauth2redirect(request):
         access_token = json_obj.pop("access_token")
         token_type = json_obj.pop("token_type")
 
+        try:
+            profile = request.user.profile,
+        except:
+            profile = Profile.objects.get(user__pk=user_id)
+
         tpp = ThirdPartyProfile(
             provider=dp,
             access_token=access_token,
-            profile=request.user.profile,
+            profile=profile,
             profile_json_field=json_obj
         )
         tpp.save()
