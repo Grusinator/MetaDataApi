@@ -5,7 +5,6 @@ from django.core.files.base import ContentFile
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 
-from MetaDataApi.metadata.services import RdfSchemaService
 import inflection
 
 # from jsonschema import validate
@@ -60,8 +59,6 @@ class JsonSchemaService(BaseMetaDataService):
 
         return_objects = self._iterate_schema(data, label, filename=filename)
 
-        # just in order to update the media turtle file
-        # RdfSchemaService().export_schema_from_db(self.schema.label)
         self.schema = None
 
         return self.touched_meta_items
