@@ -25,13 +25,10 @@ class ThirdPartyDataProvider(models.Model):
     def __str__(self):
         return "%s - %s" % (self.provider_name, self.api_endpoint)
 
-    def build_auth_url(self, logged_in_user=None):
+    def build_auth_url(self, logged_in_user_id=None):
 
-        try:
-            user_id = str(logged_in_user.pk)
-        except:
-            user_id = "AnonomousUser"
-        state = "%s:%s" % (self.provider_name, user_id)
+        state = "%s:%s" % (self.provider_name,
+                           logged_in_user_id or "AnonomousUser")
 
         try:
             scopes = json.loads(self.scope)

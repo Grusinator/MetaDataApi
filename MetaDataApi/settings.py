@@ -91,6 +91,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'MetaDataApi.urls'
 
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

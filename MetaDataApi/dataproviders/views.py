@@ -3,10 +3,12 @@ from MetaDataApi.dataproviders.models import ThirdPartyDataProvider
 from MetaDataApi.users.models import ThirdPartyProfile
 import json
 import requests
+import urllib
 from django.conf import settings
 from django.shortcuts import redirect
 from django.http import HttpResponse
 from django.views.generic import ListView
+
 
 from MetaDataApi.users.models import Profile
 # Create your views here.
@@ -19,7 +21,10 @@ def data_provider_list(request):
     data_providers = ThirdPartyDataProvider.objects.all()
 
     return render(request, 'dataproviders.html',
-                  {"dataproviders": data_providers})
+                  {
+                      "dataproviders": data_providers,
+                      "user_id": request.user.pk
+                  })
 
 
 def provider_list_view(ListView):
@@ -60,7 +65,7 @@ def oauth2redirect(request):
         token_type = json_obj.pop("token_type")
 
         try:
-            profile = request.user.profile,
+            profile = request.user.profile
         except:
             profile = Profile.objects.get(user__pk=user_id)
 
@@ -72,8 +77,12 @@ def oauth2redirect(request):
         )
         tpp.save()
 
-        return HttpResponse("""successfully connected your profile with %s
-                            <a href= "http://localhost:8000/provider/"> back <a> """
-                            % state)
+        return HttpResponse(
+            """successfully connected your profile with %s
+            <a href= "%s"> back <a> """
+            % (provider_name,
+                "../providers/")
+        )
+
     except Exception as e:
         return HttpResponse("upps... something went wrong! (%s)" % str(e))

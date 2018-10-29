@@ -7,15 +7,17 @@
 
 {% block content %}
 
-
-
-
-{% for dp in dataproviders %}
-<div>
-    <h1>{{ dp.name }}</h1>
-    <h3><a href = {{ dp.build_auth_url }}>Authorize {{dp.provider_name}}</a></h2> <p>{{dp.access_token_url}}</p>
-    <p>{{dp.scope}}</p>
-</div> 
-{% endfor %}
+    {% for dp in dataproviders %}
+    <div>
+        <h1>{{ dp.name }}</h1>
+        <h2>
+            <a href = {% build_auth_url dp user_id %}>
+                Authorize {{dp.provider_name}}
+            </a>
+        </h2> 
+        <p>{{dp.access_token_url}}</p>
+        <p>{{dp.scope}}</p>
+    </div> 
+    {% endfor %}
 
 {% endblock %}
