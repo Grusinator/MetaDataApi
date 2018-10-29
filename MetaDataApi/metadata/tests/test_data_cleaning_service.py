@@ -14,8 +14,8 @@ class TestDataCleaningService(TransactionTestCase):
         django.setup()
 
         # populate the database
-        from MetaDataApi.metadata.services.rdf_schema_service import RdfSchemaService
-        from MetaDataApi.metadata.services.json_schema_service import (
+        from MetaDataApi.metadata.services import RdfSchemaService
+        from MetaDataApi.metadata.services import (
             JsonSchemaService
         )
 

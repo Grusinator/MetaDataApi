@@ -5,7 +5,7 @@ from django.core.files.base import ContentFile
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 
-from MetaDataApi.metadata.services.rdf_schema_service import RdfSchemaService
+from MetaDataApi.metadata.services import RdfSchemaService
 import inflection
 
 # from jsonschema import validate

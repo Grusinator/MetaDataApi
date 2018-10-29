@@ -15,8 +15,8 @@ class TestJsonService(TransactionTestCase):
         super(TestJsonService, cls).setUpClass()
 
         # populate the database
-        from MetaDataApi.metadata.services.rdf_schema_service import RdfSchemaService
-        from MetaDataApi.metadata.services.json_schema_service import (
+        from MetaDataApi.metadata.services import RdfSchemaService
+        from MetaDataApi.metadata.services import (
             JsonSchemaService
         )
         rdf_service = RdfSchemaService()
@@ -28,7 +28,7 @@ class TestJsonService(TransactionTestCase):
         # service.write_to_db_baseschema(sample=True)
 
     def test_upwrite_to_db(self):
-        from MetaDataApi.metadata.services.json_schema_service import (
+        from MetaDataApi.metadata.services import (
             JsonSchemaService)
 
         url = "https://raw.githubusercontent.com/Grusinator/MetaDataApi/" +\
@@ -60,7 +60,7 @@ class TestJsonService(TransactionTestCase):
         self.assertListEqual(labels, labels_compare)
 
     def test_json_write_to_db_body_temp(self):
-        from MetaDataApi.metadata.services.json_schema_service import (
+        from MetaDataApi.metadata.services import (
             JsonSchemaService)
         from MetaDataApi.metadata.models import (
             Schema, Object, Attribute, ObjectRelation)
@@ -75,7 +75,7 @@ class TestJsonService(TransactionTestCase):
         atts = filter(lambda x: isinstance(x, Attribute), res)
 
     def test_default_schemas(self):
-        from MetaDataApi.metadata.services.json_schema_service import (
+        from MetaDataApi.metadata.services import (
             JsonSchemaService)
 
         service = JsonSchemaService()

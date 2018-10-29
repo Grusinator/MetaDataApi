@@ -16,12 +16,12 @@ from MetaDataApi.settings import MEDIA_ROOT
 from MetaDataApi.users.schema import UserType
 from MetaDataApi.metadata.models import (
     Schema, Object, Attribute, ObjectRelation, UnmappedObject)
-from MetaDataApi.metadata.services.rdf_schema_service import RdfSchemaService
-from MetaDataApi.metadata.services.rdf_instance_service import (
+from MetaDataApi.metadata.services import RdfSchemaService
+from MetaDataApi.metadata.services import (
     RdfInstanceService)
 
-from MetaDataApi.metadata.services.json_schema_service import JsonSchemaService
-from MetaDataApi.metadata.services.schema_identification import (
+from MetaDataApi.metadata.services import JsonSchemaService
+from MetaDataApi.metadata.services import (
     SchemaIdentificationV2)
 
 

@@ -17,8 +17,8 @@ class TestRdfSchemaService(TransactionTestCase):
         super(TestRdfSchemaService, cls).setUpClass()
 
         # populate the database
-        from MetaDataApi.metadata.services.rdf_schema_service import RdfSchemaService
-        from MetaDataApi.metadata.services.json_schema_service import (
+        from MetaDataApi.metadata.services import RdfSchemaService
+        from MetaDataApi.metadata.services import (
             JsonSchemaService
         )
         rdf_service = RdfSchemaService()
@@ -30,7 +30,7 @@ class TestRdfSchemaService(TransactionTestCase):
         json_service.write_to_db_baseschema(sample=True)
 
     def test_create_default_graphs(self):
-        from MetaDataApi.metadata.services.rdf_schema_service import RdfSchemaService
+        from MetaDataApi.metadata.services import RdfSchemaService
         from MetaDataApi.metadata.models import Schema, Object, ObjectRelation
 
         service = RdfSchemaService()
@@ -42,7 +42,7 @@ class TestRdfSchemaService(TransactionTestCase):
         self.assertNotEqual(schemas_count, 0)
 
     def test_upload_rdf(self):
-        from MetaDataApi.metadata.services.rdf_schema_service import RdfSchemaService
+        from MetaDataApi.metadata.services import RdfSchemaService
 
         url = "http://xmlns.com/foaf/0.1/"
 
@@ -53,7 +53,7 @@ class TestRdfSchemaService(TransactionTestCase):
         self.assertEqual(1 + 1, 2)
 
     def test_export_rdf(self):
-        from MetaDataApi.metadata.services.rdf_schema_service import RdfSchemaService
+        from MetaDataApi.metadata.services import RdfSchemaService
 
         schema_label = "friend_of_a_friend"
 
@@ -86,7 +86,7 @@ class TestRdfSchemaService(TransactionTestCase):
         self.assertListEqual(labels, labels_compare)
 
     def test_circle(self):
-        from MetaDataApi.metadata.services.rdf_schema_service import RdfSchemaService
+        from MetaDataApi.metadata.services import RdfSchemaService
         from MetaDataApi.metadata.models import Schema, Object, ObjectRelation
 
         service = RdfSchemaService()

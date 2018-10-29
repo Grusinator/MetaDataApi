@@ -1,6 +1,8 @@
 from MetaDataApi.users.models import ThirdPartyDataProvider
 import json
 
+redirect_uri = "https://meta-data-api.herokuapp.com/oauth2redirect/"
+
 default_data_providers = [
     ThirdPartyDataProvider(
         provider_name="Endomondo",
@@ -11,7 +13,7 @@ default_data_providers = [
         client_id="",
         client_secret="",
         scope=json.dumps([]),
-        redirect_uri="http://localhost:8000/oauth2redirect/",
+        redirect_uri=redirect_uri,
         rest_endpoints_list=json.dumps([]),
         json_schema_file_url=""
     ),
@@ -28,7 +30,7 @@ default_data_providers = [
             "user.metrics",
             "user.activity"
         ]),
-        redirect_uri="http://localhost:8000/oauth2redirect/",
+        redirect_uri=redirect_uri,
         rest_endpoints_list=json.dumps([
             "v2/user?action=getdevice",
             "measure?action=getmeas",
@@ -44,7 +46,7 @@ default_data_providers = [
         client_id="28148",
         client_secret="ed5f469f798830c7214fc8efad54790799fc3ae1",
         scope=json.dumps(["view_private"]),
-        redirect_uri="http://localhost:8000/oauth2redirect/",
+        redirect_uri=redirect_uri,
         rest_endpoints_list=json.dumps([
             "/activities",
             "/athlete/zones",
@@ -63,7 +65,7 @@ default_data_providers = [
             "email",
             "personal",
             "daily"]),
-        redirect_uri="http://localhost:8000/oauth2redirect/",
+        redirect_uri=redirect_uri,
         rest_endpoints_list=json.dumps([
             "/v1/userinfo",
             "/v1/sleep?start=YYYY-MM-DD&end=YYYY-MM-DD",
@@ -81,7 +83,7 @@ default_data_providers = [
         scope=json.dumps([
             "https://www.googleapis.com/auth/fitness.activity.read",
         ]),
-        redirect_uri="http://localhost:8000/oauth2redirect/",
+        redirect_uri=redirect_uri,
         rest_endpoints_list="",
         json_schema_file_url=""
     ),
@@ -93,7 +95,7 @@ default_data_providers = [
         client_id="",
         client_secret="",
         scope=json.dumps([]),
-        redirect_uri="",
+        redirect_uri=redirect_uri,
         rest_endpoints_list=json.dumps([]),
         json_schema_file_url=""
     ),

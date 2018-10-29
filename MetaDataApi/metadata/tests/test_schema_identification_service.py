@@ -31,8 +31,8 @@ class TestSchemaIdentificationService(TransactionTestCase):
         # call_command('loaddata', 'fixtures/testdb.json', verbosity=1)
 
         # populate the database
-        from MetaDataApi.metadata.services.rdf_schema_service import RdfSchemaService
-        from MetaDataApi.metadata.services.json_schema_service import (
+        from MetaDataApi.metadata.services import RdfSchemaService
+        from MetaDataApi.metadata.services import (
             JsonSchemaService
         )
 
@@ -54,7 +54,7 @@ class TestSchemaIdentificationService(TransactionTestCase):
         dc_service.relate_root_classes_to_foaf("open_m_health")
 
     def test_identify_json_data_sample(self):
-        from MetaDataApi.metadata.services.schema_identification import (
+        from MetaDataApi.metadata.services import (
             SchemaIdentificationV2)
 
         from MetaDataApi.metadata.models import Schema, Object
@@ -93,7 +93,7 @@ class NoDataTestSchemaIdentificationService(TransactionTestCase):
         django.setup()
 
     def test_identify_datatype(self):
-        from MetaDataApi.metadata.services.schema_identification import (
+        from MetaDataApi.metadata.services import (
             SchemaIdentificationV2)
         from datetime import datetime
 
@@ -116,9 +116,9 @@ class NoDataTestSchemaIdentificationService(TransactionTestCase):
         self.assertListEqual(list(resp), list(expected))
 
     def test_identify_json_data_strava_test(self):
-        from MetaDataApi.metadata.services.schema_identification import (
+        from MetaDataApi.metadata.services import (
             SchemaIdentificationV2)
-        from MetaDataApi.metadata.services.rdf_schema_service import RdfSchemaService
+        from MetaDataApi.metadata.services import RdfSchemaService
 
         from MetaDataApi.metadata.models import Schema, Object
 
