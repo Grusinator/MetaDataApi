@@ -27,6 +27,7 @@ class Schema(models.Model):
         return not self.__eq__(other)
 
     class Meta:
+        unique_together = ('label', 'url')
         app_label = 'metadata'
 
 
@@ -73,6 +74,7 @@ class Object(models.Model):
         return not self.__eq__(other)
 
     class Meta:
+        unique_together = ('label', 'schema')
         app_label = 'metadata'
 
 
@@ -87,6 +89,7 @@ class Attribute(models.Model):
     }
     data_type_choises = [(x, x) for x in data_type_map.values()]
 
+    # db Fields
     label = models.TextField()
     description = models.TextField(null=True, blank=True)
     datatype = models.TextField(choices=data_type_choises)
@@ -107,6 +110,7 @@ class Attribute(models.Model):
         return not self.__eq__(other)
 
     class Meta:
+        unique_together = ('label', 'object')
         app_label = 'metadata'
 
 
@@ -136,6 +140,7 @@ class ObjectRelation(models.Model):
         return not self.__eq__(other)
 
     class Meta:
+        unique_together = ('label', 'schema')
         app_label = 'metadata'
 
 

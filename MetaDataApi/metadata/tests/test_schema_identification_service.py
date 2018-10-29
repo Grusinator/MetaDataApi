@@ -111,18 +111,21 @@ class NoDataTestSchemaIdentificationService(TransactionTestCase):
 
         service = SchemaIdentificationV2()
 
-        resp = [service.identify_datatype(elm) for elm in inputd]
+        resp = [type(service.identify_datatype(elm)) for elm in inputd]
 
         self.assertListEqual(list(resp), list(expected))
 
     def test_identify_json_data_strava_test(self):
         from MetaDataApi.metadata.services import (
+            RdfSchemaService, DataCleaningService,
             SchemaIdentificationV2)
-        from MetaDataApi.metadata.services import RdfSchemaService
 
         from MetaDataApi.metadata.models import Schema, Object
+        from django.contrib.auth.models import User
 
         rdf_service = RdfSchemaService()
+
+        data_cleaning = DataCleaningService()
 
         # just take foaf
         rdf_service.write_to_db(rdf_url="http://xmlns.com/foaf/0.1/")
@@ -136,9 +139,21 @@ class NoDataTestSchemaIdentificationService(TransactionTestCase):
         service = SchemaIdentificationV2()
 
         schema_name = "Strava"
+        label = "activites"
 
-        resp = service.identify_schema_from_data(
-            data, schema_name, "activities")
+        user = User(
+            username="test",
+            password="dummy1234"
+        )
+        user.save()
+
+        service.identify_schema_from_data(
+            data, schema_name, parrent_label=label)
+
+        data_cleaning.relate_root_classes_to_foaf(schema_name)
+
+        resp = service.map_data_to_native_instances(
+            data, schema_name, parrent_label=label, owner=user)
 
         rdf_service.export_schema_from_db(schema_name)
 

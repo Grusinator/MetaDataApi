@@ -47,7 +47,10 @@ class DataProviderEtlService():  # BaseMetaDataService):
             print("warning: This is not a known %s endpoint - \"%s\" " %
                   (self.dataprovider.provider_name, endpoint))
 
-        url = parse.urljoin(self.dataprovider.api_endpoint, endpoint)
+        dp_base_url = self.dataprovider.api_endpoint
+        dp_base_url += "/" if dp_base_url[-1] != "/" else ""
+
+        url = parse.urljoin(dp_base_url, endpoint)
         header = {"Authorization": "Bearer %s" % auth_token}
 
         req = request.Request(url, None, header)

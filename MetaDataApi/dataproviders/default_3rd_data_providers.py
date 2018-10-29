@@ -75,7 +75,7 @@ default_data_providers = [
     ),
     ThirdPartyDataProvider(
         provider_name="Google Fit",
-        api_endpoint="https://www.googleapis.com/fitness",
+        api_endpoint="https://www.googleapis.com/fitness/",
         authorize_url="https://accounts.google.com/o/oauth2/v2/auth",
         access_token_url="https://accounts.google.com/oauth2/v4/token",
         client_id="166351402500-m9302qf47ua66qbr1gdbgrronssnm2v2.apps.googleusercontent.com",
@@ -84,7 +84,9 @@ default_data_providers = [
             "https://www.googleapis.com/auth/fitness.activity.read",
         ]),
         redirect_uri=redirect_uri,
-        rest_endpoints_list="",
+        rest_endpoints_list=json.dumps([
+            "v1/users/me/dataSources",
+        ]),
         json_schema_file_url=""
     ),
     ThirdPartyDataProvider(

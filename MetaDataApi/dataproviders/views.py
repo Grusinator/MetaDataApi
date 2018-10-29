@@ -69,12 +69,17 @@ def oauth2redirect(request):
         except:
             profile = Profile.objects.get(user__pk=user_id)
 
-        tpp = ThirdPartyProfile(
-            provider=dp,
-            access_token=access_token,
-            profile=profile,
-            profile_json_field=json_obj
-        )
+        try:
+            tpp = ThirdPartyProfile.objects.get(profile=profile)
+            tpp.access_token = access_token
+        except:
+            tpp = ThirdPartyProfile(
+                provider=dp,
+                access_token=access_token,
+                profile=profile,
+                profile_json_field=json_obj
+            )
+
         tpp.save()
 
         return HttpResponse(

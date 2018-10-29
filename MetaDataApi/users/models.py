@@ -51,4 +51,5 @@ class ThirdPartyProfile(models.Model):
         return "%s - %s" % (self.provider, self.profile.user.username)
 
     class Meta:
+        unique_together = ('provider', 'profile')
         app_label = 'users'

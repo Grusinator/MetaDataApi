@@ -52,6 +52,11 @@ class BaseMetaDataService():
             BoolAttributeInstance: bool
         }
 
+        self.att_instances = tuple(self.att_inst_to_type_map.keys())
+
+        self.instances = self.att_instances + \
+            (ObjectInstance, ObjectRelationInstance)
+
     def inverse_dict(self, dicti, value):
         try:
             keys = list(dicti.keys())
@@ -87,7 +92,7 @@ class BaseMetaDataService():
 
     def create_new_empty_schema(self, schema_name):
         self.schema = Schema()
-        self.schema.label = schema_name
+        self.schema.label = self.standardize_string(schema_name)
         self.schema.description = ""
 
         # create a dummy file
@@ -159,7 +164,6 @@ class BaseMetaDataService():
         # so if string verify!!
 
         def test_float(elm):
-
             assert ("." in elm), "does not contain decimal separator"
             return float(elm)
 
@@ -168,37 +172,50 @@ class BaseMetaDataService():
                 float: lambda elm: test_float(elm),
                 int: lambda elm: int(elm),
                 datetime: lambda elm: dateutil.parser.parse(elm),
-                str: lambda elm: str()
+                str: lambda elm: str(elm),
+                bool: lambda elm: bool(elm)
             }
 
-            order = [float, int, datetime, str]
+            order = [float, int, datetime, bool, str]
 
             for typ in order:
                 try:
                     # try the converting function of that type
                     # if it doesnt fail, thats our type
-                    return type(conv_functions[typ](element))
+                    return conv_functions[typ](element)
                 except (ValueError, AssertionError) as e:
                     pass
 
-        elif isinstance(element, (float, int)):
+            # if nothing else works, return as string
+            return str(element)
+
+        elif isinstance(element, (float, int, bool)):
             # otherwise just return the type of
-            return type(element)
+            return element
+        else:
+            return None
 
     def _try_get_item(self, item, parrent_label=None):
+        # standardize label string
+        if hasattr(item, "label"):
+            item.label = self.standardize_string(item.label)
 
-        # if self.is_meta_item_in_created_list(item):
-        #     return next(filter(item.__eq__, self.touched_meta_items))
-
-            # allways use the label
-        search_args = {
-            "label": item.label,
-        }
+        search_args = {}
 
         item_type = type(item)
+        # meta vs instances
+        if isinstance(item, (Attribute, Object, ObjectRelation, Schema)):
+            search_args["label"] = item.label
 
+        # instance only look for primary key
+        elif isinstance(item, self.instances):
+            # search_args["base__label"] = item.base.label
+            search_args["pk"] = item.pk
+
+        # individual metaobjects
         if isinstance(item, Attribute):
             search_args["object__label"] = item.object.label
+
         elif isinstance(item, Object):
             search_args["schema"] = item.schema
             # adds the option to search for objects dependent
@@ -206,12 +223,33 @@ class BaseMetaDataService():
             if parrent_label and parrent_label == "None":
                 search_args["from_relations"] = None
             elif parrent_label:
-                search_args["from_relations__from_object__label"] \
+                search_args["from_relations__from_object__label"]\
                     = parrent_label
             # search_args["from_relations"] = item.from_relations
+
         elif isinstance(item, ObjectRelation):
             search_args["from_object"] = item.from_object
             search_args["to_object"] = item.to_object
+
+        # # individual instances
+        # elif isinstance(item, self.att_instances):
+        #     search_args["object__base__label"] = item.object.base.label
+
+        # elif isinstance(item, ObjectInstance):
+        #     search_args["base__schema"] = item.base.schema
+        #     # adds the option to search for objects dependent
+        #     # on from relations
+        #     if parrent_label and parrent_label == "None":
+        #         search_args["from_relations"] = None
+        #     elif parrent_label:
+        #         search_args["from_relations__from_object__base__label"]\
+        #             = parrent_label
+
+        #     # search_args["from_relations"] = item.from_relations
+
+        # elif isinstance(item, ObjectRelation):
+        #     search_args["from_object"] = item.from_object
+        #     search_args["to_object"] = item.to_object
 
         try:
             # this "with transaction.atomic():"
@@ -318,3 +356,8 @@ class BaseMetaDataService():
         schema = Schema.objects.get(label="friend_of_a_friend")
         find_obj = Object.objects.get(label="person", schema=schema)
         return find_obj
+
+    def att_to_att_inst(self, attr):
+        datatype = self.inverse_dict(Attribute.data_type_map, attr.datatype)
+
+        return self.inverse_dict(self.att_inst_to_type_map, datatype)

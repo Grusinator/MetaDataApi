@@ -12,6 +12,8 @@ class DataCleaningService(BaseMetaDataService):
     def relate_root_classes_to_foaf(self, schema_label):
         foaf = self.get_foaf_person()
 
+        schema_label = self.standardize_string(schema_label)
+
         schema = Schema.objects.get(label=schema_label)
         root_objects = Object.objects.filter(
             from_relations=None,

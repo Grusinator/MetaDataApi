@@ -16,18 +16,14 @@ from MetaDataApi.settings import MEDIA_ROOT
 from MetaDataApi.users.schema import UserType
 from MetaDataApi.metadata.models import (
     Schema, Object, Attribute, ObjectRelation, UnmappedObject)
-from MetaDataApi.metadata.services import RdfSchemaService
 from MetaDataApi.metadata.services import (
-    RdfInstanceService)
+    RdfSchemaService,
+    RdfInstanceService,
+    JsonSchemaService,
+    SchemaIdentificationV2,
+    DataCleaningService)
 
-from MetaDataApi.metadata.services import JsonSchemaService
-from MetaDataApi.metadata.services import (
-    SchemaIdentificationV2)
-
-
-from MetaDataApi.metadata.services.data_cleaning_service import (
-    DataCleaningService
-)
+from MetaDataApi.dataproviders.models import ThirdPartyDataProvider
 
 from MetaDataApi.dataproviders.services.data_provider_etl_service import (
     DataProviderEtlService)
@@ -150,6 +146,7 @@ class IdentifyDataFromProvider(graphene.Mutation):
         rdf_service = RdfInstanceService()
 
         profile = info.context.user.profile
+
         provider_profile = profile.get_data_provider_profile(provider_name)
 
         # select which endpoints
@@ -167,7 +164,7 @@ class IdentifyDataFromProvider(graphene.Mutation):
 
             parrent_label = identify.rest_endpoint_to_label(endpoint)
 
-            modified_data, objects = identify.create_instances_from_data(
+            modified_data, objects = identify.map_data_to_native_instances(
                 data, provider_name, parrent_label)
             object_list.extend(objects)
 

@@ -1,4 +1,5 @@
 [
+  "MetaDataApi/metadata/tests/test_base_functions.py::TestMetadataBaseFunctionService::test_identify_json_data_sample",
   "MetaDataApi/metadata/tests/test_data_cleaning_service.py::TestDataCleaningService::test_identify_json_data_sample",
   "MetaDataApi/metadata/tests/test_json_schema_service.py::TestJsonService::test_default_schemas",
   "MetaDataApi/metadata/tests/test_json_schema_service.py::TestJsonService::test_json_write_to_db_body_temp",
@@ -7,5 +8,8 @@
   "MetaDataApi/metadata/tests/test_rdf_schema_service.py::TestRdfSchemaService::test_circle",
   "MetaDataApi/metadata/tests/test_rdf_schema_service.py::TestRdfSchemaService::test_create_default_graphs",
   "MetaDataApi/metadata/tests/test_rdf_schema_service.py::TestRdfSchemaService::test_export_rdf",
-  "MetaDataApi/metadata/tests/test_rdf_schema_service.py::TestRdfSchemaService::test_upload_rdf"
+  "MetaDataApi/metadata/tests/test_rdf_schema_service.py::TestRdfSchemaService::test_upload_rdf",
+  "MetaDataApi/metadata/tests/test_schema_identification_service.py::TestSchemaIdentificationService::test_identify_json_data_sample",
+  "MetaDataApi/metadata/tests/test_schema_identification_service.py::NoDataTestSchemaIdentificationService::test_identify_datatype",
+  "MetaDataApi/metadata/tests/test_schema_identification_service.py::NoDataTestSchemaIdentificationService::test_identify_json_data_strava_test"
 ]

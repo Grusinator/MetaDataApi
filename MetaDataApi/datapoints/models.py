@@ -2,6 +2,8 @@ from django.db import models
 from django.conf import settings
 from enum import Enum
 
+from django.core.exceptions import ValidationError
+
 from MetaDataApi.metadata.custom_storages import MediaStorage
 
 from MetaDataApi.metadata.models import (
@@ -99,6 +101,18 @@ class ObjectRelationInstance(models.Model):
     class Meta:
         app_label = 'datapoints'
 
+    # custom restrictions on foreign keys to make sure the instances are of
+    # the right meta object type
+    def save(self, *args, **kwargs):
+        if self.from_object.base != self.base.from_object:
+            raise ValidationError(
+                "from_object instance must match the base from_object")
+        if self.to_object.base != self.base.to_object:
+            raise ValidationError(
+                "to_object instance must match the base to_object")
+
+        return super(ObjectRelationInstance, self).save(*args, **kwargs)
+
 
 class GenericAttributeInstance(models.Model):
     base = models.ForeignKey(
@@ -111,6 +125,15 @@ class GenericAttributeInstance(models.Model):
     def __str__(self):
         return "Ai:%s.%s:%s" % (self.base.object.label, self.base.label,
                                 self.value)
+
+    # custom restrictions on foreign keys to make sure the instances are of
+    # the right meta object type
+    def save(self, *args, **kwargs):
+        if self.object.base != self.base.object:
+            raise ValidationError(
+                "object instance must match the base object")
+
+        return super(GenericAttributeInstance, self).save(*args, **kwargs)
 
     class Meta:
         app_label = 'datapoints'
@@ -135,6 +158,15 @@ class DateTimeAttributeInstance(models.Model):
             # self.owner.username
         )
 
+    # custom restrictions on foreign keys to make sure the instances are of
+    # the right meta object type
+    def save(self, *args, **kwargs):
+        if self.object.base != self.base.object:
+            raise ValidationError(
+                "object instance must match the base object")
+
+        return super(DateTimeAttributeInstance, self).save(*args, **kwargs)
+
     class Meta:
         app_label = 'datapoints'
 
@@ -157,6 +189,15 @@ class BoolAttributeInstance(models.Model):
             self.value,
             # self.owner.username
         )
+
+    # custom restrictions on foreign keys to make sure the instances are of
+    # the right meta object type
+    def save(self, *args, **kwargs):
+        if self.object.base != self.base.object:
+            raise ValidationError(
+                "object instance must match the base object")
+
+        return super(BoolAttributeInstance, self).save(*args, **kwargs)
 
     class Meta:
         app_label = 'datapoints'
@@ -181,6 +222,15 @@ class IntAttributeInstance(models.Model):
             # self.owner.username
         )
 
+    # custom restrictions on foreign keys to make sure the instances are of
+    # the right meta object type
+    def save(self, *args, **kwargs):
+        if self.object.base != self.base.object:
+            raise ValidationError(
+                "object instance must match the base object")
+
+        return super(IntAttributeInstance, self).save(*args, **kwargs)
+
     class Meta:
         app_label = 'datapoints'
 
@@ -204,6 +254,15 @@ class FloatAttributeInstance(models.Model):
             # self.owner.username
         )
 
+    # custom restrictions on foreign keys to make sure the instances are of
+    # the right meta object type
+    def save(self, *args, **kwargs):
+        if self.object.base != self.base.object:
+            raise ValidationError(
+                "object instance must match the base object")
+
+        return super(FloatAttributeInstance, self).save(*args, **kwargs)
+
     class Meta:
         app_label = 'datapoints'
 
@@ -225,6 +284,15 @@ class StringAttributeInstance(models.Model):
             self.value,
             # self.owner.username
         )
+
+    # custom restrictions on foreign keys to make sure the instances are of
+    # the right meta object type
+    def save(self, *args, **kwargs):
+        if self.object.base != self.base.object:
+            raise ValidationError(
+                "object instance must match the base object")
+
+        return super(StringAttributeInstance, self).save(*args, **kwargs)
 
     class Meta:
         app_label = 'datapoints'
