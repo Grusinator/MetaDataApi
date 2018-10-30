@@ -92,13 +92,16 @@ class BaseMetaDataService():
 
     def rest_endpoint_to_label(self, endpoint):
         # TODO the last might not be the most relevant
-        last_elm = endpoint.split("/")[-1]
+        endpoint_without_args = endpoint.split("?")[0]
+        last_elm = endpoint_without_args.split("/")[-1]
         return self.standardize_string(last_elm)
 
     def create_new_empty_schema(self, schema_label):
         self.schema = Schema()
         self.schema.label = self.standardize_string(schema_label)
         self.schema.description = ""
+        self.schema.url = "temp"
+        # quick fix for saving without conflicting with unique url
 
         # create a dummy file
         content = ContentFile("")

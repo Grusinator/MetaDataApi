@@ -2,6 +2,7 @@
 
 from MetaDataApi.dataproviders.services.data_provider_etl_service import (
     DataProviderEtlService)
+from MetaDataApi.metadata.services.base_functions import BaseMetaDataService
 
 from MetaDataApi.dataproviders.default_3rd_data_providers import (
     default_data_providers)
@@ -45,6 +46,7 @@ class AddDataProvider(graphene.Mutation):
 
     @login_required
     def mutate(self, info, url):
+
         if url == "all":
             for dp in default_data_providers:
                 dp.save()

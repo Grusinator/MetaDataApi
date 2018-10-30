@@ -1,11 +1,13 @@
 from MetaDataApi.users.models import ThirdPartyDataProvider
 import json
 
-redirect_uri = "https://meta-data-api.herokuapp.com/oauth2redirect/"
+# redirect_uri = "https://meta-data-api.herokuapp.com/oauth2redirect/"
+redirect_uri = "http://localhost:8000/oauth2redirect/"
+
 
 default_data_providers = [
     ThirdPartyDataProvider(
-        provider_name="Endomondo",
+        provider_name="endomondo",
         api_type="Oauth2-rest",
         api_endpoint="https://api.endomondo.com/api/1/",
         authorize_url="https://www.endomondo.com/oauth/authorize",
@@ -18,7 +20,7 @@ default_data_providers = [
         json_schema_file_url=""
     ),
     ThirdPartyDataProvider(
-        provider_name="Withings",
+        provider_name="withings",
         api_type="Oauth2-rest",
         api_endpoint="https://wbsapi.withings.net/",
         authorize_url="https://account.withings.com/oauth2_user/authorize2",
@@ -35,13 +37,13 @@ default_data_providers = [
         rest_endpoints_list=json.dumps([
             # "v2/user?action=getdevice",
             # "measure?action=getmeas",
-            "v2/sleep?action=getsummary&startdateymd={StartDateTime:Y-M-d}&enddateymd={EndDateTime:Y-M-d}",
-            "v2/sleep?action=get&startdate={StartDateTime:UTCSEC}&enddate={EndDateTime:UTCSEC}",
+            "v2/sleep?action=getsummary&access_token={AuthToken:}&startdateymd={StartDateTime:Y-M-d}&enddateymd={EndDateTime:Y-M-d}",
+            "v2/sleep?action=get&access_token={AuthToken:}&startdate={StartDateTime:UTCSEC}&enddate={EndDateTime:UTCSEC}",
         ]),
         json_schema_file_url=""
     ),
     ThirdPartyDataProvider(
-        provider_name="Strava",
+        provider_name="strava",
         api_type="Oauth2-rest",
         api_endpoint="https://www.strava.com/api/v3/",
         authorize_url="https://www.strava.com/oauth/authorize",
@@ -57,13 +59,13 @@ default_data_providers = [
         json_schema_file_url=""
     ),
     ThirdPartyDataProvider(
-        provider_name="Oura",
+        provider_name="oura",
         api_type="Oauth2-rest",
         api_endpoint="https://api.ouraring.com/",
         authorize_url="https://cloud.ouraring.com/oauth/authorize",
         access_token_url="https://api.ouraring.com/oauth/token",
-        client_id="Q43N7PFF2RI3SF52",
-        client_secret="CX6MEERKWUBIMBMRZOVY6BAAQLF5KDDL",
+        client_id="LPZVEFNB3DGFITEY",
+        client_secret="NZPHE3NPY7ENSXHA6AHNE2M4JC4IVHQS",
         scope=json.dumps([
             "email",
             "personal",
@@ -71,13 +73,13 @@ default_data_providers = [
         redirect_uri=redirect_uri,
         rest_endpoints_list=json.dumps([
             "/v1/userinfo",
-            "/v1/sleep?start=YYYY-MM-DD&end=YYYY-MM-DD",
-            "/v1/activity?start=YYYY-MM-DD&end=YYYY-MM-DD",
-            "/v1/readiness?start=YYYY-MM-DD&end=YYYY-MM-DD"]),
+            "/v1/sleep?start={StartDateTime:Y-M-d}&end={EndDateTime:Y-M-d}",
+            "/v1/activity?start={StartDateTime:Y-M-d}&end={EndDateTime:Y-M-d}",
+            "/v1/readiness?start={StartDateTime:Y-M-d}&end={EndDateTime:Y-M-d}"]),
         json_schema_file_url=""
     ),
     ThirdPartyDataProvider(
-        provider_name="Google Fit",
+        provider_name="google_fit",
         api_endpoint="https://www.googleapis.com/fitness/",
         authorize_url="https://accounts.google.com/o/oauth2/v2/auth",
         access_token_url="https://accounts.google.com/oauth2/v4/token",

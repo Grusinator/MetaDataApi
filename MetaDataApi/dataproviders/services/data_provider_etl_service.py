@@ -1,6 +1,7 @@
 import json
 import os
 import re
+from datetime import datetime, timedelta
 from django.core.files.base import ContentFile
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
@@ -17,16 +18,18 @@ from MetaDataApi.dataproviders.default_3rd_data_providers import (
     default_data_providers)
 from MetaDataApi.dataproviders.models import (
     ThirdPartyDataProvider)
+from MetaDataApi.metadata.services.base_functions import BaseMetaDataService
 
 
-class DataProviderEtlService():  # BaseMetaDataService):
+class DataProviderEtlService(BaseMetaDataService):
 
     def __init__(self, dataprovider):
-        # super(JsonSchemaService, self).__init__()
+        super(DataProviderEtlService, self).__init__()
 
         self.dataprovider = dataprovider if \
             isinstance(dataprovider, ThirdPartyDataProvider) else \
-            ThirdPartyDataProvider.objects.get(provider_name=dataprovider)
+            ThirdPartyDataProvider.objects.get(
+                provider_name=self.standardize_string(dataprovider))
 
     def validate_endpoints(self):
         self.dataprovider
@@ -50,7 +53,8 @@ class DataProviderEtlService():  # BaseMetaDataService):
 
         self.valid_kwarg_names = [
             "StartDateTime",
-            "EndDateTime"
+            "EndDateTime",
+            "AuthToken"
         ]
 
         for key, value in kwargs.items():
@@ -58,8 +62,9 @@ class DataProviderEtlService():  # BaseMetaDataService):
             assert key in self.valid_kwarg_names, "invalid args"
 
         self._data_type_converter = {
-            "UTCSEC": lambda x: str(int(x.timestamp()))
-            "Y-M-d": lambda x: x.strftime('%Y-%m-%d')
+            "UTCSEC": lambda x: str(int(x.timestamp())),
+            "Y-M-d": lambda x: x.strftime('%Y-%m-%d'),
+            "": lambda x: x
         }
 
         output_endpoint = endpoint
@@ -88,6 +93,12 @@ class DataProviderEtlService():  # BaseMetaDataService):
 
         dp_base_url = self.dataprovider.api_endpoint
         dp_base_url += "/" if dp_base_url[-1] != "/" else ""
+
+        endpoint = self.build_args_for_url(
+            endpoint,
+            StartDateTime=datetime.now() - timedelta(days=30),
+            EndDateTime=datetime.now(),
+            AuthToken=auth_token)
 
         url = parse.urljoin(dp_base_url, endpoint)
         header = {"Authorization": "Bearer %s" % auth_token}
