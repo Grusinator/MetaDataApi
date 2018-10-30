@@ -58,7 +58,7 @@ class RdfInstanceService(BaseRdfSchemaService):
         self.schema = schema
 
         # namespace
-        g.bind(schema_label, self.schema_namespace())
+        g.bind(self.schema.label, self.schema_namespace())
 
         for inst in inst_list:
             inst_class_uri = self.create_uri_ref(inst.base)

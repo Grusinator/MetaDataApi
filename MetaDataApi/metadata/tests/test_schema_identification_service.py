@@ -35,6 +35,7 @@ class TestSchemaIdentificationService(TransactionTestCase):
         from MetaDataApi.metadata.services import (
             JsonSchemaService
         )
+        from MetaDataApi.metadata.models import Schema, Object
 
         rdf_service = RdfSchemaService()
 
@@ -66,8 +67,6 @@ class TestSchemaIdentificationService(TransactionTestCase):
             "/master/schemas/json/omh/test_data/body-temperature/2.0/" + \
             "shouldPass/valid-temperature.json"
 
-        Schema.objects.get(label="open_m_health")
-
         obj_count = Object.objects.all().count()
         # make sure that the number of objects is larger than
         if obj_count < 10:
@@ -77,10 +76,15 @@ class TestSchemaIdentificationService(TransactionTestCase):
             text = resp.read().decode()
 
         service = SchemaIdentificationV2()
+        schema = service._try_get_item(Schema(label="open_m_health"))
 
-        resp, _ = service.identify_data(url)
+        input_data = {
+            "body-temperature": json.loads(text)
+        }
 
-        self.assertEqual(1 + 1, 2)
+        resp, objs = service.map_data_to_native_instances(input_data, schema)
+
+        self.assertEqual(len(objs), 4)
 
 
 class NoDataTestSchemaIdentificationService(TransactionTestCase):

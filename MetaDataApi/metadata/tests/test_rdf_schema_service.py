@@ -54,6 +54,7 @@ class TestRdfSchemaService(TransactionTestCase):
 
     def test_export_rdf(self):
         from MetaDataApi.metadata.services import RdfSchemaService
+        from MetaDataApi.metadata.models import Schema
 
         schema_label = "friend_of_a_friend"
 

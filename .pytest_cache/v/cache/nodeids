@@ -1,4 +1,5 @@
 [
+  "MetaDataApi/dataproviders/tests/test_data_provider_etl_Service.py::TestDataProviderEtlService::test_identify_json_data_sample",
   "MetaDataApi/metadata/tests/test_base_functions.py::TestMetadataBaseFunctionService::test_identify_json_data_sample",
   "MetaDataApi/metadata/tests/test_data_cleaning_service.py::TestDataCleaningService::test_identify_json_data_sample",
   "MetaDataApi/metadata/tests/test_json_schema_service.py::TestJsonService::test_default_schemas",

@@ -35,21 +35,21 @@ class TestRdfInstanceService(TransactionTestCase):
         schema_label = "friend_of_a_friend"
         service = RdfSchemaService()
 
-        schema = service._try_get_item(Schema(label=schema_label))
-
         # just take foaf
         service.write_to_db(rdf_url="http://xmlns.com/foaf/0.1/")
 
+        schema = service._try_get_item(Schema(label=schema_label))
+
         foaf_atts = Attribute.objects.filter(
-            object__schema__label=schema_label)
+            object__schema=schema)
         s = list(filter(lambda x: x.label, foaf_atts))
 
         foaf_person = service.get_foaf_person()
         foaf_name = Attribute.objects.get(label="first_name",
-                                          object__schema__label=schema_label)
+                                          object__schema=schema)
 
         foaf_knows = ObjectRelation.objects.get(label="knows",
-                                                schema__label=schema_label)
+                                                schema=schema)
 
         b1 = ObjectInstance(base=foaf_person)
         b2 = ObjectInstance(base=foaf_person)

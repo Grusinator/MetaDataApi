@@ -131,7 +131,7 @@ class RdfSchemaService(BaseRdfSchemaService):
 
         content = ContentFile(ttl_data)
         # schema.rdfs_file.delete()
-        self.schema.rdfs_file.save(schema_label + ".ttl", content)
+        self.schema.rdfs_file.save(self.schema.label + ".ttl", content)
 
         self.schema.save()
 

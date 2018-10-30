@@ -46,8 +46,36 @@ class DataProviderEtlService():  # BaseMetaDataService):
 
         return data
 
-    def build_args_for_url(self, endpoint):
-        pass
+    def build_args_for_url(self, endpoint, **kwargs):
+
+        self.valid_kwarg_names = [
+            "StartDateTime",
+            "EndDateTime"
+        ]
+
+        for key, value in kwargs.items():
+            test = key in self.valid_kwarg_names
+            assert key in self.valid_kwarg_names, "invalid args"
+
+        self._data_type_converter = {
+            "UTCSEC": lambda x: str(int(x.timestamp()))
+        }
+
+        output_endpoint = endpoint
+
+        args = re.findall("{(.*?)}", endpoint)
+        for arg in args:
+            arg_type, dataformat = arg.split(":")
+            assert arg_type in self.valid_kwarg_names, " invald args in endpoint url"
+            try:
+                value = kwargs[arg_type]
+                converter = self._data_type_converter[dataformat]
+                string = converter(value)
+                output_endpoint = output_endpoint.replace("{%s}" % arg, string)
+            except Exception as e:
+                a = 1
+
+        return output_endpoint
 
     def read_data_from_endpoint(self, endpoint, auth_token=None):
         # remove first slash if exists

@@ -38,11 +38,11 @@ class TestDataCleaningService(TransactionTestCase):
 
         from MetaDataApi.metadata.models import Schema, Object
 
-        service = DataCleaningService()
+        dc_service = DataCleaningService()
 
         schema_label = "open_m_health"
         schema = dc_service._try_get_item(Schema(label=schema_label))
 
-        service.relate_root_classes_to_foaf(schema)
+        dc_service.relate_root_classes_to_foaf(schema)
 
         self.assertEqual(1 + 1, 2)
