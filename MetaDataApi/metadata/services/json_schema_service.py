@@ -45,18 +45,18 @@ class JsonSchemaService(BaseMetaDataService):
             "none": type(None)
         }
 
-    def write_to_db(self, input_url, schema_name):
+    def write_to_db(self, input_url, schema_label):
         self.baseurl, filename = self._infer_info_split_url(input_url)
         label = filename.replace(".json", "")
 
         data = self._read_json_from_url(input_url)
 
-        schema_name = self.standardize_string(
-            schema_name, remove_version=False)
+        schema_label = self.standardize_string(
+            schema_label, remove_version=False)
 
-        self.schema = self._try_get_item(Schema(label=schema_name))
+        self.schema = self._try_get_item(Schema(label=schema_label))
         if not self.schema:
-            self.schema = self.create_new_empty_schema(schema_name)
+            self.schema = self.create_new_empty_schema(schema_label)
 
         return_objects = self._iterate_schema(data, label, filename=filename)
 

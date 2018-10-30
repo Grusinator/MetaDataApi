@@ -61,7 +61,9 @@ class TestRdfSchemaService(TransactionTestCase):
         # just take foaf
         service.write_to_db(rdf_url="http://xmlns.com/foaf/0.1/")
 
-        schema = service.export_schema_from_db(schema_label)
+        schema = service._try_get_item(Schema(label=schema_label))
+
+        schema = service.export_schema_from_db(schema)
 
         read_service = RdfSchemaService()
         objects = read_service.read_objects_from_rdfs(schema.rdfs_file)
@@ -94,7 +96,7 @@ class TestRdfSchemaService(TransactionTestCase):
         schemas = Schema.objects.all()
 
         for schema in schemas:
-            schema = service.export_schema_from_db(schema.label)
+            schema = service.export_schema_from_db(schema)
             before_list = service.touched_meta_items.copy()
 
             service.write_to_db(schema.rdfs_file, overwrite=True)

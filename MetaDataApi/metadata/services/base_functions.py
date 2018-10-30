@@ -95,14 +95,14 @@ class BaseMetaDataService():
         last_elm = endpoint.split("/")[-1]
         return self.standardize_string(last_elm)
 
-    def create_new_empty_schema(self, schema_name):
+    def create_new_empty_schema(self, schema_label):
         self.schema = Schema()
-        self.schema.label = self.standardize_string(schema_name)
+        self.schema.label = self.standardize_string(schema_label)
         self.schema.description = ""
 
         # create a dummy file
         content = ContentFile("")
-        self.schema.rdfs_file.save(schema_name + ".ttl", content)
+        self.schema.rdfs_file.save(schema_label + ".ttl", content)
         self.schema.url = self.schema.rdfs_file.url
         self.schema.save()
 

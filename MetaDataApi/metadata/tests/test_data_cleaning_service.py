@@ -40,6 +40,9 @@ class TestDataCleaningService(TransactionTestCase):
 
         service = DataCleaningService()
 
-        resp = service.relate_root_classes_to_foaf("open_m_health")
+        schema_label = "open_m_health"
+        schema = dc_service._try_get_item(Schema(label=schema_label))
+
+        service.relate_root_classes_to_foaf(schema)
 
         self.assertEqual(1 + 1, 2)

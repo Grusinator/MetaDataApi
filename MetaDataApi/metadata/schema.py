@@ -61,11 +61,11 @@ class DeleteSchema(graphene.Mutation):
     success = graphene.Boolean()
 
     class Arguments:
-        schema_name = graphene.String()
+        schema_label = graphene.String()
 
     @login_required
-    def mutate(self, info, schema_name):
-        if schema_name == "all":
+    def mutate(self, info, schema_label):
+        if schema_label == "all":
             schemas = Schema.objects.all()
             [schema.delete() for schema in schemas]
 
@@ -77,7 +77,7 @@ class DeleteSchema(graphene.Mutation):
             except:
                 print("does not work on AWS, and neither needed")
         else:
-            schema = Schema.objects.get(label=schema_name)
+            schema = Schema.objects.get(label=schema_label)
             schema.delete()
 
         return DeleteSchema(success=True)
@@ -89,12 +89,12 @@ class ExportSchema(graphene.Mutation):
     data = graphene.String()
 
     class Arguments:
-        schema_name = graphene.String()
+        schema_label = graphene.String()
 
-    def mutate(self, info, schema_name):
+    def mutate(self, info, schema_label):
         service = RdfSchemaService()
 
-        schema = service.export_schema_from_db(schema_name)
+        schema = service.export_schema_from_db(schema_label)
 
         schema_file_url = schema.rdfs_file.url
 
@@ -149,6 +149,8 @@ class IdentifyDataFromProvider(graphene.Mutation):
 
         provider_profile = profile.get_data_provider_profile(provider_name)
 
+        schema = rdf_service._try_get_item(Schema(label=provider_name))
+
         # select which endpoints
         if endpoint == "all" or endpoint is None:
             endpoints = json.loads(
@@ -165,12 +167,12 @@ class IdentifyDataFromProvider(graphene.Mutation):
             parrent_label = identify.rest_endpoint_to_label(endpoint)
 
             modified_data, objects = identify.map_data_to_native_instances(
-                data, provider_name, parrent_label)
+                data, schema, parrent_label)
             object_list.extend(objects)
 
         # generate rdf file from data
         rdf_file = rdf_service.export_instances_to_rdf_file(
-            provider_name, objects)
+            schema, objects)
 
         return IdentifyDataFromProvider(modified_data=modified_data,
                                         identified_objects=len(object_list),
@@ -192,6 +194,8 @@ class IdentifySchemaFromProvider(graphene.Mutation):
         profile = info.context.user.profile
         provider_profile = profile.get_data_provider_profile(provider_name)
 
+        schema = provider_service.get_related_schema()
+
         if endpoint == "all" or endpoint is None:
             endpoints = json.loads(
                 provider_service.dataprovider.rest_endpoints_list)
@@ -205,7 +209,7 @@ class IdentifySchemaFromProvider(graphene.Mutation):
             parrent_label = identify.rest_endpoint_to_label(endpoint)
 
             objects = identify.identify_schema_from_dataV2(
-                data, provider_name, parrent_label)
+                data, schema, parrent_label)
             n_objs += len(objects)
 
         return IdentifyDataFromProvider(identified_objects=n_objs)
@@ -276,13 +280,16 @@ class AddPersonReference(graphene.Mutation):
     objects_added = graphene.Int()
 
     class Arguments:
-        url = graphene.String()
+        schema_label = graphene.String()
 
     @login_required
     def mutate(self, info, url):
         service = DataCleaningService()
+
+        schema = service._try_get_item(Schema(label=schema_label))
+
         try:
-            objects = service.relate_root_classes_to_foaf(url)
+            objects = service.relate_root_classes_to_foaf(schema)
         except Exception as e:
             raise GraphQLError(str(e))
 

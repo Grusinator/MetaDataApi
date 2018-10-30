@@ -33,8 +33,10 @@ class TestRdfInstanceService(TransactionTestCase):
             StringAttributeInstance)
 
         schema_label = "friend_of_a_friend"
-
         service = RdfSchemaService()
+
+        schema = service._try_get_item(Schema(label=schema_label))
+
         # just take foaf
         service.write_to_db(rdf_url="http://xmlns.com/foaf/0.1/")
 
@@ -68,6 +70,6 @@ class TestRdfInstanceService(TransactionTestCase):
 
         read_service = RdfInstanceService()
         rdf_file = read_service.export_instances_to_rdf_file(
-            schema_label, objects)
+            schema, objects)
 
         self.assertIsNotNone(rdf_file.url)

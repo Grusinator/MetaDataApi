@@ -36,12 +36,12 @@ class SchemaIdentificationV2(DbObjectCreation):
         self._obj_rel_function = None
 
     #
-    def identify_schema_from_data(self, input_data, schema_name,
+    def identify_schema_from_data(self, input_data, schema_label,
                                   parrent_label=None):
 
-        self.schema = self._try_get_item(Schema(label=schema_name))
+        self.schema = self._try_get_item(Schema(label=schema_label))
         if not self.schema:
-            self.schema = self.create_new_empty_schema(schema_name)
+            self.schema = self.create_new_empty_schema(schema_label)
 
         try:
             person = self.get_foaf_person()
@@ -161,11 +161,11 @@ class SchemaIdentificationV2(DbObjectCreation):
                     value, parrent_object=obj or parrent_object)
 
     #
-    def create_instances_from_data(self, input_data, schema_name,
+    def create_instances_from_data(self, input_data, schema_label,
                                    parrent_label=None, owner=None):
 
         self.owner = owner
-        self.schema = self._try_get_item(Schema(label=schema_name))
+        self.schema = self._try_get_item(Schema(label=schema_label))
         if not self.schema:
             raise Exception("cant create data from native schema, "
                             "if schema does not exists. Try identify "
@@ -385,7 +385,8 @@ class SchemaIdentificationV2(DbObjectCreation):
         # when all objects are mapped return the instances
         return instance_list, modified_data
 
-    def identify_schema_from_dataV2(self, input_data, schema_name,
+    # identify schema new
+    def identify_schema_from_dataV2(self, input_data, schema,
                                   parrent_label=None):
 
         # setup how the loop handles each type of object occurrence
@@ -393,9 +394,7 @@ class SchemaIdentificationV2(DbObjectCreation):
         self._object_function = self.try_create_object
         self._obj_rel_function = self.try_create_object_relation
 
-        self.schema = self._try_get_item(Schema(label=schema_name))
-        if not self.schema:
-            self.schema = self.create_new_empty_schema(schema_name)
+        self.schema = schema 
 
         try:
             person = self.get_foaf_person()
@@ -414,8 +413,8 @@ class SchemaIdentificationV2(DbObjectCreation):
 
         return self.touched_meta_items
 
-    #
-    def map_data_to_native_instances(self, input_data, schema_name,
+    # identify data new
+    def map_data_to_native_instances(self, input_data, schema,
                                      parrent_label=None, owner=None):
 
         # setup how the loop handles each type of object occurrence
@@ -424,11 +423,7 @@ class SchemaIdentificationV2(DbObjectCreation):
         self._object_function = self.try_create_object_instance
         self._obj_rel_function = self.try_create_object_relation_instance
 
-        self.schema = self._try_get_item(Schema(label=schema_name))
-        if not self.schema:
-            raise Exception("cant create data from native schema, "
-                            "if schema does not exists. Try identify "
-                            "schema from data first")
+        self.schema = schema
 
         # test if this is an url
         url_data = self.validate_url(input_data)
@@ -459,6 +454,7 @@ class SchemaIdentificationV2(DbObjectCreation):
 
         return None, self.added_instance_items
 
+    # generic iteration loop
     def iterate_data_generic(self, input_data, parrent_object=None):
         if input_data is None:
             return

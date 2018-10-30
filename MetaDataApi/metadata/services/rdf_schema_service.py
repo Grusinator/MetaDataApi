@@ -25,14 +25,12 @@ class RdfSchemaService(BaseRdfSchemaService):
     def __init__(self):
         super(RdfSchemaService, self).__init__()
 
-    def export_schema_from_db(self, schema_label):
+    def export_schema_from_db(self, schema):
         g = Graph()
         # reset objects created (exported)
         self.touched_meta_items = []
 
-        schema_label = self.standardize_string(schema_label)
-
-        self.schema = Schema.objects.get(label=schema_label)
+        self.schema = schema
 
         # to know which have been exported
         self.touched_meta_items.append(self.schema)
@@ -45,7 +43,7 @@ class RdfSchemaService(BaseRdfSchemaService):
         namespace = self.schema.url.replace(".ttl", "#")
 
         Ontology = Namespace(namespace)
-        g.bind(schema_label, Ontology)
+        g.bind(schema.label, Ontology)
 
         rdf_schema = URIRef(Ontology)
 
@@ -209,7 +207,6 @@ class RdfSchemaService(BaseRdfSchemaService):
 
         # cant load from raw github  ttl if format is not set
         format = "n3" if ".ttl" in rdf_url else None
-        schema_name = rdf_url
 
         if rdf_url in self.selfhosted:
             rdf_url = self.selfhosted[rdf_url]

@@ -31,6 +31,13 @@ class DataProviderEtlService():  # BaseMetaDataService):
     def validate_endpoints(self):
         self.dataprovider
 
+    def get_related_schema(self):
+        schema = self._try_get_item(
+            Schema(label=self.dataprovider.provider_name)
+        )
+        return schema or self.create_new_empty_schema(
+            self.dataprovider.provider_name)
+
     def read_data_from_all_rest_endpoints(self, auth_token=None):
         endpoints = json.loads(self.dataprovider.rest_endpoints_list)
 

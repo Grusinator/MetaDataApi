@@ -33,14 +33,13 @@ class RdfInstanceService(BaseRdfSchemaService):
     def __init__(self):
         super(RdfInstanceService, self).__init__()
 
-    def export_instances_to_rdf_file(self, schema_label, instance_list):
+    def export_instances_to_rdf_file(self, schema, instance_list):
 
-        schema_label = self.standardize_string(schema_label)
         # remove unmapped objects
         instance_list = list(filter(lambda x: not isinstance(
             x, UnmappedObject), instance_list))
 
-        rdf_data = self.export_instances_from_list(schema_label, instance_list)
+        rdf_data = self.export_instances_from_list(schema, instance_list)
 
         content = ContentFile(rdf_data)
 
@@ -49,14 +48,14 @@ class RdfInstanceService(BaseRdfSchemaService):
         )
         # data_dump.save()
         data_dump.rdf_file.save("%s-%s.ttl" %
-                                (schema_label, uuid.uuid4()), content)
+                                (schema.label, uuid.uuid4()), content)
 
         return data_dump.rdf_file
 
-    def export_instances_from_list(self, schema_label, inst_list):
+    def export_instances_from_list(self, schema, inst_list):
         g = Graph()
 
-        self.schema = Schema.objects.get(label=schema_label)
+        self.schema = schema
 
         # namespace
         g.bind(schema_label, self.schema_namespace())

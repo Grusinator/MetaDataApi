@@ -9,15 +9,14 @@ class DataCleaningService(BaseMetaDataService):
     def __init__(self, *args, **kwargs):
         super(DataCleaningService, self).__init__()
 
-    def relate_root_classes_to_foaf(self, schema_label):
+    def relate_root_classes_to_foaf(self, schema):
         foaf = self.get_foaf_person()
 
-        schema_label = self.standardize_string(schema_label)
+        self.schema = schema
 
-        schema = Schema.objects.get(label=schema_label)
         root_objects = Object.objects.filter(
             from_relations=None,
-            schema=schema
+            schema=self.schema
         )
         for obj in root_objects:
             label = "person_has_%s" % obj.label
@@ -25,7 +24,7 @@ class DataCleaningService(BaseMetaDataService):
                 ObjectRelation(
                     from_object=foaf,
                     to_object=obj,
-                    schema=schema,
+                    schema=self.schema,
                     label=label
                 )
             )

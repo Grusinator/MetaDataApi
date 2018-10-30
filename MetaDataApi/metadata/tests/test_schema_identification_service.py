@@ -51,7 +51,10 @@ class TestSchemaIdentificationService(TransactionTestCase):
 
         dc_service = DataCleaningService()
 
-        dc_service.relate_root_classes_to_foaf("open_m_health")
+        schema_label = "open_m_health"
+        schema = dc_service._try_get_item(Schema(label=schema_label))
+
+        dc_service.relate_root_classes_to_foaf(schema)
 
     def test_identify_json_data_sample(self):
         from MetaDataApi.metadata.services import (
@@ -142,7 +145,7 @@ class NoDataTestSchemaIdentificationService(TransactionTestCase):
 
         service = SchemaIdentificationV2()
 
-        schema_name = "Strava"
+        schema_label = "strava"
         label = "activities"
 
         user = User(
@@ -151,16 +154,18 @@ class NoDataTestSchemaIdentificationService(TransactionTestCase):
         )
         user.save()
 
-        service.identify_schema_from_dataV2(
-            data, schema_name, parrent_label=label)
+        schema = service._try_get_item(Schema(label=schema_label))
 
-        data_cleaning.relate_root_classes_to_foaf(schema_name)
+        service.identify_schema_from_dataV2(
+            data, schema, parrent_label=label)
+
+        data_cleaning.relate_root_classes_to_foaf(schema)
 
         _, objects = service.map_data_to_native_instances(
-            data, schema_name, parrent_label=label, owner=user)
+            data, schema, parrent_label=label, owner=user)
 
-        rdf_service.export_schema_from_db(schema_name)
-        fiel = rdf_inst.export_instances_to_rdf_file(schema_name, objects)
+        rdf_service.export_schema_from_db(schema)
+        fiel = rdf_inst.export_instances_to_rdf_file(schema, objects)
 
         print(service.schema.url)
 
