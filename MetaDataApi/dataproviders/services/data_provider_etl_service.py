@@ -59,6 +59,7 @@ class DataProviderEtlService():  # BaseMetaDataService):
 
         self._data_type_converter = {
             "UTCSEC": lambda x: str(int(x.timestamp()))
+            "Y-M-d": lambda x: x.strftime('%Y-%m-%d')
         }
 
         output_endpoint = endpoint

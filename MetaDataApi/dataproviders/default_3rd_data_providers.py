@@ -26,15 +26,18 @@ default_data_providers = [
         client_id="a80378abe1059ef7c415cf79b09b1270f828c4a0fbfdc52dbec06ae5f71b4bb6",
         client_secret="1f1d852451385469a56ef6494cbd2e94c07421c3ee5ffbfca63216079fd36d1a",
         scope=json.dumps([
-            "user.info",
-            "user.metrics",
+            # issues with multiple scopes for some reason, but first when i log in
+            # "user.info",
+            # "user.metrics",
             "user.activity"
         ]),
         redirect_uri=redirect_uri,
         rest_endpoints_list=json.dumps([
-            "v2/user?action=getdevice",
-            "measure?action=getmeas",
-            "v2/sleep?action=get"]),
+            # "v2/user?action=getdevice",
+            # "measure?action=getmeas",
+            "v2/sleep?action=getsummary&startdateymd={StartDateTime:Y-M-d}&enddateymd={EndDateTime:Y-M-d}",
+            "v2/sleep?action=get&startdate={StartDateTime:UTCSEC}&enddate={EndDateTime:UTCSEC}",
+        ]),
         json_schema_file_url=""
     ),
     ThirdPartyDataProvider(
