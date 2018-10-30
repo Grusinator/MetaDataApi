@@ -51,10 +51,10 @@ class BaseRdfSchemaService(BaseMetaDataService):
         }
 
         self.rdfs_data_type_map = {
-            XSD.datetime: datetime,
+            XSD.dateTime: datetime,
             XSD.float: float,
             XSD.int: int,
-            XSD.bool: bool,
+            XSD.boolean: bool,
             XSD.string: str,
             RDFS.Literal: str,
         }
@@ -129,9 +129,9 @@ class BaseRdfSchemaService(BaseMetaDataService):
     def att_type_to_rdfs_uri(self, attr_type):
 
         # inverse of data_type_map
-        dtype = self.inverse_dict(Attribute.data_type_map, attr_type)
+        datatype = self.inverse_dict(Attribute.data_type_map, attr_type)
 
-        # default to string if none
-        dtype = dtype or str
+        # default to string if nonetype
+        datatype = datatype if datatype != type(None) else str
         # inverse self.rdfs_data_type_map lookup
-        return self.inverse_dict(self.rdfs_data_type_map, dtype)
+        return self.inverse_dict(self.rdfs_data_type_map, datatype)

@@ -15,6 +15,7 @@ from service_objects.services import Service
 import uuid
 import dateutil
 from datetime import datetime
+import inflection
 
 
 from MetaDataApi.datapoints.models import (
@@ -34,6 +35,7 @@ class BaseMetaDataService():
 
         self.added_meta_items = []
         self.touched_meta_items = []
+        self.added_instance_items = []
         self._error_list = []
         # one switch to force overwrite the objects when
         self.overwrite_db_objects = False
@@ -51,6 +53,9 @@ class BaseMetaDataService():
             IntAttributeInstance: int,
             BoolAttributeInstance: bool
         }
+
+        self.att_types = tuple(typ if isinstance(typ, type) else type(typ)
+                               for typ in Attribute.data_type_map.keys())
 
         self.att_instances = tuple(self.att_inst_to_type_map.keys())
 
@@ -159,21 +164,34 @@ class BaseMetaDataService():
         # else:
 
     def identify_datatype(self, element):
-        # even though it is a string,
-        # it might really be a int or float
-        # so if string verify!!
+        if element is None:
+            return None
 
         def test_float(elm):
             assert ("." in elm), "does not contain decimal separator"
             return float(elm)
 
+        def test_bool(elm):
+            trues = ("true", "True")
+            falses = ("false", "False")
+
+            if elm in trues:
+                return True
+            elif elm in falses:
+                return False
+            else:
+                raise ValueError("is not either true or false")
+
+        # even though it is a string,
+        # it might really be a int or float
+        # so if string verify!!
         if isinstance(element, str):
             conv_functions = {
-                float: lambda elm: test_float(elm),
+                float: test_float,
                 int: lambda elm: int(elm),
                 datetime: lambda elm: dateutil.parser.parse(elm),
                 str: lambda elm: str(elm),
-                bool: lambda elm: bool(elm)
+                bool: test_bool
             }
 
             order = [float, int, datetime, bool, str]
@@ -192,8 +210,6 @@ class BaseMetaDataService():
         elif isinstance(element, (float, int, bool)):
             # otherwise just return the type of
             return element
-        else:
-            return None
 
     def _try_get_item(self, item, parrent_label=None):
         # standardize label string

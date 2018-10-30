@@ -42,6 +42,7 @@ class JsonSchemaService(BaseMetaDataService):
             "int": int,
             "bool": bool,
             "string": str,
+            "none": type(None)
         }
 
     def write_to_db(self, input_url, schema_name):

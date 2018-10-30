@@ -204,7 +204,7 @@ class IdentifySchemaFromProvider(graphene.Mutation):
 
             parrent_label = identify.rest_endpoint_to_label(endpoint)
 
-            objects = identify.identify_schema_from_data(
+            objects = identify.identify_schema_from_dataV2(
                 data, provider_name, parrent_label)
             n_objs += len(objects)
 

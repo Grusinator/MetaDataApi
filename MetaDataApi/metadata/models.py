@@ -85,7 +85,7 @@ class Attribute(models.Model):
         int: "int",
         bool: "bool",
         str: "string",
-        None: "unknown"
+        type(None): "unknown"
     }
     data_type_choises = [(x, x) for x in data_type_map.values()]
 

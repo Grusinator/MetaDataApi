@@ -104,7 +104,10 @@ class NoDataTestSchemaIdentificationService(TransactionTestCase):
             # ("2019-20-04:20:30:59", datetime),
             (2, int),
             ("1", int),
-            ("test", str)
+            ("test", str),
+            ("False", bool),
+            (True, bool),
+            (None, type(None))
         ]
 
         inputd, expected = zip(*input_vs_expected)
@@ -118,12 +121,13 @@ class NoDataTestSchemaIdentificationService(TransactionTestCase):
     def test_identify_json_data_strava_test(self):
         from MetaDataApi.metadata.services import (
             RdfSchemaService, DataCleaningService,
-            SchemaIdentificationV2)
+            SchemaIdentificationV2, RdfInstanceService)
 
         from MetaDataApi.metadata.models import Schema, Object
         from django.contrib.auth.models import User
 
         rdf_service = RdfSchemaService()
+        rdf_inst = RdfInstanceService()
 
         data_cleaning = DataCleaningService()
 
@@ -139,7 +143,7 @@ class NoDataTestSchemaIdentificationService(TransactionTestCase):
         service = SchemaIdentificationV2()
 
         schema_name = "Strava"
-        label = "activites"
+        label = "activities"
 
         user = User(
             username="test",
@@ -147,16 +151,17 @@ class NoDataTestSchemaIdentificationService(TransactionTestCase):
         )
         user.save()
 
-        service.identify_schema_from_data(
+        service.identify_schema_from_dataV2(
             data, schema_name, parrent_label=label)
 
         data_cleaning.relate_root_classes_to_foaf(schema_name)
 
-        resp = service.map_data_to_native_instances(
+        _, objects = service.map_data_to_native_instances(
             data, schema_name, parrent_label=label, owner=user)
 
         rdf_service.export_schema_from_db(schema_name)
+        fiel = rdf_inst.export_instances_to_rdf_file(schema_name, objects)
 
         print(service.schema.url)
 
-        self.assertGreater(len(resp), 10)
+        self.assertGreater(len(objects), 10)

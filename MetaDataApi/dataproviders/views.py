@@ -42,17 +42,18 @@ def oauth2redirect(request):
 
         provider_name, user_id = state.split(":")
 
-        dp = ThirdPartyDataProvider.objects.get(provider_name=provider_name)
+        data_provider = ThirdPartyDataProvider.objects.get(
+            provider_name=provider_name)
 
         data = {
             "grant_type": "authorization_code",
             "code": code,
-            "client_id": dp.client_id,
-            "client_secret": dp.client_secret,
-            "redirect_uri": dp.redirect_uri,
+            "client_id": data_provider.client_id,
+            "client_secret": data_provider.client_secret,
+            "redirect_uri": data_provider.redirect_uri,
         }
 
-        url = dp.access_token_url
+        url = data_provider.access_token_url
         r = requests.post(url, data=data, allow_redirects=True)
 
         json_obj = json.loads(r.content)
@@ -70,11 +71,12 @@ def oauth2redirect(request):
             profile = Profile.objects.get(user__pk=user_id)
 
         try:
-            tpp = ThirdPartyProfile.objects.get(profile=profile)
+            tpp = ThirdPartyProfile.objects.get(
+                profile=profile, provider=data_provider)
             tpp.access_token = access_token
         except:
             tpp = ThirdPartyProfile(
-                provider=dp,
+                provider=data_provider,
                 access_token=access_token,
                 profile=profile,
                 profile_json_field=json_obj

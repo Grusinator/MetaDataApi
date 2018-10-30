@@ -85,7 +85,7 @@ class SchemaIdentificationV2(DbObjectCreation):
         # the value of the dict is tested for being an attribute
         elif not isinstance(input_data, dict):
             data_as_type = self.identify_datatype(input_data)
-            datatype = type(data_as_type) if data_as_type is not None else None
+            datatype = type(data_as_type) # if data_as_type is not None else None
             # create the attribute with the parrent
             # label since its a list of values
             # we dont know what it is called
@@ -119,7 +119,7 @@ class SchemaIdentificationV2(DbObjectCreation):
 
                 data_as_type = self.identify_datatype(value)
                 datatype = type(
-                    data_as_type) if data_as_type is not None else None
+                    data_as_type) #if data_as_type is not None else None
 
                 att_obj = self._try_get_item(parrent_object)
 
@@ -385,6 +385,35 @@ class SchemaIdentificationV2(DbObjectCreation):
         # when all objects are mapped return the instances
         return instance_list, modified_data
 
+    def identify_schema_from_dataV2(self, input_data, schema_name,
+                                  parrent_label=None):
+
+        # setup how the loop handles each type of object occurrence
+        self._att_function = self.try_create_attribute
+        self._object_function = self.try_create_object
+        self._obj_rel_function = self.try_create_object_relation
+
+        self.schema = self._try_get_item(Schema(label=schema_name))
+        if not self.schema:
+            self.schema = self.create_new_empty_schema(schema_name)
+
+        try:
+            person = self.get_foaf_person()
+            self.touched_meta_items.append(person)
+        except Exception as e:
+            raise Exception("foaf person was not found")
+        # TODO: Relate to logged in person object instead
+
+        if parrent_label:
+            input_data = {
+                parrent_label: input_data
+            }
+
+        self.iterate_data_generic(
+            input_data, parrent_object=person)
+
+        return self.touched_meta_items
+
     #
     def map_data_to_native_instances(self, input_data, schema_name,
                                      parrent_label=None, owner=None):
@@ -426,26 +455,11 @@ class SchemaIdentificationV2(DbObjectCreation):
         if parrent_label is not None:
             input_data = {parrent_label: input_data, }
 
-        objects, modified_data = self.iterate_map_data_to_native_instances(
-            input_data, person)
+        self.iterate_data_generic(input_data, person)
 
-        # only objects, remove attributes and relations
-        unmapped_objects = list(filter(lambda x: isinstance(x, UnmappedObject),
-                                       objects))
+        return None, self.added_instance_items
 
-        # only objects, remove attributes and relations
-        only_obj_objects = list(filter(lambda x: isinstance(x, ObjectInstance),
-                                       objects))
-
-        # relate to foaf
-        # conn_objects, failed = self.connect_objects_to_foaf(only_obj_objects)
-
-        # serialized_data = self.serialize_objects(objects)
-
-        return modified_data, objects
-
-    def iterate_map_data_to_native_instances(self, input_data,
-                                             parrent_object=None):
+    def iterate_data_generic(self, input_data, parrent_object=None):
         if input_data is None:
             return
 
@@ -459,9 +473,8 @@ class SchemaIdentificationV2(DbObjectCreation):
 
             for elm in input_data:
                 # if isinstance(elm, (dict, list)):
-                self.iterate_map_data_to_native_instances(
+                self.iterate_data_generic(
                     elm, parrent_object)
-                t = 1
             return
         # it must be some sort of value, this might only happen
         # if the parrent structure is a list, because if it is a dict
@@ -469,38 +482,35 @@ class SchemaIdentificationV2(DbObjectCreation):
         elif not isinstance(input_data, dict):
             if parrent_object is not None:
                 self._att_function(parrent_object, input_data,
-                                   parrent_object.base.label)
-
+                                   None)
             return
+        elif isinstance(input_data, dict):
+            for key, value in input_data.items():
+                # this is likely a object if it contains other
+                # attributes or objects
 
-        a = 1
+                # this must be an attribute
+                # test if value dict only contains
+                # "value", "unit" and whatever attr
+                if isinstance(value, self.att_types) or \
+                        (isinstance(value, dict) and
+                         self.dict_contains_only_attr(value)):
+                        # it is probably an attribute
 
-        for key, value in input_data.items():
-            # this is likely a object if it contains other
-            # attributes or objects
+                    self._att_function(parrent_object, value, key)
 
-            # this must be an attribute
-            # test if value dict only contains
-            # "value", "unit" and whatever attr
-            if isinstance(value, (str, int, float)) or \
-                    (isinstance(value, dict) and
-                     self.dict_contains_only_attr(value)):
-                    # it is probably an attribute
+                # its probably a object
+                else:
+                    obj = self._object_function(parrent_object, value, key)
 
-                self._att_function(parrent_object, value, key)
+                    obj_rel = self._obj_rel_function(parrent_object, obj, None)
 
-            # its probably a object
-            elif value is None:
-                return
-            else:
-                obj = self._object_function(parrent_object, value, key)
+                    # then iterate down the object value
+                    # to find connected objects
+                    self.iterate_data_generic(
+                        value, parrent_object=obj or parrent_object)
 
-                obj_rel = self._obj_rel_function(parrent_object, obj, None)
 
-                # then iterate down the object value
-                # to find connected objects
-                self.iterate_map_data_to_native_instances(
-                    value, parrent_object=obj or parrent_object)
 
     #
     def connect_objects_to_foaf(self, objects):

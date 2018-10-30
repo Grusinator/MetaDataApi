@@ -39,6 +39,9 @@ class DataProviderEtlService():  # BaseMetaDataService):
 
         return data
 
+    def build_args_for_url(self, endpoint):
+        pass
+
     def read_data_from_endpoint(self, endpoint, auth_token=None):
         # remove first slash if exists
         endpoint = endpoint[1:] if endpoint[0] == "/" else endpoint

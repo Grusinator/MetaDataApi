@@ -30,6 +30,8 @@ class RdfSchemaService(BaseRdfSchemaService):
         # reset objects created (exported)
         self.touched_meta_items = []
 
+        schema_label = self.standardize_string(schema_label)
+
         self.schema = Schema.objects.get(label=schema_label)
 
         # to know which have been exported
@@ -169,8 +171,6 @@ class RdfSchemaService(BaseRdfSchemaService):
         self.overwrite_db_objects = overwrite
 
         g = self._create_graph_from_url(rdf_url)
-
-        missing_list = self._validate_dependencies(g)
 
         self.schema = self._create_schema_from_graph(g)
 

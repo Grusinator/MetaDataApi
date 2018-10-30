@@ -35,6 +35,7 @@ class RdfInstanceService(BaseRdfSchemaService):
 
     def export_instances_to_rdf_file(self, schema_label, instance_list):
 
+        schema_label = self.standardize_string(schema_label)
         # remove unmapped objects
         instance_list = list(filter(lambda x: not isinstance(
             x, UnmappedObject), instance_list))
