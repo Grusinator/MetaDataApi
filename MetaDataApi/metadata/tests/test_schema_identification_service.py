@@ -82,7 +82,7 @@ class TestSchemaIdentificationService(TransactionTestCase):
             "body-temperature": json.loads(text)
         }
 
-        resp, objs = service.map_data_to_native_instances(input_data, schema)
+        objs = service.map_data_to_native_instances(input_data, schema)
 
         self.assertEqual(len(objs), 4)
 
@@ -165,7 +165,7 @@ class NoDataTestSchemaIdentificationService(TransactionTestCase):
 
         data_cleaning.relate_root_classes_to_foaf(schema)
 
-        _, objects = service.map_data_to_native_instances(
+        objects = service.map_data_to_native_instances(
             data, schema, parrent_label=label, owner=user)
 
         rdf_service.export_schema_from_db(schema)

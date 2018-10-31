@@ -6,7 +6,7 @@ from datetime import datetime
 
 class Schema(models.Model):
 
-    label = models.TextField()
+    label = models.TextField(unique=True)
     description = models.TextField(null=True, blank=True)
     url = models.URLField(unique=True)
     rdfs_file = models.FileField(
@@ -27,7 +27,6 @@ class Schema(models.Model):
         return not self.__eq__(other)
 
     class Meta:
-        unique_together = ('label', 'url')
         app_label = 'metadata'
 
 

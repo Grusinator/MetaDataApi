@@ -63,7 +63,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 'service_objects',
+    'service_objects',
     'graphene_django',
     'oauth2_provider',
     'corsheaders',
