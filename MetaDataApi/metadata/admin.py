@@ -5,13 +5,23 @@ import webbrowser
 from MetaDataApi.metadata.models import (
     Schema, Object, Attribute, ObjectRelation)
 
-from MetaDataApi.metadata.services import ExportSchemaService,
-AddRdfSchemaService
+from MetaDataApi.metadata.services import (
+    ExportSchemaService, AddRdfSchemaService, AddPersonReferenceToBaseObjects)
 
 models = (Object, Attribute, ObjectRelation)
 
 
 [admin.site.register(model) for model in models]
+
+
+def relate_to_foaf(modeladmin, request, queryset):
+    pass
+
+
+def add_open_m_health(modeladmin, request, queryset):
+    AddJsonSchemaService.execute({
+        "url": "open_m_health"
+    })
 
 
 def add_rdf_defaults(modeladmin, request, queryset):
@@ -40,7 +50,7 @@ export_schema.short_description = "Export to RDF file (use the url)"
 class SchemaAdmin(admin.ModelAdmin):
     list_display = ['label', 'url']
     ordering = ['label']
-    actions = [export_schema, visualize]
+    actions = [export_schema, visualize, add_open_m_health]
 
 
 admin.site.register(Schema, SchemaAdmin)
