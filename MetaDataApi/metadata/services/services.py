@@ -13,7 +13,7 @@ from MetaDataApi.dataproviders.models import ThirdPartyDataProvider
 from MetaDataApi.dataproviders.services.data_provider_etl_service import DataProviderEtlService
 
 
-class DeleteSchema(Service):
+class DeleteSchemaService(Service):
     schema_label = forms.CharField()
 
     def process(self):
@@ -35,7 +35,7 @@ class DeleteSchema(Service):
             schema.delete()
 
 
-class ExportSchema(Service):
+class ExportSchemaService(Service):
     schema_label = forms.CharField()
 
     def process(self):
@@ -48,9 +48,10 @@ class ExportSchema(Service):
         service.export_schema_from_db(schema)
 
         schema_file_url = schema.rdfs_file.url
+        return schema_file_url
 
 
-class IdentifySchemaFromFile(Service):
+class IdentifySchemaFromFileService(Service):
     file = forms.FileField()
     schema_label = forms.CharField()
 
@@ -73,7 +74,7 @@ class IdentifySchemaFromFile(Service):
         return objects
 
 
-class IdentifyDataFromFile(Service):
+class IdentifyDataFromFileService(Service):
     schema_label = forms.CharField()
     file = forms.FileField()
     data_label = forms.CharField()
@@ -201,11 +202,12 @@ class AddJsonSchemaService(Service):
         service = JsonSchemaService()
         if url == "open_m_health":
             try:
+                service.write_to_db_baseschema()
+                # import threading
 
-                import threading
-                task = service.write_to_db_baseschema
-                thr = threading.Thread(target=task)
-                thr.start()  # Will run
+                # task = service.write_to_db_baseschema
+                # thr = threading.Thread(target=task)
+                # thr.start()  # Will run
 
             except Exception as e:
                 raise GraphQLError(e)

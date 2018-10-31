@@ -59,6 +59,7 @@ class ObjectRelationNode(DjangoObjectType):
 
 
 # Mutations
+@user_passes_test(lambda u: u.is_superuser)
 class DeleteSchema(graphene.Mutation):
     success = graphene.Boolean()
 
@@ -103,6 +104,7 @@ class IdentifySchemaFromFile(graphene.Mutation):
         file = Upload(required=True)
         schema_label = graphene.String()
 
+    @login_required
     def mutate(self, info, file, schema_label):
         args = locals()
         [args.pop(x) for x in ["info", "self", "args"]]
