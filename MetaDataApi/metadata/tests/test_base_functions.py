@@ -3,9 +3,9 @@ from django.test import TestCase, TransactionTestCase
 from urllib import request
 from MetaDataApi.metadata.models import Object
 from django.core.management import call_command
-from MetaDataApi.metadata.services.data_cleaning_service import (
-    DataCleaningService
-)
+from MetaDataApi.metadata.services import BaseMetaDataService
+
+from MetaDataApi.metadata.tests import TestDataInits
 
 
 class TestMetadataBaseFunctionService(TransactionTestCase):
@@ -19,6 +19,46 @@ class TestMetadataBaseFunctionService(TransactionTestCase):
     def setUpClass(cls):
         super(TestMetadataBaseFunctionService, cls).setUpClass()
         django.setup()
+
+    def test_path_to_foaf_person(self):
+        from MetaDataApi.metadata.services.base_functions import (
+            BaseMetaDataService)
+        from MetaDataApi.metadata.models import (
+            Object, Attribute, ObjectRelation, Schema)
+
+        from MetaDataApi.metadata.services import RdfSchemaService
+
+        url = "http://xmlns.com/foaf/0.1/"
+
+        service = RdfSchemaService()
+
+        service.write_to_db(url)
+
+        att = Attribute(object=Object.objects.get(label="image"),
+                        label="test_att",
+                        datatype="float")
+        att.save()
+
+        foaf, to_foaf_p_list = service.path_to_foaf_person(att)
+
+        self.assertListEqual(to_foaf_p_list, [att.object, ])
+
+    def test_get_connected_pair(self):
+        from MetaDataApi.metadata.models import Attribute
+        from MetaDataApi.metadata.services import BaseMetaDataService
+        TestDataInits.init_strava_data_from_file()
+        service = BaseMetaDataService()
+
+        att1 = Attribute.objects.get(
+            label="name", object__schema__label="strava")
+        att2 = Attribute.objects.get(
+            label="distance", object__schema__label="strava")
+
+        data = service.get_connected_attribute_pairs(att1, att2)
+
+        expected = []
+
+        self.assertListEqual(data, expected)
 
     def test_identify_json_data_sample(self):
         from MetaDataApi.metadata.services.base_functions import (

@@ -95,6 +95,20 @@ default_data_providers = [
         json_schema_file_url=""
     ),
     ThirdPartyDataProvider(
+        provider_name="google_drive",
+        api_endpoint="",
+        authorize_url="https://accounts.google.com/o/oauth2/v2/auth",
+        access_token_url="https://www.googleapis.com/oauth2/v4/token",
+        client_id="166351402500-m9302qf47ua66qbr1gdbgrronssnm2v2.apps.googleusercontent.com",
+        client_secret="W_jKUZmRCGl05G-TMYuFPbjY",
+        scope=json.dumps([
+            "https://www.googleapis.com/auth/drive",  # full access, change later
+        ]),
+        redirect_uri=redirect_uri,
+        rest_endpoints_list=json.dumps([]),
+        json_schema_file_url="https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"
+    ),
+    ThirdPartyDataProvider(
         provider_name="template",
         api_endpoint="",
         authorize_url="",

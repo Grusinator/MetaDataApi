@@ -32,6 +32,7 @@ class BaseMetaDataService():
         # super(BaseMetaDataService, self).__init__()
         self.schema = None
         self.baseurl = None
+        self.foaf_person = None
 
         self.added_meta_items = []
         self.touched_meta_items = []
@@ -372,11 +373,97 @@ class BaseMetaDataService():
         return False
 
     def get_foaf_person(self):
-        schema = Schema.objects.get(label="friend_of_a_friend")
-        find_obj = Object.objects.get(label="person", schema=schema)
-        return find_obj
+        if not self.foaf_person:
+            schema = Schema.objects.get(label="friend_of_a_friend")
+            self.foaf_person = Object.objects.get(
+                label="person", schema=schema)
+        return self.foaf_person
 
     def att_to_att_inst(self, attr):
         datatype = self.inverse_dict(Attribute.data_type_map, attr.datatype)
 
         return self.inverse_dict(self.att_inst_to_type_map, datatype)
+
+    def get_connected_attribute_pairs(self, att_1, att_2):
+
+        foaf1, att1_list = BaseMetaDataService.path_to_object(
+            att_1, self.get_foaf_person(), childrens=[])
+
+        foaf2, att2_list = BaseMetaDataService.path_to_object(
+            att_2, self.get_foaf_person(), childrens=[])
+
+        # get first common object
+        common_set = set(att1_list) & set(att2_list)
+        common_obj = next(filter(lambda x: x in common_set, att1_list))
+
+        # truncate list down to common object
+        att1_list = att1_list[:att1_list.index(common_obj)+1]
+        att2_list = att2_list[:att2_list.index(common_obj)+1]
+
+        returns = []
+
+        common_instances = ObjectInstance.objects.filter(base=common_obj)
+        for common_instance in common_instances:
+            value1 = self.get_specific_child(
+                common_instance, att_1, path=att1_list)
+            value2 = self.get_specific_child(
+                common_instance, att_2, path=att2_list)
+            returns.append((value1, value2))
+
+        return returns
+
+    def get_specific_child(self, obj_inst, child, path=None):
+        """
+        get a decendent object, either att, or obj of a specific type
+        """
+        if path is None:
+            path = self.path_to_object(child, obj_inst.base)
+
+        search_args = self.build_search_args_from_list(path, obj_inst)
+        AttributeInstance = self.att_to_att_inst(child)
+        try:
+            return AttributeInstance.objects.get(**search_args)
+        except ObjectDoesNotExist as e:
+            pass
+
+    def build_search_args_from_list(self, path, obj_inst):
+        search_args = {}
+        base_arg_name = "from_relations__from_object__"
+        arg_name = ""
+        # loop though all but last
+        for obj in path:
+            if isinstance(obj, Attribute):
+                arg_name += "object__"
+                search_args["base__label"] = obj.label
+            elif obj == obj_inst.base:
+                # last elm add primary key
+                search_args[arg_name + "pk"] = obj_inst.pk
+            else:
+                # Not neccesary as long as pk is being added
+                # search_args[arg_name + "base__label"] = obj.label
+                arg_name += base_arg_name
+
+        return search_args
+
+    @staticmethod
+    def path_to_object(obj, root_obj, childrens=[]):
+        if isinstance(obj, Attribute):
+            # add to path
+            childrens.append(obj)
+            obj = obj.object
+        if obj == root_obj:
+            return obj, childrens
+        else:
+            parrent_rels = obj.from_relations.all()
+            childrens.append(obj)
+            for parrent_rel in parrent_rels:
+                parrent_obj = parrent_rel.from_object
+
+                obj, childrens = BaseMetaDataService.path_to_object(
+                    parrent_obj, root_obj, childrens=childrens)
+
+                if obj == root_obj:
+                    return obj, list(childrens)
+
+            # this branch has been exhausted, return none
+            return None, childrens

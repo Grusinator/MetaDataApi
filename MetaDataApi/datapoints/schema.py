@@ -20,7 +20,8 @@ from MetaDataApi.datapoints.models import (
     ObjectRelationInstance,
     GenericAttributeInstance,
     FloatAttributeInstance,
-    StringAttributeInstance)
+    StringAttributeInstance,
+    DateTimeAttributeInstance)
 
 from MetaDataApi.metadata.models import (
     Attribute, Object, ObjectRelation, Schema
@@ -29,10 +30,13 @@ from MetaDataApi.metadata.models import (
 from MetaDataApi.datapoints.schema_processing import ProcessRawData
 from MetaDataApi.users.models import Profile
 
+from MetaDataApi.datapoints.services import GetTemporalFloatPairsService
+
 from MetaDataApi.datapoints.services.google_speech_api import transcribe_file
 # from MetaDataApi.datapoints.services.sound_processing_services import SoundClassifier
 
 GrapheneCategoryTypes = Enum.from_enum(CategoryTypes)
+
 
 # specific ( only for query )
 
@@ -54,7 +58,23 @@ class GenericAttributeType(DjangoObjectType):
         model = GenericAttributeInstance
         # Allow for some more advanced filtering here
         interfaces = (graphene.relay.Node, )
-        filter_fields = ['name', ]
+        filter_fields = ['value', ]
+
+
+class TemporalAttributeType(DjangoObjectType):
+    class Meta:
+        model = DateTimeAttributeInstance
+        # Allow for some more advanced filtering here
+        interfaces = (graphene.relay.Node, )
+        filter_fields = ['value', ]
+
+
+class FloatAttributeType(DjangoObjectType):
+    class Meta:
+        model = FloatAttributeInstance
+        # Allow for some more advanced filtering here
+        interfaces = (graphene.relay.Node, )
+        filter_fields = ['value', ]
 
 
 class AttributeType(DjangoObjectType):
@@ -62,6 +82,98 @@ class AttributeType(DjangoObjectType):
         # all common attribute properties here!
         model = GenericAttributeInstance
         interfaces = (graphene.relay.Node, )
+
+
+class TemporalFloatAttributeType(DjangoObjectType):
+    value = FloatAttributeType
+    datetime = TemporalAttributeType
+
+    class Meta:
+        interfaces = (graphene.relay.node, )
+        filter_fields = ["value", "datetime"]
+
+
+# test upload
+class GetTemporalFloatPairs(graphene.Mutation):
+    data = graphene.List(TemporalFloatAttributeType)
+
+    class Arguments:
+        schema_label = graphene.String()
+        object_label = graphene.String()
+        attribute_label = graphene.String()
+        datetime_label = graphene.String()
+
+    success = graphene.Boolean()
+
+    def mutate(self, info, schema_label, object_label,
+               attribute_label, datetime_label=None):
+
+        args = locals()
+        [args.pop(x) for x in ["info", "self", "args"]]
+        args["user_pk"] = info.context.user.pk
+
+        data = GetTemporalFloatPairsService.execute(args)
+
+        return GetTemporalFloatPairs(data=data)
+
+
+class CreateRawData(graphene.Mutation):
+    rawdata = Field(RawDataType)
+
+    class Arguments:
+        starttime = graphene.DateTime()
+        stoptime = graphene.DateTime()
+        files = Upload()  # image and audio
+        value = graphene.Float()
+        std = graphene.Float()
+        text = graphene.String()
+
+        # meta params
+        source = graphene.String()
+        category = GrapheneCategoryTypes()
+        label = graphene.String()
+
+    @login_required
+    def mutate(self, info, source, category, label, starttime, stoptime=None,
+               value=None, std=None, text=None, files=None):
+
+        # handle metadata here
+
+        # Raw data should be processed into datapoints
+        try:
+            function = ProcessRawData.select_mutate_variant(self, category)
+
+            datalist = function(self, info, source, category, label, starttime,
+                                stoptime=None, value=None, std=None, text=None,
+                                files=None)
+
+            for data in datalist:
+                if isinstance(GenericAttributeInstance):
+                    data.save()
+                elif isinstance(RawData):
+                    data.metadata = None
+                    data.save()
+                    # make sure that the raw data is passed to response
+                    rawdata = data
+        except:
+            pass
+            print("eror occored while processing raw data..")
+
+            rawdata = RawData(
+                starttime=starttime,
+                stoptime=stoptime,
+                image=None,
+                audio=None,
+                value=value,
+                std=std,
+                text=text,
+                metadata=None,
+                owner=info.context.user
+            )
+
+            rawdata.save()
+
+        return CreateRawData(rawdata=rawdata)
 
 
 class CreateDatapoint(graphene.Mutation):
@@ -211,8 +323,9 @@ class Upload2Files(graphene.Mutation):
 
 class Query(graphene.ObjectType):
     datapoint = graphene.Field(AttributeType)
-    all_rawdata = graphene.List(RawDataType)
     all_datapoints = graphene.List(AttributeType)
+
+    all_rawdata = graphene.List(RawDataType)
 
     @login_required
     def resolve_datapoint(self, info):
