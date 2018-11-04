@@ -20,8 +20,8 @@ class GetTemporalFloatPairsService(Service):
     schema_label = forms.CharField()
     object_label = forms.CharField()
     attribute_label = forms.CharField()
-    datetime_label = forms.CharField()
-    datetime_object_label = forms.CharField()
+    datetime_label = forms.CharField(required=False)
+    datetime_object_label = forms.CharField(required=False)
 
     def process(self):
         schema_label = self.cleaned_data['schema_label']

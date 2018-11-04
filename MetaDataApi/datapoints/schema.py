@@ -88,10 +88,6 @@ class TemporalFloatAttributeType(ObjectType):
     value = Field(FloatAttributeType)
     datetime = Field(TemporalAttributeType)
 
-    # class Meta:
-    #     interfaces = (graphene.relay.node, )
-    #     filter_fields = ["value", "datetime"]
-
 
 # test upload
 class GetTemporalFloatPairs(graphene.Mutation):
@@ -105,7 +101,8 @@ class GetTemporalFloatPairs(graphene.Mutation):
         datetime_object_label = graphene.String()
 
     def mutate(self, info, schema_label, object_label,
-               attribute_label, datetime_label=None, datetime_object_label=None):
+               attribute_label, datetime_label=None,
+               datetime_object_label=None):
 
         args = locals()
         [args.pop(x) for x in ["info", "self", "args"]]
