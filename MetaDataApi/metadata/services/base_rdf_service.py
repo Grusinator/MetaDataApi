@@ -121,9 +121,9 @@ class BaseRdfSchemaService(BaseMetaDataService):
     def rdfs_to_att_type(self, type_name):
         # self._split_rdfs_url(range)[1]
         try:
-            dtype = self.rdfs_type_map.get(type_name)
+            dtype = self.rdfs_data_type_map.get(type_name)
             return Attribute.data_type_map[dtype]
-        except:
+        except Exception as e:
             return Attribute.data_type_map.get(None)
 
     def att_type_to_rdfs_uri(self, attr_type):

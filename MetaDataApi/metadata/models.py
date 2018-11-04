@@ -108,6 +108,16 @@ class Attribute(models.Model):
     def __ne__(self, other):
         return not self.__eq__(other)
 
+    @staticmethod
+    def assert_datatype(attribute, datatype):
+        datatype_name = Attribute.data_type_map[datatype]
+        assert attribute.datatype == datatype_name, \
+            "the found attr: %s has type %s, but it must be a %s" % (
+                attribute.label,
+                attribute.datatype,
+                str(datatype_name)
+            )
+
     class Meta:
         unique_together = ('label', 'object')
         app_label = 'metadata'

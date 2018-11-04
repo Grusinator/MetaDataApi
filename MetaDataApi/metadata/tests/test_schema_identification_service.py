@@ -70,6 +70,7 @@ class TestSchemaIdentificationService(TransactionTestCase):
             ("20.40", float),
             (2.4, float),
             ("2012-01-19 17:21:00", datetime),
+            ('2018-10-02T16: 16: 49Z', datetime),
             # ("2019-20-04:20:30:59", datetime),
             (2, int),
             ("1", int),

@@ -186,6 +186,23 @@ class BaseMetaDataService():
             else:
                 raise ValueError("is not either true or false")
 
+        def test_datetime(text):
+            try:
+                return dateutil.parser.parse(text)
+            except:
+
+                datetime_formats = (
+                    '%Y-%m-%dT%H: %M: %SZ',  # strava
+                )
+
+                for fmt in datetime_formats:
+                    try:
+                        return datetime.strptime(text, fmt)
+                    except ValueError as e:
+                        pass
+
+                raise ValueError('no valid date format found')
+
         # even though it is a string,
         # it might really be a int or float
         # so if string verify!!
@@ -193,7 +210,7 @@ class BaseMetaDataService():
             conv_functions = {
                 float: test_float,
                 int: lambda elm: int(elm),
-                datetime: lambda elm: dateutil.parser.parse(elm),
+                datetime: test_datetime,
                 str: lambda elm: str(elm),
                 bool: test_bool
             }
@@ -424,7 +441,10 @@ class BaseMetaDataService():
         try:
             return AttributeInstance.objects.get(**search_args)
         except ObjectDoesNotExist as e:
-            pass
+            return None
+        except MultipleObjectsReturned as e:
+            print("WARNING: obj, contains multiple object, first is taken")
+            return next(AttributeInstance.objects.filter(**search_args))
 
     def build_search_args_from_list(self, path, obj_inst):
         search_args = {}

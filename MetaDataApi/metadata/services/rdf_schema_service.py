@@ -455,7 +455,7 @@ class RdfSchemaService(BaseRdfSchemaService):
 
             attribute = self._try_create_item(
                 Attribute(
-                    datatype=self.rdfs_data_type_map[range],
+                    datatype=self.rdfs_to_att_type(range),
                     label=label,
                     object=object
                 )

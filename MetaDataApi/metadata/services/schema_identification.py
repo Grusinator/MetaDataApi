@@ -97,7 +97,11 @@ class SchemaIdentificationV2(DbObjectCreation):
             raise Exception("foaf person was not found")
         # TODO: Relate to logged in foaf person object instance instead
 
-        if parrent_label is not None:
+        if parrent_label is not None and isinstance(input_data, list):
+            # if its a list, we have to create a base object for each element
+            input_data = [{parrent_label: elm}for elm in input_data]
+        if parrent_label is not None and isinstance(input_data, dict):
+            # if its a dict, just add the parrent label
             input_data = {parrent_label: input_data, }
 
         self.iterate_data_generic(input_data, person)

@@ -7,6 +7,8 @@ from MetaDataApi.metadata.services import BaseMetaDataService
 
 from MetaDataApi.metadata.tests import TestDataInits
 
+from MetaDataApi.metadata.services import *
+
 
 class TestServices(TransactionTestCase):
     """Tests for the application views."""
@@ -20,5 +22,16 @@ class TestServices(TransactionTestCase):
         super(TestServices, cls).setUpClass()
         django.setup()
 
-    def test(self):
-        pass
+    def DeleteSchemaServiceTest(self):
+
+        TestDataInits.init_strava_schema_from_file()
+
+        args = {
+            schema_label: "strava",
+        }
+
+        data = DeleteSchemaService.execute(args)
+
+        schema = next(Schema.objects.filter(label="strava"))
+
+        self.assertIsNone(schema)

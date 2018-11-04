@@ -16,9 +16,6 @@ class TestRdfSchemaService(TransactionTestCase):
         django.setup()
         super(TestRdfSchemaService, cls).setUpClass()
 
-        TestDataInits.init_rdf_base()
-        TestDataInits.init_open_m_health_sample()
-
     def test_create_default_graphs(self):
         from MetaDataApi.metadata.services import RdfSchemaService
         from MetaDataApi.metadata.models import Schema, Object, ObjectRelation
@@ -46,13 +43,9 @@ class TestRdfSchemaService(TransactionTestCase):
         from MetaDataApi.metadata.services import RdfSchemaService
         from MetaDataApi.metadata.models import Schema
 
-        schema_label = "friend_of_a_friend"
-
-        TestDataInits.init_foaf()
-
         service = RdfSchemaService()
 
-        schema = service._try_get_item(Schema(label=schema_label))
+        schema = TestDataInits.init_foaf()
 
         schema = service.export_schema_from_db(schema)
 
@@ -82,6 +75,9 @@ class TestRdfSchemaService(TransactionTestCase):
     def test_circle(self):
         from MetaDataApi.metadata.services import RdfSchemaService
         from MetaDataApi.metadata.models import Schema, Object, ObjectRelation
+
+        TestDataInits.init_rdf_base()
+        TestDataInits.init_open_m_health_sample()
 
         service = RdfSchemaService()
 

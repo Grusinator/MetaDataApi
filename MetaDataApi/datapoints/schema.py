@@ -102,11 +102,12 @@ class GetTemporalFloatPairs(graphene.Mutation):
         object_label = graphene.String()
         attribute_label = graphene.String()
         datetime_label = graphene.String()
+        datetime_object_label = graphene.String()
 
     success = graphene.Boolean()
 
     def mutate(self, info, schema_label, object_label,
-               attribute_label, datetime_label=None):
+               attribute_label, datetime_label=None, datetime_object_label=None):
 
         args = locals()
         [args.pop(x) for x in ["info", "self", "args"]]
