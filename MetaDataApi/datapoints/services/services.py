@@ -53,4 +53,7 @@ class GetTemporalFloatPairsService(Service):
         service = BaseMetaDataService()
         data = service.get_connected_attribute_pairs(value_att, datetime_att)
 
+        # data_values = [(att_inst1.value, att_inst2.value)
+        #                for att_inst1, att_inst2 in data]
+
         return data

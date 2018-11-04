@@ -9,6 +9,7 @@ from graphene_file_upload.scalars import Upload
 from graphql.error import GraphQLError
 
 from graphql_jwt.decorators import login_required
+from django.contrib.auth.decorators import user_passes_test
 
 from django.contrib.auth.models import User
 from MetaDataApi.settings import MEDIA_ROOT
@@ -59,7 +60,6 @@ class ObjectRelationNode(DjangoObjectType):
 
 
 # Mutations
-@user_passes_test(lambda u: u.is_superuser)
 class DeleteSchema(graphene.Mutation):
     success = graphene.Boolean()
 
@@ -67,6 +67,7 @@ class DeleteSchema(graphene.Mutation):
         schema_label = graphene.String()
 
     @login_required
+    @user_passes_test(lambda u: u.is_superuser)
     def mutate(self, info, schema_label):
         args = locals()
         [args.pop(x) for x in ["info", "self", "args"]]

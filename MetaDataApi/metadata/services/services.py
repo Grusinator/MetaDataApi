@@ -156,9 +156,8 @@ class IdentifyDataFromProviderService(Service):
         provider_service = DataProviderEtlService(provider_name)
         rdf_service = RdfInstanceService()
 
-        profile = info.context.user.profile
-
-        provider_profile = profile.get_data_provider_profile(provider_name)
+        provider_profile = user.profile.get_data_provider_profile(
+            provider_name)
 
         schema = rdf_service._try_get_item(Schema(label=provider_name))
 

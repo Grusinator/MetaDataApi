@@ -84,13 +84,13 @@ class AttributeType(DjangoObjectType):
         interfaces = (graphene.relay.Node, )
 
 
-class TemporalFloatAttributeType(DjangoObjectType):
-    value = FloatAttributeType
-    datetime = TemporalAttributeType
+class TemporalFloatAttributeType(ObjectType):
+    value = Field(FloatAttributeType)
+    datetime = Field(TemporalAttributeType)
 
-    class Meta:
-        interfaces = (graphene.relay.node, )
-        filter_fields = ["value", "datetime"]
+    # class Meta:
+    #     interfaces = (graphene.relay.node, )
+    #     filter_fields = ["value", "datetime"]
 
 
 # test upload
@@ -104,8 +104,6 @@ class GetTemporalFloatPairs(graphene.Mutation):
         datetime_label = graphene.String()
         datetime_object_label = graphene.String()
 
-    success = graphene.Boolean()
-
     def mutate(self, info, schema_label, object_label,
                attribute_label, datetime_label=None, datetime_object_label=None):
 
@@ -115,7 +113,11 @@ class GetTemporalFloatPairs(graphene.Mutation):
 
         data = GetTemporalFloatPairsService.execute(args)
 
-        return GetTemporalFloatPairs(data=data)
+        return_data = [TemporalFloatAttributeType(
+            value=value, datetime=datetime)
+            for value, datetime in data]
+
+        return GetTemporalFloatPairs(data=return_data)
 
 
 class CreateRawData(graphene.Mutation):
@@ -352,3 +354,4 @@ class Mutation(graphene.ObjectType):
     create_rawdata = CreateRawData.Field()
     upload_file = UploadFile.Field()
     upload2_files = Upload2Files.Field()
+    get_temporal_float_pairs = GetTemporalFloatPairs.Field()
