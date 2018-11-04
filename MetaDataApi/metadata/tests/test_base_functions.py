@@ -3,16 +3,11 @@ from django.test import TestCase, TransactionTestCase
 from urllib import request
 from MetaDataApi.metadata.models import Object
 from django.core.management import call_command
-from MetaDataApi.metadata.services import BaseMetaDataService
-
 from MetaDataApi.metadata.tests import TestDataInits
 
 
 class TestMetadataBaseFunctionService(TransactionTestCase):
     """Tests for the application views."""
-    # fixtures = [
-    #     'metadata/fixtures/new_load.json',
-    # ]
 
     # Django requires an explicit setup() when running tests in PTVS
     @classmethod
@@ -21,31 +16,26 @@ class TestMetadataBaseFunctionService(TransactionTestCase):
         django.setup()
 
     def test_path_to_foaf_person(self):
-        from MetaDataApi.metadata.services.base_functions import (
-            BaseMetaDataService)
+        from MetaDataApi.metadata.services import BaseMetaDataService
         from MetaDataApi.metadata.models import (
             Object, Attribute, ObjectRelation, Schema)
 
-        from MetaDataApi.metadata.services import RdfSchemaService
-
-        url = "http://xmlns.com/foaf/0.1/"
-
-        service = RdfSchemaService()
-
-        service.write_to_db(url)
+        TestDataInits.init_foaf()
 
         att = Attribute(object=Object.objects.get(label="image"),
                         label="test_att",
                         datatype="float")
         att.save()
-
-        foaf, to_foaf_p_list = service.path_to_foaf_person(att)
+        service = BaseMetaDataService()
+        foaf, to_foaf_p_list = service.path_to_object(
+            att, service.get_foaf_person())
 
         self.assertListEqual(to_foaf_p_list, [att.object, ])
 
     def test_get_connected_pair(self):
         from MetaDataApi.metadata.models import Attribute
         from MetaDataApi.metadata.services import BaseMetaDataService
+        TestDataInits.init_strava_schema_from_file()
         TestDataInits.init_strava_data_from_file()
         service = BaseMetaDataService()
 
@@ -60,7 +50,7 @@ class TestMetadataBaseFunctionService(TransactionTestCase):
 
         self.assertListEqual(data, expected)
 
-    def test_identify_json_data_sample(self):
+    def test_is_object_in_list(self):
         from MetaDataApi.metadata.services.base_functions import (
             BaseMetaDataService)
         from MetaDataApi.metadata.models import (

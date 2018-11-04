@@ -3,7 +3,7 @@ from django.test import TestCase, TransactionTestCase
 import collections
 from django.db import transaction
 
-
+from MetaDataApi.metadata.tests import TestDataInits
 # TODO: Configure your database in settings.py and sync before running tests.
 
 
@@ -16,18 +16,8 @@ class TestRdfSchemaService(TransactionTestCase):
         django.setup()
         super(TestRdfSchemaService, cls).setUpClass()
 
-        # populate the database
-        from MetaDataApi.metadata.services import RdfSchemaService
-        from MetaDataApi.metadata.services import (
-            JsonSchemaService
-        )
-        rdf_service = RdfSchemaService()
-
-        rdf_service.write_to_db_baseschema()
-
-        json_service = JsonSchemaService()
-
-        json_service.write_to_db_baseschema(sample=True)
+        TestDataInits.init_rdf_base()
+        TestDataInits.init_open_m_health_sample()
 
     def test_create_default_graphs(self):
         from MetaDataApi.metadata.services import RdfSchemaService
@@ -58,15 +48,16 @@ class TestRdfSchemaService(TransactionTestCase):
 
         schema_label = "friend_of_a_friend"
 
+        TestDataInits.init_foaf()
+
         service = RdfSchemaService()
-        # just take foaf
-        service.write_to_db(rdf_url="http://xmlns.com/foaf/0.1/")
 
         schema = service._try_get_item(Schema(label=schema_label))
 
         schema = service.export_schema_from_db(schema)
 
         read_service = RdfSchemaService()
+
         objects = read_service.read_objects_from_rdfs(schema.rdfs_file)
 
         labels = list(map(lambda x: x.label, objects))

@@ -4,6 +4,8 @@ from urllib import request
 from MetaDataApi.metadata.models import Object
 from django.core.management import call_command
 
+from MetaDataApi.metadata.tests import TestDataInits
+
 
 class TestDataCleaningService(TransactionTestCase):
 
@@ -19,15 +21,9 @@ class TestDataCleaningService(TransactionTestCase):
             JsonSchemaService
         )
 
-        rdf_service = RdfSchemaService()
+        TestDataInits.init_foaf()
 
-        # just take foaf
-        rdf_service.write_to_db(rdf_url="http://xmlns.com/foaf/0.1/")
-
-        json_service = JsonSchemaService()
-
-        # this takes to long time if doing full
-        json_service.write_to_db_baseschema(positive_list=[
+        TestDataInits.init_open_m_health_sample(extras=[
             "body-temperature-2.0.json",
             "body-temperature-2.x.json",
         ])

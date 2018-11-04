@@ -23,8 +23,20 @@ class TestDataInits:
         )
         user.save()
 
+        return user
+
     @staticmethod
-    def init_strava_data_from_file():
+    def init_foaf():
+        from MetaDataApi.metadata.services import (
+            RdfSchemaService)
+        rdf_service = RdfSchemaService()
+        # just take foaf
+        rdf_service.write_to_db(rdf_url="http://xmlns.com/foaf/0.1/")
+
+        return rdf_service.schema
+
+    @staticmethod
+    def init_strava_schema_from_file():
         from MetaDataApi.metadata.services import (
             RdfInstanceService, RdfSchemaService, DataCleaningService,
             SchemaIdentificationV2
@@ -32,16 +44,13 @@ class TestDataInits:
 
         from MetaDataApi.metadata.models import Schema, Object, Attribute
 
-        user = TestDataInits.init_base()
+        TestDataInits.init_foaf()
 
-        rdf_service = RdfSchemaService()
         rdf_inst = RdfInstanceService()
 
         data_cleaning = DataCleaningService()
 
-        # just take foaf
-        rdf_service.write_to_db(rdf_url="http://xmlns.com/foaf/0.1/")
-
+        # load the file
         testfile = os.path.join(
             settings.BASE_DIR,
             "MetaDataApi/metadata/tests/data/json/strava_activities.json")
@@ -60,5 +69,68 @@ class TestDataInits:
 
         data_cleaning.relate_root_classes_to_foaf(schema)
 
+        return schema
+
+    @staticmethod
+    def init_strava_data_from_file():
+        from MetaDataApi.metadata.services import (
+            RdfInstanceService, RdfSchemaService, DataCleaningService,
+            SchemaIdentificationV2
+        )
+        from MetaDataApi.metadata.models import Schema, Object, Attribute
+
+        user = TestDataInits.init_base()
+
+        service = SchemaIdentificationV2()
+
+        # load the file
+        testfile = os.path.join(
+            settings.BASE_DIR,
+            "MetaDataApi/metadata/tests/data/json/strava_activities.json")
+        with open(testfile) as f:
+            data = json.loads(f.read())
+
+        schema = service._try_get_item(Schema(label="strava"))
+
+        label = "activities"
+
         objects = service.map_data_to_native_instances(
             data, schema, parrent_label=label, owner=user)
+
+        return objects
+
+    @staticmethod
+    def init_open_m_health_sample(extras=None):
+                # populate the database
+
+        from MetaDataApi.metadata.services import (
+            JsonSchemaService, DataCleaningService
+        )
+
+        schema_label = "open_m_health"
+
+        service = JsonSchemaService()
+
+        schema = service.create_new_empty_schema(schema_label)
+
+        # Takes to long time to do full
+        service.write_to_db_baseschema(sample=True, positive_list=extras)
+
+        DataCleaningService().relate_root_classes_to_foaf(schema)
+
+        return schema
+
+    @staticmethod
+    def init_rdf_base():
+        from MetaDataApi.metadata.services import RdfSchemaService
+        rdf_service = RdfSchemaService()
+
+        rdf_service.write_to_db_baseschema()
+
+    @staticmethod
+    def init_full():
+        TestDataInits.init_base()
+        TestDataInits.init_rdf_base()
+        TestDataInits.init_open_m_health_sample()
+        TestDataInits.init_strava_schema_from_file()
+        TestDataInits.init_strava_data_from_file()

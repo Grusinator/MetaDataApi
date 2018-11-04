@@ -71,10 +71,14 @@ class JsonSchemaService(BaseMetaDataService):
         # take subset if requested
         _schema_names = schema_names[0:6] if sample else schema_names
 
+        if positive_list:
+            valids = set(positive_list) & set(schema_names)
+            # add valids to schema names
+            _schema_names = list(set(_schema_names) | valids)
+
         for name in _schema_names:
-            if not positive_list or (positive_list and name in positive_list):
-                obj_list = self.write_to_db(baseurl + name, "openMHealth")
-                print(len(obj_list))
+            obj_list = self.write_to_db(baseurl + name, "openMHealth")
+            print(len(obj_list))
 
     def _read_json_from_url(self, url):
 

@@ -1,7 +1,7 @@
 import django
 from django.test import TestCase, TransactionTestCase
 
-
+from MetaDataApi.metadata.tests import TestDataInits
 # TODO: Configure your database in settings.py and sync before running tests.
 
 
@@ -14,18 +14,7 @@ class TestJsonService(TransactionTestCase):
         django.setup()
         super(TestJsonService, cls).setUpClass()
 
-        # populate the database
-        from MetaDataApi.metadata.services import RdfSchemaService
-        from MetaDataApi.metadata.services import (
-            JsonSchemaService
-        )
-        rdf_service = RdfSchemaService()
-
-        rdf_service.write_to_db_baseschema()
-
-        service = JsonSchemaService()
-        # Takes to long time to do full
-        # service.write_to_db_baseschema(sample=True)
+        TestDataInits.init_open_m_health_sample()
 
     def test_upwrite_to_db(self):
         from MetaDataApi.metadata.services import (

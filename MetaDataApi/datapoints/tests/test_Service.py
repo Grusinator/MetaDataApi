@@ -14,7 +14,7 @@ class TestService(TransactionTestCase):
         super(TestService, cls).setUpClass()
         django.setup()
 
-    def test_identify_json_data_sample(self):
+    def test(self):
         from MetaDataApi.dataproviders.services import (
             DataProviderEtlService)
 

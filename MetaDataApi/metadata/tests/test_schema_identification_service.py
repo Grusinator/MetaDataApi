@@ -10,6 +10,8 @@ from MetaDataApi.metadata.services.data_cleaning_service import (
 )
 from django.conf import settings
 
+from MetaDataApi.metadata.tests import TestDataInits
+
 
 class TestSchemaIdentificationService(TransactionTestCase):
     """Tests for the application views."""
@@ -23,45 +25,18 @@ class TestSchemaIdentificationService(TransactionTestCase):
         super(TestSchemaIdentificationService, cls).setUpClass()
         django.setup()
 
-        # call_command(
-        #     'loaddata',
-        #     'metadata/fixtures/new_load.json',
-        #     verbosity=0
-        # )
-        # call_command('loaddata', 'fixtures/testdb.json', verbosity=1)
-
-        # populate the database
-        from MetaDataApi.metadata.services import RdfSchemaService
-        from MetaDataApi.metadata.services import (
-            JsonSchemaService
-        )
-        from MetaDataApi.metadata.models import Schema, Object
-
-        rdf_service = RdfSchemaService()
-
-        # just take foaf
-        rdf_service.write_to_db(rdf_url="http://xmlns.com/foaf/0.1/")
-
-        json_service = JsonSchemaService()
-
-        # this takes to long time if doing full
-        json_service.write_to_db_baseschema(positive_list=[
-            "body-temperature-2.0.json",
-            "body-temperature-2.x.json",
-        ])
-
-        dc_service = DataCleaningService()
-
-        schema_label = "open_m_health"
-        schema = dc_service._try_get_item(Schema(label=schema_label))
-
-        dc_service.relate_root_classes_to_foaf(schema)
-
     def test_identify_json_data_sample(self):
         from MetaDataApi.metadata.services import (
             SchemaIdentificationV2)
 
         from MetaDataApi.metadata.models import Schema, Object
+
+        TestDataInits.init_foaf()
+
+        TestDataInits.init_open_m_health_sample(extras=[
+            "body-temperature-2.0.json",
+            "body-temperature-2.x.json",
+        ])
 
         url = "https://raw.githubusercontent.com/Grusinator/MetaDataApi" + \
             "/master/schemas/json/omh/test_data/body-temperature/2.0/" + \
@@ -85,19 +60,6 @@ class TestSchemaIdentificationService(TransactionTestCase):
         objs = service.map_data_to_native_instances(input_data, schema)
 
         self.assertEqual(len(objs), 4)
-
-
-class NoDataTestSchemaIdentificationService(TransactionTestCase):
-    """Tests for the application views."""
-    # fixtures = [
-    #     'metadata/fixtures/new_load.json',
-    # ]
-
-    # Django requires an explicit setup() when running tests in PTVS
-    @classmethod
-    def setUpClass(cls):
-        super(NoDataTestSchemaIdentificationService, cls).setUpClass()
-        django.setup()
 
     def test_identify_datatype(self):
         from MetaDataApi.metadata.services import (
@@ -133,44 +95,20 @@ class NoDataTestSchemaIdentificationService(TransactionTestCase):
         from MetaDataApi.metadata.models import Schema, Object
         from django.contrib.auth.models import User
 
-        rdf_service = RdfSchemaService()
         rdf_inst = RdfInstanceService()
 
         data_cleaning = DataCleaningService()
 
-        # just take foaf
-        rdf_service.write_to_db(rdf_url="http://xmlns.com/foaf/0.1/")
+        TestDataInits.init_foaf()
 
-        testfile = os.path.join(
-            settings.BASE_DIR,
-            "MetaDataApi/metadata/tests/data/json/strava_activities.json")
-        with open(testfile) as f:
-            data = json.loads(f.read())
+        schema = TestDataInits.init_strava_schema_from_file()
 
-        service = SchemaIdentificationV2()
+        objects = TestDataInits.init_strava_data_from_file()
 
-        schema_label = "strava"
-        label = "activities"
+        RdfSchemaService().export_schema_from_db(schema)
 
-        user = User(
-            username="test",
-            password="dummy1234"
-        )
-        user.save()
+        file = RdfInstanceService().export_instances_to_rdf_file(schema, objects)
 
-        schema = service._try_get_item(Schema(label=schema_label))
-
-        service.identify_schema_from_dataV2(
-            data, schema, parrent_label=label)
-
-        data_cleaning.relate_root_classes_to_foaf(schema)
-
-        objects = service.map_data_to_native_instances(
-            data, schema, parrent_label=label, owner=user)
-
-        rdf_service.export_schema_from_db(schema)
-        fiel = rdf_inst.export_instances_to_rdf_file(schema, objects)
-
-        print(service.schema.url)
+        print(schema.url)
 
         self.assertGreater(len(objects), 10)

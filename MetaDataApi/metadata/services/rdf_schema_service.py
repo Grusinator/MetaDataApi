@@ -214,6 +214,7 @@ class RdfSchemaService(BaseRdfSchemaService):
             g.parse(rdf_url, format=format)
         except URLError as e:
             print("could not fetch schema from url: " + rdf_url)
+            raise(e)
             return None
         return g
 
@@ -253,10 +254,6 @@ class RdfSchemaService(BaseRdfSchemaService):
                 pass
 
         if rdf_url is None:
-            for s, p, o in g:
-                s = str(s)
-                p = str(p)
-                o = str(o)
             return None
 
         label_keys = [

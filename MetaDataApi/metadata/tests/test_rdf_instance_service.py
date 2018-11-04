@@ -3,7 +3,7 @@ from django.test import TestCase, TransactionTestCase
 import collections
 from django.db import transaction
 
-
+from MetaDataApi.metadata.tests import TestDataInits
 # TODO: Configure your database in settings.py and sync before running tests.
 
 
@@ -16,7 +16,7 @@ class TestRdfInstanceService(TransactionTestCase):
         django.setup()
         super(TestRdfInstanceService, cls).setUpClass()
 
-    def test_export_rdf(self):
+    def test_(self):
         from MetaDataApi.metadata.services import (
             RdfSchemaService, RdfInstanceService)
 
@@ -32,11 +32,11 @@ class TestRdfInstanceService(TransactionTestCase):
             FloatAttributeInstance,
             StringAttributeInstance)
 
-        schema_label = "friend_of_a_friend"
-        service = RdfSchemaService()
+        TestDataInits.init_foaf()
 
-        # just take foaf
-        service.write_to_db(rdf_url="http://xmlns.com/foaf/0.1/")
+        service = RdfInstanceService()
+
+        schema_label = "friend_of_a_friend"
 
         schema = service._try_get_item(Schema(label=schema_label))
 
@@ -68,8 +68,7 @@ class TestRdfInstanceService(TransactionTestCase):
 
         objects = [b1, b2, name1, name2, rel1]
 
-        read_service = RdfInstanceService()
-        rdf_file = read_service.export_instances_to_rdf_file(
+        rdf_file = service.export_instances_to_rdf_file(
             schema, objects)
 
         self.assertIsNotNone(rdf_file.url)

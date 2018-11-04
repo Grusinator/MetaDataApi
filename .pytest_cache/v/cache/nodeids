@@ -1,19 +1,20 @@
 [
-  "MetaDataApi/datapoints/tests/test_Service.py::TestService::test_identify_json_data_sample",
-  "MetaDataApi/dataproviders/tests/test_data_provider_etl_Service.py::TestDataProviderEtlService::test_identify_json_data_sample",
+  "MetaDataApi/datapoints/tests/test_Service.py::TestService::test",
+  "MetaDataApi/dataproviders/tests/test_data_provider_etl_Service.py::TestDataProviderEtlService::test",
   "MetaDataApi/metadata/tests/test_base_functions.py::TestMetadataBaseFunctionService::test_get_connected_pair",
-  "MetaDataApi/metadata/tests/test_base_functions.py::TestMetadataBaseFunctionService::test_identify_json_data_sample",
+  "MetaDataApi/metadata/tests/test_base_functions.py::TestMetadataBaseFunctionService::test_is_object_in_list",
   "MetaDataApi/metadata/tests/test_base_functions.py::TestMetadataBaseFunctionService::test_path_to_foaf_person",
   "MetaDataApi/metadata/tests/test_data_cleaning_service.py::TestDataCleaningService::test_identify_json_data_sample",
   "MetaDataApi/metadata/tests/test_json_schema_service.py::TestJsonService::test_default_schemas",
   "MetaDataApi/metadata/tests/test_json_schema_service.py::TestJsonService::test_json_write_to_db_body_temp",
   "MetaDataApi/metadata/tests/test_json_schema_service.py::TestJsonService::test_upwrite_to_db",
-  "MetaDataApi/metadata/tests/test_rdf_instance_service.py::TestRdfInstanceService::test_export_rdf",
+  "MetaDataApi/metadata/tests/test_rdf_instance_service.py::TestRdfInstanceService::test_",
   "MetaDataApi/metadata/tests/test_rdf_schema_service.py::TestRdfSchemaService::test_circle",
   "MetaDataApi/metadata/tests/test_rdf_schema_service.py::TestRdfSchemaService::test_create_default_graphs",
   "MetaDataApi/metadata/tests/test_rdf_schema_service.py::TestRdfSchemaService::test_export_rdf",
   "MetaDataApi/metadata/tests/test_rdf_schema_service.py::TestRdfSchemaService::test_upload_rdf",
+  "MetaDataApi/metadata/tests/test_schema_identification_service.py::TestSchemaIdentificationService::test_identify_datatype",
   "MetaDataApi/metadata/tests/test_schema_identification_service.py::TestSchemaIdentificationService::test_identify_json_data_sample",
-  "MetaDataApi/metadata/tests/test_schema_identification_service.py::NoDataTestSchemaIdentificationService::test_identify_datatype",
-  "MetaDataApi/metadata/tests/test_schema_identification_service.py::NoDataTestSchemaIdentificationService::test_identify_json_data_strava_test"
+  "MetaDataApi/metadata/tests/test_schema_identification_service.py::TestSchemaIdentificationService::test_identify_json_data_strava_test",
+  "MetaDataApi/metadata/tests/test_services.py::TestServices::test"
 ]
