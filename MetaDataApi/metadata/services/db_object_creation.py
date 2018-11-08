@@ -166,3 +166,15 @@ class DbObjectCreation(BaseMetaDataService):
                     parrent_label=parrent_object.base.label,
                     childrens=data.base.label
                 ))
+
+    def try_create_attribute_and_instance(self, parrent_object, data, label):
+        self.try_create_attribute(parrent_object, data, label)
+        return self.try_create_attribute_instance(parrent_object, data, label)
+
+    def try_create_object_and_instance(self, parrent_object, data, label):
+        self.try_create_object(parrent_object, data, label)
+        return self.try_create_object_instance(parrent_object, data, label)
+
+    def try_create_object_relation_and_instance(self, parrent_object, data, label):
+        self.try_create_object_relation(parrent_object, data, label)
+        return self.try_create_object_relation_instance(parrent_object, data, label)

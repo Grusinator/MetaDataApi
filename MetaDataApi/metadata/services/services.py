@@ -52,36 +52,42 @@ class ExportSchemaService(Service):
 
 
 class IdentifySchemaFromFileService(Service):
-    file = forms.FileField()
+    file = forms.FileField(required=False)
     schema_label = forms.CharField()
+    data_label = forms.CharField(required=False)
 
     def process(self):
-        file = self.cleaned_data['file']
+        file = next(self.files.values())
         schema_label = self.cleaned_data['schema_label']
+        data_label = self.cleaned_data['data_label']
 
         identify = SchemaIdentificationV2()
 
-        with open(uploaded_file) as f:
-            data = json.loads(f)
+        data = json.loads(file.read())
+
+        data_label = data_label or identify.standardize_string(
+            file.name, remove_version=True)
 
         # here we have no idea about the origin if not specified
         # TODO: consider if its better to do something else
-        schema = identify._try_create_item(Schema(label=schema_label))
+        schema = identify._try_get_item(Schema(label=schema_label))
+        if not schema:
+            schema = identify.create_new_empty_schema(schema_label)
 
         objects = identify.identify_schema_from_dataV2(
-            data, schema)
+            data, schema, data_label)
 
         return objects
 
 
 class IdentifyDataFromFileService(Service):
     schema_label = forms.CharField()
-    file = forms.FileField()
-    data_label = forms.CharField()
+    file = forms.FileField(required=False)
+    data_label = forms.CharField(required=False)
     user_pk = forms.IntegerField()
 
     def process(self):
-        file = self.cleaned_data['file']
+        file = next(self.files.values())
         schema_label = self.cleaned_data['schema_label']
         data_label = self.cleaned_data['data_label']
         user_pk = self.cleaned_data['user_pk']
@@ -89,9 +95,10 @@ class IdentifyDataFromFileService(Service):
 
         identify = SchemaIdentificationV2()
 
-        uploaded_file = info.context.FILES.get(file)
-        with open(uploaded_file) as f:
-            data = json.loads(f)
+        data = json.loads(file.read())
+
+        data_label = data_label or identify.standardize_string(
+            file.name, remove_version=True)
 
         # here we have no idea about the origin if not specified
         # TODO: consider if its better to do something else
@@ -177,6 +184,52 @@ class IdentifyDataFromProviderService(Service):
             parrent_label = identify.rest_endpoint_to_label(endpoint)
 
             objects = identify.map_data_to_native_instances(
+                data, schema, parrent_label)
+            object_list.extend(objects)
+
+        # generate rdf file from data
+        rdf_file = rdf_service.export_instances_to_rdf_file(
+            schema, objects)
+
+        return rdf_file, object_list
+
+
+class IdentifySchemaAndDataFromProviderService(Service):
+    provider_name = forms.CharField()
+    endpoint = forms.CharField()
+    user_pk = forms.IntegerField()
+
+    def process(self):
+        provider_name = self.cleaned_data['provider_name']
+        endpoint = self.cleaned_data['endpoint']
+        user_pk = self.cleaned_data['user_pk']
+        user = User.objects.get(pk=user_pk)
+
+        identify = SchemaIdentificationV2()
+        provider_service = DataProviderEtlService(provider_name)
+        rdf_service = RdfInstanceService()
+
+        provider_profile = user.profile.get_data_provider_profile(
+            provider_name)
+
+        schema = rdf_service._try_get_item(Schema(label=provider_name))
+
+        # select which endpoints
+        if endpoint == "all" or endpoint is None:
+            endpoints = json.loads(
+                provider_service.dataprovider.rest_endpoints_list)
+        else:
+            endpoints = [endpoint, ]
+
+        # identify objects for each endpoint
+        object_list = []
+        for endpoint in endpoints:
+            data = provider_service.read_data_from_endpoint(
+                endpoint, provider_profile.access_token)
+
+            parrent_label = identify.rest_endpoint_to_label(endpoint)
+
+            objects = identify.add_schema_and_data(
                 data, schema, parrent_label)
             object_list.extend(objects)
 

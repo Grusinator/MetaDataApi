@@ -108,7 +108,54 @@ class SchemaIdentificationV2(DbObjectCreation):
 
         return self.added_instance_items
 
+    # identify data new
+
+    def add_schema_and_data(self, input_data, schema,
+                            parrent_label=None, owner=None):
+
+        # setup how the loop handles each type of object occurrence
+        self.owner = owner
+        self._att_function = self.try_create_attribute_and_instance
+        self._object_function = self.try_create_object__and_instance
+        self._obj_rel_function = self.try_create_object_relation_and_instance
+
+        self.schema = schema
+
+        # test if this is an url
+        url_data = self.validate_url(input_data)
+
+        # try to get the last dir of the url if applicable
+        parrent_label = parrent_label or (
+            url_data and "/".split(input_data)[-1])
+
+        input_data = url_data or input_data
+        # json data can either be list or dict
+        if not isinstance(input_data, (dict, list)):
+            input_data = json.loads(input_data)
+
+        # create a base person to relate the data to
+        try:
+            person = ObjectInstance(
+                base=self.get_foaf_person()
+            )
+            person.save()
+        except Exception as e:
+            raise Exception("foaf person was not found")
+        # TODO: Relate to logged in foaf person object instance instead
+
+        if parrent_label is not None and isinstance(input_data, list):
+            # if its a list, we have to create a base object for each element
+            input_data = [{parrent_label: elm}for elm in input_data]
+        if parrent_label is not None and isinstance(input_data, dict):
+            # if its a dict, just add the parrent label
+            input_data = {parrent_label: input_data, }
+
+        self.iterate_data_generic(input_data, person)
+
+        return self.added_instance_items
+
     # generic iteration loop
+
     def iterate_data_generic(self, input_data, parrent_object=None):
         if input_data is None:
             return

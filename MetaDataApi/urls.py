@@ -18,6 +18,8 @@ from django.urls import path, include
 from django.conf.urls import url
 from graphene_django.views import GraphQLView
 
+from graphene_file_upload.django import FileUploadGraphQLView
+
 from django.conf.urls.static import static
 from django.conf import settings
 
@@ -31,7 +33,7 @@ urlpatterns = [
     path('providers/', data_provider_list, name='providers'),
     #path("provider_list", provider_list_view.as_view(), name='provider_list'),
     url(r'^oauth2redirect/$', oauth2redirect, name='oauth2redirect'),
-    url(r'^graphql/', GraphQLView.as_view(graphiql=True)),
+    url(r'^graphql/', FileUploadGraphQLView.as_view(graphiql=True)),
     url(r'^$', RedirectView.as_view(
         url='accounts/login?next=providers/', permanent=False), name='login')
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

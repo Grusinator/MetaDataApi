@@ -104,15 +104,16 @@ class IdentifySchemaFromFile(graphene.Mutation):
     class Arguments:
         file = Upload(required=True)
         schema_label = graphene.String()
+        data_label = graphene.String()
 
     @login_required
-    def mutate(self, info, file, schema_label):
+    def mutate(self, info, file, schema_label, data_label=None):
         args = locals()
         [args.pop(x) for x in ["info", "self", "args"]]
         args["user_pk"] = info.context.user.pk
-        args["file"] = info.context.FILES.get(file)
 
-        objects = IdentifySchemaFromFileService.execute(args)
+        objects = IdentifySchemaFromFileService.execute(
+            args, info.context.FILES)
 
         return IdentifySchemaFromFile(identified_objects=len(objects))
 
@@ -130,9 +131,8 @@ class IdentifyDataFromFile(graphene.Mutation):
         args = locals()
         [args.pop(x) for x in ["info", "self", "args"]]
         args["user_pk"] = info.context.user.pk
-        args["file"] = info.context.FILES.get(file)
 
-        objects = IdentifyDataFromFileService.execute(args)
+        objects = IdentifyDataFromFileService.execute(args, info.context.FILES)
 
         return IdentifyDataFromFile(identified_objects=len(objects))
 
@@ -170,6 +170,27 @@ class IdentifyDataFromProvider(graphene.Mutation):
         args["user_pk"] = info.context.user.pk
 
         rdf_file, object_list = IdentifyDataFromProviderService.execute(args)
+
+        return IdentifyDataFromProvider(identified_objects=len(object_list),
+                                        rdf_dump_url=rdf_file.url)
+
+
+class IdentifySchemaAndDataFromProvider(graphene.Mutation):
+    identified_objects = graphene.Int()
+    rdf_dump_url = graphene.String()
+
+    class Arguments:
+        provider_name = graphene.String()
+        endpoint = graphene.String()
+
+    @login_required
+    def mutate(self, info, provider_name, endpoint):
+        args = locals()
+        [args.pop(x) for x in ["info", "self", "args"]]
+        args["user_pk"] = info.context.user.pk
+
+        rdf_file, object_list = IdentifySchemaAndDataFromProviderService.execute(
+            args)
 
         return IdentifyDataFromProvider(identified_objects=len(object_list),
                                         rdf_dump_url=rdf_file.url)
@@ -283,5 +304,9 @@ class Mutation(graphene.ObjectType):
     export_schema = ExportSchema.Field()
     add_person_reference = AddPersonReferenceToBaseObjects.Field()
     identify_data_from_provider = IdentifyDataFromProvider.Field()
+    identify_data_from_file = IdentifyDataFromFile.Field()
     identify_schema_from_provider = IdentifySchemaFromProvider.Field()
     identify_schema_from_file = IdentifySchemaFromFile.Field()
+
+    identify_schema_and_data_from_provider = IdentifySchemaAndDataFromProvider.Field()
+    # identify_schema_and_data_from_file = IdentifySchemaAndDataFromFile.Field()

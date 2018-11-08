@@ -109,6 +109,18 @@ default_data_providers = [
         json_schema_file_url="https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"
     ),
     ThirdPartyDataProvider(
+        provider_name="rescue_time",
+        api_endpoint="",
+        authorize_url="",
+        access_token_url="",
+        client_id="",
+        client_secret="",
+        scope=json.dumps([]),
+        redirect_uri=redirect_uri,
+        rest_endpoints_list=json.dumps([]),
+        json_schema_file_url=""
+    ),
+    ThirdPartyDataProvider(
         provider_name="template",
         api_endpoint="",
         authorize_url="",

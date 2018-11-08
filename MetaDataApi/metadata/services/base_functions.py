@@ -74,8 +74,10 @@ class BaseMetaDataService():
 
     def standardize_string(self, string, remove_version=False):
         string = inflection.underscore(str(string))
+        string = string.replace(".json", "")
 
         string = string.replace(" ", "_")
+
         # remove any version numbers
         if remove_version:
             string = re.sub(
