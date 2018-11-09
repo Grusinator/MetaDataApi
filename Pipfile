@@ -41,6 +41,8 @@ autopep8 = "*"
 pylint = "*"
 pytest = "*"
 pytest-django = "*"
+gql = "*"
+jupyter = "*"
 
 [requires]
 python_version = "3.6"
