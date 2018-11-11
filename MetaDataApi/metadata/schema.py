@@ -34,28 +34,45 @@ from MetaDataApi.metadata.services import *
 class SchemaNode(DjangoObjectType):
     class Meta:
         model = Schema
-        filter_fields = ['label', 'description']
+        filter_fields = {
+            'label': ["icontains", "exact", "istartswith"],
+            'description': ["icontains", "exact", "istartswith"],
+        }
         interfaces = (graphene.relay.Node, )
 
 
 class ObjectNode(DjangoObjectType):
     class Meta:
         model = Object
-        filter_fields = ['label', 'description']
+        filter_fields = {
+            'label': ["icontains", "exact", "istartswith"],
+            'description': ["icontains", "exact", "istartswith"],
+            'schema__label': ["icontains", "exact", "istartswith"]
+        }
         interfaces = (graphene.relay.Node, )
 
 
 class AttributeNode(DjangoObjectType):
     class Meta:
         model = Attribute
-        filter_fields = ['label', ]
+        filter_fields = {
+            'label': ["icontains", "exact", "istartswith"],
+            'description': ["icontains", "exact", "istartswith"],
+            'object__label': ["icontains", "exact", "istartswith"]
+        }
         interfaces = (graphene.relay.Node, )
 
 
 class ObjectRelationNode(DjangoObjectType):
     class Meta:
         model = ObjectRelation
-        filter_fields = ['label', ]
+        filter_fields = {
+            'label': ["icontains", "exact", "istartswith"],
+            'description': ["icontains", "exact", "istartswith"],
+            'from_object__label': ["icontains", "exact", "istartswith"],
+            'to_object__label': ["icontains", "exact", "istartswith"],
+            'schema__label': ["icontains", "exact", "istartswith"]
+        }
         interfaces = (graphene.relay.Node, )
 
 
@@ -266,33 +283,6 @@ class Query(graphene.ObjectType):
 
     object_relation = graphene.relay.Node.Field(ObjectRelationNode)
     all_object_relations = DjangoFilterConnectionField(ObjectRelationNode)
-
-    # def resolve_schema(self, info):
-    #     return Schema.objects.first()
-
-    # def resolve_all_schema(self, info):
-    #     return Schema.objects.all()
-
-    # # objects
-    # def resolve_object(self, info):
-    #     return Object.objects.first()
-
-    # def resolve_all_objects(self, info):
-    #     return Object.objects.all()
-
-    # # attributes
-    # def resolve_attribute(self, info):
-    #     return Attribute.objects.first()
-
-    # def resolve_all_attributes(self, info):
-    #     return Attribute.objects.all()
-
-    # # object relations
-    # def resolve_object_relation(self, info):
-    #     return ObjectRelation.objects.first()
-
-    # def resolve_all_object_relations(self, info):
-    #     return ObjectRelation.objects.all()
 
 
 class Mutation(graphene.ObjectType):
