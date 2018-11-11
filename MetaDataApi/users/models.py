@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from enum import Enum
+from django.contrib.auth.models import User
 
 from MetaDataApi.dataproviders.models import ThirdPartyDataProvider
 
@@ -23,7 +24,7 @@ class Profile(models.Model):
     profile_description = models.TextField(blank=True)
 
     user = models.OneToOneField(
-        settings.AUTH_USER_MODEL, related_name="profile",
+        User, related_name="profile",
         on_delete=models.CASCADE)
 
     def __str__(self):
