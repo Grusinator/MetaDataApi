@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "b5f7c0faec9ad9a6c76d33278f41c05f1c7e0adfa4dcc6994a97d6de145dee24"
+            "sha256": "373399364b50f3b723b37e44da50c94c4f8dae6dee5e01dfc2631708c70e871f"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -32,18 +32,18 @@
         },
         "boto3": {
             "hashes": [
-                "sha256:0bbf50cb0d0da43904f4843e2406feab2fca3e636640c22216354880d6941ff3",
-                "sha256:e3a1cb81db71cee09bd50eaf9c9496272d2afcae74f17affac919b28b525808d"
+                "sha256:02e5c1b85a8b22a92f612daf2d1eea305818076b24ce02878b85e92d9ae0082e",
+                "sha256:0e625e147eafdaf9b6c649391059156517daa579ff231e618bd3372e16dacd41"
             ],
             "index": "pypi",
-            "version": "==1.9.41"
+            "version": "==1.9.42"
         },
         "botocore": {
             "hashes": [
-                "sha256:280d8a8d88c9416f92128d175495498144e72022c8019efaab3dd2a6f4cea78e",
-                "sha256:6ea45175b5915e24cc49b24a403c1b15868a50282b8ec9fc81d46bbe612541e5"
+                "sha256:0e495bcf2e474b82da7938b35ad2f71e28384c246b47ca131779f736621da504",
+                "sha256:a890509fb7625fc5c86475db58ac7db489539000cecab349d8eabf5e5777e363"
             ],
-            "version": "==1.12.41"
+            "version": "==1.12.42"
         },
         "bz2file": {
             "hashes": [
@@ -190,13 +190,6 @@
             "index": "pypi",
             "version": "==1.5.3"
         },
-        "gql": {
-            "hashes": [
-                "sha256:d20cf1eb1c6d54558174a3dcc3cf1ca0e07678cb1123804c2e165838238350f4"
-            ],
-            "index": "pypi",
-            "version": "==0.1.0"
-        },
         "graphene": {
             "hashes": [
                 "sha256:b8ec446d17fa68721636eaad3d6adc1a378cb6323e219814c8f98c9928fc9642",
@@ -215,11 +208,11 @@
         },
         "graphene-file-upload": {
             "hashes": [
-                "sha256:a66686f8dc9ad59cd77b7ef1866bbf116762f1749c8ed160feb4f229ad09be48",
-                "sha256:bb9f3a0bb77661402fe97fbe4f32a904e280359afebc11c4d5a42ed5761e7883"
+                "sha256:4feadaeada0c5eac45ff67f5d982344e0db00536022d0c6203682cbc94740176",
+                "sha256:f02336c7c05d7d43d2156a5ed182d6b689aaeaffebd714daf32405ec37ba4f98"
             ],
             "index": "pypi",
-            "version": "==1.1.0"
+            "version": "==1.2.0"
         },
         "graphql-core": {
             "hashes": [
@@ -1145,10 +1138,10 @@
         },
         "qtconsole": {
             "hashes": [
-                "sha256:f0b74277db5174d7513e9a84138e10e94d1cf767dc1706c247507e79e2c18288",
-                "sha256:faa529167b22412ea51ea44f20728a602415734d2229721d1194cea47cb730fa"
+                "sha256:1ac4a65e81a27b0838330a6d351c2f8435d4013d98a95373e8a41119b2968390",
+                "sha256:bc1ba15f50c29ed50f1268ad823bb6543be263c18dd093b80495e9df63b003ac"
             ],
-            "version": "==4.4.2"
+            "version": "==4.4.3"
         },
         "rx": {
             "hashes": [
