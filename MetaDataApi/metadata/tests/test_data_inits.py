@@ -14,12 +14,12 @@ from django.conf import settings
 class TestDataInits:
 
     @staticmethod
-    def init_base():
+    def init_user():
         from django.contrib.auth.models import User
 
         user = User(
             username="test",
-            password="dummy1234"
+            password="test1234"
         )
         user.save()
 
@@ -79,7 +79,7 @@ class TestDataInits:
         )
         from MetaDataApi.metadata.models import Schema, Object, Attribute
 
-        user = TestDataInits.init_base()
+        user = TestDataInits.init_user()
 
         service = SchemaIdentificationV2()
 
@@ -129,7 +129,7 @@ class TestDataInits:
 
     @staticmethod
     def init_full():
-        TestDataInits.init_base()
+        TestDataInits.init_user()
         TestDataInits.init_rdf_base()
         TestDataInits.init_open_m_health_sample()
         TestDataInits.init_strava_schema_from_file()

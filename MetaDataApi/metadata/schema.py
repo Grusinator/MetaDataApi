@@ -66,11 +66,10 @@ class DeleteSchema(graphene.Mutation):
     class Arguments:
         schema_label = graphene.String()
 
-    @login_required
     @user_passes_test(lambda u: u.is_superuser)
     def mutate(self, info, schema_label):
-        args = locals()
-        [args.pop(x) for x in ["info", "self", "args"]]
+        args = dict(locals())
+        [args.pop(x) for x in ["info", "self"]]
 
         DeleteSchemaService.execute(args)
 

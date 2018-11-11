@@ -10,11 +10,8 @@ from MetaDataApi.metadata.tests import TestDataInits
 from MetaDataApi.metadata.services import *
 
 
-class TestServices(TransactionTestCase):
+class TestMetaServices(TransactionTestCase):
     """Tests for the application views."""
-    # fixtures = [
-    #     'metadata/fixtures/new_load.json',
-    # ]
 
     # Django requires an explicit setup() when running tests in PTVS
     @classmethod
@@ -35,3 +32,41 @@ class TestServices(TransactionTestCase):
         schema = next(Schema.objects.filter(label="strava"))
 
         self.assertIsNone(schema)
+
+    def IdentifyDataFromProviderServiceTest(self):
+        IdentifyDataFromProviderService
+        TestDataInits.init_strava_schema_from_file()
+        user = TestDataInits.init_user()
+
+        return
+        # will fail since third party profile is not defined
+        args = {
+            "provider_name": thd_part_profile.provider.provider_name,
+            "endpoint": "all",
+            "user_pk": thd_part_profile.profile.user.pk,
+        }
+
+        data = IdentifyDataFromProviderService.execute(args)
+
+        self.assertIsNone(schema)
+
+    def IdentifyDataFromFileServiceTest(self):
+        IdentifyDataFromProviderService
+        TestDataInits.init_strava_schema_from_file()
+        user = TestDataInits.init_user()
+        # will fail since third party profile is not defined
+        # load the file
+        testfile = os.path.join(
+            settings.BASE_DIR,
+            "MetaDataApi/metadata/tests/data/json/strava_activities.json")
+
+        args = {
+            "schema_label": "strava",
+            "data_label": "activities",
+            "user_pk": user.pk,
+        }
+
+        with open(testfile) as datafile:
+            data = IdentifyDataFromFileService.execute(args, files=datafile)
+
+        self.assertIsNotNone(data)
