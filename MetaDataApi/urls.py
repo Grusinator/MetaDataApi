@@ -35,5 +35,5 @@ urlpatterns = [
     url(r'^oauth2redirect/$', oauth2redirect, name='oauth2redirect'),
     url(r'^graphql/', FileUploadGraphQLView.as_view(graphiql=True)),
     url(r'^$', RedirectView.as_view(
-        url='accounts/login?next=providers/', permanent=False), name='login')
+        url='accounts/login?next=/providers/', permanent=False), name='login')
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

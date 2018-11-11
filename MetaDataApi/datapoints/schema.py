@@ -27,6 +27,8 @@ from MetaDataApi.metadata.models import (
     Attribute, Object, ObjectRelation, Schema
 )
 
+from MetaDataApi.metadata.schema import AttributeNode as AttributeMetaNode
+
 from MetaDataApi.datapoints.schema_processing import ProcessRawData
 from MetaDataApi.users.models import Profile
 
@@ -45,53 +47,63 @@ class RawDataType(DjangoObjectType):
     class Meta:
         model = RawData
         interfaces = (graphene.relay.Node, )
+        filter_fields = ['value', ]
 
 
-class ObjectInstanceType(DjangoObjectType):
+class ObjectInstanceNode(DjangoObjectType):
     class Meta:
         model = ObjectInstance
+        filter_fields = {
+            'base__label': ["icontains", "exact", "istartswith"]
+        }
         interfaces = (graphene.relay.Node, )
 
 
-class GenericAttributeType(DjangoObjectType):
+class StringAttributeNode(DjangoObjectType):
     class Meta:
-        model = GenericAttributeInstance
-        # Allow for some more advanced filtering here
+        model = StringAttributeInstance
         interfaces = (graphene.relay.Node, )
-        filter_fields = ['value', ]
+        filter_fields = {
+            "base__label": ["exact", "icontains", "istartswith"]
+        }
 
 
-class TemporalAttributeType(DjangoObjectType):
+class TemporalAttributeNode(DjangoObjectType):
     class Meta:
         model = DateTimeAttributeInstance
-        # Allow for some more advanced filtering here
         interfaces = (graphene.relay.Node, )
-        filter_fields = ['value', ]
+        filter_fields = {
+            "base__label": ["exact", "icontains", "istartswith"]
+        }
 
 
-class FloatAttributeType(DjangoObjectType):
+class FloatAttributeNode(DjangoObjectType):
     class Meta:
         model = FloatAttributeInstance
-        # Allow for some more advanced filtering here
         interfaces = (graphene.relay.Node, )
-        filter_fields = ['value', ]
+        filter_fields = {
+            "base__label": ["exact", "icontains", "istartswith"]
+        }
 
 
-class AttributeType(DjangoObjectType):
+class TemporalFloatAttributeNode(ObjectType):
+    value = Field(FloatAttributeNode)
+    datetime = Field(TemporalAttributeNode)
+
+
+class GenericAttributeNode(ObjectType):
+    base = Field(AttributeMetaNode)
+    value = graphene.String()
+    object = Field(ObjectInstanceNode)
+    owner = Field(UserType)
+
     class Meta:
-        # all common attribute properties here!
-        model = GenericAttributeInstance
         interfaces = (graphene.relay.Node, )
-
-
-class TemporalFloatAttributeType(ObjectType):
-    value = Field(FloatAttributeType)
-    datetime = Field(TemporalAttributeType)
 
 
 # test upload
 class GetTemporalFloatPairs(graphene.Mutation):
-    data = graphene.List(TemporalFloatAttributeType)
+    data = graphene.List(TemporalFloatAttributeNode)
 
     class Arguments:
         schema_label = graphene.String()
@@ -177,22 +189,20 @@ class CreateRawData(graphene.Mutation):
 
 
 class CreateDatapoint(graphene.Mutation):
-    datapoint = Field(AttributeType)
+    datapoint = Field(GenericAttributeNode)
+    # TODO create mutations for each datatype using metaclasses
 
     class Arguments:
-        starttime = graphene.DateTime()
-        endtime = graphene.DateTime()
         value = graphene.Float()
-        std = graphene.Float()
-
         meta_attribute = graphene.String()
         meta_object = graphene.String()
         meta_schema = graphene.String()
 
     @login_required
     def mutate(self, info, meta_schema, meta_object, meta_attribute,
-               value, std, starttime, stoptime=None):
+               value):
 
+        raise NotImplementedError()
         # get the object type from metadata and create an instance
         try:
             schema = Schema.objects.get(label=meta_schema)
@@ -214,17 +224,6 @@ class CreateDatapoint(graphene.Mutation):
         )
 
         object_inst.save()
-
-        datapoint = GenericAttributeInstance(
-            starttime=starttime,
-            stoptime=stoptime,
-            value=value,
-            object=object_inst,
-            base=attribute,
-            owner=info.context.user
-        )
-
-        datapoint.save()
 
         return CreateDatapoint(datapoint)
 
@@ -322,23 +321,39 @@ class Upload2Files(graphene.Mutation):
 
 
 class Query(graphene.ObjectType):
-    datapoint = graphene.Field(AttributeType)
-    all_datapoints = graphene.List(AttributeType)
-
+    # TODO add attribute querys by using decorator or metaclass
     all_rawdata = graphene.List(RawDataType)
 
-    @login_required
-    def resolve_datapoint(self, info):
+    object_instance = graphene.relay.Node.Field(ObjectInstanceNode)
+    all_object_instances = DjangoFilterConnectionField(ObjectInstanceNode)
 
-        datapoint = GenericAttributeInstance.objects.filter(
-            owner=info.context.user).first()
-        return datapoint
+    attribute_instance = graphene.relay.Node.Field(StringAttributeNode)
+    all_attribute_instances = DjangoFilterConnectionField(StringAttributeNode)
+
+    float_attribute_instance = graphene.relay.Node.Field(FloatAttributeNode)
+    all_float_attribute_instances = DjangoFilterConnectionField(
+        FloatAttributeNode)
+
+    all_generic_attribute_instances = graphene.List(
+        GenericAttributeNode)
 
     @login_required
-    def resolve_all_datapoints(self, info):
-        datapointlist = GenericAttributeInstance.objects.filter(
-            owner=info.context.user)
-        return datapointlist
+    def resolve_all_generic_attribute_instances(self, info):
+        att_instance_types = [DateTimeAttributeInstance,
+                              FloatAttributeInstance, GenericAttributeInstance]
+
+        generic_list = []
+        for AttributeInstance in att_instance_types:
+            for att_inst in AttributeInstance.objects.filter(owner=info.context.user):
+                gen_att_inst = GenericAttributeNode(
+                    value=str(att_inst.value),
+                    owner=att_inst.owner,
+                    base=att_inst.base,
+                    object=att_inst.object
+                )
+                generic_list.append(gen_att_inst)
+
+        return generic_list
 
     @login_required
     def resolve_all_rawdata(self, info):

@@ -114,6 +114,33 @@ class ObjectRelationInstance(models.Model):
         return super(ObjectRelationInstance, self).save(*args, **kwargs)
 
 
+class BaseAttributeInstance(models.Model):
+    # TODO base all other classes on this one
+    base = models.ForeignKey(
+        Attribute, on_delete=models.CASCADE)
+    value = models.TextField()
+    object = models.ForeignKey(
+        ObjectInstance, on_delete=models.CASCADE)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL,
+                              null=True, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return "Ai:%s.%s:%s" % (self.base.object.label, self.base.label,
+                                str(self.value))
+
+    # custom restrictions on foreign keys to make sure the instances are of
+    # the right meta object type
+    def save(self, *args, **kwargs):
+        if self.object.base != self.base.object:
+            raise ValidationError(
+                "object instance must match the base object")
+
+        return super(BaseAttributeInstance, self).save(*args, **kwargs)
+
+    class Meta:
+        app_label = 'datapoints'
+
+
 class GenericAttributeInstance(models.Model):
     base = models.ForeignKey(
         Attribute,
@@ -121,6 +148,8 @@ class GenericAttributeInstance(models.Model):
     value = models.TextField()
     object = models.ForeignKey(
         ObjectInstance, related_name='attributes', on_delete=models.CASCADE)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL,
+                              null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return "Ai:%s.%s:%s" % (self.base.object.label, self.base.label,
