@@ -41,13 +41,13 @@ class DataProviderEtlService(BaseMetaDataService):
         return schema or self.create_new_empty_schema(
             self.dataprovider.provider_name)
 
-    def read_data_from_all_rest_endpoints(self, auth_token=None):
-        endpoints = json.loads(self.dataprovider.rest_endpoints_list)
+    # def read_data_from_all_rest_endpoints(self, auth_token=None):
+    #     endpoints = json.loads(self.dataprovider.rest_endpoints_list)
 
-        data = [self.read_data_from_endpoint(
-            ep, auth_token) for ep in endpoints]
+    #     data = [self.read_data_from_endpoint(
+    #         ep, auth_token) for ep in endpoints]
 
-        return data
+    #     return data
 
     def build_args_for_url(self, endpoint, **kwargs):
 

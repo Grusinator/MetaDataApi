@@ -1,0 +1,75 @@
+import json
+from django import forms
+
+from service_objects.services import Service
+
+from MetaDataApi.metadata.services import *
+
+from MetaDataApi.metadata.models import *
+from django.contrib.auth.models import User
+
+from MetaDataApi.dataproviders.models import ThirdPartyDataProvider
+
+from MetaDataApi.dataproviders.services.data_provider_etl_service import DataProviderEtlService
+
+from MetaDataApi.dataproviders.default_3rd_data_providers import default_data_providers
+from django.core.exceptions import (
+    ObjectDoesNotExist, MultipleObjectsReturned)
+
+
+class AddDefaultDataProviderService(Service):
+    provider_name = forms.CharField()
+
+    def process(self):
+        provider_name = self.cleaned_data['provider_name']
+
+        default_providers = default_data_providers
+
+        # select only the chosen one if not
+        if provider_name != "all":
+            provider = list(filter(lambda x: x.provider_name == provider_name,
+                                   default_data_providers))
+            if provider:
+                default_providers = [provider, ]
+
+        for dp in default_providers:
+            # test if it exists before creating it
+            try:
+                ThirdPartyDataProvider.objects.get(
+                    provider_name=dp.provider_name)
+            except ObjectDoesNotExist:
+                dp.save()
+
+        return default_data_providers
+
+
+class LoadDataFromProviderService(Service):
+    """Read the raw data from endpoint"""
+
+    provider_name = forms.CharField()
+    endpoint = forms.CharField(required=False)
+
+    def process(self):
+        provider_name = self.cleaned_data['provider_name']
+        endpoint = self.cleaned_data['endpoint']
+
+        # get the dataprovider
+        data_provider = ThirdPartyDataProvider.objects.get(
+            provider_name=provider_name)
+        # init service
+        service = DataProviderEtlService(data_provider)
+        # get the profile, with the access token matching the provider_name
+        thirdpartyprofiles = info.context.user.profile.data_provider_profiles
+        thirdpartyprofile = thirdpartyprofiles.get(
+            provider__provider_name=provider_name)
+
+        # request
+        if endpoint == "all":
+            endpoints = json.loads(dataprovider.rest_endpoints_list)
+        else:
+            endpoints = [endpoint, ]
+
+        data = [service.read_data_from_endpoint(
+            ep, auth_token) for ep in endpoints]
+
+        return data

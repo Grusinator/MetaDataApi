@@ -26,8 +26,7 @@ from MetaDataApi.dataproviders.models import (
 
 from MetaDataApi.users.models import ThirdPartyProfile
 
-from MetaDataApi.dataproviders.services.data_provider_etl_service \
-    import DataProviderEtlService
+from MetaDataApi.dataproviders.services import *
 
 
 class DataProviderNode(DjangoObjectType):
@@ -37,52 +36,26 @@ class DataProviderNode(DjangoObjectType):
         interfaces = (graphene.relay.Node, )
 
 
-class AddDataProvider(graphene.Mutation):
+class AddDefaultDataProvider(graphene.Mutation):
     dataprovider = graphene.List(DataProviderNode)
     success = graphene.Boolean()
-
-    class Arguments:
-        url = graphene.String()
-
-    @login_required
-    def mutate(self, info, url):
-
-        if url == "all":
-            for dp in default_data_providers:
-                dp.save()
-
-        return AddDataProvider(
-            success=True,
-            dataprovider=default_data_providers)
-
-
-class LoadAllDataFromProvider(graphene.Mutation):
-    data = graphene.List(graphene.String)
 
     class Arguments:
         provider_name = graphene.String()
 
     @login_required
     def mutate(self, info, provider_name):
-        # get the dataprovider
-        data_provider = ThirdPartyDataProvider.objects.get(
-            provider_name=provider_name)
-        # init service
-        service = DataProviderEtlService(data_provider)
-        # get the profile, with the access token matching the provider_name
-        thirdpartyprofiles = info.context.user.profile.data_provider_profiles
-        thirdpartyprofile = thirdpartyprofiles.get(
-            provider__provider_name=provider_name)
+        args = dict(locals())
+        [args.pop(x) for x in ["info", "self"]]
 
-        # request
-        data = service.read_data_from_all_rest_endpoints(
-            thirdpartyprofile.access_token)
+        default_data_providers = AddDefaultDataProviderService.execute(args)
 
-        return LoadAllDataFromProvider(
-            data=data)
+        return AddDefaultDataProvider(
+            success=True,
+            dataprovider=default_data_providers)
 
 
-class LoadDataFromProviderEndpoint(graphene.Mutation):
+class LoadDataFromProvider(graphene.Mutation):
     data = graphene.List(graphene.String)
 
     class Arguments:
@@ -90,22 +63,13 @@ class LoadDataFromProviderEndpoint(graphene.Mutation):
         endpoint = graphene.String()
 
     @login_required
-    def mutate(self, info, provider_name, endpoint):
-        # get the dataprovider
-        data_provider = ThirdPartyDataProvider.objects.get(
-            provider_name=provider_name)
-        # init service
-        service = DataProviderEtlService(data_provider)
-        # get the profile, with the access token matching the provider_name
-        thirdpartyprofiles = info.context.user.profile.data_provider_profiles
-        thirdpartyprofile = thirdpartyprofiles.get(
-            provider__provider_name=provider_name)
+    def mutate(self, info, provider_name, endpoint="all"):
+        args = dict(locals())
+        [args.pop(x) for x in ["info", "self"]]
 
-        # request
-        data = service.read_data_from_endpoint(
-            endpoint, thirdpartyprofile.access_token)
+        data = LoadDataFromProviderService.execute(args)
 
-        return LoadAllDataFromProvider(
+        return LoadDataFromProvider(
             data=data)
 
 
@@ -121,6 +85,5 @@ class Query(graphene.ObjectType):
 
 
 class Mutation(graphene.ObjectType):
-    add_data_provider = AddDataProvider.Field()
-    load_all_data_from_dataprovider = LoadAllDataFromProvider.Field()
-    load_data_from_dataprovider_endpoint = LoadDataFromProviderEndpoint.Field()
+    add_data_provider = AddDefaultDataProvider.Field()
+    load_data_from_dataprovider = LoadDataFromProvider.Field()
