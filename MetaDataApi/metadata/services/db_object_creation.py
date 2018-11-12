@@ -82,14 +82,6 @@ class DbObjectCreation(BaseMetaDataService):
 
             att = self._try_get_item(att)
 
-            if parrent_object is None or \
-                    isinstance(parrent_object, type(None)) or \
-                    att is None or \
-                    isinstance(att, type(None)) or \
-                    data_as_type is None or\
-                    isinstance(data_as_type, type(None)):
-                a = 1
-
             # Create the instance
             if att is not None and data_as_type is not None:
                 AttributeInstance = self.att_to_att_inst(att)

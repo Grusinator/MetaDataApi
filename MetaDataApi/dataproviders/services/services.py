@@ -47,11 +47,14 @@ class LoadDataFromProviderService(Service):
     """Read the raw data from endpoint"""
 
     provider_name = forms.CharField()
+    user_pk = forms.IntegerField()
     endpoint = forms.CharField(required=False)
 
     def process(self):
         provider_name = self.cleaned_data['provider_name']
         endpoint = self.cleaned_data['endpoint']
+        user_pk = self.cleaned_data['user_pk']
+        user = User.objects.get(pk=user_pk)
 
         # get the dataprovider
         data_provider = ThirdPartyDataProvider.objects.get(
@@ -59,17 +62,17 @@ class LoadDataFromProviderService(Service):
         # init service
         service = DataProviderEtlService(data_provider)
         # get the profile, with the access token matching the provider_name
-        thirdpartyprofiles = info.context.user.profile.data_provider_profiles
+        thirdpartyprofiles = user.profile.data_provider_profiles
         thirdpartyprofile = thirdpartyprofiles.get(
             provider__provider_name=provider_name)
 
         # request
         if endpoint == "all":
-            endpoints = json.loads(dataprovider.rest_endpoints_list)
+            endpoints = json.loads(data_provider.rest_endpoints_list)
         else:
             endpoints = [endpoint, ]
 
         data = [service.read_data_from_endpoint(
-            ep, auth_token) for ep in endpoints]
+            ep, thirdpartyprofile.access_token) for ep in endpoints]
 
         return data
