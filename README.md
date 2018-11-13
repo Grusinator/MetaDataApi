@@ -4,7 +4,8 @@ tags: Quantified Self, Biohacking, RDF, OWL, Oauth, graphql, JSONSchema, OpenMHe
 This project aims to gather relevant data from a lot of services an analyse on top. You might call it HumanIntelligence 
 It is based on the semantic web idea, so json data can just be loaded in from Api endpoints, that you create.  
 First a datamodel from that json file is created, and thereafter instances of objects and attributes are added.
-You can also upload RDF schemas defined in OWL, and thereafter upload your rdf data to it. The goal is to standardize the incoming data by comparing with other models, and mapping it onto a more covering model within the field. My initial approach has been to take the OpenMHealth data model which is defined in JSONSchema, i have converted it to OWL. 
+You can also upload RDF schemas defined in OWL, and thereafter upload your rdf data to it. The goal is to standardize the incoming data by comparing with other models, and mapping it onto a more covering model within the field. My initial approach has been to take the OpenMHealth [ref](http://www.openmhealth.org/) data model which is defined in JSONSchema, i have converted it to OWL. 
+
 
 the platform can connect to different oauth2 rest apis, by adding the endpoints, and authorizing first. different parameters can be added as well as url-encoded parameters 
 
@@ -26,7 +27,7 @@ Example:
 https://brainscan.io/api?key={AuthToken:}&startdate={StartDateTime:UTCSEC}&eyesclosed=true  
 
 I have made a small client in python to request some of the data from the server, but it is not complete, have a look at:
-https://github.com/Grusinator/meta-data-client
+[grusinator/meta-data-client](https://github.com/Grusinator/meta-data-client)
 
 
 
@@ -42,6 +43,7 @@ https://github.com/Grusinator/meta-data-client
 - [ ] Generate Attribute objects from metaclass instead
 - [ ] Add CI
 - [ ] Create Cron functionallity to fetch data each day
-- [ ] create dev branch
-- [ ] 
+- [ ] Create dev branch
+- [ ] Add support for endpoints that require an id of a parrent object
+- [ ] Find a good name
 
