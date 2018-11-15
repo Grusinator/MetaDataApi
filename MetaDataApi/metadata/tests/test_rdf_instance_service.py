@@ -25,10 +25,10 @@ class TestRdfInstanceService(TransactionTestCase):
         )
 
         from MetaDataApi.datapoints.models import (
-            GenericAttributeInstance, RawData, CategoryTypes,
+            RawData, CategoryTypes,
             ObjectInstance,
             ObjectRelationInstance,
-            GenericAttributeInstance,
+
             FloatAttributeInstance,
             StringAttributeInstance)
 

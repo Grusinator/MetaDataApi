@@ -1,20 +1,16 @@
 from django.contrib import admin
 
 # Register your models here.
-from MetaDataApi.datapoints.models import (
-    RawData,
-    ObjectInstance,
-    ObjectRelationInstance,
-    GenericAttributeInstance,
-    FloatAttributeInstance,
-    StringAttributeInstance)
+from MetaDataApi.datapoints.models import *
 
 models = (
     RawData,
     ObjectInstance,
     ObjectRelationInstance,
-    GenericAttributeInstance,
     FloatAttributeInstance,
-    StringAttributeInstance)
+    StringAttributeInstance,
+    IntAttributeInstance,
+    BoolAttributeInstance,
+    ImageAttributeInstance)
 
 [admin.site.register(model) for model in models]

@@ -1,4 +1,4 @@
-from MetaDataApi.datapoints.models import CategoryTypes, GenericAttributeInstance, RawData
+from MetaDataApi.datapoints.models import CategoryTypes,   RawData
 
 
 class ProcessRawData:
@@ -24,7 +24,7 @@ class ProcessRawData:
         # )
 
         return [
-            GenericAttributeInstance(
+             StringAttributeInstance(
                 starttime=starttime,
                 stoptime=stoptime,
                 value=value,

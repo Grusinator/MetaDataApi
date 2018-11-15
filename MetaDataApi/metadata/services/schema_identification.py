@@ -20,6 +20,10 @@ from .base_functions import BaseMetaDataService
 
 from .db_object_creation import DbObjectCreation
 
+import logging
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
+
 
 class SchemaIdentificationV2(DbObjectCreation):
     def __init__(self, *args, **kwargs):
@@ -357,7 +361,7 @@ class SchemaIdentificationV2(DbObjectCreation):
     def iterate_find_related_obj(self, parrent_obj, find_obj,
                                  discovered_objects=[]):
         if isinstance(parrent_obj, (ObjectInstance,
-                                    GenericAttributeInstance)):
+                                     StringAttributeInstance)):
             parrent_obj = parrent_obj.base
         # only relevant for first iteration, if the obj is an attribute
         if isinstance(parrent_obj, Attribute):

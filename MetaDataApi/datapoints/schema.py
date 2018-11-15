@@ -15,10 +15,10 @@ from MetaDataApi.users.schema import UserType
 from django.contrib.auth.models import User
 
 from MetaDataApi.datapoints.models import (
-    GenericAttributeInstance, RawData, CategoryTypes,
+    RawData, CategoryTypes,
     ObjectInstance,
     ObjectRelationInstance,
-    GenericAttributeInstance,
+
     FloatAttributeInstance,
     StringAttributeInstance,
     DateTimeAttributeInstance)
@@ -160,7 +160,7 @@ class CreateRawData(graphene.Mutation):
                                 files=None)
 
             for data in datalist:
-                if isinstance(GenericAttributeInstance):
+                if isinstance( StringAttributeInstance):
                     data.save()
                 elif isinstance(RawData):
                     data.metadata = None
@@ -259,7 +259,7 @@ class CreateRawData(graphene.Mutation):
                                 files=None)
 
             for data in datalist:
-                if isinstance(GenericAttributeInstance):
+                if isinstance( StringAttributeInstance):
                     data.save()
                 elif isinstance(RawData):
                     data.metadata = None
@@ -340,7 +340,7 @@ class Query(graphene.ObjectType):
     @login_required
     def resolve_all_generic_attribute_instances(self, info):
         att_instance_types = [DateTimeAttributeInstance,
-                              FloatAttributeInstance, GenericAttributeInstance]
+                              FloatAttributeInstance,  StringAttributeInstance]
 
         generic_list = []
         for AttributeInstance in att_instance_types:

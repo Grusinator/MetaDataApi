@@ -14,7 +14,7 @@ from django.core.files.base import ContentFile
 
 from MetaDataApi.datapoints.models import (
     ObjectInstance, ObjectRelationInstance,
-    GenericAttributeInstance, StringAttributeInstance,
+    StringAttributeInstance,
     DateTimeAttributeInstance, BoolAttributeInstance,
     FloatAttributeInstance, IntAttributeInstance,
     RDFDataDump

@@ -1,10 +1,12 @@
 from django.db import models
 from django.conf import settings
 from enum import Enum
+from inflection import camelize
 
 from django.core.exceptions import ValidationError
 
 from MetaDataApi.metadata.custom_storages import MediaStorage
+
 
 from MetaDataApi.metadata.models import (
     Attribute, Object, ObjectRelation, Schema
@@ -114,13 +116,8 @@ class ObjectRelationInstance(models.Model):
         return super(ObjectRelationInstance, self).save(*args, **kwargs)
 
 
+# this is the class that we are going to inherit from
 class BaseAttributeInstance(models.Model):
-    # TODO base all other classes on this one
-    base = models.ForeignKey(
-        Attribute, on_delete=models.CASCADE)
-    value = models.TextField()
-    object = models.ForeignKey(
-        ObjectInstance, on_delete=models.CASCADE)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL,
                               null=True, on_delete=models.CASCADE)
 
@@ -141,95 +138,35 @@ class BaseAttributeInstance(models.Model):
         app_label = 'datapoints'
 
 
-class GenericAttributeInstance(models.Model):
-    base = models.ForeignKey(
-        Attribute,
-        related_name='attribute_instances', on_delete=models.CASCADE)
+# we call the base attribute instance string because it is
+# the most generic one, just overwrite value, when inheriting
+class StringAttributeInstance(BaseAttributeInstance):
     value = models.TextField()
     object = models.ForeignKey(
-        ObjectInstance, related_name='attributes', on_delete=models.CASCADE)
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL,
-                              null=True, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return "Ai:%s.%s:%s" % (self.base.object.label, self.base.label,
-                                self.value)
-
-    # custom restrictions on foreign keys to make sure the instances are of
-    # the right meta object type
-    def save(self, *args, **kwargs):
-        if self.object.base != self.base.object:
-            raise ValidationError(
-                "object instance must match the base object")
-
-        return super(GenericAttributeInstance, self).save(*args, **kwargs)
-
-    class Meta:
-        app_label = 'datapoints'
+        ObjectInstance, related_name="string_attributes",
+        on_delete=models.CASCADE)
+    base = models.ForeignKey(
+        Attribute,
+        related_name='string_instances', on_delete=models.CASCADE)
 
 
-class DateTimeAttributeInstance(models.Model):
+class DateTimeAttributeInstance(BaseAttributeInstance):
     # must have timestamp and value
     value = models.DateTimeField()
-    base = models.ForeignKey(
-        Attribute, related_name="datetime_attributes_insts",
-        on_delete=models.CASCADE)
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL,
-                              null=True, on_delete=models.CASCADE)
     object = models.ForeignKey(
-        ObjectInstance, related_name='datetime_attributes',
+        ObjectInstance, related_name="datetime_attributes",
         on_delete=models.CASCADE)
 
-    def __str__(self):
-        return "%s: %s" % (
-            self.base.label,
-            str(self.value),
-            # self.owner.username
-        )
 
-    # custom restrictions on foreign keys to make sure the instances are of
-    # the right meta object type
-    def save(self, *args, **kwargs):
-        if self.object.base != self.base.object:
-            raise ValidationError(
-                "object instance must match the base object")
-
-        return super(DateTimeAttributeInstance, self).save(*args, **kwargs)
-
-    class Meta:
-        app_label = 'datapoints'
-
-
-class BoolAttributeInstance(models.Model):
+class BoolAttributeInstance(BaseAttributeInstance):
     # must have timestamp and value
     value = models.BooleanField()
     base = models.ForeignKey(
         Attribute, related_name="bool_attributes_insts",
         on_delete=models.CASCADE)
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL,
-                              null=True, on_delete=models.CASCADE)
     object = models.ForeignKey(
         ObjectInstance, related_name='bool_attributes',
         on_delete=models.CASCADE)
-
-    def __str__(self):
-        return "%s: %s" % (
-            self.base.label,
-            self.value,
-            # self.owner.username
-        )
-
-    # custom restrictions on foreign keys to make sure the instances are of
-    # the right meta object type
-    def save(self, *args, **kwargs):
-        if self.object.base != self.base.object:
-            raise ValidationError(
-                "object instance must match the base object")
-
-        return super(BoolAttributeInstance, self).save(*args, **kwargs)
-
-    class Meta:
-        app_label = 'datapoints'
 
 
 class IntAttributeInstance(models.Model):
@@ -238,90 +175,27 @@ class IntAttributeInstance(models.Model):
     base = models.ForeignKey(
         Attribute, related_name="int_attributes_insts",
         on_delete=models.CASCADE)
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL,
-                              null=True, on_delete=models.CASCADE)
+
     object = models.ForeignKey(
         ObjectInstance, related_name='int_attributes',
         on_delete=models.CASCADE)
 
-    def __str__(self):
-        return "%s: %i" % (
-            self.base.label,
-            self.value,
-            # self.owner.username
-        )
 
-    # custom restrictions on foreign keys to make sure the instances are of
-    # the right meta object type
-    def save(self, *args, **kwargs):
-        if self.object.base != self.base.object:
-            raise ValidationError(
-                "object instance must match the base object")
-
-        return super(IntAttributeInstance, self).save(*args, **kwargs)
-
-    class Meta:
-        app_label = 'datapoints'
-
-
-class FloatAttributeInstance(models.Model):
+class FloatAttributeInstance(BaseAttributeInstance):
     value = models.FloatField()
-    std = models.FloatField(null=True, blank=True)
     base = models.ForeignKey(
         Attribute, related_name="float_attributes_insts",
         on_delete=models.CASCADE)
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL,
-                              null=True, on_delete=models.CASCADE)
     object = models.ForeignKey(
         ObjectInstance, related_name='float_attributes',
         on_delete=models.CASCADE)
 
-    def __str__(self):
-        return "%s: %d" % (
-            self.base.label,
-            self.value,
-            # self.owner.username
-        )
 
-    # custom restrictions on foreign keys to make sure the instances are of
-    # the right meta object type
-    def save(self, *args, **kwargs):
-        if self.object.base != self.base.object:
-            raise ValidationError(
-                "object instance must match the base object")
-
-        return super(FloatAttributeInstance, self).save(*args, **kwargs)
-
-    class Meta:
-        app_label = 'datapoints'
-
-
-class StringAttributeInstance(models.Model):
-    value = models.TextField()
+class ImageAttributeInstance(BaseAttributeInstance):
+    value = models.ImageField()
     base = models.ForeignKey(
-        Attribute, related_name="string_attribute_insts",
+        Attribute, related_name="image_attribute_insts",
         on_delete=models.CASCADE)
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL,
-                              null=True, on_delete=models.CASCADE)
     object = models.ForeignKey(
-        ObjectInstance, related_name='string_attributes',
+        ObjectInstance, related_name='image_attributes',
         on_delete=models.CASCADE)
-
-    def __str__(self):
-        return "%s: %s" % (
-            self.base.label,
-            self.value,
-            # self.owner.username
-        )
-
-    # custom restrictions on foreign keys to make sure the instances are of
-    # the right meta object type
-    def save(self, *args, **kwargs):
-        if self.object.base != self.base.object:
-            raise ValidationError(
-                "object instance must match the base object")
-
-        return super(StringAttributeInstance, self).save(*args, **kwargs)
-
-    class Meta:
-        app_label = 'datapoints'

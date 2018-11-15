@@ -14,7 +14,7 @@ from django.core.files.base import ContentFile
 
 from MetaDataApi.datapoints.models import (
     ObjectInstance, ObjectRelationInstance,
-    GenericAttributeInstance, StringAttributeInstance,
+    StringAttributeInstance,
     DateTimeAttributeInstance, BoolAttributeInstance,
     FloatAttributeInstance, IntAttributeInstance
 )
@@ -71,7 +71,7 @@ class BaseRdfSchemaService(BaseMetaDataService):
             # instances
             ObjectInstance: "Oi",
             ObjectRelationInstance: "Ri",
-            GenericAttributeInstance: "Ai",
+            StringAttributeInstance: "Ai",
         }
         # add all types of attr instances
         for item_type in list(self.att_inst_to_type_map.keys()):

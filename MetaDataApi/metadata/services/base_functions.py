@@ -20,7 +20,7 @@ import inflection
 
 from MetaDataApi.datapoints.models import (
     ObjectInstance, ObjectRelationInstance,
-    GenericAttributeInstance, StringAttributeInstance,
+    StringAttributeInstance,
     DateTimeAttributeInstance, BoolAttributeInstance,
     FloatAttributeInstance, IntAttributeInstance
 )
@@ -47,7 +47,7 @@ class BaseMetaDataService():
         self.allways_create_new = False
 
         self.att_inst_to_type_map = {
-            # GenericAttributeInstance: str,
+            #  StringAttributeInstance: str,
             StringAttributeInstance: str,
             DateTimeAttributeInstance: datetime,
             FloatAttributeInstance: float,
