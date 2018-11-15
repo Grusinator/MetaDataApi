@@ -45,7 +45,7 @@ class DbObjectCreation(BaseMetaDataService):
                 logger.error("object_create_" + str(e))
 
         else:
-            a = 1
+            a = 2
 
     def try_create_object(self, parrent_object, data, label):
 
