@@ -29,10 +29,15 @@ class Schema(models.Model):
     class Meta:
         app_label = 'metadata'
 
-
-class Object(models.Model):
+class BaseMeta(models.Model):
     label = models.TextField()
     description = models.TextField(null=True, blank=True)
+
+    class Meta:
+        abstract = True
+
+
+class Object(BaseMeta):
     # related name should not be objects, because that will cause problems
     schema = models.ForeignKey(
         Schema, related_name='object_list', on_delete=models.CASCADE)
@@ -77,7 +82,7 @@ class Object(models.Model):
         app_label = 'metadata'
 
 
-class Attribute(models.Model):
+class Attribute(BaseMeta):
     data_type_map = {
         datetime: "datetime",
         float: "float",
@@ -89,8 +94,6 @@ class Attribute(models.Model):
     data_type_choises = [(x, x) for x in data_type_map.values()]
 
     # db Fields
-    label = models.TextField()
-    description = models.TextField(null=True, blank=True)
     datatype = models.TextField(choices=data_type_choises)
     dataunit = models.TextField()
     object = models.ForeignKey(
@@ -123,9 +126,7 @@ class Attribute(models.Model):
         app_label = 'metadata'
 
 
-class ObjectRelation(models.Model):
-    label = models.TextField()
-    description = models.TextField(null=True, blank=True)
+class ObjectRelation(BaseMeta):
     schema = models.ForeignKey(
         Schema, related_name='object_relations', on_delete=models.CASCADE)
     from_object = models.ForeignKey(
@@ -153,8 +154,7 @@ class ObjectRelation(models.Model):
         app_label = 'metadata'
 
 
-class UnmappedObject(models.Model):
-    label = models.TextField()
+class UnmappedObject(BaseMeta):
     parrent_label = models.TextField()
     childrens = models.TextField()
 

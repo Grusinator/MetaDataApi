@@ -136,6 +136,7 @@ class BaseAttributeInstance(models.Model):
 
     class Meta:
         app_label = 'datapoints'
+        abstract = True
 
 
 # we call the base attribute instance string because it is
