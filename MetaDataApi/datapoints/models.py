@@ -156,6 +156,9 @@ class DateTimeAttributeInstance(BaseAttributeInstance):
     object = models.ForeignKey(
         ObjectInstance, related_name="datetime_attributes",
         on_delete=models.CASCADE)
+    base = models.ForeignKey(
+        Attribute,
+        related_name='date_time_instances', on_delete=models.CASCADE)
 
 
 class BoolAttributeInstance(BaseAttributeInstance):
@@ -167,6 +170,9 @@ class BoolAttributeInstance(BaseAttributeInstance):
     object = models.ForeignKey(
         ObjectInstance, related_name='bool_attributes',
         on_delete=models.CASCADE)
+    base = models.ForeignKey(
+        Attribute,
+        related_name='bool_instances', on_delete=models.CASCADE)
 
 
 class IntAttributeInstance(models.Model):

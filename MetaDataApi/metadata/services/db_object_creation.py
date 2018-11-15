@@ -4,6 +4,12 @@ from MetaDataApi.metadata.services.base_functions import BaseMetaDataService
 from MetaDataApi.metadata.models import *
 from MetaDataApi.datapoints.models import *
 
+# import the logging library
+import logging
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
+
 
 class DbObjectCreation(BaseMetaDataService):
 
@@ -33,7 +39,11 @@ class DbObjectCreation(BaseMetaDataService):
                 object=self._try_get_item(parrent_object)
             )
 
-            return self._try_create_item(att)
+            try:
+                return self._try_create_item(att)
+            except Exception as e:
+                logger.error("object_create_" + str(e))
+
         else:
             a = 1
 
@@ -44,10 +54,13 @@ class DbObjectCreation(BaseMetaDataService):
             schema=self.schema
         )
 
-        # we need to add the object to the
-        return self._try_create_item(
-            obj,
-            parrent_label=parrent_object.label)
+        try:
+            # we need to add the object to the
+            return self._try_create_item(
+                obj,
+                parrent_label=parrent_object.label)
+        except Exception as e:
+            logger.error("object_create_" + str(e))
 
     def try_create_object_relation(self, parrent_object, data, label):
 
@@ -61,8 +74,10 @@ class DbObjectCreation(BaseMetaDataService):
                 to_object=self._try_get_item(data),
                 schema=self.schema
             )
-
-            return self._try_create_item(obj_rel)
+            try:
+                return self._try_create_item(obj_rel)
+            except Exception as e:
+                logger.error("object_create_" + str(e))
 
     def try_create_attribute_instance(self, parrent_object, data, label):
         data_as_type = self.identify_datatype(data)
@@ -90,9 +105,12 @@ class DbObjectCreation(BaseMetaDataService):
                     value=data_as_type,
                     object=parrent_object
                 )
-                att_inst.save()
-                self.added_instance_items.append(att_inst)
-                return att_inst
+                try:
+                    att_inst.save()
+                    self.added_instance_items.append(att_inst)
+                    return att_inst
+                except Exception as e:
+                    logger.error("object_create_" + str(e))
             else:
                 self.unmapped_objects.append(UnmappedObject(
                     label=label,
@@ -115,10 +133,12 @@ class DbObjectCreation(BaseMetaDataService):
                 base=obj,
                 owner=self.owner
             )
-            obj_inst.save()
-            self.added_instance_items.append(obj_inst)
-            return obj_inst
-
+            try:
+                obj_inst.save()
+                self.added_instance_items.append(obj_inst)
+                return obj_inst
+            except Exception as e:
+                logger.error("object_create_" + str(e))
         else:
             self.unmapped_objects.append(UnmappedObject(
                 label=label,
@@ -148,10 +168,12 @@ class DbObjectCreation(BaseMetaDataService):
                     from_object=parrent_object,
                     to_object=data
                 )
-                obj_rel_inst.save()
-                self.added_instance_items.append(obj_rel_inst)
-                return obj_rel_inst
-
+                try:
+                    obj_rel_inst.save()
+                    self.added_instance_items.append(obj_rel_inst)
+                    return obj_rel_inst
+                except Exception as e:
+                    logger.error("object_create_" + str(e))
             else:
                 self.unmapped_objects.append(UnmappedObject(
                     label=label,
