@@ -29,13 +29,19 @@ https://brainscan.io/api?key={AuthToken:}&startdate={StartDateTime:UTCSEC}&eyesc
 I have made a small client in python to request some of the data from the server, but it is not complete, have a look at:
 [grusinator/meta-data-client](https://github.com/Grusinator/meta-data-client)
 
+how to test if an object instance or attribute instance allready exists. If the parrent attribute is the same, the object is too. If an object relation has the same 2 objects, then it is the same, but the objects must be tested more delicately. 
+
+inferring some sort of uniqueness score?
+
+or just comparing with all previously created objects, nobody with the same combination of objects and relations? its a new one then.
+
 
 
 ## TODO:
 - [ ] implement logging and better error handling
 - [ ] compare metaobjects using word2vec or similar
 - [ ] make a data encoder that can model a full human (requires more data)
-- [ ] Add image attribute type
+- [x] Add image attribute type
 - [ ] make a front-end 
 - [ ] write documentation
 - [ ] make tests of all services
