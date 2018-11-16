@@ -162,8 +162,8 @@ class IdentifySchemaFromProvider(graphene.Mutation):
 
     @login_required
     def mutate(self, info, provider_name, endpoint=None):
-        args = locals()
-        [args.pop(x) for x in ["info", "self", "args"]]
+        args = dict(locals())
+        [args.pop(x) for x in ["info", "self"]]
         args["user_pk"] = info.context.user.pk
 
         n_objs = IdentifySchemaFromProviderService.execute(args)
@@ -181,8 +181,8 @@ class IdentifyDataFromProvider(graphene.Mutation):
 
     @login_required
     def mutate(self, info, provider_name, endpoint):
-        args = locals()
-        [args.pop(x) for x in ["info", "self", "args"]]
+        args = dict(locals())
+        [args.pop(x) for x in ["info", "self"]]
         args["user_pk"] = info.context.user.pk
 
         rdf_file, object_list = IdentifyDataFromProviderService.execute(args)
