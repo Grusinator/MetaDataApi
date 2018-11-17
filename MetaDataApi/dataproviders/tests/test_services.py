@@ -6,7 +6,7 @@ from django.core.management import call_command
 from datetime import datetime
 
 from MetaDataApi.metadata.services import GetTemporalFloatPairsService
-from MetaDataApi.metadata.tests import TestDataInits
+from MetaDataApi.metadata.tests.data import LoadTestData
 
 
 class TestSomeService(TransactionTestCase):
@@ -19,8 +19,8 @@ class TestSomeService(TransactionTestCase):
 
     def test_some(self):
 
-        TestDataInits.init_strava_schema_from_file()
-        TestDataInits.init_strava_data_from_file()
+        LoadTestData.init_strava_schema_from_file()
+        LoadTestData.init_strava_data_from_file()
 
         args = {
             "schema_label": "strava",

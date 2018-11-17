@@ -1,8 +1,8 @@
-from MetaDataApi.metadata.tests import TestDataInits
+from MetaDataApi.metadata.tests.data import LoadTestData
 from django.test import TestCase, TransactionTestCase
 import django
 
-from MetaDataApi.metadata.utils import TestingUtils
+from MetaDataApi.metadata.tests import UtilsForTesting
 from MetaDataApi.metadata.utils.django_model_utils import BuildSearchArgsFromJson
 
 
@@ -16,7 +16,7 @@ class TestBuildSearchArgsFromJson(TransactionTestCase):
 
     def test_build_search_args_from_json(self):
 
-        #data = TestingUtils.loadStravaActivities()
+        #data = UtilsForTesting.loadStravaActivities()
 
         data = {
             "object1": {

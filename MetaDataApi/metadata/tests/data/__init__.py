@@ -1,1 +1,1 @@
-from test_data_inits import TestDataInits
+from .load_test_data import LoadTestData

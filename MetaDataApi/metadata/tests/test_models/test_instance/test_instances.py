@@ -4,7 +4,8 @@ from urllib import request
 from MetaDataApi.metadata.models import Object
 from django.core.management import call_command
 
-from MetaDataApi.metadata.tests import TestDataInits
+from MetaDataApi.metadata.tests.data import LoadTestData
+from MetaDataApi.metadata.tests import UtilsForTesting
 
 
 class TestModelInstances(TransactionTestCase):
@@ -14,19 +15,6 @@ class TestModelInstances(TransactionTestCase):
     def setUpClass(cls):
         super(TestModelInstances, cls).setUpClass()
         django.setup()
-
-        # populate the database
-        from MetaDataApi.metadata.services import (
-            RdfSchemaService,
-            JsonSchemaService
-        )
-
-        TestDataInits.init_foaf()
-
-        TestDataInits.init_open_m_health_sample(extras=[
-            "body-temperature-2.0.json",
-            "body-temperature-2.x.json",
-        ])
 
     def test_attribute_exists(self):
         # Register your models here.
@@ -38,17 +26,35 @@ class TestModelInstances(TransactionTestCase):
             StringAttributeInstance,
             IntAttributeInstance,
             BoolAttributeInstance,
-            ImageAttributeInstance)
+            ImageAttributeInstance,
+            DateTimeAttributeInstance)
 
-        TestDataInits.init_strava_schema_from_file()
-        TestDataInits.init_strava_data_from_file()
+        LoadTestData.init_foaf()
+        LoadTestData.init_strava_schema_from_file()
+        LoadTestData.init_strava_data_from_file()
 
-        test_list = [
-            (FloatAttributeInstance, "testlabel", 1000, "some value")
-        ]
+        types = (FloatAttributeInstance, StringAttributeInstance,
+                 IntAttributeInstance, BoolAttributeInstance,
+                 DateTimeAttributeInstance)
 
-        res = [Instance(*args) for Instance, *args value in test_list]
+        att_lists = [inst_type.objects.all() for inst_type in types]
 
-        expected = [None]
+        # Flatten the list
+        real_atts = [item for sublist in att_lists for item in sublist]
 
-        self.assertEqual(res, expected)
+        # convert to appropriate args for testing if it exists
+        positive_list = [(type(att), att.label, att.object.pk, att.value)
+                         for att in real_atts]
+
+        negative_list = [UtilsForTesting.mutate(elm) for elm in positive_list]
+
+        positive_res = [Instance.exists(*args)
+                        for Instance, *args in positive_list]
+
+        negative_res = [Instance.exists(*args)
+                        for Instance, *args in negative_list]
+
+        pos_expected = [type(att) for att in real_atts]
+
+        self.assertEqual(positive_res, pos_expected)
+        self.assertEqual(negative_res, len(negative_res) * None)

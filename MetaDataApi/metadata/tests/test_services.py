@@ -5,7 +5,7 @@ from MetaDataApi.metadata.models import Object
 from django.core.management import call_command
 from MetaDataApi.metadata.services import BaseMetaDataService
 
-from MetaDataApi.metadata.tests import TestDataInits
+from MetaDataApi.metadata.tests.data import LoadTestData
 
 from MetaDataApi.metadata.services import *
 
@@ -21,7 +21,7 @@ class TestMetaServices(TransactionTestCase):
 
     def DeleteSchemaServiceTest(self):
 
-        TestDataInits.init_strava_schema_from_file()
+        LoadTestData.init_strava_schema_from_file()
 
         args = {
             schema_label: "strava",
@@ -35,8 +35,8 @@ class TestMetaServices(TransactionTestCase):
 
     def IdentifyDataFromProviderServiceTest(self):
         IdentifyDataFromProviderService
-        TestDataInits.init_strava_schema_from_file()
-        user = TestDataInits.init_user()
+        LoadTestData.init_strava_schema_from_file()
+        user = LoadTestData.init_user()
 
         return
         # will fail since third party profile is not defined
@@ -52,8 +52,8 @@ class TestMetaServices(TransactionTestCase):
 
     def IdentifyDataFromFileServiceTest(self):
         IdentifyDataFromProviderService
-        TestDataInits.init_strava_schema_from_file()
-        user = TestDataInits.init_user()
+        LoadTestData.init_strava_schema_from_file()
+        user = LoadTestData.init_user()
         # will fail since third party profile is not defined
         # load the file
         testfile = os.path.join(

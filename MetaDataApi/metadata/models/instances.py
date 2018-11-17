@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from enum import Enum
 from inflection import camelize
+from datetime import datetime
 
 from django.core.exceptions import ValidationError
 
@@ -71,13 +72,13 @@ class RDFDataDump(models.Model):
 class BaseInstance(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL,
                               null=True, on_delete=models.CASCADE)
-    base = models.ForeignKey(Attribute, on_delete=models.CASCADE)
 
     class Meta:
         abstract = True
 
 
 class ObjectInstance(BaseInstance):
+    base = models.ForeignKey(Object, on_delete=models.CASCADE)
 
     def __str__(self):
         return "Oi:%s.%s" % (self.base.schema.label, self.base.label)
@@ -101,6 +102,8 @@ class ObjectInstance(BaseInstance):
 
 
 class ObjectRelationInstance(BaseInstance):
+    base = models.ForeignKey(ObjectRelation, on_delete=models.CASCADE)
+
     from_object = models.ForeignKey(
         ObjectInstance,
         related_name='to_relations', on_delete=models.CASCADE)
@@ -135,15 +138,8 @@ class ObjectRelationInstance(BaseInstance):
 
 # this is the class that we are going to inherit from
 class BaseAttributeInstance(BaseInstance):
+    base = models.ForeignKey(Attribute, on_delete=models.CASCADE)
     object = models.ForeignKey(ObjectInstance, on_delete=models.CASCADE)
-
-    att_inst_to_type_map = {
-        StringAttributeInstance: str,
-        DateTimeAttributeInstance: datetime,
-        FloatAttributeInstance: float,
-        IntAttributeInstance: int,
-        BoolAttributeInstance: bool,
-    }
 
     def __str__(self):
         return "Ai:%s.%s:%s" % (self.base.object.label, self.base.label,
@@ -219,3 +215,13 @@ class ImageAttributeInstance(BaseAttributeInstance):
 
     class Meta(BaseAttributeInstance.Meta):
         default_related_name = '%(model_name)s'
+
+
+# define the mapping between type and InstanceClass
+BaseAttributeInstance.att_inst_to_type_map = {
+    StringAttributeInstance: str,
+    DateTimeAttributeInstance: datetime,
+    FloatAttributeInstance: float,
+    IntAttributeInstance: int,
+    BoolAttributeInstance: bool,
+}

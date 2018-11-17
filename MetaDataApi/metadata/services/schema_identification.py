@@ -92,13 +92,11 @@ class SchemaIdentificationV2(DbObjectCreation):
             input_data = json.loads(input_data)
 
         # create a base person to relate the data to
-        try:
-            person = ObjectInstance(
-                base=self.get_foaf_person()
-            )
-            person.save()
-        except Exception as e:
-            raise Exception("foaf person was not found")
+
+        person = ObjectInstance(
+            base=self.get_foaf_person()
+        )
+        person.save()
         # TODO: Relate to logged in foaf person object instance instead
 
         if parrent_label is not None and isinstance(input_data, list):
@@ -361,7 +359,7 @@ class SchemaIdentificationV2(DbObjectCreation):
     def iterate_find_related_obj(self, parrent_obj, find_obj,
                                  discovered_objects=[]):
         if isinstance(parrent_obj, (ObjectInstance,
-                                     StringAttributeInstance)):
+                                    StringAttributeInstance)):
             parrent_obj = parrent_obj.base
         # only relevant for first iteration, if the obj is an attribute
         if isinstance(parrent_obj, Attribute):

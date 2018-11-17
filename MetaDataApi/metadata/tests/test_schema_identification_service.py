@@ -10,7 +10,7 @@ from MetaDataApi.metadata.services.data_cleaning_service import (
 )
 from django.conf import settings
 
-from MetaDataApi.metadata.tests import TestDataInits
+from MetaDataApi.metadata.tests.data import LoadTestData
 
 
 class TestSchemaIdentificationService(TransactionTestCase):
@@ -31,9 +31,9 @@ class TestSchemaIdentificationService(TransactionTestCase):
 
         from MetaDataApi.metadata.models import Schema, Object
 
-        TestDataInits.init_foaf()
+        LoadTestData.init_foaf()
 
-        TestDataInits.init_open_m_health_sample(extras=[
+        LoadTestData.init_open_m_health_sample(extras=[
             "body-temperature-2.0.json",
             "body-temperature-2.x.json",
         ])
@@ -100,11 +100,11 @@ class TestSchemaIdentificationService(TransactionTestCase):
 
         data_cleaning = DataCleaningService()
 
-        TestDataInits.init_foaf()
+        LoadTestData.init_foaf()
 
-        schema = TestDataInits.init_strava_schema_from_file()
+        schema = LoadTestData.init_strava_schema_from_file()
 
-        objects = TestDataInits.init_strava_data_from_file()
+        objects = LoadTestData.init_strava_data_from_file()
 
         RdfSchemaService().export_schema_from_db(schema)
 

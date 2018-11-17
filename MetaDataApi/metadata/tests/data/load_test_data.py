@@ -11,7 +11,7 @@ from MetaDataApi.metadata.services.data_cleaning_service import (
 from django.conf import settings
 
 
-class TestDataInits:
+class LoadTestData:
 
     @staticmethod
     def init_user():
@@ -44,7 +44,7 @@ class TestDataInits:
 
         from MetaDataApi.metadata.models import Schema, Object, Attribute
 
-        TestDataInits.init_foaf()
+        LoadTestData.init_foaf()
 
         rdf_inst = RdfInstanceService()
 
@@ -79,7 +79,7 @@ class TestDataInits:
         )
         from MetaDataApi.metadata.models import Schema, Object, Attribute
 
-        user = TestDataInits.init_user()
+        user = LoadTestData.init_user()
 
         service = SchemaIdentificationV2()
 

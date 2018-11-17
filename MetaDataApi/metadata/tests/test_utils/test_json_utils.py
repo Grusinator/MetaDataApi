@@ -1,7 +1,7 @@
 import django
 from django.test import TestCase, TransactionTestCase
 
-from MetaDataApi.metadata.tests import TestDataInits
+from MetaDataApi.metadata.tests.data import LoadTestData
 
 
 class TestJsonUtils(TransactionTestCase):
