@@ -2,7 +2,7 @@
 from MetaDataApi.metadata.services.base_functions import BaseMetaDataService
 
 from MetaDataApi.metadata.models import *
-from MetaDataApi.datapoints.models import *
+from MetaDataApi.metadata.models import *
 
 # import the logging library
 import logging

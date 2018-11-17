@@ -269,8 +269,6 @@ class AddPersonReferenceToBaseObjects(graphene.Mutation):
 
 
 # wrap all queries and mutations
-
-
 class Query(graphene.ObjectType):
     schema = graphene.relay.Node.Field(SchemaNode)
     all_schemas = DjangoFilterConnectionField(SchemaNode)

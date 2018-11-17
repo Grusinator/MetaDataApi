@@ -18,7 +18,7 @@ from datetime import datetime
 import inflection
 
 
-from MetaDataApi.datapoints.models import (
+from MetaDataApi.metadata.models import (
     ObjectInstance, ObjectRelationInstance,
     StringAttributeInstance,
     DateTimeAttributeInstance, BoolAttributeInstance,

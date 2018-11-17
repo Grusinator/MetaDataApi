@@ -8,8 +8,21 @@ from MetaDataApi.metadata.models import (
 from MetaDataApi.metadata.services import (
     ExportSchemaService, AddRdfSchemaService, AddPersonReferenceToBaseObjects)
 
-models = (Object, Attribute, ObjectRelation)
+# Register your models here.
+from MetaDataApi.metadata.models import *
 
+models = (
+    # meta
+    Object, Attribute, ObjectRelation,
+    # instances
+    RawData,
+    ObjectInstance,
+    ObjectRelationInstance,
+    FloatAttributeInstance,
+    StringAttributeInstance,
+    IntAttributeInstance,
+    BoolAttributeInstance,
+    ImageAttributeInstance)
 
 [admin.site.register(model) for model in models]
 

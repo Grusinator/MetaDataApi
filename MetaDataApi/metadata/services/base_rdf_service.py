@@ -12,7 +12,7 @@ from inflection import camelize
 
 from django.core.files.base import ContentFile
 
-from MetaDataApi.datapoints.models import (
+from MetaDataApi.metadata.models import (
     ObjectInstance, ObjectRelationInstance,
     StringAttributeInstance,
     DateTimeAttributeInstance, BoolAttributeInstance,

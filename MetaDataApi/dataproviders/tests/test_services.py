@@ -5,7 +5,7 @@ from MetaDataApi.metadata.models import Object
 from django.core.management import call_command
 from datetime import datetime
 
-from MetaDataApi.datapoints.services import GetTemporalFloatPairsService
+from MetaDataApi.metadata.services import GetTemporalFloatPairsService
 from MetaDataApi.metadata.tests import TestDataInits
 
 

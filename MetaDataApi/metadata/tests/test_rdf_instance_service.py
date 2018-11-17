@@ -24,7 +24,7 @@ class TestRdfInstanceService(TransactionTestCase):
             Object, Schema, Attribute, ObjectRelation
         )
 
-        from MetaDataApi.datapoints.models import (
+        from MetaDataApi.metadata.models import (
             RawData, CategoryTypes,
             ObjectInstance,
             ObjectRelationInstance,

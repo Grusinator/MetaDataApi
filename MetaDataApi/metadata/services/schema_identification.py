@@ -12,7 +12,7 @@ from MetaDataApi.metadata.models import (
     Schema, Object,
     Attribute, ObjectRelation, UnmappedObject)
 
-from MetaDataApi.datapoints.models import (
+from MetaDataApi.metadata.models import (
     ObjectInstance,
     StringAttributeInstance,
     ObjectRelationInstance)
