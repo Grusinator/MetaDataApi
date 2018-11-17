@@ -4,6 +4,9 @@ from abc import ABCMeta, abstractmethod
 class IJsonIterator:
     __metaclass__ = ABCMeta
 
+    att_types = (str, int, float, bool)
+
+    @abstractmethod
     def __init__(self):
         self.depth = 0
 

@@ -1,1 +1,2 @@
-from MetaDataApi.metadata.tests.test_data_inits import *
+from MetaDataApi.metadata.tests.data import TestDataInits
+import data

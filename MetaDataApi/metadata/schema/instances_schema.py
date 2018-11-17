@@ -190,7 +190,7 @@ class CreateRawData(graphene.Mutation):
 
 class CreateDatapoint(graphene.Mutation):
     datapoint = Field(GenericAttributeNode)
-    # TODO create mutations for each datatype using metaclasses
+    # TODO create mutations for each data_type using metaclasses
 
     class Arguments:
         value = graphene.Float()

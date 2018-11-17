@@ -261,16 +261,16 @@ class SchemaIdentificationV2(DbObjectCreation):
             self, label, att_value,
             parrent_obj_inst, instance_list):
 
-        data_as_type = self.identify_datatype(att_value)
-        datatype = type(data_as_type) if data_as_type is not None else None
+        data_as_type = self.identify_data_type(att_value)
+        data_type = type(data_as_type) if data_as_type is not None else None
         # the key is the label
         att = self.find_label_in_metadata(
-            label, datatype, look_only_for_items=[Attribute, ])
+            label, data_type, look_only_for_items=[Attribute, ])
 
         if att and data_as_type is not None:
             # select which attribute instance type to use
             AttributeInstance = self.inverse_dict(
-                self.att_inst_to_type_map, datatype)
+                self.att_inst_to_type_map, data_type)
 
             # default to string if None
             AttributeInstance = AttributeInstance or StringAttributeInstance
@@ -416,9 +416,9 @@ class SchemaIdentificationV2(DbObjectCreation):
     def likelihood_score(self, label, obj, data_type=None):
         v1 = self.compare_labels(label, obj.label)
 
-        # datatype is only used in case of attributes
+        # data_type is only used in case of attributes
         if isinstance(obj, Attribute) and data_type:
-            v2 = self.datatype_match(obj, data_type)
+            v2 = self.data_type_match(obj, data_type)
         # if it is an object we can look at the relations
         # and see if it matches related objects or attributes
         elif isinstance(obj, Object) and None:
@@ -439,7 +439,7 @@ class SchemaIdentificationV2(DbObjectCreation):
             # return self.model.similarity(label1, label2)
             return 0
 
-    def datatype_match(self, object, data_type):
+    def data_type_match(self, object, data_type):
         return 0
 
     def relations_match(self, object, json_desendents, json_parrent):

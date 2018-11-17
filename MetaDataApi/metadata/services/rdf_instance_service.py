@@ -75,7 +75,7 @@ class RdfInstanceService(BaseRdfSchemaService):
                 obj_inst_uri = self.create_uri_ref(inst.object)
                 attr_base_uri = self.create_uri_ref(inst.base)
 
-                # TODO is it poosible to specify a more specific datatype
+                # TODO is it poosible to specify a more specific data_type
                 # rdf_type = self.att_instance_to_rdf_type(inst)
 
                 value = Literal(inst.value)

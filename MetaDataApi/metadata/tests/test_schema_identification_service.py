@@ -61,7 +61,7 @@ class TestSchemaIdentificationService(TransactionTestCase):
 
         self.assertEqual(len(objs), 4)
 
-    def test_identify_datatype(self):
+    def test_identify_data_type(self):
         from MetaDataApi.metadata.services import (
             SchemaIdentificationV2)
         from datetime import datetime
@@ -84,7 +84,7 @@ class TestSchemaIdentificationService(TransactionTestCase):
 
         service = SchemaIdentificationV2()
 
-        resp = [type(service.identify_datatype(elm)) for elm in inputd]
+        resp = [type(service.identify_data_type(elm)) for elm in inputd]
 
         self.assertListEqual(list(resp), list(expected))
 

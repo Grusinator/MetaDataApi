@@ -330,7 +330,7 @@ class GetTemporalFloatPairsService(Service):
             object__label=object_label,
             object__schema__label=schema_label)
 
-        Attribute.assert_datatype(value_att, float)
+        Attribute.assert_data_type(value_att, float)
 
         if datetime_label:
             datetime_att = Attribute.objects.get(
@@ -338,7 +338,7 @@ class GetTemporalFloatPairsService(Service):
                 object__label=datetime_object_label or object_label,
                 object__schema__label=schema_label
             )
-            Attribute.assert_datatype(datetime_att, datetime)
+            Attribute.assert_data_type(datetime_att, datetime)
 
         else:
             raise NotImplementedError(

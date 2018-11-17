@@ -77,10 +77,10 @@ class RdfSchemaService(BaseRdfSchemaService):
                 # this one relates the attribute to the object or domain
                 g.add((attribute_name, RDFS.domain, obj_name))
 
-                rdf_datatype = self.att_type_to_rdfs_uri(attribute.datatype)
+                rdf_data_type = self.att_type_to_rdfs_uri(attribute.data_type)
 
-                # datatype
-                g.add((attribute_name, RDFS.range, rdf_datatype))
+                # data_type
+                g.add((attribute_name, RDFS.range, rdf_data_type))
 
                 # label and description
                 g.add((attribute_name, RDFS.label, Literal(attribute.label)))
@@ -354,13 +354,13 @@ class RdfSchemaService(BaseRdfSchemaService):
 
                 # Property Class/domain
                 domain = next(g.triples((s, RDFS.domain, None)))[2]
-                # Property datatype
+                # Property data_type
                 o_range = next(g.triples((s, RDFS.range, None)))[2]
 
                 # the purpose of this is just to identify
                 # data properties to avoid database lookup
                 # if not needed
-                if o_range in self.valid_datatypes:
+                if o_range in self.valid_data_types:
                     pass
 
                 from_schema_url, from_obj_label = self._split_rdfs_url(domain)
@@ -430,7 +430,7 @@ class RdfSchemaService(BaseRdfSchemaService):
                 comment = next(g.triples((s, RDFS.comment, None)))[2]
                 # Property Class/domain
                 domain = next(g.triples((s, RDFS.domain, None)))[2]
-                # Property datatype
+                # Property data_type
                 range = next(g.triples((s, RDFS.range, None)))[2]
 
                 _, obj_label = self._split_rdfs_url(domain)
@@ -450,12 +450,12 @@ class RdfSchemaService(BaseRdfSchemaService):
             if object is None:
                 continue
 
-            if range not in self.valid_datatypes:
+            if range not in self.valid_data_types:
                 continue
 
             attribute = self._try_create_item(
                 Attribute(
-                    datatype=self.rdfs_to_att_type(range),
+                    data_type=self.rdfs_to_att_type(range),
                     label=label,
                     object=object
                 )

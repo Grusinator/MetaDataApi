@@ -24,7 +24,7 @@ class TestMetadataBaseFunctionService(TransactionTestCase):
 
         att = Attribute(object=Object.objects.get(label="image"),
                         label="test_att",
-                        datatype="float")
+                        data_type="float")
         att.save()
         service = BaseMetaDataService()
         foaf, to_foaf_p_list = service.path_to_object(

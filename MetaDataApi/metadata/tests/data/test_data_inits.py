@@ -127,10 +127,10 @@ class TestDataInits:
 
         rdf_service.write_to_db_baseschema()
 
-    @staticmethod
-    def init_full():
-        TestDataInits.init_user()
-        TestDataInits.init_rdf_base()
-        TestDataInits.init_open_m_health_sample()
-        TestDataInits.init_strava_schema_from_file()
-        TestDataInits.init_strava_data_from_file()
+    @classmethod
+    def init_full(cls):
+        cls.init_user()
+        cls.init_rdf_base()
+        cls.init_open_m_health_sample()
+        cls.init_strava_schema_from_file()
+        cls.init_strava_data_from_file()

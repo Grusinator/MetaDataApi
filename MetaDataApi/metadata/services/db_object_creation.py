@@ -27,15 +27,15 @@ class DbObjectCreation(BaseMetaDataService):
 
     def try_create_attribute(self, parrent_object, data, label):
 
-        data_as_type = self.identify_datatype(data)
-        datatype = type(data_as_type)  # if data_as_type is not None else None
+        data_as_type = self.identify_data_type(data)
+        data_type = type(data_as_type)  # if data_as_type is not None else None
 
         if parrent_object is not None:
             label = label or parrent_object.label
 
             att = Attribute(
                 label=label,
-                datatype=Attribute.data_type_map[datatype],
+                data_type=Attribute.data_type_map[data_type],
                 object=self._try_get_item(parrent_object)
             )
 
@@ -80,8 +80,8 @@ class DbObjectCreation(BaseMetaDataService):
                 logger.error("object_create_" + str(e))
 
     def try_create_attribute_instance(self, parrent_object, data, label):
-        data_as_type = self.identify_datatype(data)
-        datatype = type(data_as_type)  # if data_as_type is not None else None
+        data_as_type = self.identify_data_type(data)
+        data_type = type(data_as_type)  # if data_as_type is not None else None
         # create the attribute with the parrent
         # label since its a list of values
         # we dont know what it is called
@@ -91,7 +91,7 @@ class DbObjectCreation(BaseMetaDataService):
 
             att = Attribute(
                 label=label,
-                datatype=Attribute.data_type_map[datatype],
+                data_type=Attribute.data_type_map[data_type],
                 object=self._try_get_item(parrent_object.base)
             )
 

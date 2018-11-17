@@ -6,7 +6,7 @@ from django.conf import settings
 class TestingUtils:
 
     @classmethod
-    def loadStravaActivities():
+    def loadStravaActivities(cls):
         # load the file
         testfile = os.path.join(
             settings.BASE_DIR,

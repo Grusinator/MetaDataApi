@@ -12,6 +12,8 @@ from MetaDataApi.metadata.models import (
     Attribute, Object, ObjectRelation, Schema
 )
 
+from MetaDataApi.metadata.utils import BuildSearchArgsFromJson, DictUtils
+
 
 class CategoryTypes(Enum):
     test = "test"
@@ -81,12 +83,17 @@ class ObjectInstance(BaseInstance):
         return "Oi:%s.%s" % (self.base.schema.label, self.base.label)
 
     @classmethod
-    def exists(label, children):
-        args = {}
+    def exists(cls, label, children={}):
+        arg_builder = BuildSearchArgsFromJson()
+        args = arg_builder.build(children)
+        args["label"] = label
+        args = BuildSearchArgsFromJson.modify_keys_in_dict(
+            args, lambda x: "base__" + x)
+
         try:
-            return ObjectInstance.objects.get(**args)
-        except:
-            pass
+            return cls.objects.get(**args)
+        except (ObjectDoesNotExist, MultipleObjectsReturned) as e:
+            return None
 
     class Meta:
         app_label = 'metadata'
@@ -130,6 +137,14 @@ class ObjectRelationInstance(BaseInstance):
 class BaseAttributeInstance(BaseInstance):
     object = models.ForeignKey(ObjectInstance, on_delete=models.CASCADE)
 
+    att_inst_to_type_map = {
+        StringAttributeInstance: str,
+        DateTimeAttributeInstance: datetime,
+        FloatAttributeInstance: float,
+        IntAttributeInstance: int,
+        BoolAttributeInstance: bool,
+    }
+
     def __str__(self):
         return "Ai:%s.%s:%s" % (self.base.object.label, self.base.label,
                                 str(self.value))
@@ -142,6 +157,20 @@ class BaseAttributeInstance(BaseInstance):
                 "object instance must match the base object")
 
         return super(BaseAttributeInstance, self).save(*args, **kwargs)
+
+    @classmethod
+    def exists(cls, label, parrent_object_pk, value):
+        # AttributeInstance = DictUtils.inverse_dict(
+        #     cls.att_inst_to_type_map, data_type)
+        args = {
+            "base__label": label,
+            "value": value,
+            "object__pk": parrent_object_pk
+        }
+        try:
+            return cls.objects.get(**args)
+        except (ObjectDoesNotExist, MultipleObjectsReturned) as e:
+            return None
 
     class Meta(BaseInstance.Meta):
         abstract = True

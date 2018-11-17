@@ -95,8 +95,8 @@ class Attribute(BaseMeta):
     data_type_choises = [(x, x) for x in data_type_map.values()]
 
     # db Fields
-    datatype = models.TextField(choices=data_type_choises)
-    dataunit = models.TextField()
+    data_type = models.TextField(choices=data_type_choises)
+    data_unit = models.TextField()
     object = models.ForeignKey(
         Object, related_name='attributes', on_delete=models.CASCADE)
 
@@ -112,14 +112,14 @@ class Attribute(BaseMeta):
     def __ne__(self, other):
         return not self.__eq__(other)
 
-    @staticmethod
-    def assert_datatype(attribute, datatype):
-        datatype_name = Attribute.data_type_map[datatype]
-        assert attribute.datatype == datatype_name, \
+    @classmethod
+    def assert_data_type(cls, attribute, data_type):
+        data_type_name = cls.data_type_map[data_type]
+        assert attribute.data_type == data_type_name, \
             "the found attr: %s has type %s, but it must be a %s" % (
                 attribute.label,
-                attribute.datatype,
-                str(datatype_name)
+                attribute.data_type,
+                str(data_type_name)
             )
 
     class Meta:
