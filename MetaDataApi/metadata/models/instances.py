@@ -34,15 +34,6 @@ class CategoryTypes(Enum):
 """ used for uploading data before processed into structured data"""
 
 
-class BaseInstance(models.Model):
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL,
-                              null=True, on_delete=models.CASCADE)
-    base = models.ForeignKey(Attribute, on_delete=models.CASCADE)
-
-    class Meta:
-        abstract = True
-
-
 class RawData(models.Model):
     starttime = models.DateTimeField(auto_now=False)
     stoptime = models.DateTimeField(null=True, blank=True)
@@ -75,11 +66,27 @@ class RDFDataDump(models.Model):
 
 # instance classes
 
+class BaseInstance(models.Model):
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL,
+                              null=True, on_delete=models.CASCADE)
+    base = models.ForeignKey(Attribute, on_delete=models.CASCADE)
+
+    class Meta:
+        abstract = True
+
 
 class ObjectInstance(BaseInstance):
 
     def __str__(self):
         return "Oi:%s.%s" % (self.base.schema.label, self.base.label)
+
+    @classmethod
+    def exists(label, children):
+        args = {}
+        try:
+            return ObjectInstance.objects.get(**args)
+        except:
+            pass
 
     class Meta:
         app_label = 'metadata'
@@ -116,6 +123,8 @@ class ObjectRelationInstance(BaseInstance):
 
         return super(ObjectRelationInstance, self).save(*args, **kwargs)
 
+
+# Attribute Instances
 
 # this is the class that we are going to inherit from
 class BaseAttributeInstance(BaseInstance):

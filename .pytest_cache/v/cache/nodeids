@@ -16,5 +16,7 @@
   "MetaDataApi/metadata/tests/test_rdf_schema_service.py::TestRdfSchemaService::test_upload_rdf",
   "MetaDataApi/metadata/tests/test_schema_identification_service.py::TestSchemaIdentificationService::test_identify_datatype",
   "MetaDataApi/metadata/tests/test_schema_identification_service.py::TestSchemaIdentificationService::test_identify_json_data_sample",
-  "MetaDataApi/metadata/tests/test_schema_identification_service.py::TestSchemaIdentificationService::test_identify_json_data_strava_test"
+  "MetaDataApi/metadata/tests/test_schema_identification_service.py::TestSchemaIdentificationService::test_identify_json_data_strava_test",
+  "MetaDataApi/metadata/tests/test_utils/django_model_utils_test.py::TestBuildSearchArgsFromJson::test_BuildSearchArgsFromJson",
+  "MetaDataApi/metadata/tests/test_utils/test_json_utils.py::TestJsonUtils::test_identify_json_data_sample"
 ]
