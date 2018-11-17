@@ -10,14 +10,17 @@ class UtilsForTesting:
 
     @staticmethod
     def mutate(input_list):
-        if not any([isinstance(elm, (str, float, int, bool))for elm in input_list]):
-            raise ValueError("there is no values to mutate")
-
         filtered_list = list(filter(
-            lambda x: isinstance(x, (str, float, int, bool), input_list)))
+            lambda x: isinstance(x, (str, float, int, bool, datetime)),
+            input_list))
+
+        if len(filtered_list) == 0:
+            raise ValueError("there is no values to mutate")
 
         # get indexes
         indexes = [input_list.index(x) for x in filtered_list]
+
+        output_list = input_list.copy()
 
         # select a mutation value
         idx = random.choice(indexes)
@@ -25,15 +28,15 @@ class UtilsForTesting:
         mutating_obj = input_list[idx]
 
         if isinstance(mutating_obj, str):
-            input_list[idx] += "_mutated"
+            output_list[idx] = input_list[idx] + "_mutated"
         elif isinstance(mutating_obj, bool):
-            input_list[idx] = not input_list[idx]
+            output_list[idx] = not input_list[idx]
         elif isinstance(mutating_obj, (int, float)):
-            input_list[idx] += 3
+            output_list[idx] = input_list[idx] + 3
         elif isinstance(mutating_obj, datetime):
-            input_list[idx] += timedelta(0, 3)
+            output_list[idx] = input_list[idx] + timedelta(0, 3)
 
-        return input_list
+        return output_list
 
     @classmethod
     def loadStravaActivities(cls):

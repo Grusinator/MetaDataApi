@@ -4,7 +4,10 @@ from enum import Enum
 from inflection import camelize
 from datetime import datetime
 
-from django.core.exceptions import ValidationError
+
+from django.core.exceptions import (
+    ValidationError,
+    ObjectDoesNotExist, MultipleObjectsReturned)
 
 from MetaDataApi.metadata.custom_storages import MediaStorage
 
@@ -95,6 +98,9 @@ class ObjectInstance(BaseInstance):
             return cls.objects.get(**args)
         except (ObjectDoesNotExist, MultipleObjectsReturned) as e:
             return None
+
+    def object_childrens_to_json(self):
+        f
 
     class Meta:
         app_label = 'metadata'

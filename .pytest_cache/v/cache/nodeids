@@ -17,7 +17,6 @@
   "MetaDataApi/metadata/tests/test_schema_identification_service.py::TestSchemaIdentificationService::test_identify_data_type",
   "MetaDataApi/metadata/tests/test_schema_identification_service.py::TestSchemaIdentificationService::test_identify_json_data_sample",
   "MetaDataApi/metadata/tests/test_schema_identification_service.py::TestSchemaIdentificationService::test_identify_json_data_strava_test",
-  "MetaDataApi/metadata/tests/test_models/test_instance/test_instances.py::TestModelInstances::test_attribute_exists",
   "MetaDataApi/metadata/tests/test_utils/django_model_utils_test.py::TestBuildSearchArgsFromJson::test_build_search_args_from_json",
   "MetaDataApi/metadata/tests/test_utils/test_json_utils.py::TestJsonUtils::test_identify_json_data_sample"
 ]

@@ -43,10 +43,11 @@ class TestModelInstances(TransactionTestCase):
         real_atts = [item for sublist in att_lists for item in sublist]
 
         # convert to appropriate args for testing if it exists
-        positive_list = [(type(att), att.label, att.object.pk, att.value)
+        positive_list = [[type(att), att.base.label, att.object.pk, att.value]
                          for att in real_atts]
 
-        negative_list = [UtilsForTesting.mutate(elm) for elm in positive_list]
+        negative_list = [UtilsForTesting.mutate(
+            elm) for elm in list(positive_list)]
 
         positive_res = [Instance.exists(*args)
                         for Instance, *args in positive_list]
@@ -54,7 +55,40 @@ class TestModelInstances(TransactionTestCase):
         negative_res = [Instance.exists(*args)
                         for Instance, *args in negative_list]
 
-        pos_expected = [type(att) for att in real_atts]
+        pos_type = [type(att).__name__ for att in positive_res]
+        pos_type_expected = [type(att).__name__ for att in real_atts]
 
-        self.assertEqual(positive_res, pos_expected)
-        self.assertEqual(negative_res, len(negative_res) * None)
+        self.assertEqual(pos_type, pos_type_expected)
+        self.assertEqual(negative_res, len(negative_res) * [None, ])
+
+  def test_attribute_exists(self):
+        # Register your models here.
+        from MetaDataApi.metadata.models.instances import ObjectInstance
+       
+
+        LoadTestData.init_foaf()
+        LoadTestData.init_strava_schema_from_file()
+        LoadTestData.init_strava_data_from_file()
+
+
+        objects = ObjectInstance.objects.all()
+
+
+        # convert to appropriate args for testing if it exists
+        positive_list = [[type(att), att.base.label, att.object.pk, att.value]
+                         for att in real_atts]
+
+        negative_list = [UtilsForTesting.mutate(
+            elm) for elm in list(positive_list)]
+
+        positive_res = [Instance.exists(*args)
+                        for Instance, *args in positive_list]
+
+        negative_res = [Instance.exists(*args)
+                        for Instance, *args in negative_list]
+
+        pos_type = [type(att).__name__ for att in positive_res]
+        pos_type_expected = [type(att).__name__ for att in real_atts]
+
+        self.assertEqual(pos_type, pos_type_expected)
+        self.assertEqual(negative_res, len(negative_res) * [None, ])
