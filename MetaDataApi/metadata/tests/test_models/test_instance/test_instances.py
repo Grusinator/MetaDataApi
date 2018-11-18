@@ -19,6 +19,28 @@ class TestModelInstances(TransactionTestCase):
         super(TestModelInstances, cls).setUpClass()
         django.setup()
 
+    def test_get_related_list(self):
+        from MetaDataApi.metadata.models import ObjectInstance
+        schema = LoadTestData.init_foaf()
+        obj = Object.objects.get(label="person", schema=schema)
+
+        obj_inst = ObjectInstance(base=obj)
+        res_inst = obj_inst.get_related_list()
+
+        res = obj.get_related_list()
+
+        res_string = list(map(lambda x: x.label, res))
+
+        expected = [
+            'person', 'person', 'document', 'document', 'document',
+            'image', 'document', 'document', 'surname', 'first_name',
+            'family_name', 'geekcode', 'myers_briggs', 'plan']
+
+        res_string.sort()
+        expected.sort()
+
+        self.assertEqual(res_string, expected)
+
     def test_attribute_exists(self):
         # Register your models here.
         from MetaDataApi.metadata.models.instances import (
@@ -76,7 +98,7 @@ class TestModelInstances(TransactionTestCase):
         data = UtilsForTesting.loadStravaActivities()
 
         finder = FindObjectJsonChildren("strava")
-        childrenslist = finder.build(data)
+        childrenslist = finder.build_from_json(data)
 
         # convert to appropriate args for testing if it exists
         positive_list = [[obj, obj.base.label, children]

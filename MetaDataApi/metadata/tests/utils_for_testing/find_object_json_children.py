@@ -26,6 +26,6 @@ class FindObjectJsonChildren(json_utils.IJsonIterator):
     def handle_object_relations(self, parrent_object, data, label):
         pass
 
-    def build(self, data):
+    def build_from_json(self, data):
         self.iterate_json_tree(data)
         return self.childrens

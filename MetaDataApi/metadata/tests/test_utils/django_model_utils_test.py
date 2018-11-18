@@ -3,15 +3,15 @@ from django.test import TestCase, TransactionTestCase
 import django
 
 from MetaDataApi.metadata.tests import utils_for_testing
-from MetaDataApi.metadata.utils.django_model_utils import BuildSearchArgsFromJson
+from MetaDataApi.metadata.utils.django_model_utils import BuildDjangoSearchArgs
 
 
-class TestBuildSearchArgsFromJson(TransactionTestCase):
+class TestBuildDjangoSearchArgs(TransactionTestCase):
 
     # Django requires an explicit setup() when running tests in PTVS
     @classmethod
     def setUpClass(cls):
-        super(TestBuildSearchArgsFromJson, cls).setUpClass()
+        super(TestBuildDjangoSearchArgs, cls).setUpClass()
         # django.setup()
 
     def test_build_search_args_from_json(self):
@@ -29,8 +29,8 @@ class TestBuildSearchArgsFromJson(TransactionTestCase):
             }
         }
 
-        builder = BuildSearchArgsFromJson()
-        args = builder.build(data)
+        builder = BuildDjangoSearchArgs()
+        args = builder.build_from_json(data)
 
         expected = {
             'from_relations__from_object__label': 'object1',

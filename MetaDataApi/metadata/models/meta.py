@@ -1,6 +1,7 @@
 from django.db import models
 from MetaDataApi.metadata.custom_storages import MediaStorage
 from datetime import datetime
+from MetaDataApi.metadata.utils import BuildDjangoSearchArgs, DictUtils
 # Create your models here.
 
 
@@ -74,6 +75,29 @@ class Object(BaseMeta):
 
         else:
             return False
+
+    def get_related_list(self, include_attributes=True):
+        related = []
+
+        builder = BuildDjangoSearchArgs()
+
+        # add "to" relations to current object to list
+        # dont match on label but on object
+        builder.add_to_obj(self)
+        related.extend(list(type(self).objects.filter(**builder.search_args)))
+
+        # clear args
+        builder.search_args = {}
+
+        # add "from" relations to current object to list
+        # dont match on label but on object
+        builder.add_from_obj(self)
+        related.extend(list(type(self).objects.filter(**builder.search_args)))
+
+        if include_attributes:
+            related.extend(list(Attribute.objects.filter(object=self)))
+
+        return related
 
     @classmethod
     def exists(cls, label: str, schema: str):

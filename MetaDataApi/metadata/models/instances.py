@@ -16,7 +16,7 @@ from MetaDataApi.metadata.models import (
     Attribute, Object, ObjectRelation, Schema
 )
 
-from MetaDataApi.metadata.utils import BuildSearchArgsFromJson, DictUtils
+from MetaDataApi.metadata.utils import BuildDjangoSearchArgs, DictUtils
 
 
 class CategoryTypes(Enum):
@@ -88,16 +88,43 @@ class ObjectInstance(BaseInstance):
 
     @classmethod
     def exists(cls, label, children={}):
-        arg_builder = BuildSearchArgsFromJson()
-        args = arg_builder.build(children)
+        arg_builder = BuildDjangoSearchArgs()
+        args = arg_builder.build_from_json(children)
         args["label"] = label
-        args = BuildSearchArgsFromJson.modify_keys_in_dict(
+        args = BuildDjangoSearchArgs.modify_keys_in_dict(
             args, lambda x: "base__" + x)
 
         try:
             return cls.objects.get(**args)
         except (ObjectDoesNotExist, MultipleObjectsReturned) as e:
             return None
+
+    def get_related_list(self, include_attributes=False):
+        related = []
+
+        builder = BuildDjangoSearchArgs()
+
+        # add "to" relations to current object to list
+        # dont match on label but on object
+        builder.add_to_obj(self)
+
+        related.extend(list(type(self).objects.filter(**builder.search_args)))
+
+        # clear args
+        builder.search_args = {}
+
+        # add "from" relations to current object to list
+        # dont match on label but on object
+        builder.add_from_obj(self)
+        related.extend(list(type(self).objects.filter(**builder.search_args)))
+
+        if include_attributes:
+            raise NotImplementedError(
+                "include atts has not been implemented yet")
+            # TODO add all types of attributes
+            # related.append(Attribute.objects.filter(object=self))
+
+        return related
 
     # def object_childrens_to_json(self):
     #     raise NotImplementedError
