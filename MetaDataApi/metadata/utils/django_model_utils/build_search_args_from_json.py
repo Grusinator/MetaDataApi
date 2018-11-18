@@ -36,4 +36,4 @@ class BuildSearchArgsFromJson(IJsonIterator):
 
     @staticmethod
     def modify_keys_in_dict(input_dict, func):
-        {func(key): value for key, value in input_dict.items()}
+        return {func(key): value for key, value in input_dict.items()}

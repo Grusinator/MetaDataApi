@@ -2,7 +2,7 @@ from MetaDataApi.metadata.tests.data import LoadTestData
 from django.test import TestCase, TransactionTestCase
 import django
 
-from MetaDataApi.metadata.tests import UtilsForTesting
+from MetaDataApi.metadata.tests import utils_for_testing
 from MetaDataApi.metadata.utils.django_model_utils import BuildSearchArgsFromJson
 
 

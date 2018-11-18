@@ -99,8 +99,8 @@ class ObjectInstance(BaseInstance):
         except (ObjectDoesNotExist, MultipleObjectsReturned) as e:
             return None
 
-    def object_childrens_to_json(self):
-        f
+    # def object_childrens_to_json(self):
+    #     raise NotImplementedError
 
     class Meta:
         app_label = 'metadata'

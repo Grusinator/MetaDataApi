@@ -75,6 +75,11 @@ class Object(BaseMeta):
         else:
             return False
 
+    @classmethod
+    def exists(cls, label: str, schema: str):
+
+        return cls.objects.get(label=label, schema__label=schema)
+
     def __ne__(self, other):
         return not self.__eq__(other)
 
