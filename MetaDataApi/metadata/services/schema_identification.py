@@ -20,6 +20,8 @@ from .base_functions import BaseMetaDataService
 
 from .db_object_creation import DbObjectCreation
 
+from MetaDataApi.metadata.utils.django_model_utils import BuildDataObjectsFromJson
+
 import logging
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -38,6 +40,28 @@ class SchemaIdentificationV2(DbObjectCreation):
         self._att_function = None
         self._object_function = None
         self._obj_rel_function = None
+
+    def identify_from_json_data(self, input_data, schema, owner, parrent_label=None):
+        # setup how the loop handles each type of object occurrence
+
+        builder = BuildDataObjectsFromJson(schema, owner)
+
+        person = ObjectInstance(
+            base=self.get_foaf_person()
+        )
+        person.save()
+        # TODO: Relate to logged in foaf person object instance instead
+
+        if parrent_label is not None and isinstance(input_data, list):
+            # if its a list, we have to create a base object for each element
+            input_data = [{parrent_label: elm}for elm in input_data]
+        elif parrent_label is not None and isinstance(input_data, dict):
+            # if its a dict, just add the parrent label
+            input_data = {parrent_label: input_data, }
+
+        builder.build_from_json(input_data, parrent_object=person)
+
+        return self.touched_meta_items
 
     # identify schema new
     def identify_schema_from_dataV2(self, input_data, schema,
@@ -68,6 +92,7 @@ class SchemaIdentificationV2(DbObjectCreation):
         return self.touched_meta_items
 
     # identify data new
+
     def map_data_to_native_instances(self, input_data, schema,
                                      parrent_label=None, owner=None):
 

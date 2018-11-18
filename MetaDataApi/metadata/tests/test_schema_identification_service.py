@@ -11,6 +11,7 @@ from MetaDataApi.metadata.services.data_cleaning_service import (
 from django.conf import settings
 
 from MetaDataApi.metadata.tests.data import LoadTestData
+from MetaDataApi.metadata.tests.utils_for_testing.common_utils_for_testing import UtilsForTesting
 
 
 class TestSchemaIdentificationService(TransactionTestCase):
@@ -89,6 +90,44 @@ class TestSchemaIdentificationService(TransactionTestCase):
         self.assertListEqual(list(resp), list(expected))
 
     def test_identify_json_data_strava_test(self):
+        from MetaDataApi.metadata.services import (
+            RdfSchemaService, DataCleaningService,
+            SchemaIdentificationV2, RdfInstanceService)
+
+        from MetaDataApi.metadata.models import Schema, Object
+        from django.contrib.auth.models import User
+
+        rdf_inst = RdfInstanceService()
+
+        # data_cleaning = DataCleaningService()
+
+        LoadTestData.init_foaf()
+
+        user = LoadTestData.init_user()
+
+        # schema = LoadTestData.init_strava_schema_from_file()
+
+        schema = Schema(label="strava")
+        schema.save()
+
+        # objects = LoadTestData.init_strava_data_from_file()
+
+        service = SchemaIdentificationV2()
+
+        data = UtilsForTesting.loadStravaActivities()
+
+        service.identify_from_json_data(
+            data, schema, user, parrent_label="activities")
+
+        # RdfSchemaService().export_schema_from_db(schema)
+
+        # file = RdfInstanceService().export_instances_to_rdf_file(schema, objects)
+
+        # print(schema.url)
+
+        # self.assertGreater(len(objects), 10)
+
+    def test_identify_from_json_data(self):
         from MetaDataApi.metadata.services import (
             RdfSchemaService, DataCleaningService,
             SchemaIdentificationV2, RdfInstanceService)

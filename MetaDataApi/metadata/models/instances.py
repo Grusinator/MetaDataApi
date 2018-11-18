@@ -16,7 +16,8 @@ from MetaDataApi.metadata.models import (
     Attribute, Object, ObjectRelation, Schema
 )
 
-from MetaDataApi.metadata.utils import BuildDjangoSearchArgs, DictUtils
+from MetaDataApi.metadata.utils.django_model_utils import BuildDjangoSearchArgs
+from MetaDataApi.metadata.utils.common_utils import DictUtils
 
 
 class CategoryTypes(Enum):
@@ -153,6 +154,15 @@ class ObjectRelationInstance(BaseInstance):
     class Meta:
         app_label = 'metadata'
         default_related_name = '%(model_name)s'
+
+    @classmethod
+    def exists(cls, label: str, from_object: str, to_object: str):
+        search_args = {
+            "from_object__base__label": from_object,
+            "from_object__base__label": to_object,
+            "base__label": label
+        }
+        return cls.objects.get(**search_args)
 
     # custom restrictions on foreign keys to make sure the instances are of
     # the right meta object type

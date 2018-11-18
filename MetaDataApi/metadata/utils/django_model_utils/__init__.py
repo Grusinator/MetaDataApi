@@ -1,1 +1,2 @@
 from .build_search_args_from_json import BuildDjangoSearchArgs
+from .build_data_objects_from_json import BuildDataObjectsFromJson

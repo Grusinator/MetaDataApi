@@ -1,7 +1,8 @@
 from django.db import models
 from MetaDataApi.metadata.custom_storages import MediaStorage
 from datetime import datetime
-from MetaDataApi.metadata.utils import BuildDjangoSearchArgs, DictUtils
+from MetaDataApi.metadata.utils.django_model_utils import BuildDjangoSearchArgs
+from MetaDataApi.metadata.utils.common_utils import DictUtils
 # Create your models here.
 
 
@@ -14,7 +15,6 @@ class BaseMeta(models.Model):
 
 
 class Schema(models.Model):
-
     label = models.TextField(unique=True)
     description = models.TextField(null=True, blank=True)
     url = models.URLField(unique=True)
@@ -138,6 +138,11 @@ class Attribute(BaseMeta):
         else:
             return False
 
+    @classmethod
+    def exists(cls, label: str, object: str):
+
+        return cls.objects.get(label=label, object__label=schema)
+
     def __ne__(self, other):
         return not self.__eq__(other)
 
@@ -175,6 +180,15 @@ class ObjectRelation(BaseMeta):
             return self.__dict__ == other.__dict__
         else:
             return False
+
+    @classmethod
+    def exists(cls, label: str, from_object: str, to_object: str):
+        search_args = {
+            "from_object__label": from_object,
+            "from_object__label": to_object,
+            "label": label
+        }
+        return cls.objects.get(**search_args)
 
     def __ne__(self, other):
         return not self.__eq__(other)
