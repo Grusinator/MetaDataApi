@@ -61,7 +61,7 @@ class SchemaIdentificationV2(DbObjectCreation):
 
         builder.build_from_json(input_data, parrent_object=person)
 
-        return self.touched_meta_items
+        return builder.added_instance_items
 
     # identify schema new
     def identify_schema_from_dataV2(self, input_data, schema,

@@ -1,7 +1,7 @@
 from django.db import models
 from MetaDataApi.metadata.custom_storages import MediaStorage
 from datetime import datetime
-from MetaDataApi.metadata.utils.django_model_utils import BuildDjangoSearchArgs
+from MetaDataApi.metadata.utils.django_model_utils import BuildDjangoSearchArgs, DjangoModelUtils
 from MetaDataApi.metadata.utils.common_utils import DictUtils
 # Create your models here.
 
@@ -100,9 +100,10 @@ class Object(BaseMeta):
         return related
 
     @classmethod
-    def exists(cls, label: str, schema: str):
-
-        return cls.objects.get(label=label, schema__label=schema)
+    def exists(cls, label: str, schema__label: str):
+        search_args = dict(locals())
+        search_args.pop("cls")
+        return DjangoModelUtils.get_object_or_none(cls, **search_args)
 
     def __ne__(self, other):
         return not self.__eq__(other)
@@ -139,9 +140,10 @@ class Attribute(BaseMeta):
             return False
 
     @classmethod
-    def exists(cls, label: str, object: str):
-
-        return cls.objects.get(label=label, object__label=schema)
+    def exists(cls, label: str, object__label: str):
+        search_args = dict(locals())
+        search_args.pop("cls")
+        return DjangoModelUtils.get_object_or_none(cls, **search_args)
 
     def __ne__(self, other):
         return not self.__eq__(other)
@@ -182,13 +184,12 @@ class ObjectRelation(BaseMeta):
             return False
 
     @classmethod
-    def exists(cls, label: str, from_object: str, to_object: str):
-        search_args = {
-            "from_object__label": from_object,
-            "from_object__label": to_object,
-            "label": label
-        }
-        return cls.objects.get(**search_args)
+    def exists(cls, label: str, from_object__label: str,
+               to_object__label: str):
+        search_args = dict(locals())
+        search_args.pop("cls")
+
+        return DjangoModelUtils.get_object_or_none(cls, **search_args)
 
     def __ne__(self, other):
         return not self.__eq__(other)

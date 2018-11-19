@@ -48,8 +48,8 @@ class IJsonIterator:
         # the value of the dict is tested for being an attribute
         elif not isinstance(input_data, dict):
             if parrent_object is not None:
-                self._att_function(parrent_object, input_data,
-                                   None)
+                self.handle_attributes(parrent_object, input_data,
+                                       None)
             self.depth -= 1
             return
 

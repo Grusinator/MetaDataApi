@@ -89,7 +89,7 @@ class TestSchemaIdentificationService(TransactionTestCase):
 
         self.assertListEqual(list(resp), list(expected))
 
-    def test_identify_json_data_strava_test(self):
+    def test_identify_from_json_data_strava_test(self):
         from MetaDataApi.metadata.services import (
             RdfSchemaService, DataCleaningService,
             SchemaIdentificationV2, RdfInstanceService)

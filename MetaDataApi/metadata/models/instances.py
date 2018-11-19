@@ -16,7 +16,7 @@ from MetaDataApi.metadata.models.meta import (
     Attribute, Object, ObjectRelation, Schema
 )
 
-from MetaDataApi.metadata.utils.django_model_utils import BuildDjangoSearchArgs
+from MetaDataApi.metadata.utils.django_model_utils import BuildDjangoSearchArgs, DjangoModelUtils
 from MetaDataApi.metadata.utils.common_utils import DictUtils
 
 
@@ -90,15 +90,12 @@ class ObjectInstance(BaseInstance):
     @classmethod
     def exists(cls, label, children={}):
         arg_builder = BuildDjangoSearchArgs()
-        args = arg_builder.build_from_json(children)
-        args["label"] = label
-        args = BuildDjangoSearchArgs.modify_keys_in_dict(
-            args, lambda x: "base__" + x)
+        search_args = arg_builder.build_from_json(children)
+        search_args["label"] = label
+        search_args = BuildDjangoSearchArgs.modify_keys_in_dict(
+            search_args, lambda x: "base__" + x)
 
-        try:
-            return cls.objects.get(**args)
-        except (ObjectDoesNotExist, MultipleObjectsReturned) as e:
-            return None
+        return DjangoModelUtils.get_object_or_none(cls, **search_args)
 
     def get_related_list(self, include_attributes=False):
         related = []
@@ -156,13 +153,13 @@ class ObjectRelationInstance(BaseInstance):
         default_related_name = '%(model_name)s'
 
     @classmethod
-    def exists(cls, label: str, from_object: str, to_object: str):
-        search_args = {
-            "from_object__base__label": from_object,
-            "from_object__base__label": to_object,
-            "base__label": label
-        }
-        return cls.objects.get(**search_args)
+    def exists(cls, base__label: str, from_object__base__label: str,
+               to_object__base__label: str):
+
+        search_args = dict(locals())
+        search_args.pop("cls")
+
+        return DjangoModelUtils.get_object_or_none(cls, **search_args)
 
     # custom restrictions on foreign keys to make sure the instances are of
     # the right meta object type
@@ -184,6 +181,9 @@ class BaseAttributeInstance(BaseInstance):
     base = models.ForeignKey(Attribute, on_delete=models.CASCADE)
     object = models.ForeignKey(ObjectInstance, on_delete=models.CASCADE)
 
+    # the dictionay is populated after init of specific attribute instances
+    att_inst_to_type_map = {}
+
     def __str__(self):
         return "Ai:%s.%s:%s" % (self.base.object.label, self.base.label,
                                 str(self.value))
@@ -198,18 +198,12 @@ class BaseAttributeInstance(BaseInstance):
         return super(BaseAttributeInstance, self).save(*args, **kwargs)
 
     @classmethod
-    def exists(cls, label, parrent_object_pk, value):
-        # AttributeInstance = DictUtils.inverse_dict(
-        #     cls.att_inst_to_type_map, data_type)
-        args = {
-            "base__label": label,
-            "value": value,
-            "object__pk": parrent_object_pk
-        }
-        try:
-            return cls.objects.get(**args)
-        except (ObjectDoesNotExist, MultipleObjectsReturned) as e:
-            return None
+    def exists(cls, base__label, object__pk, value):
+
+        search_args = dict(locals())
+        search_args.pop("cls")
+
+        return DjangoModelUtils.get_object_or_none(cls, **search_args)
 
     class Meta(BaseInstance.Meta):
         abstract = True

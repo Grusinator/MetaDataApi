@@ -1,7 +1,10 @@
+from datetime import datetime
+
+
 class DataTypeUtils:
 
     @staticmethod
-    def identify_data_type(self, element):
+    def identify_data_type(element):
         if element is None:
             return None
 
