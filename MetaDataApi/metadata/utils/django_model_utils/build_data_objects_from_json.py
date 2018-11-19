@@ -1,9 +1,22 @@
 
+from MetaDataApi.metadata.models import (
+    # meta
+    Object, Attribute, ObjectRelation, Schema,
+    # instances
+    RawData,
+    ObjectInstance,
+    ObjectRelationInstance,
+    FloatAttributeInstance,
+    StringAttributeInstance,
+    IntAttributeInstance,
+    BoolAttributeInstance,
+    ImageAttributeInstance)
+
 
 from ..json_utils.json_iterator import IJsonIterator
-from MetaDataApi.metadata.utils.common_utils import DataTypeUtils
+from MetaDataApi.metadata.utils.common_utils.data_type_utils import DataTypeUtils
 
-from MetaDataApi.metadata.models.meta import Schema
+#from MetaDataApi.metadata.models.meta import Schema
 
 
 class BuildDataObjectsFromJson(IJsonIterator):

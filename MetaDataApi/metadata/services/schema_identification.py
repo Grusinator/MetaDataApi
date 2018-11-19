@@ -20,7 +20,7 @@ from .base_functions import BaseMetaDataService
 
 from .db_object_creation import DbObjectCreation
 
-from MetaDataApi.metadata.utils.django_model_utils import BuildDataObjectsFromJson
+from MetaDataApi.metadata.utils.django_model_utils.build_data_objects_from_json import BuildDataObjectsFromJson
 
 import logging
 # Get an instance of a logger

@@ -12,7 +12,7 @@ from django.core.exceptions import (
 from MetaDataApi.metadata.custom_storages import MediaStorage
 
 
-from MetaDataApi.metadata.models import (
+from MetaDataApi.metadata.models.meta import (
     Attribute, Object, ObjectRelation, Schema
 )
 
