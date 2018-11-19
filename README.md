@@ -35,7 +35,7 @@ I have made a small client in python to request some of the data from the server
 - [ ] implement logging and better error handling
 - [ ] compare metaobjects using word2vec or similar
 - [ ] make a data encoder that can model a full human (requires more data)
-- [ ] Add image attribute type
+- [x] Add image attribute type
 - [ ] make a front-end 
 - [ ] write documentation
 - [ ] make tests of all services
@@ -46,4 +46,5 @@ I have made a small client in python to request some of the data from the server
 - [ ] Create dev branch
 - [ ] Add support for endpoints that require an id of a parrent object
 - [ ] Find a good name
+- [ ] add a way to make lists in the database ("pointers" obj_rel)
 
