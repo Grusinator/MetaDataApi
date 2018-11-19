@@ -19,6 +19,7 @@ from MetaDataApi.metadata.utils.common_utils.data_type_utils import DataTypeUtil
 from MetaDataApi.metadata.utils.common_utils import DictUtils
 from MetaDataApi.metadata.utils.django_model_utils import DjangoModelUtils
 
+import logging
 logger = logging.getLogger(__name__)
 
 # from MetaDataApi.metadata.models.meta import Schema
@@ -36,8 +37,10 @@ class BuildDataObjectsFromJson(IJsonIterator):
     def save_obj(self, obj):
         try:
             obj.save()
-            if not hasattr(obj, label):
+            if not hasattr(obj, "label"):
                 self.added_instance_items.append(obj)
+            return obj
+
         except Exception as e:
             label = obj.label if hasattr(obj, "label") else obj.base.label
             logger.error(
@@ -68,8 +71,7 @@ class BuildDataObjectsFromJson(IJsonIterator):
                 data_type=Attribute.data_type_map[data_type],
                 object=parrent_object.base
             )
-
-            self.save_obj(att)
+            return self.save_obj(att)
 
         # get the corresponding attribute type class
         AttributeInstance = DictUtils.inverse_dict(
@@ -91,7 +93,7 @@ class BuildDataObjectsFromJson(IJsonIterator):
                 owner=self.owner
             )
 
-            self.save_obj(att_inst)
+            return self.save_obj(att_inst)
 
     def handle_objects(self, parrent_object: ObjectInstance, data, label: str):
         obj = Object.exists(label, self.schema.label)
@@ -114,7 +116,7 @@ class BuildDataObjectsFromJson(IJsonIterator):
                 base=obj,
                 owner=self.owner
             )
-            self.save_obj(obj_inst)
+            return self.save_obj(obj_inst)
 
     def handle_object_relations(self, parrent_object: ObjectInstance,
                                 to_object: ObjectInstance, label: str):
@@ -150,6 +152,8 @@ class BuildDataObjectsFromJson(IJsonIterator):
             )
 
         self.save_obj(obj_rel_inst)
+
+        return obj_rel_inst
 
     def build_from_json(self, data, parrent_object=None):
         self.iterate_json_tree(data, parrent_object)
