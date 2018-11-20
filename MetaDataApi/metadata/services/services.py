@@ -229,8 +229,8 @@ class IdentifySchemaAndDataFromProviderService(Service):
 
             parrent_label = identify.rest_endpoint_to_label(endpoint)
 
-            objects = identify.add_schema_and_data(
-                data, schema, parrent_label)
+            objects = identify.identify_from_json_data(
+                data, schema, user, parrent_label)
             object_list.extend(objects)
 
         # generate rdf file from data

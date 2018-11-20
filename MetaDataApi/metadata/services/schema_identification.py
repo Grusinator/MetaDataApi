@@ -64,6 +64,8 @@ class SchemaIdentificationV2(DbObjectCreation):
         return builder.added_instance_items
 
     # identify schema new
+
+    @DeprecationWarning
     def identify_schema_from_dataV2(self, input_data, schema,
                                     parrent_label=None):
 
@@ -92,7 +94,7 @@ class SchemaIdentificationV2(DbObjectCreation):
         return self.touched_meta_items
 
     # identify data new
-
+    @DeprecationWarning
     def map_data_to_native_instances(self, input_data, schema,
                                      parrent_label=None, owner=None):
 
@@ -136,7 +138,7 @@ class SchemaIdentificationV2(DbObjectCreation):
         return self.added_instance_items
 
     # identify data new
-
+    @DeprecationWarning
     def add_schema_and_data(self, input_data, schema,
                             parrent_label=None, owner=None):
 
@@ -182,7 +184,7 @@ class SchemaIdentificationV2(DbObjectCreation):
         return self.added_instance_items
 
     # generic iteration loop
-
+    @DeprecationWarning
     def iterate_data_generic(self, input_data, parrent_object=None):
         if input_data is None:
             return

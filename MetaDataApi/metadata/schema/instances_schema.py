@@ -27,7 +27,7 @@ from MetaDataApi.metadata.models import (
     Attribute, Object, ObjectRelation, Schema
 )
 
-from MetaDataApi.metadata.schema import AttributeNode as AttributeMetaNode
+from MetaDataApi.metadata.schema.meta_schema import AttributeNode as AttributeMetaNode
 
 from MetaDataApi.datapoints.schema_processing import ProcessRawData
 from MetaDataApi.users.models import Profile
