@@ -151,6 +151,7 @@ class ObjectRelationInstance(BaseInstance):
     class Meta:
         app_label = 'metadata'
         default_related_name = '%(model_name)s'
+        unique_together = ("base", "from_object", "to_object")
 
     @classmethod
     def exists(cls, base__label: str, from_object__base__label: str,

@@ -185,7 +185,7 @@ class ObjectRelation(BaseMeta):
 
     @classmethod
     def exists(cls, label: str, from_object__label: str,
-               to_object__label: str):
+               to_object__label: str, schema__label: str):
         search_args = dict(locals())
         search_args.pop("cls")
 
@@ -195,7 +195,7 @@ class ObjectRelation(BaseMeta):
         return not self.__eq__(other)
 
     class Meta:
-        unique_together = ('label', 'schema')
+        unique_together = ('label', 'schema', "from_object", "to_object")
         app_label = 'metadata'
 
 

@@ -45,7 +45,7 @@ class BuildDataObjectsFromJson(IJsonIterator):
                 self.added_instance_items.append(obj)
             return obj
 
-        except (Exception, IntegrityError) as e:
+        except (IntegrityError, Exception) as e:
             label = obj.label if hasattr(obj, "label") else obj.base.label
             logger.error(
                 """Could not create obj: %s of type: %s, caused by the following
@@ -131,13 +131,16 @@ class BuildDataObjectsFromJson(IJsonIterator):
         if parrent_object is None or to_object is None:
             return None
 
+        # when loading json the relations is just binded together by:
+        #  [label]__to__[label]
+        label = label or "%s__to__%s" % (
+            parrent_object.base.label, to_object.base.label)
+
         obj_rel = ObjectRelation.exists(
-            label, parrent_object.base.label, to_object.base.label)
+            label, parrent_object.base.label,
+            to_object.base.label, self.schema.label)
 
         if obj_rel is None:
-            label = label or "%s__to__%s" % (
-                parrent_object.base.label, to_object.base.label)
-
             obj_rel = ObjectRelation(
                 label=label,
                 from_object=parrent_object.base,
