@@ -19,6 +19,8 @@ from MetaDataApi.metadata.utils.common_utils.data_type_utils import DataTypeUtil
 from MetaDataApi.metadata.utils.common_utils import DictUtils
 from MetaDataApi.metadata.utils.django_model_utils import DjangoModelUtils
 
+from django.db import IntegrityError, transaction
+
 import logging
 logger = logging.getLogger(__name__)
 
@@ -36,17 +38,21 @@ class BuildDataObjectsFromJson(IJsonIterator):
 
     def save_obj(self, obj):
         try:
-            obj.save()
+            with transaction.atomic():
+                obj.save()
+
             if not hasattr(obj, "label"):
                 self.added_instance_items.append(obj)
             return obj
 
-        except Exception as e:
+        except (Exception, IntegrityError) as e:
             label = obj.label if hasattr(obj, "label") else obj.base.label
             logger.error(
                 """Could not create obj: %s of type: %s, caused by the following
-                 error: %s""" % (type(obj), label, str(e))
+                 error: %s""" % (type(obj).__name__, label, str(e))
             )
+            # could not be created, so delete
+            # obj.delete()
             del obj
 
     def handle_attributes(self, parrent_object: ObjectInstance,
@@ -71,7 +77,8 @@ class BuildDataObjectsFromJson(IJsonIterator):
                 data_type=Attribute.data_type_map[data_type],
                 object=parrent_object.base
             )
-            return self.save_obj(att)
+            if not self.save_obj(att):
+                return None
 
         # get the corresponding attribute type class
         AttributeInstance = DictUtils.inverse_dict(
@@ -104,7 +111,8 @@ class BuildDataObjectsFromJson(IJsonIterator):
                 label=label,
                 schema=self.schema
             )
-            self.save_obj(obj)
+            if not self.save_obj(obj):
+                return None
 
         obj_inst = ObjectInstance.exists(label, data)
 
@@ -136,7 +144,8 @@ class BuildDataObjectsFromJson(IJsonIterator):
                 to_object=to_object.base,
                 schema=self.schema
             )
-            self.save_obj(obj_rel)
+            if not self.save_obj(obj_rel):
+                return None
 
         obj_rel_inst = ObjectRelationInstance.exists(
             label, obj_rel.from_object, obj_rel.to_object)
