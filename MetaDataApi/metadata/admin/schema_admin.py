@@ -1,30 +1,10 @@
 from django.contrib import admin
 import webbrowser
 
-# Register your models here.
-from MetaDataApi.metadata.models import (
-    Schema, Object, Attribute, ObjectRelation)
+from MetaDataApi.metadata.models import Schema
 
 from MetaDataApi.metadata.services import (
     ExportSchemaService, AddRdfSchemaService, AddPersonReferenceToBaseObjects)
-
-# Register your models here.
-from MetaDataApi.metadata.models import *
-
-models = (
-    # meta
-    Object, Attribute, ObjectRelation,
-    # instances
-    RawData,
-    ObjectInstance,
-    ObjectRelationInstance,
-    FloatAttributeInstance,
-    StringAttributeInstance,
-    IntAttributeInstance,
-    BoolAttributeInstance,
-    ImageAttributeInstance)
-
-[admin.site.register(model) for model in models]
 
 
 def relate_to_foaf(modeladmin, request, queryset):
