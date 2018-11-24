@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     'oauth2_provider',
     'corsheaders',
     'storages',
+    'admin_reorder',
     'graphene_file_upload',
     'MetaDataApi.datapoints.apps.DatapointsConfig',
     'MetaDataApi.users.apps.UsersConfig',
@@ -87,6 +88,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'graphql_jwt.middleware.JSONWebTokenMiddleware',
+    'admin_reorder.middleware.ModelAdminReorder',
 ]
 
 ROOT_URLCONF = 'MetaDataApi.urls'
@@ -245,3 +247,35 @@ LOGGING = {
         },
     },
 }
+
+ADMIN_REORDER = (
+    {'app': 'users', 'label': 'users',
+        "models": (
+            "auth.User",
+            "users.Profile",
+            "users.ThirdPartyProfile",
+            "auth.Group"
+        )
+     },
+    {'app': 'metadata', 'label': 'meta',
+        'models': (
+            'metadata.Schema',
+            'metadata.Object',
+            'metadata.ObjectRelation',
+            'metadata.Attribute',
+        )
+     },
+    {'app': 'metadata', 'label': 'instances',
+        'models': (
+            'metadata.ObjectInstance',
+            'metadata.ObjectRelationInstance',
+            'metadata.StringAttributeInstance',
+            'metadata.DateTimeAttributeInstance',
+            'metadata.IntAttributeInstance',
+            'metadata.BoolAttributeInstance',
+            'metadata.ImageAttributeInstance',
+            'metadata.FloatAttributeInstance',
+        )
+     },
+    {'app': 'dataproviders', 'label': 'dataproviders'},
+)

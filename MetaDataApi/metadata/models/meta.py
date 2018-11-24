@@ -1,11 +1,20 @@
 from django.db import models
 from MetaDataApi.metadata.custom_storages import MediaStorage
 from datetime import datetime
+from MetaDataApi.metadata.utils.django_model_utils import BuildDjangoSearchArgs, DjangoModelUtils
+from MetaDataApi.metadata.utils.common_utils import DictUtils
 # Create your models here.
 
 
-class Schema(models.Model):
+class BaseMeta(models.Model):
+    label = models.TextField()
+    description = models.TextField(null=True, blank=True)
 
+    class Meta:
+        abstract = True
+
+
+class Schema(models.Model):
     label = models.TextField(unique=True)
     description = models.TextField(null=True, blank=True)
     url = models.URLField(unique=True)
@@ -28,6 +37,7 @@ class Schema(models.Model):
 
     class Meta:
         app_label = 'metadata'
+
 
 class BaseMeta(models.Model):
     label = models.TextField()
@@ -74,6 +84,35 @@ class Object(BaseMeta):
         else:
             return False
 
+    def get_related_list(self, include_attributes=True):
+        related = []
+
+        builder = BuildDjangoSearchArgs()
+
+        # add "to" relations to current object to list
+        # dont match on label but on object
+        builder.add_to_obj(self)
+        related.extend(list(type(self).objects.filter(**builder.search_args)))
+
+        # clear args
+        builder.search_args = {}
+
+        # add "from" relations to current object to list
+        # dont match on label but on object
+        builder.add_from_obj(self)
+        related.extend(list(type(self).objects.filter(**builder.search_args)))
+
+        if include_attributes:
+            related.extend(list(Attribute.objects.filter(object=self)))
+
+        return related
+
+    @classmethod
+    def exists(cls, label: str, schema__label: str):
+        search_args = dict(locals())
+        search_args.pop("cls")
+        return DjangoModelUtils.get_object_or_none(cls, **search_args)
+
     def __ne__(self, other):
         return not self.__eq__(other)
 
@@ -94,8 +133,8 @@ class Attribute(BaseMeta):
     data_type_choises = [(x, x) for x in data_type_map.values()]
 
     # db Fields
-    datatype = models.TextField(choices=data_type_choises)
-    dataunit = models.TextField()
+    data_type = models.TextField(choices=data_type_choises)
+    data_unit = models.TextField()
     object = models.ForeignKey(
         Object, related_name='attributes', on_delete=models.CASCADE)
 
@@ -108,17 +147,23 @@ class Attribute(BaseMeta):
         else:
             return False
 
+    @classmethod
+    def exists(cls, label: str, object__label: str):
+        search_args = dict(locals())
+        search_args.pop("cls")
+        return DjangoModelUtils.get_object_or_none(cls, **search_args)
+
     def __ne__(self, other):
         return not self.__eq__(other)
 
-    @staticmethod
-    def assert_datatype(attribute, datatype):
-        datatype_name = Attribute.data_type_map[datatype]
-        assert attribute.datatype == datatype_name, \
+    @classmethod
+    def assert_data_type(cls, attribute, data_type):
+        data_type_name = cls.data_type_map[data_type]
+        assert attribute.data_type == data_type_name, \
             "the found attr: %s has type %s, but it must be a %s" % (
                 attribute.label,
-                attribute.datatype,
-                str(datatype_name)
+                attribute.data_type,
+                str(data_type_name)
             )
 
     class Meta:
@@ -146,11 +191,19 @@ class ObjectRelation(BaseMeta):
         else:
             return False
 
+    @classmethod
+    def exists(cls, label: str, from_object__label: str,
+               to_object__label: str, schema__label: str):
+        search_args = dict(locals())
+        search_args.pop("cls")
+
+        return DjangoModelUtils.get_object_or_none(cls, **search_args)
+
     def __ne__(self, other):
         return not self.__eq__(other)
 
     class Meta:
-        unique_together = ('label', 'schema')
+        unique_together = ('label', 'schema', "from_object", "to_object")
         app_label = 'metadata'
 
 

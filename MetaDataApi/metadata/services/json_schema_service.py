@@ -243,7 +243,7 @@ class JsonSchemaService(BaseMetaDataService):
                 attribute = self._try_create_item(
                     Attribute(
                         label=root_label,
-                        datatype=self.json_to_att_type(data_type),
+                        data_type=self.json_to_att_type(data_type),
                         description=description,
                         object=self._try_get_item(current_object)
                     )

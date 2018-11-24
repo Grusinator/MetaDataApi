@@ -3,7 +3,7 @@ from django.test import TestCase, TransactionTestCase
 from urllib import request
 from MetaDataApi.metadata.models import Object
 from django.core.management import call_command
-from MetaDataApi.metadata.tests import TestDataInits
+from MetaDataApi.metadata.tests.data import LoadTestData
 
 
 class TestMetadataBaseFunctionService(TransactionTestCase):
@@ -20,11 +20,11 @@ class TestMetadataBaseFunctionService(TransactionTestCase):
         from MetaDataApi.metadata.models import (
             Object, Attribute, ObjectRelation, Schema)
 
-        TestDataInits.init_foaf()
+        LoadTestData.init_foaf()
 
         att = Attribute(object=Object.objects.get(label="image"),
                         label="test_att",
-                        datatype="float")
+                        data_type="float")
         att.save()
         service = BaseMetaDataService()
         foaf, to_foaf_p_list = service.path_to_object(
@@ -35,8 +35,8 @@ class TestMetadataBaseFunctionService(TransactionTestCase):
     def test_get_connected_pair(self):
         from MetaDataApi.metadata.models import Attribute
         from MetaDataApi.metadata.services import BaseMetaDataService
-        TestDataInits.init_strava_schema_from_file()
-        TestDataInits.init_strava_data_from_file()
+        LoadTestData.init_strava_schema_from_file()
+        LoadTestData.init_strava_data_from_file()
         service = BaseMetaDataService()
 
         att1 = Attribute.objects.get(

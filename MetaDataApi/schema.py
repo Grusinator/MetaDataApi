@@ -3,6 +3,7 @@ import MetaDataApi.users.schema
 import MetaDataApi.datapoints.schema
 import MetaDataApi.dataproviders.schema
 
+
 import graphene
 import graphql_jwt
 
@@ -12,8 +13,8 @@ from graphene_django.debug import DjangoDebug
 
 class Query(
         MetaDataApi.users.schema.Query,
-        MetaDataApi.metadata.schema.Query,
-        MetaDataApi.datapoints.schema.Query,
+        MetaDataApi.metadata.schema.schema.Query,
+        # MetaDataApi.datapoints.schema.Query,
         MetaDataApi.dataproviders.schema.Query,
         graphene.ObjectType):
 
@@ -22,8 +23,8 @@ class Query(
 
 class Mutation(
         MetaDataApi.users.schema.Mutation,
-        MetaDataApi.metadata.schema.Mutation,
-        MetaDataApi.datapoints.schema.Mutation,
+        MetaDataApi.metadata.schema.schema.Mutation,
+        # MetaDataApi.datapoints.schema.Mutation,
         MetaDataApi.dataproviders.schema.Mutation,
         graphene.ObjectType):
 

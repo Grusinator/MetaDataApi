@@ -1,4 +1,4 @@
-from MetaDataApi.datapoints.models import CategoryTypes,   RawData
+from MetaDataApi.metadata.models import CategoryTypes,   RawData
 
 
 class ProcessRawData:

@@ -3,7 +3,7 @@ from django.test import TestCase, TransactionTestCase
 import collections
 from django.db import transaction
 
-from MetaDataApi.metadata.tests import TestDataInits
+from MetaDataApi.metadata.tests.data import LoadTestData
 # TODO: Configure your database in settings.py and sync before running tests.
 
 
@@ -45,7 +45,7 @@ class TestRdfSchemaService(TransactionTestCase):
 
         service = RdfSchemaService()
 
-        schema = TestDataInits.init_foaf()
+        schema = LoadTestData.init_foaf()
 
         schema = service.export_schema_from_db(schema)
 
@@ -76,8 +76,8 @@ class TestRdfSchemaService(TransactionTestCase):
         from MetaDataApi.metadata.services import RdfSchemaService
         from MetaDataApi.metadata.models import Schema, Object, ObjectRelation
 
-        TestDataInits.init_rdf_base()
-        TestDataInits.init_open_m_health_sample()
+        LoadTestData.init_rdf_base()
+        LoadTestData.init_open_m_health_sample()
 
         service = RdfSchemaService()
 

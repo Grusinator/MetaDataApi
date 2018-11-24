@@ -14,7 +14,13 @@
   "MetaDataApi/metadata/tests/test_rdf_schema_service.py::TestRdfSchemaService::test_create_default_graphs",
   "MetaDataApi/metadata/tests/test_rdf_schema_service.py::TestRdfSchemaService::test_export_rdf",
   "MetaDataApi/metadata/tests/test_rdf_schema_service.py::TestRdfSchemaService::test_upload_rdf",
-  "MetaDataApi/metadata/tests/test_schema_identification_service.py::TestSchemaIdentificationService::test_identify_datatype",
+  "MetaDataApi/metadata/tests/test_schema_identification_service.py::TestSchemaIdentificationService::test_identify_data_type",
+  "MetaDataApi/metadata/tests/test_schema_identification_service.py::TestSchemaIdentificationService::test_identify_from_json_data",
+  "MetaDataApi/metadata/tests/test_schema_identification_service.py::TestSchemaIdentificationService::test_identify_from_json_data_strava_test",
   "MetaDataApi/metadata/tests/test_schema_identification_service.py::TestSchemaIdentificationService::test_identify_json_data_sample",
-  "MetaDataApi/metadata/tests/test_schema_identification_service.py::TestSchemaIdentificationService::test_identify_json_data_strava_test"
+  "MetaDataApi/metadata/tests/test_models/test_instance/test_instances.py::TestModelInstances::test_attribute_exists",
+  "MetaDataApi/metadata/tests/test_models/test_instance/test_instances.py::TestModelInstances::test_get_related_list",
+  "MetaDataApi/metadata/tests/test_models/test_instance/test_instances.py::TestModelInstances::test_object_exists",
+  "MetaDataApi/metadata/tests/test_utils/django_model_utils_test.py::TestBuildDjangoSearchArgs::test_build_search_args_from_json",
+  "MetaDataApi/metadata/tests/test_utils/test_json_utils.py::TestJsonUtils::test_identify_json_data_sample"
 ]

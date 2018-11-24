@@ -3,7 +3,7 @@ from django.test import TestCase, TransactionTestCase
 import collections
 from django.db import transaction
 
-from MetaDataApi.metadata.tests import TestDataInits
+from MetaDataApi.metadata.tests.data import LoadTestData
 # TODO: Configure your database in settings.py and sync before running tests.
 
 
@@ -24,7 +24,7 @@ class TestRdfInstanceService(TransactionTestCase):
             Object, Schema, Attribute, ObjectRelation
         )
 
-        from MetaDataApi.datapoints.models import (
+        from MetaDataApi.metadata.models import (
             RawData, CategoryTypes,
             ObjectInstance,
             ObjectRelationInstance,
@@ -32,7 +32,7 @@ class TestRdfInstanceService(TransactionTestCase):
             FloatAttributeInstance,
             StringAttributeInstance)
 
-        TestDataInits.init_foaf()
+        LoadTestData.init_foaf()
 
         service = RdfInstanceService()
 

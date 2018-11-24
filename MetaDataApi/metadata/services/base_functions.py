@@ -18,7 +18,7 @@ from datetime import datetime
 import inflection
 
 
-from MetaDataApi.datapoints.models import (
+from MetaDataApi.metadata.models import (
     ObjectInstance, ObjectRelationInstance,
     StringAttributeInstance,
     DateTimeAttributeInstance, BoolAttributeInstance,
@@ -169,7 +169,7 @@ class BaseMetaDataService():
 
         # else:
 
-    def identify_datatype(self, element):
+    def identify_data_type(self, element):
         if element is None:
             return None
 
@@ -399,9 +399,9 @@ class BaseMetaDataService():
         return self.foaf_person
 
     def att_to_att_inst(self, attr):
-        datatype = self.inverse_dict(Attribute.data_type_map, attr.datatype)
+        data_type = self.inverse_dict(Attribute.data_type_map, attr.data_type)
 
-        return self.inverse_dict(self.att_inst_to_type_map, datatype)
+        return self.inverse_dict(self.att_inst_to_type_map, data_type)
 
     def get_connected_attribute_pairs(self, att_1, att_2):
 

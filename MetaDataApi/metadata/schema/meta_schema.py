@@ -201,8 +201,8 @@ class IdentifySchemaAndDataFromProvider(graphene.Mutation):
 
     @login_required
     def mutate(self, info, provider_name, endpoint):
-        args = locals()
-        [args.pop(x) for x in ["info", "self", "args"]]
+        args = dict(locals())
+        [args.pop(x) for x in ["info", "self"]]
         args["user_pk"] = info.context.user.pk
 
         rdf_file, object_list = IdentifySchemaAndDataFromProviderService.execute(
@@ -269,8 +269,6 @@ class AddPersonReferenceToBaseObjects(graphene.Mutation):
 
 
 # wrap all queries and mutations
-
-
 class Query(graphene.ObjectType):
     schema = graphene.relay.Node.Field(SchemaNode)
     all_schemas = DjangoFilterConnectionField(SchemaNode)

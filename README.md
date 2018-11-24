@@ -52,4 +52,6 @@ or just comparing with all previously created objects, nobody with the same comb
 - [ ] Create dev branch
 - [ ] Add support for endpoints that require an id of a parrent object
 - [ ] Find a good name
-
+- [ ] add a way to make lists in the database ("pointers" obj_rel)
+- [ ] add version to and deploy to heroku from deploy/master branch
+  

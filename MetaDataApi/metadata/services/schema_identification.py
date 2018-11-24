@@ -12,13 +12,15 @@ from MetaDataApi.metadata.models import (
     Schema, Object,
     Attribute, ObjectRelation, UnmappedObject)
 
-from MetaDataApi.datapoints.models import (
+from MetaDataApi.metadata.models import (
     ObjectInstance,
     StringAttributeInstance,
     ObjectRelationInstance)
 from .base_functions import BaseMetaDataService
 
 from .db_object_creation import DbObjectCreation
+
+from MetaDataApi.metadata.utils.django_model_utils.build_data_objects_from_json import BuildDataObjectsFromJson
 
 import logging
 # Get an instance of a logger
@@ -39,7 +41,31 @@ class SchemaIdentificationV2(DbObjectCreation):
         self._object_function = None
         self._obj_rel_function = None
 
+    def identify_from_json_data(self, input_data, schema, owner, parrent_label=None):
+        # setup how the loop handles each type of object occurrence
+
+        builder = BuildDataObjectsFromJson(schema, owner)
+
+        person = ObjectInstance(
+            base=self.get_foaf_person()
+        )
+        person.save()
+        # TODO: Relate to logged in foaf person object instance instead
+
+        if parrent_label is not None and isinstance(input_data, list):
+            # if its a list, we have to create a base object for each element
+            input_data = [{parrent_label: elm}for elm in input_data]
+        elif parrent_label is not None and isinstance(input_data, dict):
+            # if its a dict, just add the parrent label
+            input_data = {parrent_label: input_data, }
+
+        builder.build_from_json(input_data, parrent_object=person)
+
+        return builder.added_instance_items
+
     # identify schema new
+
+    @DeprecationWarning
     def identify_schema_from_dataV2(self, input_data, schema,
                                     parrent_label=None):
 
@@ -68,6 +94,7 @@ class SchemaIdentificationV2(DbObjectCreation):
         return self.touched_meta_items
 
     # identify data new
+    @DeprecationWarning
     def map_data_to_native_instances(self, input_data, schema,
                                      parrent_label=None, owner=None):
 
@@ -92,13 +119,11 @@ class SchemaIdentificationV2(DbObjectCreation):
             input_data = json.loads(input_data)
 
         # create a base person to relate the data to
-        try:
-            person = ObjectInstance(
-                base=self.get_foaf_person()
-            )
-            person.save()
-        except Exception as e:
-            raise Exception("foaf person was not found")
+
+        person = ObjectInstance(
+            base=self.get_foaf_person()
+        )
+        person.save()
         # TODO: Relate to logged in foaf person object instance instead
 
         if parrent_label is not None and isinstance(input_data, list):
@@ -113,7 +138,7 @@ class SchemaIdentificationV2(DbObjectCreation):
         return self.added_instance_items
 
     # identify data new
-
+    @DeprecationWarning
     def add_schema_and_data(self, input_data, schema,
                             parrent_label=None, owner=None):
 
@@ -159,7 +184,7 @@ class SchemaIdentificationV2(DbObjectCreation):
         return self.added_instance_items
 
     # generic iteration loop
-
+    @DeprecationWarning
     def iterate_data_generic(self, input_data, parrent_object=None):
         if input_data is None:
             return
@@ -261,16 +286,16 @@ class SchemaIdentificationV2(DbObjectCreation):
             self, label, att_value,
             parrent_obj_inst, instance_list):
 
-        data_as_type = self.identify_datatype(att_value)
-        datatype = type(data_as_type) if data_as_type is not None else None
+        data_as_type = self.identify_data_type(att_value)
+        data_type = type(data_as_type) if data_as_type is not None else None
         # the key is the label
         att = self.find_label_in_metadata(
-            label, datatype, look_only_for_items=[Attribute, ])
+            label, data_type, look_only_for_items=[Attribute, ])
 
         if att and data_as_type is not None:
             # select which attribute instance type to use
             AttributeInstance = self.inverse_dict(
-                self.att_inst_to_type_map, datatype)
+                self.att_inst_to_type_map, data_type)
 
             # default to string if None
             AttributeInstance = AttributeInstance or StringAttributeInstance
@@ -361,7 +386,7 @@ class SchemaIdentificationV2(DbObjectCreation):
     def iterate_find_related_obj(self, parrent_obj, find_obj,
                                  discovered_objects=[]):
         if isinstance(parrent_obj, (ObjectInstance,
-                                     StringAttributeInstance)):
+                                    StringAttributeInstance)):
             parrent_obj = parrent_obj.base
         # only relevant for first iteration, if the obj is an attribute
         if isinstance(parrent_obj, Attribute):
@@ -416,9 +441,9 @@ class SchemaIdentificationV2(DbObjectCreation):
     def likelihood_score(self, label, obj, data_type=None):
         v1 = self.compare_labels(label, obj.label)
 
-        # datatype is only used in case of attributes
+        # data_type is only used in case of attributes
         if isinstance(obj, Attribute) and data_type:
-            v2 = self.datatype_match(obj, data_type)
+            v2 = self.data_type_match(obj, data_type)
         # if it is an object we can look at the relations
         # and see if it matches related objects or attributes
         elif isinstance(obj, Object) and None:
@@ -439,7 +464,7 @@ class SchemaIdentificationV2(DbObjectCreation):
             # return self.model.similarity(label1, label2)
             return 0
 
-    def datatype_match(self, object, data_type):
+    def data_type_match(self, object, data_type):
         return 0
 
     def relations_match(self, object, json_desendents, json_parrent):

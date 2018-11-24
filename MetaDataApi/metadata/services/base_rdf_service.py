@@ -12,7 +12,7 @@ from inflection import camelize
 
 from django.core.files.base import ContentFile
 
-from MetaDataApi.datapoints.models import (
+from MetaDataApi.metadata.models import (
     ObjectInstance, ObjectRelationInstance,
     StringAttributeInstance,
     DateTimeAttributeInstance, BoolAttributeInstance,
@@ -59,7 +59,7 @@ class BaseRdfSchemaService(BaseMetaDataService):
             RDFS.Literal: str,
         }
 
-        self.valid_datatypes = list(self.rdfs_data_type_map.keys())
+        self.valid_data_types = list(self.rdfs_data_type_map.keys())
 
     def create_uri_ref(self, item):
         # this is just for labeling with letter in uri
@@ -129,9 +129,9 @@ class BaseRdfSchemaService(BaseMetaDataService):
     def att_type_to_rdfs_uri(self, attr_type):
 
         # inverse of data_type_map
-        datatype = self.inverse_dict(Attribute.data_type_map, attr_type)
+        data_type = self.inverse_dict(Attribute.data_type_map, attr_type)
 
         # default to string if nonetype
-        datatype = datatype if datatype != type(None) else str
+        data_type = data_type if data_type != type(None) else str
         # inverse self.rdfs_data_type_map lookup
-        return self.inverse_dict(self.rdfs_data_type_map, datatype)
+        return self.inverse_dict(self.rdfs_data_type_map, data_type)

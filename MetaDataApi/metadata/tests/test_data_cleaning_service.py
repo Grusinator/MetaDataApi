@@ -4,7 +4,7 @@ from urllib import request
 from MetaDataApi.metadata.models import Object
 from django.core.management import call_command
 
-from MetaDataApi.metadata.tests import TestDataInits
+from MetaDataApi.metadata.tests.data import LoadTestData
 
 
 class TestDataCleaningService(TransactionTestCase):
@@ -21,9 +21,9 @@ class TestDataCleaningService(TransactionTestCase):
             JsonSchemaService
         )
 
-        TestDataInits.init_foaf()
+        LoadTestData.init_foaf()
 
-        TestDataInits.init_open_m_health_sample(extras=[
+        LoadTestData.init_open_m_health_sample(extras=[
             "body-temperature-2.0.json",
             "body-temperature-2.x.json",
         ])
