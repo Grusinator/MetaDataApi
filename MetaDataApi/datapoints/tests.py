@@ -6,7 +6,7 @@ Replace this with more appropriate tests for your application.
 """
 import json
 import django
-#from django.contrib.auth import get_user_model
+# from django.contrib.auth import get_user_model
 
 
 from MetaDataApi.tests.GraphQLTestCase import GraphQLTestCase
@@ -36,11 +36,11 @@ class DatapointTestCase(GraphQLTestCase):
             # The mutation's graphql code
             '''
             mutation createDatapointMutation(
-	            $datetime: DateTime, 
-	            $category: CategoryTypes,
-	            $source_device: String!,
-	            $value: Float,
-	            $text_from_audio: String
+                $datetime: DateTime, 
+                $category: CategoryTypes,
+                $source_device: String!,
+                $value: Float,
+                $text_from_audio: String
             ) {
               createDatapoint(
 		            datetime:$datetime, 
@@ -105,7 +105,7 @@ class DatapointTestCase(GraphQLTestCase):
 	            $text_from_audio: String
             ) {
               createDatapoint(
-		            datetime:$datetime, 
+		            datetime:$datetime,
 		            category:$category,
 		            sourceDevice:$source_device,
 		            value:$value,

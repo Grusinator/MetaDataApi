@@ -1,0 +1,21 @@
+{
+    "python.pythonPath": "C:\\Users\\willi\\.virtualenvs\\MetaDataApi-ylnQQxG5\\Scripts\\python.exe",
+
+    "python.linting.pep8Enabled": true,
+    "python.linting.pylintPath": "C:\\Users\\willi\\.virtualenvs\\MetaDataApi-ylnQQxG5\\Scripts\\pylint.exe",
+    "python.linting.pylintArgs": ["--load-plugins", "pylint_django"],
+    "python.linting.pylintEnabled": true,
+    "[python]": {
+        "editor.formatOnSave": true
+    },
+    "python.unitTest.unittestEnabled": true,
+    "python.unitTest.pyTestEnabled": true,
+    "python.unitTest.autoTestDiscoverOnSaveEnabled": true,
+    "python.unitTest.unittestArgs": [
+        "-v",
+        "-s",
+        ".",
+        "-p",
+        "*test*.py"
+    ]
+}
