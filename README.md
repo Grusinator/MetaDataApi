@@ -34,24 +34,4 @@ how to test if an object instance or attribute instance allready exists. If the 
 inferring some sort of uniqueness score?
 
 or just comparing with all previously created objects, nobody with the same combination of objects and relations? its a new one then.
-
-
-
-## TODO:
-- [ ] implement logging and better error handling
-- [ ] compare metaobjects using word2vec or similar
-- [ ] make a data encoder that can model a full human (requires more data)
-- [x] Add image attribute type
-- [ ] make a front-end 
-- [ ] write documentation
-- [ ] make tests of all services
-- [ ] refactor the ThirdpartyDataprovider to exclude api endpoints
-- [ ] Generate Attribute objects from metaclass instead
-- [ ] Add CI
-- [ ] Create Cron functionallity to fetch data each day
-- [ ] Create dev branch
-- [ ] Add support for endpoints that require an id of a parrent object
-- [ ] Find a good name
-- [ ] add a way to make lists in the database ("pointers" obj_rel)
-- [ ] add version to and deploy to heroku from deploy/master branch
   
