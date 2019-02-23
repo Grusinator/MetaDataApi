@@ -7,7 +7,7 @@ import dateutil
 
 
 from inflection import underscore
-from gensim.models import word2vec
+
 from MetaDataApi.metadata.models import (
     Schema, Object,
     Attribute, ObjectRelation, UnmappedObject)
