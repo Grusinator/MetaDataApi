@@ -65,7 +65,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'service_objects',
     'graphene_django',
-    'oauth2_provider',
+    # 'oauth2_provider',
     'corsheaders',
     'storages',
     'admin_reorder',
@@ -116,19 +116,19 @@ WSGI_APPLICATION = 'MetaDataApi.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'djongo',
+        'NAME': 'meta-data-api',
     }
 }
-
-# DATABASES = {
-#    'default': {
-#        'ENGINE': 'djongo',
-#        'NAME': 'personal-data',
-#    }
-# }
 
 GRAPHENE = {
     'SCHEMA': 'MetaDataApi.schema.schema',

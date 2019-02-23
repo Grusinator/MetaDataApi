@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-Django = "*"
+Django == "2.1.6"
 django-filter = "*"
 django-cors-headers = "*"
 django-service-objects = "*"
@@ -20,7 +20,7 @@ html5lib = "*"
 jsonschema = "*"
 inflection = "*"
 gensim = "*"
-python-dateutil = "*"
+# python-dateutil = "*"
 django-storages = "*"
 "boto3" = "*"
 graphene-file-upload = "*"
