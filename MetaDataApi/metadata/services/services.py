@@ -213,6 +213,8 @@ class IdentifySchemaAndDataFromProviderService(Service):
             provider_name)
 
         schema = rdf_service._try_get_item(Schema(label=provider_name))
+        if not schema:
+            schema = rdf_service.create_new_empty_schema(schema_label)
 
         # select which endpoints
         if endpoint == "all" or endpoint is None:
