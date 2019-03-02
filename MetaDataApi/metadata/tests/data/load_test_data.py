@@ -21,9 +21,11 @@ class LoadTestData:
             username="test",
             password="test1234"
         )
-        user.save()
-
-        return user
+        try:
+            return User.objects.get(username=user.username)
+        except:
+            user.save()
+            return user
 
     @staticmethod
     def init_foaf():
@@ -64,9 +66,10 @@ class LoadTestData:
 
         schema = service.create_new_empty_schema(schema_label)
 
+        user = LoadTestData.init_user()
+
         service.identify_schema_from_dataV2(
             data, schema, parrent_label=label)
-
         data_cleaning.relate_root_classes_to_foaf(schema)
 
         return schema
