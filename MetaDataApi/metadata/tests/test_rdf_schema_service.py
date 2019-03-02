@@ -30,6 +30,7 @@ class TestRdfSchemaService(TransactionTestCase):
 
     def test_upload_rdf(self):
         from MetaDataApi.metadata.services import RdfSchemaService
+        from MetaDataApi.metadata.models.meta import Schema, Object, Attribute
 
         url = "http://xmlns.com/foaf/0.1/"
 
@@ -37,7 +38,11 @@ class TestRdfSchemaService(TransactionTestCase):
 
         service.write_to_db(url)
 
-        self.assertEqual(1 + 1, 2)
+        Schema.objects.get(label="friend_of_a_friend")
+        Object.objects.get(label="Person")
+        # Object.objects.get(label="Project")
+        # Object.objects.get(label="Image")
+        # Attribute.objects.get(label="")
 
     def test_export_rdf(self):
         from MetaDataApi.metadata.services import RdfSchemaService

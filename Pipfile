@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-Django == "2.1.6"
+Django = ">=2.1.6"
 django-filter = "*"
 django-cors-headers = "*"
 django-service-objects = "*"
@@ -44,6 +44,7 @@ pytest = "*"
 pytest-django = "*"
 gql = "*"
 jupyter = "*"
+# coverage = "*"
 
 [requires]
 python_version = "3.7"

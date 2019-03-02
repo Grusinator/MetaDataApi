@@ -16,7 +16,7 @@ class TestBuildDjangoSearchArgs(TransactionTestCase):
 
     def test_build_search_args_from_json(self):
 
-        #data = UtilsForTesting.loadStravaActivities()
+        # data = UtilsForTesting.loadStravaActivities()
 
         data = {
             "object1": {

@@ -43,7 +43,7 @@ class DatapointTestCase(GraphQLTestCase):
                 $text_from_audio: String
             ) {
               createDatapoint(
-		            datetime:$datetime, 
+		            datetime:$datetime,
 		            category:$category,
 		            sourceDevice:$source_device,
 		            value:$value,
