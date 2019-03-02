@@ -38,11 +38,13 @@ class TestRdfSchemaService(TransactionTestCase):
 
         service.write_to_db(url)
 
-        Schema.objects.get(label="friend_of_a_friend")
-        Object.objects.get(label="Person")
-        # Object.objects.get(label="Project")
-        # Object.objects.get(label="Image")
-        # Attribute.objects.get(label="")
+        self.assertIsNotNone(
+            Schema.objects.get(label="friend_of_a_friend"))
+        self.assertIsNotNone(Object.objects.filter(label="person").first())
+        self.assertIsNotNone(Object.objects.filter(label="project").first())
+        self.assertIsNotNone(Object.objects.filter(label="image").first())
+        self.assertIsNotNone(Attribute.objects.filter(
+            label="first_name").first())
 
     def test_export_rdf(self):
         from MetaDataApi.metadata.services import RdfSchemaService
@@ -82,7 +84,7 @@ class TestRdfSchemaService(TransactionTestCase):
         from MetaDataApi.metadata.models import Schema, Object, ObjectRelation
 
         LoadTestData.init_rdf_base()
-        LoadTestData.init_open_m_health_sample()
+        # LoadTestData.init_open_m_health_sample()
 
         service = RdfSchemaService()
 

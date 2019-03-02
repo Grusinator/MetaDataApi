@@ -34,14 +34,14 @@ class BaseRdfSchemaService(BaseMetaDataService):
         self.schema = None
 
         self.default_list = [
-            # 'http://www.w3.org/XML/1998/namespace',
-            "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
-            "http://www.w3.org/2000/01/rdf-schema#",
-            "http://purl.org/dc/elements/1.1/",
-            # "http://xmlns.com/wot/0.1/",
-            # "http://www.w3.org/2001/XMLSchema#",
-            "http://www.w3.org/2003/06/sw-vocab-status/ns#",
-            "http://www.w3.org/2002/07/owl#",
+            # # 'http://www.w3.org/XML/1998/namespace',
+            # "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+            # "http://www.w3.org/2000/01/rdf-schema#",
+            # "http://purl.org/dc/elements/1.1/",
+            # # "http://xmlns.com/wot/0.1/",
+            # # "http://www.w3.org/2001/XMLSchema#",
+            # "http://www.w3.org/2003/06/sw-vocab-status/ns#",
+            # "http://www.w3.org/2002/07/owl#",
             "http://xmlns.com/foaf/0.1/"
         ]
         self.selfhosted = {

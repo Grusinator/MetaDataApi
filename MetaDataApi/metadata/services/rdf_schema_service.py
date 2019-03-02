@@ -363,8 +363,13 @@ class RdfSchemaService(BaseRdfSchemaService):
                 if o_range in self.valid_data_types:
                     pass
 
-                from_schema_url, from_obj_label = self._split_rdfs_url(domain)
-                to_schema_url, to_obj_label = self._split_rdfs_url(o_range)
+                from_schema_url, _ = self._split_rdfs_url(domain)
+                to_schema_url, _ = self._split_rdfs_url(o_range)
+
+                # find label of object property
+                from_obj_label = next(
+                    g.triples((domain,  RDFS.label, None)))[2]
+                to_obj_label = next(g.triples((o_range,  RDFS.label, None)))[2]
 
                 # get the schema so that we can select the object from the
                 # right schema
@@ -433,7 +438,8 @@ class RdfSchemaService(BaseRdfSchemaService):
                 # Property data_type
                 range = next(g.triples((s, RDFS.range, None)))[2]
 
-                _, obj_label = self._split_rdfs_url(domain)
+                # find label of object property
+                obj_label = next(g.triples((domain,  RDFS.label, None)))[2]
 
                 obj_label = self.standardize_string(obj_label)
 
