@@ -30,7 +30,7 @@ For comparison, here is TF-Slim's VGG definition:
 https://github.com/tensorflow/models/blob/master/research/slim/nets/vgg.py
 """
 
-import tensorflow as tf
+# import tensorflow as tf
 from MetaDataApi.datapoints.services.sound_classification import params
 
 slim = tf.contrib.slim

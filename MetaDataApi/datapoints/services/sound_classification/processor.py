@@ -15,7 +15,8 @@
 import csv
 import os
 import numpy as np
-import tensorflow as tf
+# import tensorflow as tf
+# TODO: fix all tensorflow imports when reenabling sound processing
 
 from . import params
 from .utils import vggish, youtube8m
@@ -84,7 +85,8 @@ class WavProcessor(object):
 
     def get_predictions(self, sample_rate, data):
         samples = data / 32768.0  # Convert to [-1.0, +1.0]
-        examples_batch = vggish.input.waveform_to_examples(samples, sample_rate)
+        examples_batch = vggish.input.waveform_to_examples(
+            samples, sample_rate)
         features = self._get_features(examples_batch)
         predictions = self._process_features(features)
         predictions = self._filter_predictions(predictions)
