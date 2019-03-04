@@ -12,6 +12,10 @@ from django.test import RequestFactory, TestCase
 # Inherit from this in your test cases
 class GraphQLTestCase(TestCase):
 
+    @classmethod
+    def setUpClass(cls):
+        super(GraphQLTestCase, cls).setUpClass()
+
     def setUp(self):
         self._client = Client()
         self.token = None

@@ -33,7 +33,8 @@ https://github.com/tensorflow/models/blob/master/research/slim/nets/vgg.py
 # import tensorflow as tf
 from MetaDataApi.datapoints.services.sound_classification import params
 
-slim = tf.contrib.slim
+# slim = tf.contrib.slim
+# TODO: tf uncomment here aswell
 
 
 def define_vggish_slim(training=False):

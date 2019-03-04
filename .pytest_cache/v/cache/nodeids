@@ -1,4 +1,6 @@
 [
+  "MetaDataApi/datapoints/tests/test_datapoint.py::DatapointTestCase::test_create_datapoint_audiodata",
+  "MetaDataApi/datapoints/tests/test_datapoint.py::DatapointTestCase::test_create_test_datapoint",
   "MetaDataApi/datapoints/tests/test_services.py::TestService::test_get_temporal_attribute",
   "MetaDataApi/dataproviders/tests/test_data_provider_etl_Service.py::TestDataProviderEtlService::test",
   "MetaDataApi/dataproviders/tests/test_services.py::TestSomeService::test_some",
