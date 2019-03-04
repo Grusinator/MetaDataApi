@@ -11,8 +11,9 @@ class TestJsonService(TransactionTestCase):
     # Django requires an explicit setup() when running tests in PTVS
     @classmethod
     def setUpClass(cls):
-        django.setup()
         super(TestJsonService, cls).setUpClass()
+        django.setup()
+
 
         LoadTestData.init_open_m_health_sample()
 
