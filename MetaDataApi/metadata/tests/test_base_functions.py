@@ -1,8 +1,6 @@
 import django
-from django.test import TestCase, TransactionTestCase
-from urllib import request
-from MetaDataApi.metadata.models import Object
-from django.core.management import call_command
+from django.test import TransactionTestCase
+
 from MetaDataApi.metadata.tests.data import LoadTestData
 
 
@@ -18,7 +16,7 @@ class TestMetadataBaseFunctionService(TransactionTestCase):
     def test_path_to_foaf_person(self):
         from MetaDataApi.metadata.services import BaseMetaDataService
         from MetaDataApi.metadata.models import (
-            Object, Attribute, ObjectRelation, Schema)
+            Object, Attribute)
 
         LoadTestData.init_foaf()
 
@@ -30,7 +28,7 @@ class TestMetadataBaseFunctionService(TransactionTestCase):
         foaf, to_foaf_p_list = service.path_to_object(
             att, service.get_foaf_person())
 
-        self.assertListEqual(to_foaf_p_list, [att.object, ])
+        self.assertListEqual(to_foaf_p_list, [att, att.object, ])
 
     def test_get_connected_pair(self):
         from MetaDataApi.metadata.models import Attribute
@@ -54,7 +52,7 @@ class TestMetadataBaseFunctionService(TransactionTestCase):
         from MetaDataApi.metadata.services.base_functions import (
             BaseMetaDataService)
         from MetaDataApi.metadata.models import (
-            Object, Attribute, ObjectRelation, Schema)
+            Object, Attribute, ObjectRelation)
 
         service = BaseMetaDataService()
         schema = service.create_new_empty_schema("test")

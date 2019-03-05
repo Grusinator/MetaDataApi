@@ -10,6 +10,9 @@ class DjangoModelUtils:
             return obj_type.objects.get(**kwargs)
         except ObjectDoesNotExist:
             return None
+        except MultipleObjectsReturned:
+            print("Warning: found multiple where it should not")
+            return obj_type.objects.filter(**kwargs).first()
 
     @staticmethod
     def save_object(object, logger=None):
