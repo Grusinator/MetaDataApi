@@ -1,10 +1,10 @@
-from django.contrib import admin
 import webbrowser
 
-from MetaDataApi.metadata.models import Schema
+from django.contrib import admin
 
+from MetaDataApi.metadata.models import Schema
 from MetaDataApi.metadata.services import (
-    ExportSchemaService, AddRdfSchemaService, AddPersonReferenceToBaseObjects)
+    ExportSchemaService, AddRdfSchemaService, AddJsonSchemaService)
 
 
 def relate_to_foaf(modeladmin, request, queryset):
@@ -43,7 +43,7 @@ export_schema.short_description = "Export to RDF file (use the url)"
 class SchemaAdmin(admin.ModelAdmin):
     list_display = ['label', 'url']
     ordering = ['label']
-    actions = [export_schema, visualize, add_open_m_health]
+    actions = [export_schema, visualize, add_open_m_health, add_rdf_defaults]
 
 
 admin.site.register(Schema, SchemaAdmin)
