@@ -4,11 +4,8 @@ from django.contrib import admin
 from MetaDataApi.metadata.models import *
 
 models = (
-    # meta
-    Object, Attribute, ObjectRelation,
     # instances
-    RawData,
-    ObjectInstance,
-    ObjectRelationInstance)
+    RawData,)
+
 
 [admin.site.register(model) for model in models]

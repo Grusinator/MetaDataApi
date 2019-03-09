@@ -9,12 +9,13 @@ models = (
     StringAttributeInstance,
     IntAttributeInstance,
     BoolAttributeInstance,
-    ImageAttributeInstance)
+    ImageAttributeInstance
+)
 
 
 class BaseAttributeInstanceAdmin(admin.ModelAdmin):
     list_display = ['value', 'base', "object"]
-    ordering = ['value']
+    ordering = ['value', 'base', "object"]
 
 
 for model in models:
