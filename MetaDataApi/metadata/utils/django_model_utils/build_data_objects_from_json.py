@@ -1,8 +1,8 @@
+import logging
 
-from MetaDataApi.metadata.models.meta import (
-    Object, Attribute, ObjectRelation, Schema,
-)
-from MetaDataApi.metadata.models.instances import (
+from django.db import IntegrityError, transaction
+
+from metadata.models.instance import (
     ObjectInstance,
     ObjectRelationInstance,
     BaseAttributeInstance,
@@ -12,19 +12,16 @@ from MetaDataApi.metadata.models.instances import (
     # BoolAttributeInstance,
     # ImageAttributeInstance
 )
-
-
+from metadata.models.meta import (
+    Object, Attribute, ObjectRelation, )
+from metadata.utils.common_utils import DictUtils
+from metadata.utils.common_utils.data_type_utils import DataTypeUtils
 from ..json_utils.json_iterator import IJsonIterator
-from MetaDataApi.metadata.utils.common_utils.data_type_utils import DataTypeUtils
-from MetaDataApi.metadata.utils.common_utils import DictUtils
-from MetaDataApi.metadata.utils.django_model_utils import DjangoModelUtils
 
-from django.db import IntegrityError, transaction
-
-import logging
 logger = logging.getLogger(__name__)
 
-# from MetaDataApi.metadata.models.meta import Schema
+
+# from metadata.models.meta import Schema
 
 
 class BuildDataObjectsFromJson(IJsonIterator):

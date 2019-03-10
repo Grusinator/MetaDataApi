@@ -1,21 +1,14 @@
 import json
-import os
-import re
-from django.core.files.base import ContentFile
-from django.core.exceptions import ObjectDoesNotExist
-from django.db import transaction
-
-import inflection
-
+from datetime import datetime
 # from jsonschema import validate
 from urllib import request
-from MetaDataApi.metadata.models import (
-    Schema, Object, Attribute, ObjectRelation)
 
+from django.db import transaction
+
+from metadata.models import (
+    Schema, Object, Attribute, ObjectRelation)
 from schemas.json.omh.schema_names import filtered_schema_names as schema_names
 from .base_functions import BaseMetaDataService
-
-from datetime import datetime
 
 
 class JsonSchemaService(BaseMetaDataService):

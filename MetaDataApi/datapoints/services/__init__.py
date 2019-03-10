@@ -1,1 +1,1 @@
-from MetaDataApi.datapoints.services.services import *
+from datapoints.services.services import *

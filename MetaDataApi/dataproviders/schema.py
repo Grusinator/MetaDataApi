@@ -1,32 +1,9 @@
-
-
-from MetaDataApi.dataproviders.services.data_provider_etl_service import (
-    DataProviderEtlService)
-from MetaDataApi.metadata.services.base_functions import BaseMetaDataService
-
-from MetaDataApi.dataproviders.default_3rd_data_providers import (
-    default_data_providers)
-import os
-import shutil
 import graphene
 from graphene_django.filter import DjangoFilterConnectionField
 from graphene_django.types import DjangoObjectType
-
-from graphql.error import GraphQLError
-
 from graphql_jwt.decorators import login_required
 
-from django.contrib.auth.models import User
-from MetaDataApi.settings import MEDIA_ROOT
-
-
-from MetaDataApi.users.schema import UserType
-from MetaDataApi.dataproviders.models import (
-    ThirdPartyDataProvider)
-
-from MetaDataApi.users.models import ThirdPartyProfile
-
-from MetaDataApi.dataproviders.services import *
+from dataproviders.services import *
 
 
 class DataProviderNode(DjangoObjectType):

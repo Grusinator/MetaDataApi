@@ -1,10 +1,7 @@
 import django
-from django.test import TestCase, TransactionTestCase
-from urllib import request
-from MetaDataApi.metadata.models import Object
-from django.core.management import call_command
+from django.test import TransactionTestCase
 
-from MetaDataApi.metadata.tests.data import LoadTestData
+from metadata.tests.data import LoadTestData
 
 
 class TestDataCleaningService(TransactionTestCase):
@@ -16,10 +13,6 @@ class TestDataCleaningService(TransactionTestCase):
         django.setup()
 
         # populate the database
-        from MetaDataApi.metadata.services import RdfSchemaService
-        from MetaDataApi.metadata.services import (
-            JsonSchemaService
-        )
 
         LoadTestData.init_foaf()
 
@@ -29,10 +22,10 @@ class TestDataCleaningService(TransactionTestCase):
         ])
 
     def test_identify_json_data_sample(self):
-        from MetaDataApi.metadata.services.data_cleaning_service import (
+        from metadata.services.all_services.data_cleaning_service import (
             DataCleaningService)
 
-        from MetaDataApi.metadata.models import Schema, Object
+        from metadata.models import Schema
 
         dc_service = DataCleaningService()
 

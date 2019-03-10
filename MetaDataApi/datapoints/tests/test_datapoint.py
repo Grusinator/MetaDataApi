@@ -4,14 +4,13 @@ when you run "manage.py test".
 
 Replace this with more appropriate tests for your application.
 """
-import json
 import unittest
 
 import django
+
+from tests.GraphQLTestCase import GraphQLTestCase
+
 # from django.contrib.auth import get_user_model
-
-
-from MetaDataApi.tests.GraphQLTestCase import GraphQLTestCase
 
 # TODO: Configure your database in settings.py and sync before running tests.
 Token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6Imd1ZXN0IiwiZXhwIjoxNTM1MTE4NTA1LCJvcmlnX2lhdCI6MTUzNTExODIwNX0.Behbkb_R3OPuPubuoO0TIVl9jr-oPNgDTFBLvassKmU'

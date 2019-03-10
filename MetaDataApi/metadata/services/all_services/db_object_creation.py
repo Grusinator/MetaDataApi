@@ -1,11 +1,9 @@
 
-from MetaDataApi.metadata.services.base_functions import BaseMetaDataService
-
-from MetaDataApi.metadata.models import *
-from MetaDataApi.metadata.models import *
-
 # import the logging library
 import logging
+
+from metadata.models import *
+from metadata.services.all_services.base_functions import BaseMetaDataService
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)

@@ -1,6 +1,7 @@
-from MetaDataApi.metadata.models import Schema, Object, ObjectRelation
-from MetaDataApi.metadata.services.rdf import RdfSchemaService
 import django
+
+from metadata.models import Schema
+from metadata.services.all_services.rdf_schema_service import RdfSchemaService
 
 django.setup()
 

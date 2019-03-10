@@ -1,9 +1,6 @@
-from MetaDataApi.metadata.tests.data import LoadTestData
-from django.test import TestCase, TransactionTestCase
-import django
+from django.test import TransactionTestCase
 
-from MetaDataApi.metadata.tests import utils_for_testing
-from MetaDataApi.metadata.utils.django_model_utils import BuildDjangoSearchArgs
+from metadata.utils.django_model_utils import BuildDjangoSearchArgs
 
 
 class TestBuildDjangoSearchArgs(TransactionTestCase):

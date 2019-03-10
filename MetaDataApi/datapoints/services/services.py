@@ -1,21 +1,3 @@
-import json
-from django import forms
-
-from service_objects.services import Service
-
-from MetaDataApi.metadata.services import *
-
-from MetaDataApi.metadata.models import *
-from MetaDataApi.metadata.models import *
-
-from django.contrib.auth.models import User
-
-from datetime import datetime
-
-
-from MetaDataApi.dataproviders.services import DataProviderEtlService
-
-
 # class GetTemporalFloatPairsService(Service):
 #     schema_label = forms.CharField()
 #     object_label = forms.CharField()

@@ -1,9 +1,7 @@
-import django
-from django.test import TestCase, TransactionTestCase
-from urllib import request
-from MetaDataApi.metadata.models import Object
-from django.core.management import call_command
 from datetime import datetime
+
+import django
+from django.test import TransactionTestCase
 
 
 class TestDataProviderEtlService(TransactionTestCase):
@@ -15,12 +13,10 @@ class TestDataProviderEtlService(TransactionTestCase):
         django.setup()
 
     def test(self):
-        from MetaDataApi.dataproviders.services import (
+        from dataproviders.services import (
             DataProviderEtlService)
 
-        from MetaDataApi.dataproviders.models import ThirdPartyDataProvider
-
-        from MetaDataApi.metadata.models import Schema, Object
+        from dataproviders.models import ThirdPartyDataProvider
 
         data_provider = ThirdPartyDataProvider(
             provider_name="dummy")

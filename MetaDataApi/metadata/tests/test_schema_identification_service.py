@@ -1,17 +1,11 @@
-import django
-import os
 import json
-from django.test import TestCase, TransactionTestCase
 from urllib import request
-from MetaDataApi.metadata.models import Object, Attribute, ObjectRelation
-from django.core.management import call_command
-from MetaDataApi.metadata.services.data_cleaning_service import (
-    DataCleaningService
-)
-from django.conf import settings
 
-from MetaDataApi.metadata.tests.data import LoadTestData
-from MetaDataApi.metadata.tests.utils_for_testing.common_utils_for_testing import UtilsForTesting
+import django
+from django.test import TransactionTestCase
+
+from metadata.tests.data import LoadTestData
+from metadata.tests.utils_for_testing.common_utils_for_testing import UtilsForTesting
 
 
 class TestSchemaIdentificationService(TransactionTestCase):
@@ -27,10 +21,10 @@ class TestSchemaIdentificationService(TransactionTestCase):
         django.setup()
 
     def test_identify_json_data_sample(self):
-        from MetaDataApi.metadata.services import (
+        from metadata.services import (
             SchemaIdentificationV2)
 
-        from MetaDataApi.metadata.models import Schema, Object
+        from metadata.models import Schema, Object
 
         LoadTestData.init_foaf()
 
@@ -63,7 +57,7 @@ class TestSchemaIdentificationService(TransactionTestCase):
         self.assertEqual(len(objs), 4)
 
     def test_identify_data_type(self):
-        from MetaDataApi.metadata.services import (
+        from metadata.services import (
             SchemaIdentificationV2)
         from datetime import datetime
 
@@ -90,12 +84,10 @@ class TestSchemaIdentificationService(TransactionTestCase):
         self.assertListEqual(list(resp), list(expected))
 
     def test_identify_from_json_data_strava_test(self):
-        from MetaDataApi.metadata.services import (
-            RdfSchemaService, DataCleaningService,
-            SchemaIdentificationV2, RdfInstanceService)
+        from metadata.services import (
+            RdfSchemaService, SchemaIdentificationV2, RdfInstanceService)
 
-        from MetaDataApi.metadata.models import Schema, Object, Attribute, ObjectRelation
-        from django.contrib.auth.models import User
+        from metadata.models import Schema, Object, Attribute, ObjectRelation
 
         rdf_inst = RdfInstanceService()
 
@@ -141,12 +133,9 @@ class TestSchemaIdentificationService(TransactionTestCase):
         self.assertEqual(labels, expected)
 
     def test_identify_from_json_data(self):
-        from MetaDataApi.metadata.services import (
+        from metadata.services import (
             RdfSchemaService, DataCleaningService,
-            SchemaIdentificationV2, RdfInstanceService)
-
-        from MetaDataApi.metadata.models import Schema, Object
-        from django.contrib.auth.models import User
+            RdfInstanceService)
 
         rdf_inst = RdfInstanceService()
 

@@ -1,30 +1,16 @@
-from urllib.error import URLError
-
-from graphql.error import GraphQLLocatedError
-
-import os
-
-from rdflib import Namespace, Graph, Literal, URIRef
-from rdflib.namespace import RDF, FOAF, RDFS, DCTERMS, DC, OWL, XSD
-from rdflib.plugin import register, Serializer, Parser
+from datetime import datetime
 
 from inflection import camelize
+from rdflib import Namespace, URIRef
+from rdflib.namespace import RDFS, XSD
 
-from django.core.files.base import ContentFile
-
-from MetaDataApi.metadata.models import (
+from metadata.models import (
+    Object, Attribute, ObjectRelation)
+from metadata.models import (
     ObjectInstance, ObjectRelationInstance,
-    StringAttributeInstance,
-    DateTimeAttributeInstance, BoolAttributeInstance,
-    FloatAttributeInstance, IntAttributeInstance
+    StringAttributeInstance
 )
-from MetaDataApi.metadata.models import (
-    Schema, Object, Attribute, ObjectRelation)
-
 from .base_functions import BaseMetaDataService
-
-import uuid
-from datetime import datetime
 
 
 class BaseRdfSchemaService(BaseMetaDataService):

@@ -1,36 +1,14 @@
-import os
-import shutil
 import graphene
-import json
+from django.contrib.auth.decorators import user_passes_test
 from graphene_django.filter import DjangoFilterConnectionField
 from graphene_django.types import DjangoObjectType
 from graphene_file_upload.scalars import Upload
-
-from graphql.error import GraphQLError
-
 from graphql_jwt.decorators import login_required
-from django.contrib.auth.decorators import user_passes_test
 
-from django.contrib.auth.models import User
-from MetaDataApi.settings import MEDIA_ROOT
-
-
-from MetaDataApi.users.schema import UserType
-from MetaDataApi.metadata.models import (
-    Schema, Object, Attribute, ObjectRelation, UnmappedObject)
+from metadata.models import Schema, Object, Attribute, ObjectRelation
+from metadata.services import *
 
 
-from MetaDataApi.dataproviders.models import ThirdPartyDataProvider
-
-from MetaDataApi.dataproviders.services.data_provider_etl_service import (
-    DataProviderEtlService)
-
-from MetaDataApi.metadata.services.services import *
-
-from MetaDataApi.metadata.services import *
-
-
-# Nodes
 class SchemaNode(DjangoObjectType):
     class Meta:
         model = Schema
@@ -38,7 +16,7 @@ class SchemaNode(DjangoObjectType):
             'label': ["icontains", "exact", "istartswith"],
             'description': ["icontains", "exact", "istartswith"],
         }
-        interfaces = (graphene.relay.Node, )
+        interfaces = (graphene.relay.Node,)
 
 
 class ObjectNode(DjangoObjectType):
@@ -49,7 +27,7 @@ class ObjectNode(DjangoObjectType):
             'description': ["icontains", "exact", "istartswith"],
             'schema__label': ["icontains", "exact", "istartswith"]
         }
-        interfaces = (graphene.relay.Node, )
+        interfaces = (graphene.relay.Node,)
 
 
 class AttributeNode(DjangoObjectType):
@@ -60,7 +38,7 @@ class AttributeNode(DjangoObjectType):
             'description': ["icontains", "exact", "istartswith"],
             'object__label': ["icontains", "exact", "istartswith"]
         }
-        interfaces = (graphene.relay.Node, )
+        interfaces = (graphene.relay.Node,)
 
 
 class ObjectRelationNode(DjangoObjectType):
@@ -73,7 +51,7 @@ class ObjectRelationNode(DjangoObjectType):
             'to_object__label': ["icontains", "exact", "istartswith"],
             'schema__label': ["icontains", "exact", "istartswith"]
         }
-        interfaces = (graphene.relay.Node, )
+        interfaces = (graphene.relay.Node,)
 
 
 # Mutations
@@ -110,7 +88,7 @@ class ExportSchema(graphene.Mutation):
         return ExportSchema(
             schema_file_url=schema_file_url,
             visualization_url="http://visualdataweb.de/webvowl/#iri=" +
-            schema_file_url)
+                              schema_file_url)
 
 
 class IdentifySchemaFromFile(graphene.Mutation):
@@ -252,20 +230,22 @@ class AddRdfSchema(graphene.Mutation):
         return AddRdfSchema(succes=True)
 
 
-class AddPersonReferenceToBaseObjects(graphene.Mutation):
-    objects_added = graphene.Int()
+# TODO fix reference
 
-    class Arguments:
-        schema_label = graphene.String()
-
-    @login_required
-    def mutate(self, info, schema_label):
-        args = locals()
-        [args.pop(x) for x in ["info", "self", "args"]]
-
-        objects = AddPersonReferenceToBaseObjectsService.execute(args)
-
-        return AddPersonReferenceToBaseObjects(objects_added=len(objects))
+# class AddPersonReferenceToBaseObjects(graphene.Mutation):
+#     objects_added = graphene.Int()
+#
+#     class Arguments:
+#         schema_label = graphene.String()
+#
+#     @login_required
+#     def mutate(self, info, schema_label):
+#         args = locals()
+#         [args.pop(x) for x in ["info", "self", "args"]]
+#
+#         objects = AddPersonReferenceToBaseObjectsService.execute(args)
+#
+#         return AddPersonReferenceToBaseObjects(objects_added=len(objects))
 
 
 # wrap all queries and mutations
@@ -289,7 +269,7 @@ class Mutation(graphene.ObjectType):
     delete_schema = DeleteSchema.Field()
     identify_data = IdentifyDataFromFile.Field()
     export_schema = ExportSchema.Field()
-    add_person_reference = AddPersonReferenceToBaseObjects.Field()
+    # add_person_reference = AddPersonReferenceToBaseObjects.Field()
     identify_data_from_provider = IdentifyDataFromProvider.Field()
     identify_data_from_file = IdentifyDataFromFile.Field()
     identify_schema_from_provider = IdentifySchemaFromProvider.Field()

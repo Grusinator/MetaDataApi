@@ -1,12 +1,8 @@
 import django
-from django.test import TestCase, TransactionTestCase
-from urllib import request
-from MetaDataApi.metadata.models import Object
-from django.core.management import call_command
-from datetime import datetime
+from django.test import TransactionTestCase
 
-from MetaDataApi.metadata.services import GetTemporalFloatPairsService
-from MetaDataApi.metadata.tests.data import LoadTestData
+from metadata.services.services import GetTemporalFloatPairsService
+from metadata.tests.data import LoadTestData
 
 
 class TestService(TransactionTestCase):

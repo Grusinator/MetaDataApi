@@ -1,14 +1,10 @@
-from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
-
-from graphene import AbstractType, Node, Mutation, String, ObjectType, Field, List, Date, Enum, Float
+from graphene import Mutation, String, ObjectType, Field, List, Date, Enum, Float
 from graphene_django import DjangoObjectType
-from graphene_django.filter import DjangoFilterConnectionField
-
-from MetaDataApi.users.models import Profile, ThirdPartyProfile, Languages
 from graphql.error import GraphQLError
-
 from graphql_jwt.decorators import login_required
+
+from users.models import Profile, ThirdPartyProfile, Languages
 
 GrapheneLanguages = Enum.from_enum(Languages)
 

@@ -5,10 +5,10 @@
 
 # from django.core.exceptions import ValidationError
 
-# from MetaDataApi.metadata.custom_storages import MediaStorage
+# from metadata.custom_storages import MediaStorage
 
 
-# from MetaDataApi.metadata.models import (
+# from metadata.models import (
 #     Attribute, Object, ObjectRelation, Schema
 # )
 

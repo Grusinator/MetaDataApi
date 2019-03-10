@@ -1,9 +1,7 @@
-
-from MetaDataApi.metadata.services.rdf_schema_service import RdfSchemaService
-from MetaDataApi.metadata.services.json_schema_service import JsonSchemaService
-from MetaDataApi.metadata.services.rdf_instance_service import RdfInstanceService
-from MetaDataApi.metadata.services.schema_identification import SchemaIdentificationV2
-from MetaDataApi.metadata.services.data_cleaning_service import DataCleaningService
-from MetaDataApi.metadata.services.base_functions import BaseMetaDataService
-
-from MetaDataApi.metadata.services.services import *
+from metadata.services.all_services.data_cleaning_service import DataCleaningService
+from .all_services import *
+from .services import (DeleteSchemaService, BaseMetaDataService, AddRdfSchemaService, AddJsonSchemaService,
+                       RdfSchemaService, JsonSchemaService, DataCleaningService, ExportSchemaService,
+                       GetTemporalFloatPairsService, IdentifyDataFromFileService, IdentifyDataFromProviderService,
+                       IdentifySchemaFromFileService, IdentifySchemaFromProviderService,
+                       IdentifySchemaAndDataFromProviderService)

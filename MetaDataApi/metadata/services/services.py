@@ -1,17 +1,17 @@
 import json
-from django import forms
+import os
+import shutil
 from datetime import datetime
 
+from django import forms
+from django.contrib.auth.models import User
+from graphql import GraphQLError
 from service_objects.services import Service
 
-from MetaDataApi.metadata.services import *
-
-from MetaDataApi.metadata.models import *
-from django.contrib.auth.models import User
-
-from MetaDataApi.dataproviders.models import ThirdPartyDataProvider
-
-from MetaDataApi.dataproviders.services.data_provider_etl_service import DataProviderEtlService
+from dataproviders.services.data_provider_etl_service import DataProviderEtlService
+from metadata.models import *
+from settings import MEDIA_ROOT
+from .all_services import *
 
 
 class DeleteSchemaService(Service):
@@ -270,7 +270,7 @@ class AddJsonSchemaService(Service):
             service.write_to_db_baseschema(sample=True)
         else:
             try:
-                service.write_to_db(url, name)
+                service.write_to_db(url, schema_label)
             except Exception as e:
                 raise GraphQLError(str(e))
 
@@ -344,8 +344,7 @@ class GetTemporalFloatPairsService(Service):
             Attribute.assert_data_type(datetime_att, datetime)
 
         else:
-            raise NotImplementedError(
-                "identify not implemented, specify a secondary label")
+            raise NotImplementedError("identify not implemented, specify a secondary label")
             datetime_att = identify()
 
         service = BaseMetaDataService()

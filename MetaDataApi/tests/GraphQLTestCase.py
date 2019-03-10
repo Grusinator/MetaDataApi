@@ -1,12 +1,9 @@
 import json
-from django.test import TestCase
-from django.test import Client
-from graphene.test import Client as GrapheneClient
-import inflection
 import unittest
 
-
+from django.test import Client
 from django.test import RequestFactory, TestCase
+from graphene.test import Client as GrapheneClient
 
 
 # Inherit from this in your test cases
@@ -20,13 +17,11 @@ class GraphQLTestCase(TestCase):
         self._client = Client()
         self.token = None
 
-        from MetaDataApi.schema import schema
+        from schema import schema
         self._gqlclient = GrapheneClient(schema)
 
         from django.contrib.auth.models import User
         self.user = User.objects.get(username="guest")
-
-        from MetaDataApi.users.models import Profile
 
     def execute_test_client_api_query(
             self, api_query, user=None, variable_values=None, **kwargs):
@@ -132,20 +127,21 @@ class GraphQLTestCase(TestCase):
 
     @unittest.skip("needs repair")
     def dict_to_datapoint(self, dict):
-        from PersonalDataApi.datapoints.models import Datapoint, CategoryTypes
-        us_dict = {}
-        # convert all keys to underscore
-        for key, value in dict.items():
-            us_dict[inflection.underscore(key)] = dict[key]
-
-        return Datapoint(
-            # id=obj["id"],
-            datetime=us_dict["datetime"],
-            category=CategoryTypes.force_value(us_dict["category"]),
-            source_device=us_dict["source_device"],
-            value=us_dict["value"],
-            text_from_audio=us_dict["text_from_audio"]
-        )
+        # from datapoints.models import Datapoint, CategoryTypes
+        # us_dict = {}
+        # # convert all keys to underscore
+        # for key, value in dict.items():
+        #     us_dict[inflection.underscore(key)] = dict[key]
+        #
+        # return Datapoint(
+        #     # id=obj["id"],
+        #     datetime=us_dict["datetime"],
+        #     category=CategoryTypes.force_value(us_dict["category"]),
+        #     source_device=us_dict["source_device"],
+        #     value=us_dict["value"],
+        #     text_from_audio=us_dict["text_from_audio"]
+        # )
+        pass
 
     def response_to_user_and_profile(self, resp):
         pass

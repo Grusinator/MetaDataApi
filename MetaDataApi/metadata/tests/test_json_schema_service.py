@@ -1,7 +1,9 @@
 import django
-from django.test import TestCase, TransactionTestCase
+from django.test import TransactionTestCase
 
-from MetaDataApi.metadata.tests.data import LoadTestData
+from metadata.tests.data import LoadTestData
+
+
 # TODO: Configure your database in settings.py and sync before running tests.
 
 
@@ -18,7 +20,7 @@ class TestJsonService(TransactionTestCase):
         LoadTestData.init_open_m_health_sample()
 
     def test_upwrite_to_db(self):
-        from MetaDataApi.metadata.services import (
+        from metadata.services import (
             JsonSchemaService)
 
         url = "https://raw.githubusercontent.com/Grusinator/MetaDataApi/" +\
@@ -50,10 +52,10 @@ class TestJsonService(TransactionTestCase):
         self.assertListEqual(labels, labels_compare)
 
     def test_json_write_to_db_body_temp(self):
-        from MetaDataApi.metadata.services import (
+        from metadata.services import (
             JsonSchemaService)
-        from MetaDataApi.metadata.models import (
-            Schema, Object, Attribute, ObjectRelation)
+        from metadata.models import (
+            Attribute)
 
         url = "https://raw.githubusercontent.com/Grusinator/MetaDataApi/" +\
             "master/schemas/json/omh/schemas/body-temperature-2.0.json"
@@ -65,7 +67,7 @@ class TestJsonService(TransactionTestCase):
         atts = filter(lambda x: isinstance(x, Attribute), res)
 
     def test_default_schemas(self):
-        from MetaDataApi.metadata.services import (
+        from metadata.services import (
             JsonSchemaService)
 
         service = JsonSchemaService()

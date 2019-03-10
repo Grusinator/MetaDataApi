@@ -1,13 +1,12 @@
-import django
-from django.test import TestCase, TransactionTestCase
-from urllib import request
-from MetaDataApi.metadata.models import Object
-from django.core.management import call_command
-
-from MetaDataApi.metadata.tests.data import LoadTestData
-from MetaDataApi.metadata.tests.utils_for_testing.common_utils_for_testing import UtilsForTesting
-
 import logging
+
+import django
+from django.test import TransactionTestCase
+
+from metadata.models import Object
+from metadata.tests.data import LoadTestData
+from metadata.tests.utils_for_testing.common_utils_for_testing import UtilsForTesting
+
 logging.disable(logging.CRITICAL)
 
 
@@ -20,7 +19,7 @@ class TestModelInstances(TransactionTestCase):
         django.setup()
 
     def test_get_related_list(self):
-        from MetaDataApi.metadata.models import ObjectInstance
+        from metadata.models import ObjectInstance
         schema = LoadTestData.init_foaf()
         obj = Object.objects.get(label="person", schema=schema)
 
@@ -43,15 +42,12 @@ class TestModelInstances(TransactionTestCase):
 
     def test_attribute_exists(self):
         # Register your models here.
-        from MetaDataApi.metadata.models.instances import (
+        from metadata.models.instance import (
             # instances
-            ObjectInstance,
-            ObjectRelationInstance,
             FloatAttributeInstance,
             StringAttributeInstance,
             IntAttributeInstance,
             BoolAttributeInstance,
-            ImageAttributeInstance,
             DateTimeAttributeInstance)
 
         LoadTestData.init_foaf()
@@ -88,8 +84,7 @@ class TestModelInstances(TransactionTestCase):
 
     def test_object_exists(self):
         # Register your models here.
-        from MetaDataApi.metadata.models.instances import ObjectInstance
-        from MetaDataApi.metadata.tests.utils_for_testing.find_object_json_children import FindObjectJsonChildren
+        from metadata.tests.utils_for_testing.find_object_json_children import FindObjectJsonChildren
 
         LoadTestData.init_foaf()
         LoadTestData.init_strava_schema_from_file()

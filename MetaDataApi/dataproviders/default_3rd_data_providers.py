@@ -1,5 +1,6 @@
-from MetaDataApi.users.models import ThirdPartyDataProvider
 import json
+
+from users.models import ThirdPartyDataProvider
 
 redirect_uri = "https://meta-data-api.herokuapp.com/oauth2redirect/"
 # redirect_uri = "http://localhost:8000/oauth2redirect/"

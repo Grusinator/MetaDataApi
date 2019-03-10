@@ -1,9 +1,10 @@
-from django.db import models
-from django.conf import settings
 from enum import Enum
-from django.contrib.auth.models import User
 
-from MetaDataApi.dataproviders.models import ThirdPartyDataProvider
+from django.contrib.auth.models import User
+from django.db import models
+
+from dataproviders.models import ThirdPartyDataProvider
+
 
 # Create your models here.
 

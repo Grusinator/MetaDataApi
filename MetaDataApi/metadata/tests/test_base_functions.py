@@ -1,7 +1,7 @@
 import django
 from django.test import TransactionTestCase
 
-from MetaDataApi.metadata.tests.data import LoadTestData
+from metadata.tests.data import LoadTestData
 
 
 class TestMetadataBaseFunctionService(TransactionTestCase):
@@ -14,8 +14,8 @@ class TestMetadataBaseFunctionService(TransactionTestCase):
         django.setup()
 
     def test_path_to_foaf_person(self):
-        from MetaDataApi.metadata.services import BaseMetaDataService
-        from MetaDataApi.metadata.models import (
+        from metadata.services.services import BaseMetaDataService
+        from metadata.models import (
             Object, Attribute)
 
         LoadTestData.init_foaf()
@@ -31,8 +31,8 @@ class TestMetadataBaseFunctionService(TransactionTestCase):
         self.assertListEqual(to_foaf_p_list, [att, att.object, ])
 
     def test_get_connected_pair(self):
-        from MetaDataApi.metadata.models import Attribute
-        from MetaDataApi.metadata.services import BaseMetaDataService
+        from metadata.models import Attribute
+        from metadata.services import BaseMetaDataService
         LoadTestData.init_strava_schema_from_file()
         LoadTestData.init_strava_data_from_file()
         service = BaseMetaDataService()
@@ -49,9 +49,9 @@ class TestMetadataBaseFunctionService(TransactionTestCase):
         self.assertListEqual(data, expected)
 
     def test_is_object_in_list(self):
-        from MetaDataApi.metadata.services.base_functions import (
+        from metadata.services.all_services.base_functions import (
             BaseMetaDataService)
-        from MetaDataApi.metadata.models import (
+        from metadata.models import (
             Object, Attribute, ObjectRelation)
 
         service = BaseMetaDataService()

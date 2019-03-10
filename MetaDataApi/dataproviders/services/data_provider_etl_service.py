@@ -1,24 +1,14 @@
 import json
-import os
 import re
 from datetime import datetime, timedelta
-from django.core.files.base import ContentFile
-from django.core.exceptions import ObjectDoesNotExist
-from django.db import transaction
-
-
-import inflection
-
 # from jsonschema import validate
 from urllib import request, parse
-from MetaDataApi.metadata.models import (
-    Schema, Object, Attribute, ObjectRelation)
 
-from MetaDataApi.dataproviders.default_3rd_data_providers import (
-    default_data_providers)
-from MetaDataApi.dataproviders.models import (
+from dataproviders.models import (
     ThirdPartyDataProvider)
-from MetaDataApi.metadata.services.base_functions import BaseMetaDataService
+from metadata.models import (
+    Schema)
+from metadata.services.all_services.base_functions import BaseMetaDataService
 
 
 class DataProviderEtlService(BaseMetaDataService):

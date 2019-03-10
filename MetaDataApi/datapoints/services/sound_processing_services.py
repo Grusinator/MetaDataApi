@@ -1,8 +1,8 @@
 import numpy as np
 from scipy.io import wavfile
-
-from MetaDataApi.datapoints.services.sound_classification.processor import WavProcessor, format_predictions
 from service_objects.services import Service
+
+from datapoints.services.sound_classification.processor import WavProcessor
 
 
 class SoundClassifier(Service):

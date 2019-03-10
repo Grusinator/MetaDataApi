@@ -1,7 +1,7 @@
-from .base_functions import BaseMetaDataService
-from MetaDataApi.metadata.models import (
-    Schema, Object, ObjectRelation, Attribute
+from metadata.models import (
+    Object, ObjectRelation
 )
+from .base_functions import BaseMetaDataService
 
 
 class DataCleaningService(BaseMetaDataService):

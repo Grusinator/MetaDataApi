@@ -1,6 +1,6 @@
-import speech_recognition as sr
 import os
-from enum import Enum
+
+import speech_recognition as sr
 
 #from pydub import AudioSegment
 
@@ -12,7 +12,7 @@ GoogleLanguages = {
 
 def get_google_api_key():
     api_key_filename = r"C:\Users\William S. Hansen\source\api-keys\Free_Trial\PersonalData-9d8c53dee9bd.json"
-    api_key_filename = r"C:\Users\William\Google Drive\Forretningsprojekter\PersonalData\google_credentials\PersonalData-9d8c53dee9bd.json"
+    api_key_filename2 = r"C:\Users\William\Google Drive\Forretningsprojekter\PersonalData\google_credentials\PersonalData-9d8c53dee9bd.json"
 
     #try to read it local
     try:

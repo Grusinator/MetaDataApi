@@ -10,11 +10,11 @@
 
 # from graphql_jwt.decorators import login_required
 
-# from MetaDataApi.users.schema import UserType
+# from users.schema import UserType
 
 # from django.contrib.auth.models import User
 
-# from MetaDataApi.metadata.models import (
+# from metadata.models import (
 #     RawData, CategoryTypes,
 #     ObjectInstance,
 #     ObjectRelationInstance,
@@ -23,19 +23,19 @@
 #     StringAttributeInstance,
 #     DateTimeAttributeInstance)
 
-# from MetaDataApi.metadata.models import (
+# from metadata.models import (
 #     Attribute, Object, ObjectRelation, Schema
 # )
 
-# from MetaDataApi.metadata.schema import AttributeNode as AttributeMetaNode
+# from metadata.schema import AttributeNode as AttributeMetaNode
 
-# from MetaDataApi.datapoints.schema_processing import ProcessRawData
-# from MetaDataApi.users.models import Profile
+# from datapoints.schema_processing import ProcessRawData
+# from users.models import Profile
 
-# from MetaDataApi.metadata.services import GetTemporalFloatPairsService
+# from metadata.services import GetTemporalFloatPairsService
 
-# from MetaDataApi.datapoints.services.google_speech_api import transcribe_file
-# # from MetaDataApi.datapoints.services.sound_processing_services import SoundClassifier
+# from datapoints.services.google_speech_api import transcribe_file
+# # from datapoints.services.sound_processing_services import SoundClassifier
 
 # GrapheneCategoryTypes = Enum.from_enum(CategoryTypes)
 

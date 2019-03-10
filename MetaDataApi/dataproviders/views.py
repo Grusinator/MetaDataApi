@@ -1,16 +1,16 @@
-from django.shortcuts import render
-from MetaDataApi.dataproviders.models import ThirdPartyDataProvider
-from MetaDataApi.users.models import ThirdPartyProfile
 import json
+
 import requests
-import urllib
 from django.conf import settings
-from django.shortcuts import redirect
 from django.http import HttpResponse
-from django.views.generic import ListView
+from django.shortcuts import redirect
+from django.shortcuts import render
+
+from dataproviders.models import ThirdPartyDataProvider
+from users.models import Profile
+from users.models import ThirdPartyProfile
 
 
-from MetaDataApi.users.models import Profile
 # Create your views here.
 
 

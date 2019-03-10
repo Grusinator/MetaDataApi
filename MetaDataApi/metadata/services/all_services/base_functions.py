@@ -1,29 +1,22 @@
-import os
 import re
-import inflection
-# from jsonschema import validate
-from urllib import request
-from MetaDataApi.metadata.models import (
-    Schema, Object, Attribute, ObjectRelation)
-from django.core.files.base import ContentFile
+from datetime import datetime
 
-from schemas.json.omh.schema_names import filtered_schema_names as schema_names
-from django.db import transaction
+import dateutil
+import inflection
 from django.core.exceptions import (
     ObjectDoesNotExist, MultipleObjectsReturned)
-from service_objects.services import Service
-import uuid
-import dateutil
-from datetime import datetime
-import inflection
+from django.core.files.base import ContentFile
+from django.db import transaction
 
-
-from MetaDataApi.metadata.models import (
+from metadata.models import (
     ObjectInstance, ObjectRelationInstance,
     StringAttributeInstance,
     DateTimeAttributeInstance, BoolAttributeInstance,
     FloatAttributeInstance, IntAttributeInstance
 )
+# from jsonschema import validate
+from metadata.models import (
+    Schema, Object, Attribute, ObjectRelation)
 
 
 class BaseMetaDataService():

@@ -1,13 +1,6 @@
-import django
-import os
 import json
-from django.test import TestCase, TransactionTestCase
-from urllib import request
-from MetaDataApi.metadata.models import Object
-from django.core.management import call_command
-from MetaDataApi.metadata.services.data_cleaning_service import (
-    DataCleaningService
-)
+import os
+
 from django.conf import settings
 
 
@@ -29,7 +22,7 @@ class LoadTestData:
 
     @staticmethod
     def init_foaf():
-        from MetaDataApi.metadata.services import (
+        from metadata.services import (
             RdfSchemaService)
         rdf_service = RdfSchemaService()
         # just take foaf
@@ -39,12 +32,10 @@ class LoadTestData:
 
     @staticmethod
     def init_strava_schema_from_file():
-        from MetaDataApi.metadata.services import (
-            RdfInstanceService, RdfSchemaService, DataCleaningService,
+        from metadata.services import (
+            RdfInstanceService, DataCleaningService,
             SchemaIdentificationV2
         )
-
-        from MetaDataApi.metadata.models import Schema, Object, Attribute
 
         LoadTestData.init_foaf()
 
@@ -76,11 +67,10 @@ class LoadTestData:
 
     @staticmethod
     def init_strava_data_from_file():
-        from MetaDataApi.metadata.services import (
-            RdfInstanceService, RdfSchemaService, DataCleaningService,
+        from metadata.services import (
             SchemaIdentificationV2
         )
-        from MetaDataApi.metadata.models import Schema, Object, Attribute
+        from metadata.models import Schema
 
         user = LoadTestData.init_user()
 
@@ -104,9 +94,7 @@ class LoadTestData:
 
     @staticmethod
     def init_open_m_health_sample(extras=None):
-                # populate the database
-
-        from MetaDataApi.metadata.services import (
+        from metadata.services import (
             JsonSchemaService, DataCleaningService
         )
 
@@ -125,7 +113,7 @@ class LoadTestData:
 
     @staticmethod
     def init_rdf_base():
-        from MetaDataApi.metadata.services import RdfSchemaService
+        from metadata.services import RdfSchemaService
         rdf_service = RdfSchemaService()
 
         rdf_service.write_to_db_baseschema()

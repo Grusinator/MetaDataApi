@@ -1,20 +1,14 @@
 import json
-from django import forms
 
+from django import forms
+from django.contrib.auth.models import User
+from django.core.exceptions import (
+    ObjectDoesNotExist)
 from service_objects.services import Service
 
-from MetaDataApi.metadata.services import *
-
-from MetaDataApi.metadata.models import *
-from django.contrib.auth.models import User
-
-from MetaDataApi.dataproviders.models import ThirdPartyDataProvider
-
-from MetaDataApi.dataproviders.services.data_provider_etl_service import DataProviderEtlService
-
-from MetaDataApi.dataproviders.default_3rd_data_providers import default_data_providers
-from django.core.exceptions import (
-    ObjectDoesNotExist, MultipleObjectsReturned)
+from dataproviders.default_3rd_data_providers import default_data_providers
+from dataproviders.models import ThirdPartyDataProvider
+from dataproviders.services.data_provider_etl_service import DataProviderEtlService
 
 
 class AddDefaultDataProviderService(Service):

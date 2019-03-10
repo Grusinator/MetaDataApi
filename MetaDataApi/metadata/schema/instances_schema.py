@@ -1,41 +1,26 @@
 import graphene
-from graphene import (AbstractType, Node, Mutation, String,
-                      ObjectType, Field, List, Date, Enum, Float)
-
+from graphene import (ObjectType, Field, Enum)
 from graphene_django.filter import DjangoFilterConnectionField
 from graphene_django.types import DjangoObjectType
-
 from graphene_file_upload.scalars import Upload
 from graphql.error import GraphQLError
-
 from graphql_jwt.decorators import login_required
 
-from MetaDataApi.users.schema import UserType
-
-from django.contrib.auth.models import User
-
-from MetaDataApi.metadata.models import (
+from datapoints.schema_processing import ProcessRawData
+from metadata.models import (
+    Attribute, Object, Schema
+)
+from metadata.models import (
     RawData, CategoryTypes,
     ObjectInstance,
-    ObjectRelationInstance,
-
     FloatAttributeInstance,
     StringAttributeInstance,
     DateTimeAttributeInstance)
+from metadata.schema.meta_schema import AttributeNode as AttributeMetaNode
+from metadata.services.services import GetTemporalFloatPairsService
+from users.schema import UserType
 
-from MetaDataApi.metadata.models import (
-    Attribute, Object, ObjectRelation, Schema
-)
-
-from MetaDataApi.metadata.schema.meta_schema import AttributeNode as AttributeMetaNode
-
-from MetaDataApi.datapoints.schema_processing import ProcessRawData
-from MetaDataApi.users.models import Profile
-
-from MetaDataApi.metadata.services import GetTemporalFloatPairsService
-
-from MetaDataApi.datapoints.services.google_speech_api import transcribe_file
-# from MetaDataApi.datapoints.services.sound_processing_services import SoundClassifier
+# from datapoints.services.sound_processing_services import SoundClassifier
 
 GrapheneCategoryTypes = Enum.from_enum(CategoryTypes)
 
@@ -122,7 +107,7 @@ class GetTemporalFloatPairs(graphene.Mutation):
 
         data = GetTemporalFloatPairsService.execute(args)
 
-        return_data = [TemporalFloatAttributeType(
+        return_data = [TemporalFloatAttributeNode(
             value=value, datetime=datetime)
             for value, datetime in data]
 

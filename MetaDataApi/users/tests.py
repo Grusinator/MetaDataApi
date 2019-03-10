@@ -7,9 +7,9 @@ Replace this with more appropriate tests for your application.
 import unittest
 
 import django
-from django.test import TestCase
 
-from MetaDataApi.tests.GraphQLTestCase import GraphQLTestCase
+from tests.GraphQLTestCase import GraphQLTestCase
+
 
 # TODO: Configure your database in settings.py and sync before running tests.
 

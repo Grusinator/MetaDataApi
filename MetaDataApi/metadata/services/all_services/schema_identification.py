@@ -1,28 +1,20 @@
 import json
+import logging
 from urllib import request
-from django.core.validators import URLValidator
+
 from django.core.exceptions import ValidationError
-from datetime import datetime
-import dateutil
-
-
+from django.core.validators import URLValidator
 from inflection import underscore
 
-from MetaDataApi.metadata.models import (
-    Schema, Object,
-    Attribute, ObjectRelation, UnmappedObject)
-
-from MetaDataApi.metadata.models import (
+from metadata.models import (
+    Object,
+    Attribute, ObjectRelation)
+from metadata.models import (
     ObjectInstance,
-    StringAttributeInstance,
-    ObjectRelationInstance)
-from .base_functions import BaseMetaDataService
-
+    StringAttributeInstance)
+from metadata.utils.django_model_utils.build_data_objects_from_json import BuildDataObjectsFromJson
 from .db_object_creation import DbObjectCreation
 
-from MetaDataApi.metadata.utils.django_model_utils.build_data_objects_from_json import BuildDataObjectsFromJson
-
-import logging
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
 

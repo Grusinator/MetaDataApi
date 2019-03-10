@@ -1,4 +1,8 @@
-from MetaDataApi.metadata.models import CategoryTypes,   RawData
+from graphql import GraphQLError
+
+from datapoints.services.google_speech_api import transcribe_file
+from metadata.models import CategoryTypes, RawData, StringAttributeInstance
+from users.models import Profile
 
 
 class ProcessRawData:

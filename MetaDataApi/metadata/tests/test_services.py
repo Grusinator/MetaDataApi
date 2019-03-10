@@ -1,13 +1,11 @@
+import os
+
 import django
-from django.test import TestCase, TransactionTestCase
-from urllib import request
-from MetaDataApi.metadata.models import Object
-from django.core.management import call_command
-from MetaDataApi.metadata.services import BaseMetaDataService
+from django.test import TransactionTestCase
 
-from MetaDataApi.metadata.tests.data import LoadTestData
-
-from MetaDataApi.metadata.services import *
+import settings
+from metadata.tests.data import LoadTestData
+from tests import TestServices
 
 
 class TestMetaServices(TransactionTestCase):
@@ -20,11 +18,12 @@ class TestMetaServices(TransactionTestCase):
         django.setup()
 
     def DeleteSchemaServiceTest(self):
-
+        from metadata.models import Schema
+        from metadata.services.services import DeleteSchemaService
         LoadTestData.init_strava_schema_from_file()
 
         args = {
-            schema_label: "strava",
+            "schema_label": "strava",
         }
 
         data = DeleteSchemaService.execute(args)
@@ -34,24 +33,22 @@ class TestMetaServices(TransactionTestCase):
         self.assertIsNone(schema)
 
     def IdentifyDataFromProviderServiceTest(self):
-        IdentifyDataFromProviderService
         LoadTestData.init_strava_schema_from_file()
         user = LoadTestData.init_user()
 
-        return
-        # will fail since third party profile is not defined
-        args = {
-            "provider_name": thd_part_profile.provider.provider_name,
-            "endpoint": "all",
-            "user_pk": thd_part_profile.profile.user.pk,
-        }
-
-        data = IdentifyDataFromProviderService.execute(args)
-
-        self.assertIsNone(schema)
+        # # will fail since third party profile is not defined
+        # args = {
+        #     "provider_name": thd_part_profile.provider.provider_name,
+        #     "endpoint": "all",
+        #     "user_pk": thd_part_profile.profile.user.pk,
+        # }
+        #
+        # data = IdentifyDataFromProviderService.execute(args)
+        #
+        # self.assertIsNone(schema)
 
     def IdentifyDataFromFileServiceTest(self):
-        IdentifyDataFromProviderService
+        from metadata.services.services import IdentifyDataFromFileService
         LoadTestData.init_strava_schema_from_file()
         user = LoadTestData.init_user()
         # will fail since third party profile is not defined
