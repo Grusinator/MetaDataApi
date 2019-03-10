@@ -1,12 +1,19 @@
-
-from MetaDataApi.metadata.models.meta import (
-    Attribute, Schema, Object, ObjectRelation, UnmappedObject)
-from MetaDataApi.metadata.models.instances import (
-    CategoryTypes,
-    ObjectInstance, ObjectRelationInstance,
-    RawData, RDFDataDump,
-    BoolAttributeInstance, FloatAttributeInstance,
-    DateTimeAttributeInstance, ImageAttributeInstance,
-    IntAttributeInstance, StringAttributeInstance,
-
+from .instance import (
+    ObjectInstance,
+    ObjectRelationInstance,
+    BoolAttributeInstance,
+    FloatAttributeInstance,
+    DateTimeAttributeInstance,
+    ImageAttributeInstance,
+    IntAttributeInstance,
+    StringAttributeInstance,
+)
+from .instance.old_instances import CategoryTypes, RawData
+from .meta import (
+    Attribute,
+    Schema,
+    Object,
+    ObjectRelation,
+    RDFDataDump,
+    UnmappedObject
 )
