@@ -42,7 +42,7 @@ class TestModelInstances(TransactionTestCase):
 
     def test_attribute_exists(self):
         # Register your models here.
-        from metadata.models.instance import (
+        from metadata.models import (
             # instances
             FloatAttributeInstance,
             StringAttributeInstance,

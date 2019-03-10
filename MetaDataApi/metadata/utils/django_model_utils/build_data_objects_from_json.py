@@ -2,7 +2,7 @@ import logging
 
 from django.db import IntegrityError, transaction
 
-from metadata.models.instance import (
+from metadata.models import (
     ObjectInstance,
     ObjectRelationInstance,
     BaseAttributeInstance,

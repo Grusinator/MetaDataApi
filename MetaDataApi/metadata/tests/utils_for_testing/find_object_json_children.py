@@ -1,5 +1,4 @@
-from metadata.models import Schema, Object
-from metadata.models.instance import ObjectInstance
+from metadata.models import Schema, Object, ObjectInstance
 from metadata.utils import json_utils
 
 

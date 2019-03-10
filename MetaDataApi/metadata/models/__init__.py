@@ -7,6 +7,8 @@ from .instance import (
     ImageAttributeInstance,
     IntAttributeInstance,
     StringAttributeInstance,
+    BaseInstance,
+    BaseAttributeInstance
 )
 from .instance.old_instances import CategoryTypes, RawData
 from .meta import (
