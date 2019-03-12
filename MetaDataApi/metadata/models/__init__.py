@@ -1,4 +1,4 @@
-from .instance import (
+from metadata.models.instance import (
     ObjectInstance,
     ObjectRelationInstance,
     BoolAttributeInstance,
@@ -10,8 +10,8 @@ from .instance import (
     BaseInstance,
     BaseAttributeInstance
 )
-from .instance.old_instances import CategoryTypes, RawData
-from .meta import (
+from metadata.models.instance.old_instances import CategoryTypes, RawData
+from metadata.models.meta import (
     Attribute,
     Schema,
     Object,
