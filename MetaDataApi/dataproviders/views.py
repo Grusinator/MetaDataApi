@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.shortcuts import render
 
-from dataproviders.models import ThirdPartyDataProvider
+from dataproviders.models import third_party_data_provider
 from users.models import Profile
 from users.models import ThirdPartyProfile
 
@@ -18,7 +18,7 @@ def data_provider_list(request):
     if not request.user.is_authenticated:
         return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
 
-    data_providers = ThirdPartyDataProvider.objects.all()
+    data_providers = third_party_data_provider.objects.all()
 
     return render(request, 'dataproviders.html',
                   {
@@ -28,7 +28,7 @@ def data_provider_list(request):
 
 
 def provider_list_view(ListView):
-    queryset = ThirdPartyDataProvider.objects.all()
+    queryset = third_party_data_provider.objects.all()
 
 
 def oauth2redirect(request):
@@ -42,7 +42,7 @@ def oauth2redirect(request):
 
         provider_name, user_id = state.split(":")
 
-        data_provider = ThirdPartyDataProvider.objects.get(
+        data_provider = third_party_data_provider.objects.get(
             provider_name=provider_name)
 
         data = {

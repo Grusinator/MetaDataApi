@@ -1,8 +1,8 @@
 from django.db import models
 
+from metadata.models.meta.meta_base import BaseMeta
 from metadata.utils import BuildDjangoSearchArgs
 from metadata.utils.django_model_utils import DjangoModelUtils
-from .meta_base import BaseMeta
 
 
 class Object(BaseMeta):

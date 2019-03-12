@@ -3,11 +3,6 @@ from enum import Enum
 from django.contrib.auth.models import User
 from django.db import models
 
-from dataproviders.models import ThirdPartyDataProvider
-
-
-# Create your models here.
-
 
 class Languages(Enum):
     Danish = "dk"
@@ -29,7 +24,7 @@ class Profile(models.Model):
         on_delete=models.CASCADE)
 
     def __str__(self):
-        return "%i - %s - %s" % (self.id, self.user.username,  self.language)
+        return "%i - %s - %s" % (self.id, self.user.username, self.language)
 
     def get_data_provider_profile(self, provider_name):
         tpdp_profile = self.data_provider_profiles.get(
@@ -37,21 +32,4 @@ class Profile(models.Model):
         return tpdp_profile
 
     class Meta:
-        app_label = 'users'
-
-
-class ThirdPartyProfile(models.Model):
-    # consider if this shoud be a foreignkey to provider or enum
-    provider = models.ForeignKey(
-        ThirdPartyDataProvider, on_delete=models.CASCADE)
-    profile = models.ForeignKey(Profile, related_name="data_provider_profiles",
-                                null=False, on_delete=models.CASCADE)
-    access_token = models.TextField(null=False, blank=False)
-    profile_json_field = models.TextField(null=False, blank=False)
-
-    def __str__(self):
-        return "%s - %s" % (self.provider, self.profile.user.username)
-
-    class Meta:
-        unique_together = ('provider', 'profile')
         app_label = 'users'

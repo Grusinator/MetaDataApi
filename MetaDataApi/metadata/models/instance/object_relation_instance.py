@@ -1,14 +1,15 @@
 from django.core.exceptions import ValidationError
+from django.db import models
 
 from metadata.utils.django_model_utils import DjangoModelUtils
 from .instance_base import BaseInstance
 
 
 class ObjectRelationInstance(BaseInstance):
-    # base = models.ForeignKey('ObjectRelation', on_delete=models.CASCADE)
+    base = models.ForeignKey('ObjectRelation', on_delete=models.CASCADE)
 
-    # from_object = models.ForeignKey('ObjectInstance',related_name='to_relations', on_delete=models.CASCADE)
-    # to_object = models.ForeignKey('ObjectInstance', related_name='from_relations', on_delete=models.CASCADE)
+    from_object = models.ForeignKey('ObjectInstance', related_name='to_relations', on_delete=models.CASCADE)
+    to_object = models.ForeignKey('ObjectInstance', related_name='from_relations', on_delete=models.CASCADE)
 
     def __str__(self):
         return "Ri:%s - %s - %s" % (

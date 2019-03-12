@@ -7,7 +7,7 @@ from django.core.exceptions import (
 from service_objects.services import Service
 
 from dataproviders.default_3rd_data_providers import default_data_providers
-from dataproviders.models import ThirdPartyDataProvider
+from dataproviders.models import third_party_data_provider
 from dataproviders.services.data_provider_etl_service import DataProviderEtlService
 
 
@@ -29,7 +29,7 @@ class AddDefaultDataProviderService(Service):
         for dp in default_providers:
             # test if it exists before creating it
             try:
-                ThirdPartyDataProvider.objects.get(
+                third_party_data_provider.objects.get(
                     provider_name=dp.provider_name)
             except ObjectDoesNotExist:
                 dp.save()
@@ -51,7 +51,7 @@ class LoadDataFromProviderService(Service):
         user = User.objects.get(pk=user_pk)
 
         # get the dataprovider
-        data_provider = ThirdPartyDataProvider.objects.get(
+        data_provider = third_party_data_provider.objects.get(
             provider_name=provider_name)
         # init service
         service = DataProviderEtlService(data_provider)

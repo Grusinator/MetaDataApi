@@ -16,9 +16,9 @@ class TestDataProviderEtlService(TransactionTestCase):
         from dataproviders.services import (
             DataProviderEtlService)
 
-        from dataproviders.models import ThirdPartyDataProvider
+        from dataproviders.models import third_party_data_provider
 
-        data_provider = ThirdPartyDataProvider(
+        data_provider = third_party_data_provider(
             provider_name="dummy")
         # init service
         service = DataProviderEtlService(data_provider)

@@ -16,7 +16,7 @@ from metadata.models.meta import (
     Object, Attribute, ObjectRelation, )
 from metadata.utils.common_utils import DictUtils
 from metadata.utils.common_utils.data_type_utils import DataTypeUtils
-from ..json_utils.json_iterator import IJsonIterator
+from metadata.utils.json_utils.json_iterator import IJsonIterator
 
 logger = logging.getLogger(__name__)
 
