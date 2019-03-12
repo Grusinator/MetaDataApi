@@ -60,9 +60,9 @@ class Object(BaseMeta):
         builder.add_from_obj(self)
         related.extend(list(type(self).objects.filter(**builder.search_args)))
 
-        # TODO fix this later
+        # TODO refactor this out in own service, so that imports are not getting circular
         # if include_attributes:
-        # related.extend(list(Attribute.objects.filter(object=self)))
+        #     related.extend(list(Attribute.objects.filter(object=self)))
 
         return related
 
