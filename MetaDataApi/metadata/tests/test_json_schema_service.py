@@ -16,7 +16,6 @@ class TestJsonService(TransactionTestCase):
         super(TestJsonService, cls).setUpClass()
         django.setup()
 
-
         LoadTestData.init_open_m_health_sample()
 
     def test_upwrite_to_db(self):

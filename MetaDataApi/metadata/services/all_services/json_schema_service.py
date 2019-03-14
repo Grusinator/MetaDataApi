@@ -47,7 +47,7 @@ class JsonSchemaService(BaseMetaDataService):
         schema_label = self.standardize_string(
             schema_label, remove_version=False)
 
-        self.schema = self._try_get_item(Schema(label=schema_label))
+        self.schema = self.do_meta_item_exists(Schema(label=schema_label))
         if not self.schema:
             self.schema = self.create_new_empty_schema(schema_label)
 
@@ -153,8 +153,8 @@ class JsonSchemaService(BaseMetaDataService):
             if current_object is not None:
                 # None is root - so no relation
                 self._try_create_item(ObjectRelation(
-                    from_object=self._try_get_item(current_object),
-                    to_object=self._try_get_item(new_object),
+                    from_object=self.do_meta_item_exists(current_object),
+                    to_object=self.do_meta_item_exists(new_object),
                     schema=self.schema,
                     label=root_label)
                 )
@@ -238,7 +238,7 @@ class JsonSchemaService(BaseMetaDataService):
                         label=root_label,
                         data_type=self.json_to_att_type(data_type),
                         description=description,
-                        object=self._try_get_item(current_object)
+                        object=self.do_meta_item_exists(current_object)
                     )
                 )
 

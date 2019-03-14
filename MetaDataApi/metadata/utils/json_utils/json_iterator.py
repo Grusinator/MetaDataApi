@@ -1,6 +1,5 @@
 from abc import ABCMeta, abstractmethod
 
-
 class IJsonIterator:
     __metaclass__ = ABCMeta
 
@@ -10,17 +9,24 @@ class IJsonIterator:
     def __init__(self):
         self.depth = 0
 
-    # all handle functions should take: parrent_object, data, label
-    # as parameters
+    @abstractmethod
+    def handle_attributes(self, parrent_object,
+                          data, label: str):
+        raise NotImplementedError
 
     @abstractmethod
-    def handle_attributes(self): raise NotImplementedError
+    def handle_objects(self, parrent_object, data, label: str):
+        raise NotImplementedError
 
     @abstractmethod
-    def handle_objects(self): raise NotImplementedError
+    def handle_object_relations(self, parrent_object, data, label: str):
+        raise NotImplementedError
 
-    @abstractmethod
-    def handle_object_relations(self): raise NotImplementedError
+    def isAnAttribute(self, value):
+        return isinstance(value, self.att_types) or (
+                isinstance(value, dict) and
+                self.dict_contains_only_attr_values(value)
+        )
 
     def iterate_json_tree(self, input_data, parrent_object=None):
         self.depth += 1
@@ -29,15 +35,7 @@ class IJsonIterator:
             return
 
         if isinstance(input_data, list):
-            # if its a list, there is no key, all we can do is to step
-            # down but add all the data within to a new list
-            # def func(x): return isinstance(x, (dict, list))
-
-            # if any([func(x) for x in input_data]):
-            #     pass
-
             for elm in input_data:
-                # if isinstance(elm, (dict, list)):
                 self.iterate_json_tree(
                     elm, parrent_object)
 
@@ -55,35 +53,21 @@ class IJsonIterator:
 
         elif isinstance(input_data, dict):
             for key, value in input_data.items():
-                # this is likely a object if it contains other
-                # attributes or objects
-
-                # this must be an attribute
-                # test if value dict only contains
-                # "value", "unit" and whatever attr
-                if isinstance(value, self.att_types) or \
-                        (isinstance(value, dict) and
-                         self.dict_contains_only_attr(value)):
-                        # it is probably an attribute
-
+                if self.isAnAttribute(value):
                     self.handle_attributes(parrent_object, value, key)
-
-                # its probably a object
                 else:
                     obj = self.handle_objects(parrent_object, value, key)
 
                     obj_rel = self.handle_object_relations(
                         parrent_object, obj, None)
 
-                    # then iterate down the object value
-                    # to find connected objects
                     self.iterate_json_tree(
                         value, parrent_object=obj or parrent_object)
 
         self.depth -= 1
         return
 
-    def dict_contains_only_attr(self, data):
+    def dict_contains_only_attr_values(self, data):
         # if its not a dict, then its not an
         # attribute
         if not isinstance(data, dict):

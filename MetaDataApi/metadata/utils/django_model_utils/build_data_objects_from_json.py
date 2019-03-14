@@ -24,6 +24,10 @@ logger = logging.getLogger(__name__)
 # from metadata.models.meta import Schema
 
 
+def convert_dict_attribute_type(data):
+    data.get("value")
+
+
 class BuildDataObjectsFromJson(IJsonIterator):
 
     def __init__(self, schema, owner):
@@ -62,13 +66,16 @@ class BuildDataObjectsFromJson(IJsonIterator):
 
         att = Attribute.exists(label, parrent_object.base.label)
 
+        # TODO handle if the data of an attribute is a dict
+        if isinstance(data, dict):
+            unit = data.get('unit')
+            data = data.get('value')
+
         # identify datatype
         data_as_type = DataTypeUtils.identify_data_type(data)
         data_type = type(data_as_type)
 
-        # it does not exists
         if att is None:
-
             att = Attribute(
                 label=label,
                 data_type=Attribute.data_type_map[data_type],
@@ -82,6 +89,7 @@ class BuildDataObjectsFromJson(IJsonIterator):
             BaseAttributeInstance.att_inst_to_type_map,
             data_type
         )
+
         # check if an attribute of such type exists
         att_inst = AttributeInstance.exists(
             label, parrent_object.pk, data_as_type)

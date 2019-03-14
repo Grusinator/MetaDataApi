@@ -36,7 +36,7 @@ class TestRdfInstanceService(TransactionTestCase):
 
         schema_label = "friend_of_a_friend"
 
-        schema = service._try_get_item(Schema(label=schema_label))
+        schema = service.do_meta_item_exists(Schema(label=schema_label))
 
         foaf_atts = Attribute.objects.filter(
             object__schema=schema)

@@ -34,7 +34,7 @@ class LoadTestData:
     def init_strava_schema_from_file():
         from metadata.services import (
             RdfInstanceService, DataCleaningService,
-            SchemaIdentificationV2
+            JsonAnalyser
         )
 
         LoadTestData.init_foaf()
@@ -50,7 +50,7 @@ class LoadTestData:
         with open(testfile) as f:
             data = json.loads(f.read())
 
-        service = SchemaIdentificationV2()
+        service = JsonAnalyser()
 
         schema_label = "strava"
         label = "activities"
@@ -59,8 +59,8 @@ class LoadTestData:
 
         user = LoadTestData.init_user()
 
-        service.identify_schema_from_dataV2(
-            data, schema, parrent_label=label)
+        service.identify_from_json_data(
+            data, schema, user, parrent_label=label)
         data_cleaning.relate_root_classes_to_foaf(schema)
 
         return schema
@@ -68,13 +68,13 @@ class LoadTestData:
     @staticmethod
     def init_strava_data_from_file():
         from metadata.services import (
-            SchemaIdentificationV2
+            JsonAnalyser
         )
         from metadata.models import Schema
 
         user = LoadTestData.init_user()
 
-        service = SchemaIdentificationV2()
+        service = JsonAnalyser()
 
         # load the file
         testfile = os.path.join(
@@ -83,11 +83,11 @@ class LoadTestData:
         with open(testfile) as f:
             data = json.loads(f.read())
 
-        schema = service._try_get_item(Schema(label="strava"))
+        schema = service.do_meta_item_exists(Schema(label="strava"))
 
         label = "activities"
 
-        objects = service.map_data_to_native_instances(
+        objects = service.identify_from_json_data(
             data, schema, parrent_label=label, owner=user)
 
         return objects

@@ -54,7 +54,7 @@ class BaseMetaDataService():
         self.att_instances = tuple(self.att_inst_to_type_map.keys())
 
         self.instances = self.att_instances + \
-            (ObjectInstance, ObjectRelationInstance)
+                         (ObjectInstance, ObjectRelationInstance)
 
     def inverse_dict(self, dicti, value):
         try:
@@ -114,31 +114,6 @@ class BaseMetaDataService():
 
         # new __eq__implementation
         return next(filter(item.__eq__, item_list), None)
-
-        # old rubbish
-        same_labels = filter(lambda x: item.label == x.label, item_list)
-
-        if isinstance(item, Object):
-            for same_label in same_labels:
-                if same_label.to_relations.all().count() == 0:
-                    return True
-                for relation in same_label.to_relations.all():
-                    item_to_relation_objects = [
-                        rel.to_object for rel in item.from_relations.all()]
-                    if relation.to_object in item_to_relation_objects:
-                        return True
-        elif isinstance(item, Attribute):
-            for same_label in same_labels:
-                if same_label.object == item.object:
-                    return True
-        elif isinstance(item, ObjectRelation):
-            for in_list in item_list:
-                if in_list.label == item.label:
-                    return True
-        else:
-            raise Exception()
-
-        return False
 
     def dict_contains_only_attr(self, data):
         # if its not a dict, then its not an
@@ -227,62 +202,18 @@ class BaseMetaDataService():
             # otherwise just return the type of
             return element
 
-    def _try_get_item(self, item, parrent_label=None):
-        # standardize label string
-        if hasattr(item, "label"):
-            item.label = self.standardize_string(item.label)
+    def do_instance_exists(self, instance):
+        search_args = {"pk": instance.pk}
+        return self.find_item(instance, search_args)
 
-        search_args = {}
+    def do_meta_item_exists(self, item, parrent_label=None):
 
+        item.label = self.standardize_string(item.label)
+        search_args = self.build_search_args_for_meta_items(item, parrent_label)
+        return self.find_item(item, search_args)
+
+    def find_item(self, item, search_args):
         item_type = type(item)
-        # meta vs instances
-        if isinstance(item, (Attribute, Object, ObjectRelation, Schema)):
-            search_args["label"] = item.label
-
-        # instance only look for primary key
-        elif isinstance(item, self.instances):
-            # search_args["base__label"] = item.base.label
-            search_args["pk"] = item.pk
-
-        # individual metaobjects
-        if isinstance(item, Attribute):
-            search_args["object__label"] = item.object.label
-
-        elif isinstance(item, Object):
-            search_args["schema"] = item.schema
-            # adds the option to search for objects dependent
-            # on from relations
-            if parrent_label and parrent_label == "None":
-                search_args["from_relations"] = None
-            elif parrent_label:
-                search_args["from_relations__from_object__label"]\
-                    = parrent_label
-            # search_args["from_relations"] = item.from_relations
-
-        elif isinstance(item, ObjectRelation):
-            search_args["from_object"] = item.from_object
-            search_args["to_object"] = item.to_object
-
-        # # individual instances
-        # elif isinstance(item, self.att_instances):
-        #     search_args["object__base__label"] = item.object.base.label
-
-        # elif isinstance(item, ObjectInstance):
-        #     search_args["base__schema"] = item.base.schema
-        #     # adds the option to search for objects dependent
-        #     # on from relations
-        #     if parrent_label and parrent_label == "None":
-        #         search_args["from_relations"] = None
-        #     elif parrent_label:
-        #         search_args["from_relations__from_object__base__label"]\
-        #             = parrent_label
-
-        #     # search_args["from_relations"] = item.from_relations
-
-        # elif isinstance(item, ObjectRelation):
-        #     search_args["from_object"] = item.from_object
-        #     search_args["to_object"] = item.to_object
-
         try:
             # this "with transaction.atomic():"
             # is used to make tests run due to some
@@ -332,7 +263,7 @@ class BaseMetaDataService():
                 # object, so test on all objects, not only the label,
                 # so that it is possible to know if we are overwriting
                 # objects that shouldnt
-                return_item = self._try_get_item(
+                return_item = self.do_meta_item_exists(
                     item, parrent_label=parrent_label)
 
                 # the object exists,
@@ -409,8 +340,8 @@ class BaseMetaDataService():
         common_obj = next(filter(lambda x: x in common_set, att1_list))
 
         # truncate list down to common object
-        att1_list = att1_list[:att1_list.index(common_obj)+1]
-        att2_list = att2_list[:att2_list.index(common_obj)+1]
+        att1_list = att1_list[:att1_list.index(common_obj) + 1]
+        att2_list = att2_list[:att2_list.index(common_obj) + 1]
 
         returns = []
 
@@ -482,3 +413,25 @@ class BaseMetaDataService():
 
             # this branch has been exhausted, return none
             return None, childrens
+
+    def build_search_args_for_meta_items(self, item, parrent_label):
+        search_args = {"label": item.label}
+
+        if isinstance(item, Attribute):
+            search_args["object__label"] = item.object.label
+
+        elif isinstance(item, Object):
+            search_args["schema"] = item.schema
+            # adds the option to search for objects dependent
+            # on from relations
+            if parrent_label and parrent_label == "None":
+                search_args["from_relations"] = None
+            elif parrent_label:
+                search_args["from_relations__from_object__label"] \
+                    = parrent_label
+
+        elif isinstance(item, ObjectRelation):
+            search_args["from_object"] = item.from_object
+            search_args["to_object"] = item.to_object
+
+        return search_args

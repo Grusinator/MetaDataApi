@@ -30,7 +30,7 @@ class TestDataCleaningService(TransactionTestCase):
         dc_service = DataCleaningService()
 
         schema_label = "open_m_health"
-        schema = dc_service._try_get_item(Schema(label=schema_label))
+        schema = dc_service.do_meta_item_exists(Schema(label=schema_label))
 
         dc_service.relate_root_classes_to_foaf(schema)
 

@@ -22,11 +22,13 @@ class TestSchemaIdentificationService(TransactionTestCase):
 
     def test_identify_json_data_sample(self):
         from metadata.services import (
-            SchemaIdentificationV2)
+            JsonAnalyser)
 
         from metadata.models import Schema, Object
 
+        user = LoadTestData.init_user()
         LoadTestData.init_foaf()
+
 
         LoadTestData.init_open_m_health_sample(extras=[
             "body-temperature-2.0.json",
@@ -45,20 +47,31 @@ class TestSchemaIdentificationService(TransactionTestCase):
         with request.urlopen(url) as resp:
             text = resp.read().decode()
 
-        service = SchemaIdentificationV2()
-        schema = service._try_get_item(Schema(label="open_m_health"))
+        service = JsonAnalyser()
+        schema = service.do_meta_item_exists(Schema(label="open_m_health"))
 
         input_data = {
             "body-temperature": json.loads(text)
         }
 
-        objs = service.map_data_to_native_instances(input_data, schema)
+        objs = service.identify_from_json_data(input_data, schema, user, "body-temperature")
 
-        self.assertEqual(len(objs), 4)
+        compare_instances = ['Oi:open_m_health.body-temperature',
+                             'Ri:person - person__to__body-temperature - body-temperature',
+                             'Oi:open_m_health.body-temperature',
+                             'Ri:body-temperature - body-temperature__to__body-temperature - body-temperature',
+                             'Ai:body-temperature.body_temperature:97', 'Oi:open_m_health.effective_time_frame',
+                             'Ri:body-temperature - body-temperature__to__effective_time_frame - effective_time_frame',
+                             'Ai:effective_time_frame.date_time:2013-02-05T07:25:00Z',
+                             'Ai:body-temperature.measurement_location:forehead']
+
+        instance_str = [str(obj) for obj in objs]
+
+        self.assertListEqual(compare_instances, instance_str)
 
     def test_identify_data_type(self):
         from metadata.services import (
-            SchemaIdentificationV2)
+            JsonAnalyser)
         from datetime import datetime
 
         input_vs_expected = [
@@ -77,7 +90,7 @@ class TestSchemaIdentificationService(TransactionTestCase):
 
         inputd, expected = zip(*input_vs_expected)
 
-        service = SchemaIdentificationV2()
+        service = JsonAnalyser()
 
         resp = [type(service.identify_data_type(elm)) for elm in inputd]
 
@@ -85,7 +98,7 @@ class TestSchemaIdentificationService(TransactionTestCase):
 
     def test_identify_from_json_data_strava_test(self):
         from metadata.services import (
-            RdfSchemaService, SchemaIdentificationV2, RdfInstanceService)
+            RdfSchemaService, JsonAnalyser, RdfInstanceService)
 
         from metadata.models import Schema, Object, Attribute, ObjectRelation
 
@@ -104,7 +117,7 @@ class TestSchemaIdentificationService(TransactionTestCase):
 
         # objects = LoadTestData.init_strava_data_from_file()
 
-        service = SchemaIdentificationV2()
+        service = JsonAnalyser()
 
         data = UtilsForTesting.loadStravaActivities()
 

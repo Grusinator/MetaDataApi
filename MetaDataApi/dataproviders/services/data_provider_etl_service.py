@@ -24,7 +24,7 @@ class DataProviderEtlService(BaseMetaDataService):
         self.dataprovider
 
     def get_related_schema(self):
-        schema = self._try_get_item(
+        schema = self.do_meta_item_exists(
             Schema(label=self.dataprovider.provider_name)
         )
         return schema or self.create_new_empty_schema(

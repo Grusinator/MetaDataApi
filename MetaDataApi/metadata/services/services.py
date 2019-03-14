@@ -44,7 +44,7 @@ class ExportSchemaService(Service):
 
         service = RdfSchemaService()
 
-        schema = service._try_get_item(Schema(label=schema_label))
+        schema = service.do_meta_item_exists(Schema(label=schema_label))
 
         service.export_schema_from_db(schema)
 
@@ -62,7 +62,7 @@ class IdentifySchemaFromFileService(Service):
         schema_label = self.cleaned_data['schema_label']
         data_label = self.cleaned_data['data_label']
 
-        identify = SchemaIdentificationV2()
+        identify = JsonAnalyser()
 
         data = json.loads(file.read())
 
@@ -71,11 +71,11 @@ class IdentifySchemaFromFileService(Service):
 
         # here we have no idea about the origin if not specified
         # TODO: consider if its better to do something else
-        schema = identify._try_get_item(Schema(label=schema_label))
+        schema = identify.do_meta_item_exists(Schema(label=schema_label))
         if not schema:
             schema = identify.create_new_empty_schema(schema_label)
 
-        objects = identify.identify_schema_from_dataV2(
+        objects = identify.identify_from_json_data(
             data, schema, data_label)
 
         return objects
@@ -94,7 +94,7 @@ class IdentifyDataFromFileService(Service):
         user_pk = self.cleaned_data['user_pk']
         user = User.objects.get(pk=user_pk)
 
-        identify = SchemaIdentificationV2()
+        identify = JsonAnalyser()
 
         data = json.loads(file.read())
 
@@ -103,9 +103,9 @@ class IdentifyDataFromFileService(Service):
 
         # here we have no idea about the origin if not specified
         # TODO: consider if its better to do something else
-        schema = identify._try_get_item(Schema(label=schema_label))
+        schema = identify.do_meta_item_exists(Schema(label=schema_label))
 
-        objects = identify.map_data_to_native_instances(
+        objects = identify.identify_from_json_data(
             data, schema, data_label)
 
         return objects
@@ -122,7 +122,7 @@ class IdentifySchemaFromProviderService(Service):
         user_pk = self.cleaned_data['user_pk']
         user = User.objects.get(pk=user_pk)
 
-        identify = SchemaIdentificationV2()
+        identify = JsonAnalyser()
         provider_service = DataProviderEtlService(provider_name)
 
         provider_profile = user.profile.get_data_provider_profile(
@@ -142,8 +142,8 @@ class IdentifySchemaFromProviderService(Service):
 
             parrent_label = identify.rest_endpoint_to_label(endpoint)
 
-            objects = identify.identify_schema_from_dataV2(
-                data, schema, parrent_label)
+            objects = identify.identify_from_json_data(
+                data, schema, user, parrent_label)
             n_objs += len(objects)
 
         return n_objs
@@ -160,14 +160,14 @@ class IdentifyDataFromProviderService(Service):
         user_pk = self.cleaned_data['user_pk']
         user = User.objects.get(pk=user_pk)
 
-        identify = SchemaIdentificationV2()
+        identify = JsonAnalyser()
         provider_service = DataProviderEtlService(provider_name)
         rdf_service = RdfInstanceService()
 
         provider_profile = user.profile.get_data_provider_profile(
             provider_name)
 
-        schema = rdf_service._try_get_item(Schema(label=provider_name))
+        schema = rdf_service.do_meta_item_exists(Schema(label=provider_name))
 
         # select which endpoints
         if endpoint == "all" or endpoint is None:
@@ -184,7 +184,7 @@ class IdentifyDataFromProviderService(Service):
 
             parrent_label = identify.rest_endpoint_to_label(endpoint)
 
-            objects = identify.map_data_to_native_instances(
+            objects = identify.identify_from_json_data(
                 data, schema, parrent_label)
             object_list.extend(objects)
 
@@ -206,14 +206,14 @@ class IdentifySchemaAndDataFromProviderService(Service):
         user_pk = self.cleaned_data['user_pk']
         user = User.objects.get(pk=user_pk)
 
-        identify = SchemaIdentificationV2()
+        identify = JsonAnalyser()
         provider_service = DataProviderEtlService(provider_name)
         rdf_service = RdfInstanceService()
 
         provider_profile = user.profile.get_data_provider_profile(
             provider_name)
 
-        schema = rdf_service._try_get_item(Schema(label=provider_name))
+        schema = rdf_service.do_meta_item_exists(Schema(label=provider_name))
         if not schema:
             schema = rdf_service.create_new_empty_schema(provider_name)
 
@@ -304,7 +304,7 @@ class AddPersonReferenceToBaseObjects(Service):
 
         service = DataCleaningService()
 
-        schema = service._try_get_item(Schema(label=schema_label))
+        schema = service.do_meta_item_exists(Schema(label=schema_label))
 
         try:
             objects = service.relate_root_classes_to_foaf(schema)

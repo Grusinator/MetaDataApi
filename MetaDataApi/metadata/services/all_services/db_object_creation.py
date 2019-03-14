@@ -34,16 +34,12 @@ class DbObjectCreation(BaseMetaDataService):
             att = Attribute(
                 label=label,
                 data_type=Attribute.data_type_map[data_type],
-                object=self._try_get_item(parrent_object)
+                object=self.do_meta_item_exists(parrent_object)
             )
-
             try:
                 return self._try_create_item(att)
             except Exception as e:
                 logger.error("object_create_" + str(e))
-
-        else:
-            a = 2
 
     def try_create_object(self, parrent_object, data, label):
 
@@ -68,8 +64,8 @@ class DbObjectCreation(BaseMetaDataService):
 
             obj_rel = ObjectRelation(
                 label=label,
-                from_object=self._try_get_item(parrent_object),
-                to_object=self._try_get_item(data),
+                from_object=self.do_meta_item_exists(parrent_object),
+                to_object=self.do_meta_item_exists(data),
                 schema=self.schema
             )
             try:
@@ -90,10 +86,10 @@ class DbObjectCreation(BaseMetaDataService):
             att = Attribute(
                 label=label,
                 data_type=Attribute.data_type_map[data_type],
-                object=self._try_get_item(parrent_object.base)
+                object=self.do_meta_item_exists(parrent_object.base)
             )
 
-            att = self._try_get_item(att)
+            att = self.do_meta_item_exists(att)
 
             # Create the instance
             if att is not None and data_as_type is not None:
@@ -123,7 +119,7 @@ class DbObjectCreation(BaseMetaDataService):
         )
 
         # we need to add the object to the
-        obj = self._try_get_item(
+        obj = self.do_meta_item_exists(
             obj, parrent_label=parrent_object.base.label)
 
         if obj:
@@ -154,11 +150,11 @@ class DbObjectCreation(BaseMetaDataService):
 
             obj_rel = ObjectRelation(
                 label=label,
-                from_object=self._try_get_item(parrent_object.base),
-                to_object=self._try_get_item(data.base),
+                from_object=self.do_meta_item_exists(parrent_object.base),
+                to_object=self.do_meta_item_exists(data.base),
                 schema=self.schema
             )
-            obj_rel = self._try_get_item(obj_rel)
+            obj_rel = self.do_meta_item_exists(obj_rel)
 
             if obj_rel is not None:
                 obj_rel_inst = ObjectRelationInstance(

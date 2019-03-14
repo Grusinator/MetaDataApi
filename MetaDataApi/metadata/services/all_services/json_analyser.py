@@ -1,7 +1,7 @@
-import json
 import logging
 from urllib import request
 
+from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator
 from inflection import underscore
@@ -19,21 +19,21 @@ from .db_object_creation import DbObjectCreation
 logger = logging.getLogger(__name__)
 
 
-class SchemaIdentificationV2(DbObjectCreation):
+class JsonAnalyser(DbObjectCreation):
     def __init__(self, *args, **kwargs):
-        super(SchemaIdentificationV2, self).__init__()
+        super(JsonAnalyser, self).__init__()
 
         self.orms = [Object, Attribute]
 
         self.meta_data_list = []
         self.schema = None
-        self.owner
+        self.owner = None
 
         self._att_function = None
         self._object_function = None
         self._obj_rel_function = None
 
-    def identify_from_json_data(self, input_data, schema, owner, parrent_label=None):
+    def identify_from_json_data(self, input_data, schema, owner: User, parrent_label=None):
         # setup how the loop handles each type of object occurrence
 
         builder = BuildDataObjectsFromJson(schema, owner)
@@ -44,189 +44,20 @@ class SchemaIdentificationV2(DbObjectCreation):
         person.save()
         # TODO: Relate to logged in foaf person object instance instead
 
-        if parrent_label is not None and isinstance(input_data, list):
-            # if its a list, we have to create a base object for each element
-            input_data = [{parrent_label: elm}for elm in input_data]
-        elif parrent_label is not None and isinstance(input_data, dict):
-            # if its a dict, just add the parrent label
-            input_data = {parrent_label: input_data, }
+        input_data = self.inject_parrent_label_as_root_key(input_data, parrent_label)
 
         builder.build_from_json(input_data, parrent_object=person)
 
         return builder.added_instance_items
 
-    # identify schema new
-
-    # @DeprecationWarning
-    def identify_schema_from_dataV2(self, input_data, schema,
-                                    parrent_label=None):
-
-        # setup how the loop handles each type of object occurrence
-        self._att_function = self.try_create_attribute
-        self._object_function = self.try_create_object
-        self._obj_rel_function = self.try_create_object_relation
-
-        self.schema = schema
-
-        try:
-            person = self.get_foaf_person()
-            self.touched_meta_items.append(person)
-        except Exception as e:
-            raise Exception("foaf person was not found")
-        # TODO: Relate to logged in person object instead
-
-        if parrent_label:
-            input_data = {
-                parrent_label: input_data
-            }
-
-        self.iterate_data_generic(
-            input_data, parrent_object=person)
-
-        return self.touched_meta_items
-
-    # identify data new
-    # @DeprecationWarning
-    def map_data_to_native_instances(self, input_data, schema,
-                                     parrent_label=None, owner=None):
-
-        # setup how the loop handles each type of object occurrence
-        self.owner = owner
-        self._att_function = self.try_create_attribute_instance
-        self._object_function = self.try_create_object_instance
-        self._obj_rel_function = self.try_create_object_relation_instance
-
-        self.schema = schema
-
-        # test if this is an url
-        url_data = self.validate_url(input_data)
-
-        # try to get the last dir of the url if applicable
-        parrent_label = parrent_label or (
-            url_data and "/".split(input_data)[-1])
-
-        input_data = url_data or input_data
-        # json data can either be list or dict
-        if not isinstance(input_data, (dict, list)):
-            input_data = json.loads(input_data)
-
-        # create a base person to relate the data to
-
-        person = ObjectInstance(
-            base=self.get_foaf_person()
-        )
-        person.save()
-        # TODO: Relate to logged in foaf person object instance instead
-
+    def inject_parrent_label_as_root_key(self, input_data, parrent_label):
         if parrent_label is not None and isinstance(input_data, list):
             # if its a list, we have to create a base object for each element
-            input_data = [{parrent_label: elm}for elm in input_data]
+            input_data = [{parrent_label: elm} for elm in input_data]
         elif parrent_label is not None and isinstance(input_data, dict):
             # if its a dict, just add the parrent label
             input_data = {parrent_label: input_data, }
-
-        self.iterate_data_generic(input_data, person)
-
-        return self.added_instance_items
-
-    # identify data new
-    # @DeprecationWarning
-    def add_schema_and_data(self, input_data, schema,
-                            parrent_label=None, owner=None):
-
-        # setup how the loop handles each type of object occurrence
-        self.owner = owner
-        self._att_function = self.try_create_attribute_and_instance
-        self._object_function = self.try_create_object__and_instance
-        self._obj_rel_function = self.try_create_object_relation_and_instance
-
-        self.schema = schema
-
-        # test if this is an url
-        url_data = self.validate_url(input_data)
-
-        # try to get the last dir of the url if applicable
-        parrent_label = parrent_label or (
-            url_data and "/".split(input_data)[-1])
-
-        input_data = url_data or input_data
-        # json data can either be list or dict
-        if not isinstance(input_data, (dict, list)):
-            input_data = json.loads(input_data)
-
-        # create a base person to relate the data to
-        try:
-            person = ObjectInstance(
-                base=self.get_foaf_person()
-            )
-            person.save()
-        except Exception as e:
-            raise Exception("foaf person was not found")
-        # TODO: Relate to logged in foaf person object instance instead
-
-        if parrent_label is not None and isinstance(input_data, list):
-            # if its a list, we have to create a base object for each element
-            input_data = [{parrent_label: elm}for elm in input_data]
-        if parrent_label is not None and isinstance(input_data, dict):
-            # if its a dict, just add the parrent label
-            input_data = {parrent_label: input_data, }
-
-        self.iterate_data_generic(input_data, person)
-
-        return self.added_instance_items
-
-    # generic iteration loop
-    # @DeprecationWarning
-    def iterate_data_generic(self, input_data, parrent_object=None):
-        if input_data is None:
-            return
-
-        if isinstance(input_data, list):
-            # if its a list, there is no key, all we can do is to step
-            # down but add all the data within to a new list
-            # def func(x): return isinstance(x, (dict, list))
-
-            # if any([func(x) for x in input_data]):
-            #     pass
-
-            for elm in input_data:
-                # if isinstance(elm, (dict, list)):
-                self.iterate_data_generic(
-                    elm, parrent_object)
-            return
-        # it must be some sort of value, this might only happen
-        # if the parrent structure is a list, because if it is a dict
-        # the value of the dict is tested for being an attribute
-        elif not isinstance(input_data, dict):
-            if parrent_object is not None:
-                self._att_function(parrent_object, input_data,
-                                   None)
-            return
-        elif isinstance(input_data, dict):
-            for key, value in input_data.items():
-                # this is likely a object if it contains other
-                # attributes or objects
-
-                # this must be an attribute
-                # test if value dict only contains
-                # "value", "unit" and whatever attr
-                if isinstance(value, self.att_types) or \
-                        (isinstance(value, dict) and
-                         self.dict_contains_only_attr(value)):
-                        # it is probably an attribute
-
-                    self._att_function(parrent_object, value, key)
-
-                # its probably a object
-                else:
-                    obj = self._object_function(parrent_object, value, key)
-
-                    obj_rel = self._obj_rel_function(parrent_object, obj, None)
-
-                    # then iterate down the object value
-                    # to find connected objects
-                    self.iterate_data_generic(
-                        value, parrent_object=obj or parrent_object)
+        return input_data
 
     def connect_objects_to_foaf(self, objects):
         foaf = self.get_foaf_person()
