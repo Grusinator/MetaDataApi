@@ -8,6 +8,7 @@ from django.db import transaction
 from metadata.models import (
     Schema, Object, Attribute, ObjectRelation)
 from metadata.services.all_services.base_functions import BaseMetaDataService
+from metadata.utils.common_utils import StringUtils
 from schemas.json.omh.schema_names import filtered_schema_names as schema_names
 
 
@@ -25,10 +26,6 @@ class JsonSchemaService(BaseMetaDataService):
             "definitions"
         ]
 
-        # Json schemas should have unique subclasses
-        self.allways_create_new = True
-        # self.skip_fields.extend(self.subtypes)
-
         self.json_type_map = {
             "datetime": datetime,
             "number": float,
@@ -44,7 +41,7 @@ class JsonSchemaService(BaseMetaDataService):
 
         data = self._read_json_from_url(input_url)
 
-        schema_label = self.standardize_string(
+        schema_label = StringUtils.standardize_string(
             schema_label, remove_version=False)
 
         self.schema = self.do_meta_item_exists(Schema(label=schema_label))

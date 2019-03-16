@@ -1,8 +1,6 @@
-import re
+import logging
 from datetime import datetime
 
-import dateutil
-import inflection
 from django.core.exceptions import (
     ObjectDoesNotExist, MultipleObjectsReturned)
 from django.core.files.base import ContentFile
@@ -17,15 +15,24 @@ from metadata.models import (
 # from jsonschema import validate
 from metadata.models import (
     Schema, Object, Attribute, ObjectRelation)
+from metadata.utils.common_utils import StringUtils
+
+logger = logging.getLogger(__name__)
 
 
-class BaseMetaDataService():
+class BaseMetaDataService:
+    att_inst_to_type_map = {
+        #  StringAttributeInstance: str,
+        StringAttributeInstance: str,
+        DateTimeAttributeInstance: datetime,
+        FloatAttributeInstance: float,
+        IntAttributeInstance: int,
+        BoolAttributeInstance: bool
+    }
 
     def __init__(self):
-        # super(BaseMetaDataService, self).__init__()
         self.schema = None
         self.baseurl = None
-        self.foaf_person = None
 
         self.added_meta_items = []
         self.touched_meta_items = []
@@ -36,18 +43,6 @@ class BaseMetaDataService():
         # -- same -- but to disable saving to db
         self.save_to_db = True
 
-        # dont use the same if it allready exists
-        self.allways_create_new = False
-
-        self.att_inst_to_type_map = {
-            #  StringAttributeInstance: str,
-            StringAttributeInstance: str,
-            DateTimeAttributeInstance: datetime,
-            FloatAttributeInstance: float,
-            IntAttributeInstance: int,
-            BoolAttributeInstance: bool
-        }
-
         self.att_types = tuple(typ if isinstance(typ, type) else type(typ)
                                for typ in Attribute.data_type_map.keys())
 
@@ -56,7 +51,8 @@ class BaseMetaDataService():
         self.instances = self.att_instances + \
                          (ObjectInstance, ObjectRelationInstance)
 
-    def inverse_dict(self, dicti, value):
+    @staticmethod
+    def inverse_dict(dicti, value):
         try:
             keys = list(dicti.keys())
             values = list(dicti.values())
@@ -65,49 +61,27 @@ class BaseMetaDataService():
         except Exception as e:
             return None
 
-    def standardize_string(self, string, remove_version=False):
-        string = inflection.underscore(str(string))
-        string = string.replace(".json", "")
-
-        string = string.replace(" ", "_")
-
-        # remove any version numbers
-        if remove_version:
-            string = re.sub(
-                r"(|_version|_v|_v.)(|_)\d+\.(\d+|x)(|_)", '', string)
-
-        string = re.sub("(|_)vocabulary(|_)", '', string)
-
-        # remove parenthesis with content
-        string = re.sub(r'(|_)\([^)]*\)', '', string)
-
-        # remove trailing and leading whitespace/underscore
-        # string = re.sub('/^[\W_]+|[\W_]+$/', '', string)
-
-        return string
-
-    def rest_endpoint_to_label(self, endpoint):
+    @classmethod
+    def rest_endpoint_to_label(cls, endpoint):
         # TODO the last might not be the most relevant
         endpoint_without_args = endpoint.split("?")[0]
         last_elm = endpoint_without_args.split("/")[-1]
-        return self.standardize_string(last_elm)
+        return StringUtils.standardize_string(last_elm)
 
     def create_new_empty_schema(self, schema_label):
-        self.schema = Schema()
-        self.schema.label = self.standardize_string(schema_label)
-        self.schema.description = ""
-        self.schema.url = "temp"
+        schema = Schema()
+        schema.label = StringUtils.standardize_string(schema_label)
+        schema.description = ""
+        schema.url = "temp"
         # quick fix for saving without conflicting with unique url
 
         # create a dummy file
         content = ContentFile("")
-        self.schema.rdfs_file.save(schema_label + ".ttl", content)
-        self.schema.url = self.schema.rdfs_file.url
-        self.schema.save()
+        schema.rdfs_file.save(schema_label + ".ttl", content)
+        schema.url = schema.rdfs_file.url
+        schema.save()
 
-        self.touched_meta_items.append(self.schema)
-
-        return self.schema
+        return schema
 
     def is_meta_item_in_created_list(self, item, item_list=None):
         item_list = item_list or self.touched_meta_items
@@ -115,7 +89,8 @@ class BaseMetaDataService():
         # new __eq__implementation
         return next(filter(item.__eq__, item_list), None)
 
-    def dict_contains_only_attr(self, data):
+    @staticmethod
+    def dict_contains_only_attr(data):
         # if its not a dict, then its not an
         # attribute
         if not isinstance(data, dict):
@@ -137,82 +112,20 @@ class BaseMetaDataService():
 
         # else:
 
-    def identify_data_type(self, element):
-        if element is None:
-            return None
-
-        def test_float(elm):
-            assert ("." in elm), "does not contain decimal separator"
-            return float(elm)
-
-        def test_bool(elm):
-            trues = ("true", "True")
-            falses = ("false", "False")
-
-            if elm in trues:
-                return True
-            elif elm in falses:
-                return False
-            else:
-                raise ValueError("is not either true or false")
-
-        def test_datetime(text):
-            try:
-                return dateutil.parser.parse(text)
-            except:
-
-                datetime_formats = (
-                    '%Y-%m-%dT%H: %M: %SZ',  # strava
-                )
-
-                for fmt in datetime_formats:
-                    try:
-                        return datetime.strptime(text, fmt)
-                    except ValueError as e:
-                        pass
-
-                raise ValueError('no valid date format found')
-
-        # even though it is a string,
-        # it might really be a int or float
-        # so if string verify!!
-        if isinstance(element, str):
-            conv_functions = {
-                float: test_float,
-                int: lambda elm: int(elm),
-                datetime: test_datetime,
-                str: lambda elm: str(elm),
-                bool: test_bool
-            }
-
-            order = [float, int, datetime, bool, str]
-
-            for typ in order:
-                try:
-                    # try the converting function of that type
-                    # if it doesnt fail, thats our type
-                    return conv_functions[typ](element)
-                except (ValueError, AssertionError) as e:
-                    pass
-
-            # if nothing else works, return as string
-            return str(element)
-
-        elif isinstance(element, (float, int, bool)):
-            # otherwise just return the type of
-            return element
-
-    def do_instance_exists(self, instance):
+    @classmethod
+    def do_instance_exists(cls, instance):
         search_args = {"pk": instance.pk}
-        return self.find_item(instance, search_args)
+        return cls.find_item(instance, search_args)
 
-    def do_meta_item_exists(self, item, parrent_label=None):
+    @classmethod
+    def do_meta_item_exists(cls, item, parrent_label=None):
 
-        item.label = self.standardize_string(item.label)
-        search_args = self.build_search_args_for_meta_items(item, parrent_label)
-        return self.find_item(item, search_args)
+        item.label = StringUtils.standardize_string(item.label)
+        search_args = cls.build_search_args_for_meta_items(item, parrent_label)
+        return cls.find_item(item, search_args)
 
-    def find_item(self, item, search_args):
+    @staticmethod
+    def find_item(item, search_args):
         item_type = type(item)
         try:
             # this "with transaction.atomic():"
@@ -223,26 +136,23 @@ class BaseMetaDataService():
             with transaction.atomic():
                 return item_type.objects.get(**search_args)
 
-        except ObjectDoesNotExist as e:
+        except ObjectDoesNotExist:
             return None
-        except MultipleObjectsReturned as e:
-            self._error_list.append((item, e))
+        except MultipleObjectsReturned:
             if hasattr(item, "schema"):
                 schema_label = item.schema.label
             else:
                 schema_label = item.object.schema.label
-            print("""Warning, this is most likely wrong wrong, the object
+            logger.warning("""MultipleObjectsReturned Error, this is most likely wrong wrong, the object
                 found:  %s  objects, but the first was chosen.
                 -- label: %s schema: %s""" % (
                 item_type.objects.filter(**search_args).count(),
                 item.label,
                 schema_label,
             ))
-
             return item_type.objects.filter(**search_args).first()
-
         except Exception as e:
-            pass
+            logger.error(e)
 
     def _try_create_item(self, item, update=False, parrent_label=None):
 
@@ -250,7 +160,7 @@ class BaseMetaDataService():
         remove_version = not isinstance(item_type, Schema)
 
         # test if exists
-        item.label = self.standardize_string(
+        item.label = StringUtils.standardize_string(
             item.label, remove_version=remove_version)
         try:
             # this "with transaction.atomic():"
@@ -315,25 +225,25 @@ class BaseMetaDataService():
 
         return False
 
-    def get_foaf_person(self):
-        if not self.foaf_person:
-            schema = Schema.objects.get(label="friend_of_a_friend")
-            self.foaf_person = Object.objects.get(
-                label="person", schema=schema)
-        return self.foaf_person
+    @staticmethod
+    def get_foaf_person():
+        schema = Schema.objects.get(label="friend_of_a_friend")
+        return Object.objects.get(label="person", schema=schema)
 
-    def att_to_att_inst(self, attr):
-        data_type = self.inverse_dict(Attribute.data_type_map, attr.data_type)
+    @classmethod
+    def att_to_att_inst(cls, attr):
+        data_type = cls.inverse_dict(Attribute.data_type_map, attr.data_type)
 
-        return self.inverse_dict(self.att_inst_to_type_map, data_type)
+        return cls.inverse_dict(cls.att_inst_to_type_map, data_type)
 
-    def get_connected_attribute_pairs(self, att_1, att_2):
+    @classmethod
+    def get_connected_attribute_pairs(cls, att_1, att_2):
 
         foaf1, att1_list = BaseMetaDataService.path_to_object(
-            att_1, self.get_foaf_person(), childrens=[])
+            att_1, cls.get_foaf_person(), childrens=[])
 
         foaf2, att2_list = BaseMetaDataService.path_to_object(
-            att_2, self.get_foaf_person(), childrens=[])
+            att_2, cls.get_foaf_person(), childrens=[])
 
         # get first common object
         common_set = set(att1_list) & set(att2_list)
@@ -347,23 +257,24 @@ class BaseMetaDataService():
 
         common_instances = ObjectInstance.objects.filter(base=common_obj)
         for common_instance in common_instances:
-            value1 = self.get_specific_child(
+            value1 = cls.get_specific_child(
                 common_instance, att_1, path=att1_list)
-            value2 = self.get_specific_child(
+            value2 = cls.get_specific_child(
                 common_instance, att_2, path=att2_list)
             returns.append((value1, value2))
 
         return returns
 
-    def get_specific_child(self, obj_inst, child, path=None):
+    @classmethod
+    def get_specific_child(cls, obj_inst, child, path=None):
         """
         get a decendent object, either att, or obj of a specific type
         """
         if path is None:
-            path = self.path_to_object(child, obj_inst.base)
+            path = cls.path_to_object(child, obj_inst.base)
 
-        search_args = self.build_search_args_from_list(path, obj_inst)
-        AttributeInstance = self.att_to_att_inst(child)
+        search_args = cls.build_search_args_from_list(path, obj_inst)
+        AttributeInstance = cls.att_to_att_inst(child)
         try:
             return AttributeInstance.objects.get(**search_args)
         except ObjectDoesNotExist as e:
@@ -372,7 +283,8 @@ class BaseMetaDataService():
             print("WARNING: obj, contains multiple object, first is taken")
             return next(AttributeInstance.objects.filter(**search_args))
 
-    def build_search_args_from_list(self, path, obj_inst):
+    @staticmethod
+    def build_search_args_from_list(path, obj_inst):
         search_args = {}
         base_arg_name = "from_relations__from_object__"
         arg_name = ""
@@ -414,7 +326,8 @@ class BaseMetaDataService():
             # this branch has been exhausted, return none
             return None, childrens
 
-    def build_search_args_for_meta_items(self, item, parrent_label):
+    @staticmethod
+    def build_search_args_for_meta_items(item, parrent_label):
         search_args = {"label": item.label}
 
         if isinstance(item, Attribute):

@@ -35,14 +35,13 @@ class TestMetadataBaseFunctionService(TransactionTestCase):
         from metadata.services import BaseMetaDataService
         LoadTestData.init_strava_schema_from_file()
         LoadTestData.init_strava_data_from_file()
-        service = BaseMetaDataService()
 
         att1 = Attribute.objects.get(
             label="name", object__schema__label="strava")
         att2 = Attribute.objects.get(
             label="distance", object__schema__label="strava")
 
-        data = service.get_connected_attribute_pairs(att1, att2)
+        data = BaseMetaDataService.get_connected_attribute_pairs(att1, att2)
 
         expected = []
 

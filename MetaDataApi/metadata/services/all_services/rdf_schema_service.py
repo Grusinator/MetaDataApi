@@ -7,6 +7,7 @@ from rdflib.plugin import register, Parser
 
 from metadata.models import (
     Schema, Object, Attribute, ObjectRelation)
+from metadata.utils.common_utils import StringUtils
 from .base_rdf_service import BaseRdfSchemaService
 
 
@@ -280,7 +281,7 @@ class RdfSchemaService(BaseRdfSchemaService):
             self.schema = Schema.objects.get(url=str(rdf_url))
         except Exception as e:
             self.schema = Schema(
-                label=self.standardize_string(label, remove_version=True),
+                label=StringUtils.standardize_string(label, remove_version=True),
                 url=str(rdf_url),
                 description=str(description)
             )
@@ -378,8 +379,8 @@ class RdfSchemaService(BaseRdfSchemaService):
                         url=to_schema_url)
 
                 # standardize the labels to match what has been created
-                from_obj_label = self.standardize_string(from_obj_label)
-                to_obj_label = self.standardize_string(to_obj_label)
+                from_obj_label = StringUtils.standardize_string(from_obj_label)
+                to_obj_label = StringUtils.standardize_string(to_obj_label)
 
                 # first try find the objects in the created list
                 from_object = next(filter(lambda x: x.label == from_obj_label,
@@ -430,7 +431,7 @@ class RdfSchemaService(BaseRdfSchemaService):
                 # find label of object property
                 obj_label = next(g.triples((domain,  RDFS.label, None)))[2]
 
-                obj_label = self.standardize_string(obj_label)
+                obj_label = StringUtils.standardize_string(obj_label)
 
                 # find the object in the created list first
                 object = next(filter(lambda x: x.label == obj_label,

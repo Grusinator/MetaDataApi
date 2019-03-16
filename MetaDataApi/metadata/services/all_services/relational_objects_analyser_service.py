@@ -1,66 +1,17 @@
-import logging
 from urllib import request
 
-from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator
 from inflection import underscore
 
-from metadata.models import (
-    Object,
-    Attribute, ObjectRelation)
-from metadata.models import (
-    ObjectInstance,
-    StringAttributeInstance)
-from metadata.utils.django_model_utils.build_data_objects_from_json import BuildDataObjectsFromJson
-from .db_object_creation import DbObjectCreation
-
-# Get an instance of a logger
-logger = logging.getLogger(__name__)
+from metadata.models import Attribute, Object, ObjectRelation, ObjectInstance, StringAttributeInstance
+from metadata.services import BaseMetaDataService
 
 
-class JsonAnalyser(DbObjectCreation):
-    def __init__(self, *args, **kwargs):
-        super(JsonAnalyser, self).__init__()
-
-        self.orms = [Object, Attribute]
-
-        self.meta_data_list = []
-        self.schema = None
-        self.owner = None
-
-        self._att_function = None
-        self._object_function = None
-        self._obj_rel_function = None
-
-    def identify_from_json_data(self, input_data, schema, owner: User, parrent_label=None):
-        # setup how the loop handles each type of object occurrence
-
-        builder = BuildDataObjectsFromJson(schema, owner)
-
-        person = ObjectInstance(
-            base=self.get_foaf_person()
-        )
-        person.save()
-        # TODO: Relate to logged in foaf person object instance instead
-
-        input_data = self.inject_parrent_label_as_root_key(input_data, parrent_label)
-
-        builder.build_from_json(input_data, parrent_object=person)
-
-        return builder.added_instance_items
-
-    def inject_parrent_label_as_root_key(self, input_data, parrent_label):
-        if parrent_label is not None and isinstance(input_data, list):
-            # if its a list, we have to create a base object for each element
-            input_data = [{parrent_label: elm} for elm in input_data]
-        elif parrent_label is not None and isinstance(input_data, dict):
-            # if its a dict, just add the parrent label
-            input_data = {parrent_label: input_data, }
-        return input_data
+class RelationalObjectsAnalyserService():
 
     def connect_objects_to_foaf(self, objects):
-        foaf = self.get_foaf_person()
+        foaf = BaseMetaDataService.get_foaf_person()
         objects_has_foaf = foaf in objects
 
         # objects_has_foaf = True
@@ -80,78 +31,6 @@ class JsonAnalyser(DbObjectCreation):
             else:
                 failed.append(obj)
         return extra_objects, failed
-
-    def serialize_objects(self, object_list):
-        # TODO: implement real serialization
-        dummy_string = ', '.join(str(x) for x in object_list)
-
-        return dummy_string
-
-    def _validate_and_create_if_real_parrent(self, attribute_inst,
-                                             assumed_parrent):
-        # if the parrent object is not the "real" parrent
-        # of the attribute, then create it
-        if assumed_parrent is None or \
-                attribute_inst.base.object != assumed_parrent.base:
-
-            real_parrent = ObjectInstance(
-                base=attribute_inst.base.object,
-            )
-            real_parrent.save()
-        else:
-            real_parrent = assumed_parrent
-
-        attribute_inst.object = real_parrent
-
-        return real_parrent
-
-    def _identify_and_create_attribute(
-            self, label, att_value,
-            parrent_obj_inst, instance_list):
-
-        data_as_type = self.identify_data_type(att_value)
-        data_type = type(data_as_type) if data_as_type is not None else None
-        # the key is the label
-        att = self.find_label_in_metadata(
-            label, data_type, look_only_for_items=[Attribute, ])
-
-        if att and data_as_type is not None:
-            # select which attribute instance type to use
-            AttributeInstance = self.inverse_dict(
-                self.att_inst_to_type_map, data_type)
-
-            # default to string if None
-            AttributeInstance = AttributeInstance or StringAttributeInstance
-            att_inst = AttributeInstance(
-                base=att,
-                object=parrent_obj_inst,
-                value=data_as_type
-            )
-
-            # real_parrent = self._validate_and_create_if_real_parrent(
-            #     att_inst, parrent_obj_inst
-            # )
-
-            # make sure the connection is to the real parrent,
-            # but this adobtion thing should not be done
-            # TODO: handle this better, in native schemas it should
-            # not be a problem
-
-            att_inst.save()
-
-            # if real_parrent != parrent_obj_inst:
-
-            #     instance_list.append(real_parrent)
-
-            instance_list.append(att_inst)
-
-            return att_inst, instance_list
-
-        else:
-
-            # attribute not found
-            return None, instance_list
-        # TODO: handle this better
 
     def _add_object_label_to_dict_key(self, input_dict, item, key):
         conv = {
@@ -200,9 +79,8 @@ class JsonAnalyser(DbObjectCreation):
             return resp.read().decode()
 
     def find_shortest_path_to_foaf_person(self, base_object):
-
         foaf_found, _ = self.iterate_find_related_obj(
-            base_object, self.get_foaf_person(), discovered_objects=[])
+            base_object, BaseMetaDataService.get_foaf_person(), discovered_objects=[])
 
         return foaf_found
 

@@ -10,6 +10,7 @@ from service_objects.services import Service
 
 from dataproviders.services.data_provider_etl_service import DataProviderEtlService
 from metadata.models import *
+from metadata.utils.common_utils import StringUtils
 from settings import MEDIA_ROOT
 from .all_services import *
 
@@ -66,7 +67,7 @@ class IdentifySchemaFromFileService(Service):
 
         data = json.loads(file.read())
 
-        data_label = data_label or identify.standardize_string(
+        data_label = data_label or StringUtils.standardize_string(
             file.name, remove_version=True)
 
         # here we have no idea about the origin if not specified
@@ -98,7 +99,7 @@ class IdentifyDataFromFileService(Service):
 
         data = json.loads(file.read())
 
-        data_label = data_label or identify.standardize_string(
+        data_label = data_label or StringUtils.standardize_string(
             file.name, remove_version=True)
 
         # here we have no idea about the origin if not specified

@@ -8,6 +8,7 @@ from dataproviders.models import ThirdPartyDataProvider
 from metadata.models import (
     Schema)
 from metadata.services.all_services.base_functions import BaseMetaDataService
+from metadata.utils.common_utils import StringUtils
 
 
 class DataProviderEtlService(BaseMetaDataService):
@@ -18,7 +19,7 @@ class DataProviderEtlService(BaseMetaDataService):
         self.dataprovider = dataprovider if \
             isinstance(dataprovider, ThirdPartyDataProvider) else \
             ThirdPartyDataProvider.objects.get(
-                provider_name=self.standardize_string(dataprovider))
+                provider_name=StringUtils.standardize_string(dataprovider))
 
     def validate_endpoints(self):
         self.dataprovider
