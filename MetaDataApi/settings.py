@@ -289,8 +289,9 @@ ADMIN_REORDER = (
             'metadata.DateTimeAttributeInstance',
             'metadata.IntAttributeInstance',
             'metadata.BoolAttributeInstance',
-            'metadata.ImageAttributeInstance',
             'metadata.FloatAttributeInstance',
+            'metadata.ImageAttributeInstance',
+            'metadata.FileAttributeInstance',
         )
      },
     {'app': 'dataproviders', 'label': 'dataproviders'},

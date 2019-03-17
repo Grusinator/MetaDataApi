@@ -1,4 +1,5 @@
 import json
+import logging
 
 import requests
 from django.conf import settings
@@ -11,6 +12,7 @@ from settings import OAUTH_REDIRECT_URI
 from users.models import Profile
 from users.models import ThirdPartyProfile
 
+logger = logging.getLogger(__name__)
 
 # Create your views here.
 
@@ -93,4 +95,5 @@ def oauth2redirect(request):
         )
 
     except Exception as e:
+        logger.error(e)
         return HttpResponse("upps... something went wrong! (%s)" % str(e))
