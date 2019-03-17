@@ -7,6 +7,7 @@ from django.shortcuts import redirect
 from django.shortcuts import render
 
 from dataproviders.models import ThirdPartyDataProvider
+from settings import OAUTH_REDIRECT_URI
 from users.models import Profile
 from users.models import ThirdPartyProfile
 
@@ -50,7 +51,7 @@ def oauth2redirect(request):
             "code": code,
             "client_id": data_provider.client_id,
             "client_secret": data_provider.client_secret,
-            "redirect_uri": data_provider.redirect_uri,
+            "redirect_uri": OAUTH_REDIRECT_URI,
         }
 
         url = data_provider.access_token_url

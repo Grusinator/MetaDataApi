@@ -4,6 +4,7 @@ import urllib
 from django.db import models
 
 # Create your models here.
+from settings import OAUTH_REDIRECT_URI
 
 api_type_choises = [(x, x) for x in [
     "Oauth2-rest",
@@ -20,9 +21,8 @@ class ThirdPartyDataProvider(models.Model):
     client_id = models.TextField()
     client_secret = models.TextField()
     scope = models.TextField()
-    redirect_uri = models.TextField()
     rest_endpoints_list = models.TextField()
-    json_schema_file_url = models.TextField(null=False, blank=False)
+    json_schema_file_url = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return "%s - %s" % (self.provider_name, self.api_endpoint)
@@ -40,7 +40,7 @@ class ThirdPartyDataProvider(models.Model):
 
         args = {
             "client_id": self.client_id,
-            "redirect_uri": self.redirect_uri,
+            "redirect_uri": OAUTH_REDIRECT_URI,
             "scope": scopes,
             "nounce": "sdfkjlhasdfdhfas",
             "response_type": "code",

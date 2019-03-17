@@ -2,10 +2,6 @@ import json
 
 from dataproviders.models import ThirdPartyDataProvider
 
-redirect_uri = "https://meta-data-api.herokuapp.com/oauth2redirect/"
-# redirect_uri = "http://localhost:8000/oauth2redirect/"
-
-
 default_data_providers = [
     ThirdPartyDataProvider(
         provider_name="endomondo",
@@ -16,7 +12,6 @@ default_data_providers = [
         client_id="",
         client_secret="",
         scope=json.dumps([]),
-        redirect_uri=redirect_uri,
         rest_endpoints_list=json.dumps([]),
         json_schema_file_url=""
     ),
@@ -34,7 +29,6 @@ default_data_providers = [
             # "user.metrics",
             "user.activity"
         ]),
-        redirect_uri=redirect_uri,
         rest_endpoints_list=json.dumps([
             # "v2/user?action=getdevice",
             # "measure?action=getmeas",
@@ -52,7 +46,6 @@ default_data_providers = [
         client_id="28148",
         client_secret="ed5f469f798830c7214fc8efad54790799fc3ae1",
         scope=json.dumps(["view_private"]),
-        redirect_uri=redirect_uri,
         rest_endpoints_list=json.dumps([
             "/activities",
             "/athlete/zones",
@@ -65,13 +58,12 @@ default_data_providers = [
         api_endpoint="https://api.ouraring.com/",
         authorize_url="https://cloud.ouraring.com/oauth/authorize",
         access_token_url="https://api.ouraring.com/oauth/token",
-        client_id="LPZVEFNB3DGFITEY",
-        client_secret="NZPHE3NPY7ENSXHA6AHNE2M4JC4IVHQS",
+        client_id="Q43N7PFF2RI3SF52",
+        client_secret="CX6MEERKWUBIMBMRZOVY6BAAQLF5KDDL",
         scope=json.dumps([
             "email",
             "personal",
             "daily"]),
-        redirect_uri=redirect_uri,
         rest_endpoints_list=json.dumps([
             "/v1/userinfo",
             "/v1/sleep?start={StartDateTime:Y-M-d}&end={EndDateTime:Y-M-d}",
@@ -89,7 +81,6 @@ default_data_providers = [
         scope=json.dumps([
             "https://www.googleapis.com/auth/fitness.activity.read",
         ]),
-        redirect_uri=redirect_uri,
         rest_endpoints_list=json.dumps([
             "v1/users/me/dataSources",
         ]),
@@ -105,7 +96,6 @@ default_data_providers = [
         scope=json.dumps([
             "https://www.googleapis.com/auth/drive",  # full access, change later
         ]),
-        redirect_uri=redirect_uri,
         rest_endpoints_list=json.dumps([]),
         json_schema_file_url="https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"
     ),
@@ -117,7 +107,6 @@ default_data_providers = [
         client_id="",
         client_secret="",
         scope=json.dumps([]),
-        redirect_uri=redirect_uri,
         rest_endpoints_list=json.dumps([]),
         json_schema_file_url=""
     ),
@@ -129,7 +118,6 @@ default_data_providers = [
         client_id="",
         client_secret="",
         scope=json.dumps([]),
-        redirect_uri=redirect_uri,
         rest_endpoints_list=json.dumps([]),
         json_schema_file_url=""
     ),

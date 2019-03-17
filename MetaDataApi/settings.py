@@ -220,6 +220,10 @@ try:
 except Exception as e:
     api_keys = {}
 
+# OAUTH_REDIRECT_URI = "https://meta-data-api.herokuapp.com/oauth2redirect/"
+OAUTH_REDIRECT_URI = "http://localhost:8000/oauth2redirect/"
+
+
 AWS_ACCESS_KEY_ID = os.environ.get(
     'AWS_ACCESS_KEY_ID') or api_keys.get("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.environ.get(
