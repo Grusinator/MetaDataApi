@@ -10,10 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
-import os
-import django_heroku
-import posixpath
 import json
+import os
+import posixpath
+
+import django_heroku
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -70,10 +71,10 @@ INSTALLED_APPS = [
     'storages',
     'admin_reorder',
     'graphene_file_upload',
-    'MetaDataApi.datapoints.apps.DatapointsConfig',
-    'MetaDataApi.users.apps.UsersConfig',
-    'MetaDataApi.metadata.apps.MetadataConfig',
-    'MetaDataApi.dataproviders.apps.DataprovidersConfig',
+    'MetaDataApi.users',
+    'MetaDataApi.datapoints',
+    'MetaDataApi.metadata',
+    'MetaDataApi.dataproviders',
     'MetaDataApi.app'
 ]
 
