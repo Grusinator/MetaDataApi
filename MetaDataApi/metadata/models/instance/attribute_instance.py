@@ -2,6 +2,7 @@ from datetime import datetime
 
 from django.db import models
 
+from metadata.custom_storages import MediaStorage
 from .attribute_instance_base import BaseAttributeInstance
 
 
@@ -44,17 +45,18 @@ class FloatAttributeInstance(BaseAttributeInstance):
 
 
 class ImageAttributeInstance(BaseAttributeInstance):
-    value = models.ImageField()
+    value = models.ImageField(upload_to="images", storage=MediaStorage())
 
     class Meta(BaseAttributeInstance.Meta):
         default_related_name = '%(model_name)s'
 
 
 class FileAttributeInstance(BaseAttributeInstance):
-    value = models.FileField()
+    value = models.FileField(upload_to="datafiles", storage=MediaStorage())
 
     class Meta(BaseAttributeInstance.Meta):
         default_related_name = '%(model_name)s'
+
 
 # define the mapping between type and InstanceClass
 BaseAttributeInstance.att_inst_to_type_map = {
