@@ -45,7 +45,7 @@ class UtilsForTesting:
     def build_meta_instance_string_signature(obj):
         from metadata.models import BaseAttributeInstance
 
-        label = obj.base.labl if isinstance(obj, BaseInstance) else obj.label
+        label = obj.base.label if isinstance(obj, BaseInstance) else obj.label
 
         signature = "%s - %s" % (label, str(type(obj).__name__))
         if isinstance(obj, BaseAttributeInstance):
