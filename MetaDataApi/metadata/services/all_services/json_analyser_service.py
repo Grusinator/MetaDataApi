@@ -3,9 +3,6 @@ import logging
 from django.contrib.auth.models import User
 
 from metadata.models import (
-    Object,
-    Attribute)
-from metadata.models import (
     ObjectInstance)
 from metadata.services.all_services.base_functions import BaseMetaDataService
 from metadata.utils.django_model_utils.build_data_objects_from_json import BuildDataObjectsFromJson
@@ -14,12 +11,8 @@ from metadata.utils.django_model_utils.build_data_objects_from_json import Build
 logger = logging.getLogger(__name__)
 
 
-class JsonAnalyser():
-    def __init__(self, *args, **kwargs):
-        super(JsonAnalyser, self).__init__()
-
-        self.orms = [Object, Attribute]
-
+class JsonAnalyser:
+    def __init__(self):
         self.meta_data_list = []
         self.schema = None
         self.owner = None

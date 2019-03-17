@@ -14,6 +14,7 @@ from .base_rdf_service import BaseRdfSchemaService
 class RdfSchemaService(BaseRdfSchemaService):
     def __init__(self):
         super(RdfSchemaService, self).__init__()
+        self.schema = None
 
     def export_schema_from_db(self, schema):
         g = Graph()
@@ -316,7 +317,7 @@ class RdfSchemaService(BaseRdfSchemaService):
             except Exception as e:
                 pass
             else:
-                object = self._try_create_item(
+                object = self._try_create_meta_item(
                     Object(
                         label=str(label),
                         description=str(comment),
@@ -401,7 +402,7 @@ class RdfSchemaService(BaseRdfSchemaService):
             except Exception as e:
                 continue
             if from_object and to_object:
-                object_relation = self._try_create_item(
+                object_relation = self._try_create_meta_item(
                     ObjectRelation(
                         from_object=from_object,
                         to_object=to_object,
@@ -449,7 +450,7 @@ class RdfSchemaService(BaseRdfSchemaService):
             if range not in self.valid_data_types:
                 continue
 
-            attribute = self._try_create_item(
+            attribute = self._try_create_meta_item(
                 Attribute(
                     data_type=self.rdfs_to_att_type(range),
                     label=label,

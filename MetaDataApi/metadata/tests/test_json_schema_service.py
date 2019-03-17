@@ -16,6 +16,8 @@ class TestJsonService(TransactionTestCase):
         super(TestJsonService, cls).setUpClass()
         django.setup()
 
+        LoadTestData.init_foaf()
+
         LoadTestData.init_open_m_health_sample()
 
     def test_upwrite_to_db(self):
@@ -32,7 +34,7 @@ class TestJsonService(TransactionTestCase):
         labels = list(map(lambda x: x.label, objects))
 
         labels_compare = [
-            "open_m_health", "acceleration", "acceleration_x",
+            "acceleration", "acceleration_x",
             "acceleration_x", "acceleration_x", "acceleration_y",
             "acceleration_y", "acceleration_y", "acceleration_z",
             "acceleration_z", "acceleration_z", "effective_time_frame",

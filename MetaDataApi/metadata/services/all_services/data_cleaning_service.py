@@ -20,7 +20,7 @@ class DataCleaningService(BaseMetaDataService):
         )
         for obj in root_objects:
             label = "person_has_%s" % obj.label
-            self._try_create_item(
+            self._try_create_meta_item(
                 ObjectRelation(
                     from_object=foaf,
                     to_object=obj,

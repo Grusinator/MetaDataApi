@@ -3,6 +3,9 @@ import os
 
 from django.conf import settings
 
+from metadata.models import Schema
+from metadata.services import BaseMetaDataService
+
 
 class LoadTestData:
 
@@ -55,7 +58,7 @@ class LoadTestData:
         schema_label = "strava"
         label = "activities"
 
-        schema = service.create_new_empty_schema(schema_label)
+        schema = BaseMetaDataService.create_new_empty_schema(schema_label)
 
         user = LoadTestData.init_user()
 
@@ -83,7 +86,7 @@ class LoadTestData:
         with open(testfile) as f:
             data = json.loads(f.read())
 
-        schema = service.do_meta_item_exists(Schema(label="strava"))
+        schema = Schema.objects.get(label="strava")
 
         label = "activities"
 
@@ -102,7 +105,9 @@ class LoadTestData:
 
         service = JsonSchemaService()
 
-        schema = service.create_new_empty_schema(schema_label)
+        schema = Schema.objects.filter(label=schema_label).first()
+        if not schema:
+            schema = service.create_new_empty_schema(schema_label)
 
         # Takes to long time to do full
         service.write_to_db_baseschema(sample=True, positive_list=extras)
@@ -117,6 +122,16 @@ class LoadTestData:
         rdf_service = RdfSchemaService()
 
         rdf_service.write_to_db_baseschema()
+
+    @classmethod
+    def loadStravaActivities(cls):
+        # load the file
+        testfile = os.path.join(
+            settings.BASE_DIR,
+            "MetaDataApi/metadata/tests/data/json/strava_activities.json")
+        with open(testfile) as f:
+            data = json.loads(f.read())
+        return data
 
     @classmethod
     def init_full(cls):

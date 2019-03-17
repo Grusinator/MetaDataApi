@@ -90,7 +90,7 @@ class TestModelInstances(TransactionTestCase):
         LoadTestData.init_strava_schema_from_file()
         LoadTestData.init_strava_data_from_file()
 
-        data = UtilsForTesting.loadStravaActivities()
+        data = LoadTestData.loadStravaActivities()
 
         finder = FindObjectJsonChildren("strava")
         childrenslist = finder.build_from_json(data)

@@ -35,10 +35,10 @@ class DbObjectCreation(BaseMetaDataService):
             att = Attribute(
                 label=label,
                 data_type=Attribute.data_type_map[data_type],
-                object=self.do_meta_item_exists(parrent_object)
+                object=BaseMetaDataService.do_meta_item_exists(parrent_object)
             )
             try:
-                return self._try_create_item(att)
+                return self._try_create_meta_item(att)
             except Exception as e:
                 logger.error("object_create_" + str(e))
 
@@ -51,7 +51,7 @@ class DbObjectCreation(BaseMetaDataService):
 
         try:
             # we need to add the object to the
-            return self._try_create_item(
+            return self._try_create_meta_item(
                 obj,
                 parrent_label=parrent_object.label)
         except Exception as e:
@@ -70,7 +70,7 @@ class DbObjectCreation(BaseMetaDataService):
                 schema=self.schema
             )
             try:
-                return self._try_create_item(obj_rel)
+                return self._try_create_meta_item(obj_rel)
             except Exception as e:
                 logger.error("object_create_" + str(e))
 

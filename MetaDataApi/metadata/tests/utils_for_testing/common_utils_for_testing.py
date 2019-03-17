@@ -1,9 +1,7 @@
 import random
-
-import os
-import json
-from django.conf import settings
 from datetime import datetime, timedelta
+
+from metadata.models import BaseInstance
 
 
 class UtilsForTesting:
@@ -39,11 +37,23 @@ class UtilsForTesting:
         return output_list
 
     @classmethod
-    def loadStravaActivities(cls):
-        # load the file
-        testfile = os.path.join(
-            settings.BASE_DIR,
-            "MetaDataApi/metadata/tests/data/json/strava_activities.json")
-        with open(testfile) as f:
-            data = json.loads(f.read())
-        return data
+    def build_meta_instance_strings_for_comparison(cls, instances):
+        labels = list(map(cls.build_meta_instance_string_signature, instances))
+        return cls.sort_and_remove_duplicates(labels)
+
+    @staticmethod
+    def build_meta_instance_string_signature(obj):
+        from metadata.models import BaseAttributeInstance
+
+        label = obj.base.labl if isinstance(obj, BaseInstance) else obj.label
+
+        signature = "%s - %s" % (label, str(type(obj).__name__))
+        if isinstance(obj, BaseAttributeInstance):
+            signature += " : %s" % obj.value
+        return signature
+
+    @staticmethod
+    def sort_and_remove_duplicates(labels):
+        labels = list(set(labels))
+        labels.sort()
+        return labels

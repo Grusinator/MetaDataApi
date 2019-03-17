@@ -135,7 +135,7 @@ class JsonSchemaService(BaseMetaDataService):
                 not same_as_previous:
             # use root label if possible
             label = root_label or filename.replace(".json", "")
-            new_object = self._try_create_item(
+            new_object = self._try_create_meta_item(
                 Object(
                     label=label,
                     schema=self.schema,
@@ -149,7 +149,7 @@ class JsonSchemaService(BaseMetaDataService):
             # create the object relation
             if current_object is not None:
                 # None is root - so no relation
-                self._try_create_item(ObjectRelation(
+                self._try_create_meta_item(ObjectRelation(
                     from_object=self.do_meta_item_exists(current_object),
                     to_object=self.do_meta_item_exists(new_object),
                     schema=self.schema,
@@ -230,7 +230,7 @@ class JsonSchemaService(BaseMetaDataService):
                     # saving is done after the object has been created
                     # if this dict contains "other classes"
 
-                attribute = self._try_create_item(
+                attribute = self._try_create_meta_item(
                     Attribute(
                         label=root_label,
                         data_type=self.json_to_att_type(data_type),
@@ -297,7 +297,7 @@ class JsonSchemaService(BaseMetaDataService):
                     attribute.object = parrent_object
                     attribute.description += " -> simplified: " + root_label
                     # update because description is being updated
-                    self._try_create_item(attribute, update=True)
+                    self._try_create_meta_item(attribute, update=True)
                     current_object.delete()
 
                     # return as if it was an attribute, which it now is

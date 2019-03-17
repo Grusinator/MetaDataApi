@@ -32,7 +32,6 @@ class BaseMetaDataService:
 
     def __init__(self):
         self.schema = None
-        self.baseurl = None
 
         self.added_meta_items = []
         self.touched_meta_items = []
@@ -68,7 +67,8 @@ class BaseMetaDataService:
         last_elm = endpoint_without_args.split("/")[-1]
         return StringUtils.standardize_string(last_elm)
 
-    def create_new_empty_schema(self, schema_label):
+    @staticmethod
+    def create_new_empty_schema(schema_label):
         schema = Schema()
         schema.label = StringUtils.standardize_string(schema_label)
         schema.description = ""
@@ -82,12 +82,6 @@ class BaseMetaDataService:
         schema.save()
 
         return schema
-
-    def is_meta_item_in_created_list(self, item, item_list=None):
-        item_list = item_list or self.touched_meta_items
-
-        # new __eq__implementation
-        return next(filter(item.__eq__, item_list), None)
 
     @staticmethod
     def dict_contains_only_attr(data):
@@ -154,7 +148,7 @@ class BaseMetaDataService:
         except Exception as e:
             logger.error(e)
 
-    def _try_create_item(self, item, update=False, parrent_label=None):
+    def _try_create_meta_item(self, item, update=False, parrent_label=None):
 
         item_type = type(item)
         remove_version = not isinstance(item_type, Schema)

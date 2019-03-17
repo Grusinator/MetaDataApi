@@ -1,12 +1,9 @@
-import collections
-
 import django
 from django.test import TransactionTestCase
 
 from metadata.tests.data import LoadTestData
-
-
 # TODO: Configure your database in settings.py and sync before running tests.
+from metadata.tests.utils_for_testing.common_utils_for_testing import UtilsForTesting
 
 
 class TestRdfSchemaService(TransactionTestCase):
@@ -94,9 +91,10 @@ class TestRdfSchemaService(TransactionTestCase):
         for schema in schemas:
             schema = service.export_schema_from_db(schema)
             before_list = service.touched_meta_items.copy()
+            before_list = UtilsForTesting.build_meta_instance_strings_for_comparison(before_list)
 
             service.write_to_db(schema.rdfs_file, overwrite=True)
             after_list = service.touched_meta_items.copy()
+            after_list = UtilsForTesting.build_meta_instance_strings_for_comparison(after_list)
 
-            self.assertEqual(collections.Counter(before_list),
-                             collections.Counter(after_list))
+            self.assertListEqual(before_list, after_list)
