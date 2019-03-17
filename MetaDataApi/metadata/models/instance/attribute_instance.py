@@ -50,6 +50,12 @@ class ImageAttributeInstance(BaseAttributeInstance):
         default_related_name = '%(model_name)s'
 
 
+class FileAttributeInstance(BaseAttributeInstance):
+    value = models.FileField()
+
+    class Meta(BaseAttributeInstance.Meta):
+        default_related_name = '%(model_name)s'
+
 # define the mapping between type and InstanceClass
 BaseAttributeInstance.att_inst_to_type_map = {
     StringAttributeInstance: str,
