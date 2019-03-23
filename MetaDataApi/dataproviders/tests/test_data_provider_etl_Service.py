@@ -3,6 +3,8 @@ from datetime import datetime
 import django
 from django.test import TransactionTestCase
 
+from dataproviders.services.url_argument_format_helper import UrlArgumentFormatHelper
+
 
 class TestDataProviderEtlService(TransactionTestCase):
 
@@ -12,7 +14,7 @@ class TestDataProviderEtlService(TransactionTestCase):
         super(TestDataProviderEtlService, cls).setUpClass()
         django.setup()
 
-    def test(self):
+    def test_build_args_for_url(self):
         from dataproviders.services import (
             DataProviderEtlService)
 
@@ -28,9 +30,9 @@ class TestDataProviderEtlService(TransactionTestCase):
 
         endpoint = "testendpoint?start={StartDateTime:UTCSEC}&end={EndDateTime:UTCSEC}"
 
-        output_endpoint = service.build_args_for_url(
+        output_endpoint = UrlArgumentFormatHelper.build_args_for_url(
             endpoint, StartDateTime=start_time, EndDateTime=end_time)
 
         expected = "testendpoint?start=1520118000&end=1525384800"
 
-        self.assertEqual(output_endpoint, expected)
+        self.assertEqual(expected, output_endpoint)
