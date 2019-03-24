@@ -3,7 +3,7 @@ import unittest
 import django
 from django.test import TransactionTestCase
 
-from metadata.tests.data import LoadTestData
+from MetaDataApi.metadata.tests.data import LoadTestData
 
 
 class TestMetadataBaseFunctionService(TransactionTestCase):
@@ -16,8 +16,8 @@ class TestMetadataBaseFunctionService(TransactionTestCase):
         django.setup()
 
     def test_path_to_foaf_person(self):
-        from metadata.services.services import BaseMetaDataService
-        from metadata.models import (
+        from MetaDataApi.metadata.services.services import BaseMetaDataService
+        from MetaDataApi.metadata.models import (
             Object, Attribute)
 
         LoadTestData.init_foaf()
@@ -34,8 +34,8 @@ class TestMetadataBaseFunctionService(TransactionTestCase):
 
     @unittest.skip("needs repair")
     def test_get_connected_pair(self):
-        from metadata.models import Attribute
-        from metadata.services import BaseMetaDataService
+        from MetaDataApi.metadata.models import Attribute
+        from MetaDataApi.metadata.services import BaseMetaDataService
         LoadTestData.init_strava_schema_from_file()
         LoadTestData.init_strava_data_from_file()
 

@@ -21,7 +21,7 @@ from django.urls import path, include
 from django.views.generic.base import RedirectView
 from graphene_django.views import GraphQLView
 
-from dataproviders.views import data_provider_list, oauth2redirect
+from MetaDataApi.dataproviders.views import data_provider_list, oauth2redirect
 
 # from graphene_file_upload.django import FileUploadGraphQLView
 

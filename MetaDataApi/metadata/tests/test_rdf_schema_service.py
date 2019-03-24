@@ -1,9 +1,9 @@
 import django
 from django.test import TransactionTestCase
 
-from metadata.tests.data import LoadTestData
+from MetaDataApi.metadata.tests.data import LoadTestData
 # TODO: Configure your database in settings.py and sync before running tests.
-from metadata.tests.utils_for_testing.common_utils_for_testing import UtilsForTesting
+from MetaDataApi.metadata.tests.utils_for_testing.common_utils_for_testing import UtilsForTesting
 
 
 class TestRdfSchemaService(TransactionTestCase):
@@ -16,8 +16,8 @@ class TestRdfSchemaService(TransactionTestCase):
         super(TestRdfSchemaService, cls).setUpClass()
 
     def test_create_default_graphs(self):
-        from metadata.services import RdfSchemaService
-        from metadata.models import Schema
+        from MetaDataApi.metadata.services import RdfSchemaService
+        from MetaDataApi.metadata.models import Schema
 
         service = RdfSchemaService()
 
@@ -28,8 +28,8 @@ class TestRdfSchemaService(TransactionTestCase):
         self.assertNotEqual(schemas_count, 0)
 
     def test_upload_rdf(self):
-        from metadata.services import RdfSchemaService
-        from metadata.models.meta import Schema, Object, Attribute
+        from MetaDataApi.metadata.services import RdfSchemaService
+        from MetaDataApi.metadata.models.meta import Schema, Object, Attribute
 
         url = "http://xmlns.com/foaf/0.1/"
 
@@ -46,7 +46,7 @@ class TestRdfSchemaService(TransactionTestCase):
             label="first_name").first())
 
     def test_export_rdf(self):
-        from metadata.services import RdfSchemaService
+        from MetaDataApi.metadata.services import RdfSchemaService
 
         service = RdfSchemaService()
 
@@ -78,8 +78,8 @@ class TestRdfSchemaService(TransactionTestCase):
         self.assertListEqual(labels, labels_compare)
 
     def test_circle(self):
-        from metadata.services import RdfSchemaService
-        from metadata.models import Schema
+        from MetaDataApi.metadata.services import RdfSchemaService
+        from MetaDataApi.metadata.models import Schema
 
         LoadTestData.init_rdf_base()
         # LoadTestData.init_open_m_health_sample()

@@ -5,8 +5,8 @@ from graphene_django.types import DjangoObjectType
 from graphene_file_upload.scalars import Upload
 from graphql_jwt.decorators import login_required
 
-from metadata.models import Schema, Object, Attribute, ObjectRelation
-from metadata.services import *
+from MetaDataApi.metadata.models import Schema, Object, Attribute, ObjectRelation
+from MetaDataApi.metadata.services import *
 
 
 class SchemaNode(DjangoObjectType):

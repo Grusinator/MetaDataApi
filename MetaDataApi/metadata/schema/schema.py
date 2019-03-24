@@ -1,4 +1,4 @@
-from metadata.schema import meta_schema, instances_schema
+from MetaDataApi.metadata.schema import meta_schema, instances_schema
 
 
 class Query(meta_schema.Query, instances_schema.Query):

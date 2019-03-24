@@ -7,10 +7,10 @@ from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.shortcuts import render
 
-from dataproviders.models import ThirdPartyDataProvider
-from settings import OAUTH_REDIRECT_URI
-from users.models import Profile
-from users.models import ThirdPartyProfile
+from MetaDataApi.dataproviders.models import ThirdPartyDataProvider
+from MetaDataApi.settings import OAUTH_REDIRECT_URI
+from MetaDataApi.users.models import Profile
+from MetaDataApi.users.models import ThirdPartyProfile
 
 logger = logging.getLogger(__name__)
 

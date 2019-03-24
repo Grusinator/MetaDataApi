@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from metadata.models import ObjectInstance
+from MetaDataApi.metadata.models import ObjectInstance
 
 
 class ObjectInstanceAdmin(admin.ModelAdmin):

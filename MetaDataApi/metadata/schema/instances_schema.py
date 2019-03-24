@@ -6,19 +6,19 @@ from graphene_file_upload.scalars import Upload
 from graphql.error import GraphQLError
 from graphql_jwt.decorators import login_required
 
-from datapoints.schema_processing import ProcessRawData
-from metadata.models import (
+from MetaDataApi.metadata.models import (
     Attribute, Object, Schema
 )
-from metadata.models import (
+from MetaDataApi.metadata.models import (
     RawData, CategoryTypes,
     ObjectInstance,
     FloatAttributeInstance,
     StringAttributeInstance,
     DateTimeAttributeInstance)
-from metadata.schema.meta_schema import AttributeNode as AttributeMetaNode
-from metadata.services.services import GetTemporalFloatPairsService
-from users.schema import UserType
+from MetaDataApi.metadata.schema.meta_schema import AttributeNode as AttributeMetaNode
+from MetaDataApi.metadata.services.services import GetTemporalFloatPairsService
+from MetaDataApi.users.schema import UserType
+from datapoints.schema_processing import ProcessRawData
 
 # from datapoints.services.sound_processing_services import SoundClassifier
 

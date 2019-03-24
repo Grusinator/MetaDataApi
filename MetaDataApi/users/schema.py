@@ -4,7 +4,7 @@ from graphene_django import DjangoObjectType
 from graphql.error import GraphQLError
 from graphql_jwt.decorators import login_required
 
-from users.models import Profile, ThirdPartyProfile, Languages
+from MetaDataApi.users.models import Profile, ThirdPartyProfile, Languages
 
 GrapheneLanguages = Enum.from_enum(Languages)
 

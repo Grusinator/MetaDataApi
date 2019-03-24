@@ -1,7 +1,7 @@
 import django
 from django.test import TransactionTestCase
 
-from metadata.tests.data import LoadTestData
+from MetaDataApi.metadata.tests.data import LoadTestData
 
 
 class TestDataCleaningService(TransactionTestCase):
@@ -22,10 +22,10 @@ class TestDataCleaningService(TransactionTestCase):
         ])
 
     def test_identify_json_data_sample(self):
-        from metadata.services.all_services.data_cleaning_service import (
+        from MetaDataApi.metadata.services.all_services.data_cleaning_service import (
             DataCleaningService)
 
-        from metadata.models import Schema
+        from MetaDataApi.metadata.models import Schema
 
         dc_service = DataCleaningService()
 

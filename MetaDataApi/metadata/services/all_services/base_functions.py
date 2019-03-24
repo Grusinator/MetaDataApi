@@ -6,16 +6,16 @@ from django.core.exceptions import (
 from django.core.files.base import ContentFile
 from django.db import transaction
 
-from metadata.models import (
+from MetaDataApi.metadata.models import (
     ObjectInstance, ObjectRelationInstance,
     StringAttributeInstance,
     DateTimeAttributeInstance, BoolAttributeInstance,
     FloatAttributeInstance, IntAttributeInstance
 )
 # from jsonschema import validate
-from metadata.models import (
+from MetaDataApi.metadata.models import (
     Schema, Object, Attribute, ObjectRelation)
-from metadata.utils.common_utils import StringUtils
+from MetaDataApi.metadata.utils.common_utils import StringUtils
 
 logger = logging.getLogger(__name__)
 

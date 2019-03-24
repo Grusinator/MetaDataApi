@@ -8,10 +8,10 @@ from django.contrib.auth.models import User
 from graphql import GraphQLError
 from service_objects.services import Service
 
-from dataproviders.services.data_provider_etl_service import DataProviderEtlService
-from metadata.models import *
-from metadata.utils.common_utils import StringUtils
-from settings import MEDIA_ROOT
+from MetaDataApi.dataproviders.services.data_provider_etl_service import DataProviderEtlService
+from MetaDataApi.metadata.models import *
+from MetaDataApi.metadata.utils.common_utils import StringUtils
+from MetaDataApi.settings import MEDIA_ROOT
 from .all_services import *
 
 
@@ -72,9 +72,9 @@ class IdentifySchemaFromFileService(Service):
 
         # here we have no idea about the origin if not specified
         # TODO: consider if its better to do something else
-        schema = identify.do_meta_item_exists(Schema(label=schema_label))
+        schema = BaseMetaDataService.do_meta_item_exists(Schema(label=schema_label))
         if not schema:
-            schema = identify.create_new_empty_schema(schema_label)
+            schema = BaseMetaDataService.create_new_empty_schema(schema_label)
 
         objects = identify.identify_from_json_data(
             data, schema, data_label)
@@ -104,7 +104,7 @@ class IdentifyDataFromFileService(Service):
 
         # here we have no idea about the origin if not specified
         # TODO: consider if its better to do something else
-        schema = identify.do_meta_item_exists(Schema(label=schema_label))
+        schema = BaseMetaDataService.do_meta_item_exists(Schema(label=schema_label))
 
         objects = identify.identify_from_json_data(
             data, schema, data_label)
@@ -141,7 +141,7 @@ class IdentifySchemaFromProviderService(Service):
             data = provider_service.read_data_from_endpoint(
                 endpoint, provider_profile.access_token)
 
-            parrent_label = identify.rest_endpoint_to_label(endpoint)
+            parrent_label = BaseMetaDataService.rest_endpoint_to_label(endpoint)
 
             objects = identify.identify_from_json_data(
                 data, schema, user, parrent_label)
@@ -183,7 +183,7 @@ class IdentifyDataFromProviderService(Service):
             data = provider_service.read_data_from_endpoint(
                 endpoint, provider_profile.access_token)
 
-            parrent_label = identify.rest_endpoint_to_label(endpoint)
+            parrent_label = BaseMetaDataService.rest_endpoint_to_label(endpoint)
 
             objects = identify.identify_from_json_data(
                 data, schema, parrent_label)
@@ -231,7 +231,7 @@ class IdentifySchemaAndDataFromProviderService(Service):
             data = provider_service.read_data_from_endpoint(
                 endpoint, provider_profile.access_token)
 
-            parrent_label = identify.rest_endpoint_to_label(endpoint)
+            parrent_label = BaseMetaDataService.rest_endpoint_to_label(endpoint)
 
             objects = identify.identify_from_json_data(
                 data, schema, user, parrent_label)

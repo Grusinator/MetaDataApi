@@ -1,1 +1,1 @@
-from metadata.tests.data import LoadTestData
+from MetaDataApi.metadata.tests.data import LoadTestData

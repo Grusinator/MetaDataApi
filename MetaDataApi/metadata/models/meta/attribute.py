@@ -2,9 +2,9 @@ from datetime import datetime
 
 from django.db import models
 
-from metadata.models.meta.meta_base import BaseMeta
-from metadata.models.meta.object import Object
-from metadata.utils.django_model_utils import DjangoModelUtils
+from MetaDataApi.metadata.models.meta.meta_base import BaseMeta
+from MetaDataApi.metadata.models.meta.object import Object
+from MetaDataApi.metadata.utils.django_model_utils import DjangoModelUtils
 
 
 class Attribute(BaseMeta):

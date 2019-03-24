@@ -3,8 +3,8 @@ from graphene_django.filter import DjangoFilterConnectionField
 from graphene_django.types import DjangoObjectType
 from graphql_jwt.decorators import login_required
 
-from dataproviders.models import ThirdPartyDataProvider
-from dataproviders.services import AddDefaultDataProviderService, LoadDataFromProviderService
+from MetaDataApi.dataproviders.models import ThirdPartyDataProvider
+from MetaDataApi.dataproviders.services import AddDefaultDataProviderService, LoadDataFromProviderService
 
 
 class DataProviderNode(DjangoObjectType):

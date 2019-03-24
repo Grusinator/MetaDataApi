@@ -1,5 +1,5 @@
-from metadata.models import Schema, Object, ObjectInstance
-from metadata.utils import json_utils
+from MetaDataApi.metadata.models import Schema, Object, ObjectInstance
+from MetaDataApi.metadata.utils import json_utils
 
 
 class FindObjectJsonChildren(json_utils.IJsonIterator):

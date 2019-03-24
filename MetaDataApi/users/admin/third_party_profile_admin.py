@@ -1,8 +1,8 @@
 from django.contrib import admin
 
-from metadata.services.services import IdentifySchemaAndDataFromProviderService
+from MetaDataApi.metadata.services.services import IdentifySchemaAndDataFromProviderService
 # Register your models here.
-from users.models import ThirdPartyProfile
+from MetaDataApi.users.models import ThirdPartyProfile
 
 
 def identify_schema_and_data_from_all_endpoints(modeladmin, request, queryset):

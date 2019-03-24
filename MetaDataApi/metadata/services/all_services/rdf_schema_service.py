@@ -5,9 +5,9 @@ from rdflib import Namespace, Graph, Literal, URIRef, term
 from rdflib.namespace import RDF, RDFS, DCTERMS, DC, OWL
 from rdflib.plugin import register, Parser
 
-from metadata.models import (
+from MetaDataApi.metadata.models import (
     Schema, Object, Attribute, ObjectRelation)
-from metadata.utils.common_utils import StringUtils
+from MetaDataApi.metadata.utils.common_utils import StringUtils
 from .base_rdf_service import BaseRdfSchemaService
 
 

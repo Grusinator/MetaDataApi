@@ -3,8 +3,8 @@ import os
 
 from django.conf import settings
 
-from metadata.models import Schema
-from metadata.services import BaseMetaDataService
+from MetaDataApi.metadata.models import Schema
+from MetaDataApi.metadata.services import BaseMetaDataService
 
 
 class LoadTestData:
@@ -25,7 +25,7 @@ class LoadTestData:
 
     @staticmethod
     def init_foaf():
-        from metadata.services import (
+        from MetaDataApi.metadata.services import (
             RdfSchemaService)
         rdf_service = RdfSchemaService()
         # just take foaf
@@ -35,7 +35,7 @@ class LoadTestData:
 
     @staticmethod
     def init_strava_schema_from_file():
-        from metadata.services import (
+        from MetaDataApi.metadata.services import (
             RdfInstanceService, DataCleaningService,
             JsonAnalyser
         )
@@ -70,10 +70,10 @@ class LoadTestData:
 
     @staticmethod
     def init_strava_data_from_file():
-        from metadata.services import (
+        from MetaDataApi.metadata.services import (
             JsonAnalyser
         )
-        from metadata.models import Schema
+        from MetaDataApi.metadata.models import Schema
 
         user = LoadTestData.init_user()
 
@@ -97,7 +97,7 @@ class LoadTestData:
 
     @staticmethod
     def init_open_m_health_sample(extras=None):
-        from metadata.services import (
+        from MetaDataApi.metadata.services import (
             JsonSchemaService, DataCleaningService
         )
 
@@ -118,7 +118,7 @@ class LoadTestData:
 
     @staticmethod
     def init_rdf_base():
-        from metadata.services import RdfSchemaService
+        from MetaDataApi.metadata.services import RdfSchemaService
         rdf_service = RdfSchemaService()
 
         rdf_service.write_to_db_baseschema()

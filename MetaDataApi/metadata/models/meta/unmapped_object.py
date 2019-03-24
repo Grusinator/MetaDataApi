@@ -1,6 +1,6 @@
 from django.db import models
 
-from metadata.models.meta import BaseMeta
+from MetaDataApi.metadata.models.meta import BaseMeta
 
 
 class UnmappedObject(BaseMeta):

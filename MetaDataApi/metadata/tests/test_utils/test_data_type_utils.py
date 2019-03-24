@@ -3,7 +3,7 @@ from datetime import datetime
 import django
 from django.test import TransactionTestCase
 
-from metadata.utils.common_utils import DataTypeUtils
+from MetaDataApi.metadata.utils.common_utils import DataTypeUtils
 
 
 class TestJsonUtils(TransactionTestCase):

@@ -4,7 +4,7 @@ from urllib import parse
 from django.db import models
 
 # Create your models here.
-from settings import OAUTH_REDIRECT_URI
+from MetaDataApi.settings import OAUTH_REDIRECT_URI
 
 api_type_choises = [(x, x) for x in [
     "Oauth2-rest",

@@ -2,7 +2,7 @@ from datetime import datetime
 
 from django.db import models
 
-from metadata.custom_storages import MediaStorage
+from MetaDataApi.metadata.custom_storages import MediaStorage
 from .attribute_instance_base import BaseAttributeInstance
 
 

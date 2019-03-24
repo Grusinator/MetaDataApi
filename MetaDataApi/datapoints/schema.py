@@ -10,11 +10,11 @@
 
 # from graphql_jwt.decorators import login_required
 
-# from users.schema import UserType
+# from MetaDataApi.users.schema import UserType
 
 # from django.contrib.auth.models import User
 
-# from metadata.models import (
+# from MetaDataApi.metadata.models import (
 #     RawData, CategoryTypes,
 #     ObjectInstance,
 #     ObjectRelationInstance,
@@ -23,16 +23,16 @@
 #     StringAttributeInstance,
 #     DateTimeAttributeInstance)
 
-# from metadata.models import (
+# from MetaDataApi.metadata.models import (
 #     Attribute, Object, ObjectRelation, Schema
 # )
 
-# from metadata.schema import AttributeNode as AttributeMetaNode
+# from MetaDataApi.metadata.schema import AttributeNode as AttributeMetaNode
 
 # from datapoints.schema_processing import ProcessRawData
-# from users.models import Profile
+# from MetaDataApi.users.models import Profile
 
-# from metadata.services import GetTemporalFloatPairsService
+# from MetaDataApi.metadata.services import GetTemporalFloatPairsService
 
 # from datapoints.services.google_speech_api import transcribe_file
 # # from datapoints.services.sound_processing_services import SoundClassifier

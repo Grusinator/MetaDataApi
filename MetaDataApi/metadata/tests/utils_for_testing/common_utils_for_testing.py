@@ -1,7 +1,7 @@
 import random
 from datetime import datetime, timedelta
 
-from metadata.models import BaseInstance
+from MetaDataApi.metadata.models import BaseInstance
 
 
 class UtilsForTesting:
@@ -43,7 +43,7 @@ class UtilsForTesting:
 
     @staticmethod
     def build_meta_instance_string_signature(obj):
-        from metadata.models import BaseAttributeInstance
+        from MetaDataApi.metadata.models import BaseAttributeInstance
 
         label = obj.base.label if isinstance(obj, BaseInstance) else obj.label
 

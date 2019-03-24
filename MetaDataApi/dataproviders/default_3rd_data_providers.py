@@ -1,6 +1,6 @@
 import json
 
-from dataproviders.models import ThirdPartyDataProvider
+from MetaDataApi.dataproviders.models import ThirdPartyDataProvider
 
 default_data_providers = [
     ThirdPartyDataProvider(

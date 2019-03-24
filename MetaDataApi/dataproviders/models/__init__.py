@@ -1,1 +1,1 @@
-from dataproviders.models.third_party_data_provider import ThirdPartyDataProvider
+from MetaDataApi.dataproviders.models.third_party_data_provider import ThirdPartyDataProvider

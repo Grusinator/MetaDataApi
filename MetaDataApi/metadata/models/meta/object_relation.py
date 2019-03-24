@@ -1,7 +1,7 @@
 from django.db import models
 
-from metadata.models.meta import BaseMeta
-from metadata.utils.django_model_utils import DjangoModelUtils
+from MetaDataApi.metadata.models.meta import BaseMeta
+from MetaDataApi.metadata.utils.django_model_utils import DjangoModelUtils
 
 
 class ObjectRelation(BaseMeta):

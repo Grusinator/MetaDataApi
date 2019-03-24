@@ -4,7 +4,7 @@ import django.db.models.deletion
 from django.conf import settings
 from django.db import migrations, models
 
-import metadata.custom_storages
+from MetaDataApi.metadata.custom_storages import MediaStorage
 
 
 class Migration(migrations.Migration):
@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
             name='FileAttributeInstance',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('value', models.FileField(storage=metadata.custom_storages.MediaStorage(), upload_to='datafiles')),
+                ('value', models.FileField(storage=MediaStorage(), upload_to='datafiles')),
                 ('base',
                  models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='fileattributeinstance',
                                    to='metadata.Attribute')),
@@ -36,17 +36,17 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='imageattributeinstance',
             name='value',
-            field=models.ImageField(storage=metadata.custom_storages.MediaStorage(), upload_to='images'),
+            field=models.ImageField(storage=MediaStorage(), upload_to='images'),
         ),
         migrations.AlterField(
             model_name='rdfdatadump',
             name='rdf_file',
-            field=models.FileField(storage=metadata.custom_storages.MediaStorage(), upload_to='datapoints/audio'),
+            field=models.FileField(storage=MediaStorage(), upload_to='datapoints/audio'),
         ),
         migrations.AlterField(
             model_name='schema',
             name='rdfs_file',
-            field=models.FileField(blank=True, null=True, storage=metadata.custom_storages.MediaStorage(),
+            field=models.FileField(blank=True, null=True, storage=MediaStorage(),
                                    upload_to='schemas'),
         ),
     ]

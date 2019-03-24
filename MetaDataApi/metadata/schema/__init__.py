@@ -1,2 +1,2 @@
-from metadata.schema.meta_schema import AttributeNode, ObjectNode
-from metadata.schema.schema import Query, Mutation
+from MetaDataApi.metadata.schema.meta_schema import AttributeNode, ObjectNode
+from MetaDataApi.metadata.schema.schema import Query, Mutation

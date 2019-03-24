@@ -4,9 +4,9 @@ import unittest
 import django
 from django.test import TransactionTestCase
 
-from metadata.models import Object
-from metadata.tests.data import LoadTestData
-from metadata.tests.utils_for_testing.common_utils_for_testing import UtilsForTesting
+from MetaDataApi.metadata.models import Object
+from MetaDataApi.metadata.tests.data import LoadTestData
+from MetaDataApi.metadata.tests.utils_for_testing.common_utils_for_testing import UtilsForTesting
 
 logging.disable(logging.CRITICAL)
 
@@ -21,7 +21,7 @@ class TestModelInstances(TransactionTestCase):
 
     @unittest.skip("needs repair")
     def test_get_related_list(self):
-        from metadata.models import ObjectInstance
+        from MetaDataApi.metadata.models import ObjectInstance
         schema = LoadTestData.init_foaf()
         obj = Object.objects.get(label="person", schema=schema)
 
@@ -45,7 +45,7 @@ class TestModelInstances(TransactionTestCase):
     @unittest.skip("needs repair")
     def test_attribute_exists(self):
         # Register your models here.
-        from metadata.models import (
+        from MetaDataApi.metadata.models import (
             # instances
             FloatAttributeInstance,
             StringAttributeInstance,
@@ -88,7 +88,7 @@ class TestModelInstances(TransactionTestCase):
     @unittest.skip("needs repair")
     def test_object_exists(self):
         # Register your models here.
-        from metadata.tests.utils_for_testing.find_object_json_children import FindObjectJsonChildren
+        from MetaDataApi.metadata.tests.utils_for_testing.find_object_json_children import FindObjectJsonChildren
 
         LoadTestData.init_foaf()
         LoadTestData.init_strava_schema_from_file()

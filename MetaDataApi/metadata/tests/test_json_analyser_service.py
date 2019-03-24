@@ -4,8 +4,8 @@ from urllib import request
 import django
 from django.test import TransactionTestCase
 
-from metadata.tests.data import LoadTestData
-from metadata.tests.utils_for_testing.common_utils_for_testing import UtilsForTesting
+from MetaDataApi.metadata.tests.data import LoadTestData
+from MetaDataApi.metadata.tests.utils_for_testing.common_utils_for_testing import UtilsForTesting
 
 
 class TestSchemaIdentificationService(TransactionTestCase):
@@ -16,10 +16,10 @@ class TestSchemaIdentificationService(TransactionTestCase):
         django.setup()
 
     def test_identify_json_data_sample(self):
-        from metadata.services import (
+        from MetaDataApi.metadata.services import (
             JsonAnalyser)
 
-        from metadata.models import Schema
+        from MetaDataApi.metadata.models import Schema
 
         user = LoadTestData.init_user()
         LoadTestData.init_foaf()
@@ -52,9 +52,9 @@ class TestSchemaIdentificationService(TransactionTestCase):
         self.assertEqual(labels, expected)
 
     def test_identify_from_json_data_strava_test(self):
-        from metadata.services import (
+        from MetaDataApi.metadata.services import (
             JsonAnalyser)
-        from metadata.models import Schema
+        from MetaDataApi.metadata.models import Schema
 
         LoadTestData.init_foaf()
         user = LoadTestData.init_user()

@@ -3,7 +3,7 @@ from datetime import datetime
 import django
 from django.test import TransactionTestCase
 
-from dataproviders.services.url_format_helper import UrlFormatHelper
+from MetaDataApi.dataproviders.services.url_format_helper import UrlFormatHelper
 
 
 class TestDataProviderEtlService(TransactionTestCase):
@@ -15,10 +15,10 @@ class TestDataProviderEtlService(TransactionTestCase):
         django.setup()
 
     def test_build_args_for_url(self):
-        from dataproviders.services import (
+        from MetaDataApi.dataproviders.services import (
             DataProviderEtlService)
 
-        from dataproviders.models import ThirdPartyDataProvider
+        from MetaDataApi.dataproviders.models import ThirdPartyDataProvider
 
         data_provider = ThirdPartyDataProvider(
             provider_name="dummy")

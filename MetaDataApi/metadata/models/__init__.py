@@ -1,4 +1,4 @@
-from metadata.models.instance import (
+from MetaDataApi.metadata.models.instance import (
     ObjectInstance,
     ObjectRelationInstance,
     BoolAttributeInstance,
@@ -10,8 +10,8 @@ from metadata.models.instance import (
     BaseInstance,
     BaseAttributeInstance
 )
-from metadata.models.instance.old_instances import CategoryTypes, RawData
-from metadata.models.meta import (
+from MetaDataApi.metadata.models.instance.old_instances import CategoryTypes, RawData
+from MetaDataApi.metadata.models.meta import (
     Attribute,
     Schema,
     Object,

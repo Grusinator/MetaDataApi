@@ -4,11 +4,11 @@ from django.core.files.base import ContentFile
 from rdflib import Graph, Literal
 from rdflib.namespace import RDF
 
-from metadata.models import (
+from MetaDataApi.metadata.models import (
     ObjectInstance, ObjectRelationInstance,
     RDFDataDump
 )
-from metadata.models import (
+from MetaDataApi.metadata.models import (
     UnmappedObject)
 from .base_rdf_service import BaseRdfSchemaService
 

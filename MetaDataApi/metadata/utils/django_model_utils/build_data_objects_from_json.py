@@ -2,7 +2,7 @@ import logging
 
 from django.db import IntegrityError, transaction
 
-from metadata.models import (
+from MetaDataApi.metadata.models import (
     ObjectInstance,
     ObjectRelationInstance,
     BaseAttributeInstance,
@@ -12,16 +12,16 @@ from metadata.models import (
     # BoolAttributeInstance,
     # ImageAttributeInstance
 )
-from metadata.models.meta import (
+from MetaDataApi.metadata.models.meta import (
     Object, Attribute, ObjectRelation, )
-from metadata.utils.common_utils import DictUtils
-from metadata.utils.common_utils.data_type_utils import DataTypeUtils
-from metadata.utils.json_utils.json_iterator import IJsonIterator
+from MetaDataApi.metadata.utils.common_utils import DictUtils
+from MetaDataApi.metadata.utils.common_utils.data_type_utils import DataTypeUtils
+from MetaDataApi.metadata.utils.json_utils.json_iterator import IJsonIterator
 
 logger = logging.getLogger(__name__)
 
 
-# from metadata.models.meta import Schema
+# from MetaDataApi.metadata.models.meta import Schema
 
 
 def convert_dict_attribute_type(data):

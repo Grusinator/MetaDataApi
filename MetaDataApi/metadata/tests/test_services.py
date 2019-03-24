@@ -4,8 +4,7 @@ import django
 from django.test import TransactionTestCase
 
 import settings
-from metadata.tests.data import LoadTestData
-from tests import TestServices
+from MetaDataApi.metadata.tests.data import LoadTestData
 
 
 class TestMetaServices(TransactionTestCase):
@@ -14,12 +13,12 @@ class TestMetaServices(TransactionTestCase):
     # Django requires an explicit setup() when running tests in PTVS
     @classmethod
     def setUpClass(cls):
-        super(TestServices, cls).setUpClass()
+        super(TestMetaServices, cls).setUpClass()
         django.setup()
 
     def DeleteSchemaServiceTest(self):
-        from metadata.models import Schema
-        from metadata.services.services import DeleteSchemaService
+        from MetaDataApi.metadata.models import Schema
+        from MetaDataApi.metadata.services.services import DeleteSchemaService
         LoadTestData.init_strava_schema_from_file()
 
         args = {
@@ -48,7 +47,7 @@ class TestMetaServices(TransactionTestCase):
         # self.assertIsNone(schema)
 
     def IdentifyDataFromFileServiceTest(self):
-        from metadata.services.services import IdentifyDataFromFileService
+        from MetaDataApi.metadata.services.services import IdentifyDataFromFileService
         LoadTestData.init_strava_schema_from_file()
         user = LoadTestData.init_user()
         # will fail since third party profile is not defined

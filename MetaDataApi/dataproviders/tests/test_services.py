@@ -3,8 +3,8 @@ import unittest
 import django
 from django.test import TransactionTestCase
 
-from metadata.services.services import GetTemporalFloatPairsService
-from metadata.tests.data import LoadTestData
+from MetaDataApi.metadata.services.services import GetTemporalFloatPairsService
+from MetaDataApi.metadata.tests.data import LoadTestData
 
 
 class TestSomeService(TransactionTestCase):

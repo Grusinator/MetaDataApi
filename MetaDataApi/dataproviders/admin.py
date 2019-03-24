@@ -1,8 +1,8 @@
 from django.contrib import admin
 
 # Register your models here.
-from dataproviders.models import ThirdPartyDataProvider
-from dataproviders.services import AddDefaultDataProviderService
+from MetaDataApi.dataproviders.models import ThirdPartyDataProvider
+from MetaDataApi.dataproviders.services import AddDefaultDataProviderService
 
 
 def add_default_providers(modeladmin, request, queryset):

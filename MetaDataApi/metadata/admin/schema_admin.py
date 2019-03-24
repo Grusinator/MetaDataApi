@@ -2,8 +2,8 @@ import webbrowser
 
 from django.contrib import admin
 
-from metadata.models import Schema
-from metadata.services.services import (
+from MetaDataApi.metadata.models import Schema
+from MetaDataApi.metadata.services.services import (
     ExportSchemaService, AddRdfSchemaService, AddJsonSchemaService)
 
 

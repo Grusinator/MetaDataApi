@@ -4,9 +4,9 @@ from inflection import camelize
 from rdflib import Namespace, URIRef
 from rdflib.namespace import RDFS, XSD
 
-from metadata.models import (
+from MetaDataApi.metadata.models import (
     Object, Attribute, ObjectRelation)
-from metadata.models import (
+from MetaDataApi.metadata.models import (
     ObjectInstance, ObjectRelationInstance,
     StringAttributeInstance
 )

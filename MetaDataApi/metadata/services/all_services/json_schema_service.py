@@ -5,10 +5,10 @@ from urllib import request
 
 from django.db import transaction
 
-from metadata.models import (
+from MetaDataApi.metadata.models import (
     Schema, Object, Attribute, ObjectRelation)
-from metadata.services.all_services.base_functions import BaseMetaDataService
-from metadata.utils.common_utils import StringUtils
+from MetaDataApi.metadata.services.all_services.base_functions import BaseMetaDataService
+from MetaDataApi.metadata.utils.common_utils import StringUtils
 from schemas.json.omh.schema_names import filtered_schema_names as schema_names
 
 

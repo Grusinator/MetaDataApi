@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from metadata.models import *
+from MetaDataApi.metadata.models import *
 
 models = (
     # instances

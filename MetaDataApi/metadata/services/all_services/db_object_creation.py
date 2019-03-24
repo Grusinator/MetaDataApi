@@ -2,10 +2,10 @@
 # import the logging library
 import logging
 
-from metadata.models import *
-from metadata.services.all_services.base_functions import BaseMetaDataService
+from MetaDataApi.metadata.models import *
+from MetaDataApi.metadata.services.all_services.base_functions import BaseMetaDataService
 # Get an instance of a logger
-from metadata.utils.common_utils import DataTypeUtils
+from MetaDataApi.metadata.utils.common_utils import DataTypeUtils
 
 logger = logging.getLogger(__name__)
 

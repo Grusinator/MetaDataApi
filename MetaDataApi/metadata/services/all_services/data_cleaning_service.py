@@ -1,4 +1,4 @@
-from metadata.models import (
+from MetaDataApi.metadata.models import (
     Object, ObjectRelation
 )
 from .base_functions import BaseMetaDataService

@@ -1,4 +1,4 @@
-from metadata.utils.json_utils import IJsonIterator
+from MetaDataApi.metadata.utils.json_utils import IJsonIterator
 
 
 class BuildDjangoSearchArgs(IJsonIterator):

@@ -3,12 +3,12 @@ from datetime import datetime, timedelta
 # from jsonschema import validate
 from urllib import request, parse
 
-from dataproviders.models import ThirdPartyDataProvider
-from dataproviders.services.url_format_helper import UrlFormatHelper
-from metadata.models import (
+from MetaDataApi.dataproviders.models import ThirdPartyDataProvider
+from MetaDataApi.dataproviders.services.url_format_helper import UrlFormatHelper
+from MetaDataApi.metadata.models import (
     Schema)
-from metadata.services.all_services.base_functions import BaseMetaDataService
-from metadata.utils.common_utils import StringUtils
+from MetaDataApi.metadata.services.all_services.base_functions import BaseMetaDataService
+from MetaDataApi.metadata.utils.common_utils import StringUtils
 
 
 class DataProviderEtlService:

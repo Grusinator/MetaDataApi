@@ -4,8 +4,8 @@ from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator
 from inflection import underscore
 
-from metadata.models import Attribute, Object, ObjectRelation, ObjectInstance, StringAttributeInstance
-from metadata.services import BaseMetaDataService
+from MetaDataApi.metadata.models import Attribute, Object, ObjectRelation, ObjectInstance, StringAttributeInstance
+from MetaDataApi.metadata.services import BaseMetaDataService
 
 
 class RelationalObjectsAnalyserService():

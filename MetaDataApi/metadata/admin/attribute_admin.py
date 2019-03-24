@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from metadata.models import Attribute
+from MetaDataApi.metadata.models import Attribute
 
 
 class AttributeAdmin(admin.ModelAdmin):

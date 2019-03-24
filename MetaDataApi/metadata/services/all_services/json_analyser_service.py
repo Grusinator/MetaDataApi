@@ -2,10 +2,10 @@ import logging
 
 from django.contrib.auth.models import User
 
-from metadata.models import (
+from MetaDataApi.metadata.models import (
     ObjectInstance)
-from metadata.services.all_services.base_functions import BaseMetaDataService
-from metadata.utils.django_model_utils.build_data_objects_from_json import BuildDataObjectsFromJson
+from MetaDataApi.metadata.services.all_services.base_functions import BaseMetaDataService
+from MetaDataApi.metadata.utils.django_model_utils.build_data_objects_from_json import BuildDataObjectsFromJson
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
