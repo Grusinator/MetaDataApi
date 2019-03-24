@@ -9,7 +9,8 @@ models = (
     StringAttributeInstance,
     IntAttributeInstance,
     BoolAttributeInstance,
-    ImageAttributeInstance
+    ImageAttributeInstance,
+    FileAttributeInstance,
 )
 
 

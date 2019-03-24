@@ -5,6 +5,7 @@ from MetaDataApi.metadata.models.instance import (
     FloatAttributeInstance,
     DateTimeAttributeInstance,
     ImageAttributeInstance,
+    FileAttributeInstance,
     IntAttributeInstance,
     StringAttributeInstance,
     BaseInstance,
