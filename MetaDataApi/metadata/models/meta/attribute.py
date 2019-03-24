@@ -20,7 +20,7 @@ class Attribute(BaseMeta):
 
     # db Fields
     data_type = models.TextField(choices=data_type_choises)
-    data_unit = models.TextField()
+    data_unit = models.TextField(blank=True, null=True)
     object = models.ForeignKey(Object, related_name='attributes', on_delete=models.CASCADE)
 
     def __str__(self):
