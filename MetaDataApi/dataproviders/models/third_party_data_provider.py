@@ -1,20 +1,23 @@
 import json
+from enum import Enum
 from urllib import parse
 
 from django.db import models
 
+from MetaDataApi.metadata.models import Object, ObjectInstance
 # Create your models here.
 from MetaDataApi.settings import OAUTH_REDIRECT_URI
 
-api_type_choises = [(x, x) for x in [
-    "Oauth2-rest",
-    "Oauth2-graphql",
-    "Token-rest"]]
+
+class ApiTypes(Enum):
+    OauthRest = "Oauth2-rest"
+    OauthGraphql = "Oauth2-graphql"
+    TokenRest = "Token-rest"
 
 
 class ThirdPartyDataProvider(models.Model):
     provider_name = models.TextField(unique=True)
-    api_type = models.TextField(choices=api_type_choises)
+    api_type = models.TextField(choices=[(type.value, type.name) for type in ApiTypes])
     api_endpoint = models.TextField()
     authorize_url = models.TextField()
     access_token_url = models.TextField()
@@ -23,9 +26,22 @@ class ThirdPartyDataProvider(models.Model):
     scope = models.TextField()
     rest_endpoints_list = models.TextField()
     json_schema_file_url = models.TextField(null=True, blank=True)
+    data_provider_instance = models.ForeignKey(
+        "metadata.ObjectInstance",
+        on_delete=models.CASCADE,
+        null=True, blank=True
+    )
 
     def __str__(self):
         return "%s - %s" % (self.provider_name, self.api_endpoint)
+
+    def save(self, *args, **kwargs):
+        data_provider_meta = Object.objects.get(schema__label="meta_data_api", label="data_provider")
+        data_provider_instance = ObjectInstance(base=data_provider_meta)
+        data_provider_instance.save()
+        self.data_provider_instance = data_provider_instance
+
+        super(ThirdPartyDataProvider, self).save(*args, **kwargs)
 
     def do_endpoint_exist(self, endpoint):
         if endpoint not in self.rest_endpoints_list:

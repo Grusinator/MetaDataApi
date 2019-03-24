@@ -28,7 +28,8 @@ class BaseRdfSchemaService(BaseMetaDataService):
             # # "http://www.w3.org/2001/XMLSchema#",
             # "http://www.w3.org/2003/06/sw-vocab-status/ns#",
             # "http://www.w3.org/2002/07/owl#",
-            "http://xmlns.com/foaf/0.1/"
+            "http://xmlns.com/foaf/0.1/",
+            "https://meta-data-api-storage.s3.amazonaws.com/media/schemas/meta_data_api.ttl"
         ]
         self.selfhosted = {
             "http://xmlns.com/foaf/0.1/":
