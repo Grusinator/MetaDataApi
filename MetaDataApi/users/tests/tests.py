@@ -8,7 +8,7 @@ import unittest
 
 import django
 
-from tests.GraphQLTestCase import GraphQLTestCase
+from MetaDataApi.tests.GraphQLTestCase import GraphQLTestCase
 
 
 # TODO: Configure your database in settings.py and sync before running tests.
