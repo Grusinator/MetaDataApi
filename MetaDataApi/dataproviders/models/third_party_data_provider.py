@@ -1,5 +1,5 @@
 import json
-import urllib
+from urllib import parse
 
 from django.db import models
 
@@ -27,6 +27,14 @@ class ThirdPartyDataProvider(models.Model):
     def __str__(self):
         return "%s - %s" % (self.provider_name, self.api_endpoint)
 
+    def do_endpoint_exist(self, endpoint):
+        if endpoint not in self.rest_endpoints_list:
+            print("warning: This is not a known %s endpoint - \"%s\" " %
+                  (self.provider_name, endpoint))
+            return True
+        else:
+            return False
+
     def build_auth_url(self, logged_in_user_id=None):
 
         state = "%s:%s" % (self.provider_name,
@@ -51,7 +59,7 @@ class ThirdPartyDataProvider(models.Model):
         if any([not bool(value.strip(" ")) for value in args.values()]):
             return ""
 
-        args_string = urllib.parse.urlencode(tuple(args.items()))
+        args_string = parse.urlencode(tuple(args.items()))
 
         url = "%s?%s" % (self.authorize_url, args_string)
 

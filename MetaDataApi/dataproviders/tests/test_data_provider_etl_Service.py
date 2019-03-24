@@ -3,7 +3,7 @@ from datetime import datetime
 import django
 from django.test import TransactionTestCase
 
-from dataproviders.services.url_argument_format_helper import UrlArgumentFormatHelper
+from dataproviders.services.url_format_helper import UrlFormatHelper
 
 
 class TestDataProviderEtlService(TransactionTestCase):
@@ -30,7 +30,7 @@ class TestDataProviderEtlService(TransactionTestCase):
 
         endpoint = "testendpoint?start={StartDateTime:UTCSEC}&end={EndDateTime:UTCSEC}"
 
-        output_endpoint = UrlArgumentFormatHelper.build_args_for_url(
+        output_endpoint = UrlFormatHelper.build_args_for_url(
             endpoint, StartDateTime=start_time, EndDateTime=end_time)
 
         expected = "testendpoint?start=1520118000&end=1525384800"

@@ -1,14 +1,14 @@
 import re
 
 
-class UrlArgumentFormatHelper:
+class UrlFormatHelper:
     valid_url_arg_names = [
         "StartDateTime",
         "EndDateTime",
         "AuthToken"
     ]
 
-    data_type_converter = {
+    arg_data_type_converter = {
         "UTCSEC": lambda x: str(int(x.timestamp())),
         "Y-M-d": lambda x: x.strftime('%Y-%m-%d'),
         "": lambda x: x
@@ -35,6 +35,11 @@ class UrlArgumentFormatHelper:
         return output_endpoint
 
     @classmethod
+    def standardize_url(cls, url):
+        # remove first slash if exists
+        return url[1:] if url[0] == "/" else url
+
+    @classmethod
     def build_url_arg_def(cls, data_format: str, url_arg_name: str):
         cls.validate(url_arg_name)
         return ("{%s-%s}" % (url_arg_name, data_format)) \
@@ -47,7 +52,7 @@ class UrlArgumentFormatHelper:
 
     @classmethod
     def convert(cls, data, data_format):
-        return cls.data_type_converter[data_format](data)
+        return cls.arg_data_type_converter[data_format](data)
 
     @classmethod
     def validate(cls, key):
