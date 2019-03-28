@@ -44,13 +44,11 @@ class ExportSchemaService(Service):
         schema_label = self.cleaned_data['schema_label']
 
         service = RdfSchemaService()
-
-        schema = service.do_meta_item_exists(Schema(label=schema_label))
-
+        schema = BaseMetaDataService.do_meta_item_exists(Schema(label=schema_label))
         service.export_schema_from_db(schema)
-
-        schema_file_url = schema.rdfs_file.url
-        return schema_file_url
+        schema.url = schema.rdfs_file.url
+        schema.save()
+        return schema.url
 
 
 class IdentifySchemaFromFileService(Service):
