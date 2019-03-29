@@ -49,7 +49,6 @@ CORS_ORIGIN_WHITELIST = (
     'localhost:3002'
 )
 
-
 AUTHENTICATION_BACKENDS = [
     'graphql_jwt.backends.JSONWebTokenBackend',
     'django.contrib.auth.backends.ModelBackend',
@@ -94,7 +93,6 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'MetaDataApi.urls'
 
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -112,7 +110,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'MetaDataApi.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
@@ -155,26 +152,25 @@ PROJECT_ROOT = os.path.abspath(os.path.dirname(settings_dir))
 ML_models_dir = os.path.join(
     PROJECT_ROOT, "MetaDataApi/services/sound_classification/models")
 
-
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.' +
-        'UserAttributeSimilarityValidator',
+                'UserAttributeSimilarityValidator',
     },
     {
         'NAME': 'django.contrib.auth.password_validation.' +
-        'MinimumLengthValidator',
+                'MinimumLengthValidator',
     },
     {
         'NAME': 'django.contrib.auth.password_validation.' +
-        'CommonPasswordValidator',
+                'CommonPasswordValidator',
     },
     {
         'NAME': 'django.contrib.auth.password_validation.' +
-        'NumericPasswordValidator',
+                'NumericPasswordValidator',
     },
 ]
 
@@ -193,14 +189,12 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
 
 STATIC_ROOT = posixpath.join(*(BASE_DIR.split(os.path.sep) + ['static']))
-
 
 ENV_PATH = os.path.abspath(os.path.dirname(__file__))
 MEDIA_ROOT = os.path.join(ENV_PATH, 'media/')
@@ -209,10 +203,6 @@ MEDIA_URL = '/media/'
 
 # Activate Django-Heroku.
 django_heroku.settings(locals())
-
-# AWS
-AWS_STORAGE_BUCKET_NAME = 'meta-data-api-storage'
-AWS_S3_REGION_NAME = 'eu-central-1'  # e.g. us-east-2
 
 try:
     with open('api_keys.json') as f:
@@ -223,6 +213,11 @@ except Exception as e:
 OAUTH_REDIRECT_URI = "https://meta-data-api.herokuapp.com/oauth2redirect/"
 # OAUTH_REDIRECT_URI = "http://localhost:8000/oauth2redirect/"
 
+# AWS
+AWS_STORAGE_BUCKET_NAME = os.environ.get(
+    'AWS_STORAGE_BUCKET_NAME') or api_keys.get("AWS_STORAGE_BUCKET_NAME")
+
+AWS_S3_REGION_NAME = 'eu-central-1'  # e.g. us-east-2
 
 AWS_ACCESS_KEY_ID = os.environ.get(
     'AWS_ACCESS_KEY_ID') or api_keys.get("AWS_ACCESS_KEY_ID")
@@ -243,7 +238,6 @@ STATICFILES_STORAGE = 'MetaDataApi.metadata.custom_storages.StaticStorage'
 
 MEDIAFILES_LOCATION = 'media'
 DEFAULT_FILE_STORAGE = 'MetaDataApi.metadata.custom_storages.MediaStorage'
-
 
 LOGGING = {
     'version': 1,
@@ -266,33 +260,33 @@ LOGGING = {
 
 ADMIN_REORDER = (
     {'app': 'users', 'label': 'users',
-        "models": (
-            "auth.User",
-            "users.Profile",
-            "users.ThirdPartyProfile",
-            "auth.Group"
-        )
+     "models": (
+         "auth.User",
+         "users.Profile",
+         "users.ThirdPartyProfile",
+         "auth.Group"
+     )
      },
     {'app': 'metadata', 'label': 'meta',
-        'models': (
-            'metadata.Schema',
-            'metadata.Object',
-            'metadata.ObjectRelation',
-            'metadata.Attribute',
-        )
+     'models': (
+         'metadata.Schema',
+         'metadata.Object',
+         'metadata.ObjectRelation',
+         'metadata.Attribute',
+     )
      },
     {'app': 'metadata', 'label': 'instances',
-        'models': (
-            'metadata.ObjectInstance',
-            'metadata.ObjectRelationInstance',
-            'metadata.StringAttributeInstance',
-            'metadata.DateTimeAttributeInstance',
-            'metadata.IntAttributeInstance',
-            'metadata.BoolAttributeInstance',
-            'metadata.FloatAttributeInstance',
-            'metadata.ImageAttributeInstance',
-            'metadata.FileAttributeInstance',
-        )
+     'models': (
+         'metadata.ObjectInstance',
+         'metadata.ObjectRelationInstance',
+         'metadata.StringAttributeInstance',
+         'metadata.DateTimeAttributeInstance',
+         'metadata.IntAttributeInstance',
+         'metadata.BoolAttributeInstance',
+         'metadata.FloatAttributeInstance',
+         'metadata.ImageAttributeInstance',
+         'metadata.FileAttributeInstance',
+     )
      },
     {'app': 'dataproviders', 'label': 'dataproviders'},
 )
