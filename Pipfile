@@ -45,6 +45,7 @@ pytest-django = "*"
 gql = "*"
 jupyter = "*"
 # coverage = "*"
+moto = "*"
 
 [requires]
 python_version = "3.7"

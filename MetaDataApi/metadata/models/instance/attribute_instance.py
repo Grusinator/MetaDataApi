@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from PIL import Image
+from django.core.files import File
 from django.db import models
 
 from MetaDataApi.metadata.custom_storages import MediaStorage
@@ -65,4 +67,6 @@ BaseAttributeInstance.att_inst_to_type_map = {
     FloatAttributeInstance: float,
     IntAttributeInstance: int,
     BoolAttributeInstance: bool,
+    FileAttributeInstance: File,
+    ImageAttributeInstance: Image
 }

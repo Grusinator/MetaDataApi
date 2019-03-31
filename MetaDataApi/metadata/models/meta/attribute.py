@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from PIL import Image
-from django.contrib.sessions.backends import file
+from django.core.files import File
 from django.db import models
 
 from MetaDataApi.metadata.models.meta.meta_base import BaseMeta
@@ -16,7 +16,7 @@ class Attribute(BaseMeta):
         int: "int",
         bool: "bool",
         str: "string",
-        file: "file",
+        File: "file",
         Image: "image",
         type(None): "unknown"
     }

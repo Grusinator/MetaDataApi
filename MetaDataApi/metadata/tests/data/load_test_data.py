@@ -3,7 +3,7 @@ import os
 
 from django.conf import settings
 
-from MetaDataApi.metadata.models import Schema
+from MetaDataApi.metadata.models import Schema, ObjectRelation, Object, Attribute
 from MetaDataApi.metadata.services import BaseMetaDataService
 
 
@@ -30,6 +30,31 @@ class LoadTestData:
         rdf_service = RdfSchemaService()
         # just take foaf
         rdf_service.write_to_db(rdf_url="http://xmlns.com/foaf/0.1/")
+
+        return rdf_service.schema
+
+    @staticmethod
+    def init_meta_data_api():
+        from MetaDataApi.metadata.services import (
+            RdfSchemaService)
+        rdf_service = RdfSchemaService()
+        rdf_service.write_to_db(
+            rdf_url="https://meta-data-api-storage-dev.s3.amazonaws.com/media/schemas/meta_data_api.ttl"
+        )
+
+        # TODO fix error in obj rel load, this is a temp fix
+        schema = Schema.objects.get(label="meta_data_api")
+        data_dump = Object.objects.get(schema=schema, label="endpoint_data_dump")
+        ObjectRelation(
+            schema=schema,
+            label="has_generated",
+            from_object=Object.objects.get(schema=schema, label="rest_endpoint"),
+            to_object=data_dump
+        ).save()
+
+        att = Attribute.objects.get(label="data_dump_file", object=data_dump)
+        att.data_type = "file"
+        att.save()
 
         return rdf_service.schema
 

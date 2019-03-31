@@ -9,7 +9,7 @@ class BaseAttributeInstance(BaseInstance):
     base = models.ForeignKey('Attribute', on_delete=models.CASCADE)
     object = models.ForeignKey('ObjectInstance', on_delete=models.CASCADE)
 
-    # the dictionay is populated after init of specific attribute instances
+    # the dictionary is populated after init of specific attribute instances
     att_inst_to_type_map = {}
 
     def __str__(self):
