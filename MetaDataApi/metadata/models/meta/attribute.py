@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from PIL import Image
+from django.contrib.sessions.backends import file
 from django.db import models
 
 from MetaDataApi.metadata.models.meta.meta_base import BaseMeta
@@ -14,6 +16,8 @@ class Attribute(BaseMeta):
         int: "int",
         bool: "bool",
         str: "string",
+        file: "file",
+        Image: "image",
         type(None): "unknown"
     }
     data_type_choises = [(x, x) for x in data_type_map.values()]
