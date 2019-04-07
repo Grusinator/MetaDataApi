@@ -1,8 +1,6 @@
 import logging
-from abc import ABCMeta
+from abc import ABCMeta, abstractmethod
 from enum import Enum
-
-from django.core.exceptions import ObjectDoesNotExist
 
 from MetaDataApi.metadata.models import Object, ObjectRelation, Attribute, Schema, ObjectInstance, \
     ObjectRelationInstance, BaseAttributeInstance, FileAttributeInstance
@@ -19,6 +17,26 @@ class BaseRdfModel:
     class ObjectLabels(Enum):
         pass
 
+    @classmethod
+    @abstractmethod
+    def _get_schema(cls) -> Schema:
+        pass
+
+    @classmethod
+    @abstractmethod
+    def _get_objects(cls):
+        pass
+
+    @classmethod
+    @abstractmethod
+    def _get_attributes(cls):
+        pass
+
+    @classmethod
+    @abstractmethod
+    def _get_object_relations(cls):
+        pass
+
     class ObjectRelationLabels(Enum):
         pass
 
@@ -32,38 +50,30 @@ class BaseRdfModel:
     }
 
     @classmethod
-    def validate(cls):
-        cls.validate_schema()
-        cls.validate_enums()
+    def create_all_meta_objects(cls):
+        cls._get_schema().save()
+        [obj.save() for obj in cls._get_objects()]
+        [att.save() for att in cls._get_attributes()]
+        [obj_rel.save() for obj_rel in cls._get_object_relations()]
 
     @classmethod
-    def validate_enums(cls):
-
-        for labels, db_object in cls.label_to_db_object.items():
-            for label in labels:
-                cls.try_get_db_object(db_object, label)
-
-    @classmethod
-    def try_get_db_object(cls, db_object, label):
-        try:
-            db_object.objects.get(label=label)
-        except ObjectDoesNotExist as e:
-            logger.error(str(e) + "| label not found: " + str(label))
+    def is_schema_items_valid(cls):
+        schema = [Schema.exists(cls._get_schema())]
+        objs = [Object.exists_obj(obj) for obj in cls._get_objects()]
+        atts = [Attribute.exists_att(att) for att in cls._get_attributes()]
+        obj_rels = [ObjectRelation.exists_obj_rel(obj_rel) for obj_rel in cls._get_object_relations()]
+        return all(schema + objs + atts + obj_rels)
 
     @classmethod
-    def validate_schema(cls):
-        Schema.objects.get(label=cls.schema_label)
-
-    @classmethod
-    def create_obj_inst(cls, label: ObjectRelationLabels):
-        obj_base = Object.objects.get(label=label.value, schema=cls.get_schema())
+    def create_obj_inst(cls, obj: Object):
+        obj_base = Object.exists_obj(obj)
         obj = ObjectInstance(base=obj_base)
         obj.save()
         return obj
 
     @classmethod
-    def create_obj_rel_inst(cls, rel_label: ObjectRelationLabels, from_object, to_object):
-        rel_base = ObjectRelation.objects.get(label=rel_label.value, schema=cls.get_schema())
+    def create_obj_rel_inst(cls, obj_rel: ObjectRelation, from_object: ObjectInstance, to_object: ObjectInstance):
+        rel_base = ObjectRelation.exists_obj_rel(obj_rel)
         rel = ObjectRelationInstance(
             base=rel_base,
             from_object=from_object,
@@ -75,12 +85,9 @@ class BaseRdfModel:
     @classmethod
     def create_att_inst_to_obj_inst(cls,
                                     parrent_obj_inst: ObjectInstance,
-                                    attribute_label: AttributeLabels,
+                                    att: Attribute,
                                     value):
-        att_base = Attribute.objects.get(
-            label=attribute_label.value,
-            object=parrent_obj_inst.base
-        )
+        att_base = Attribute.exists_att(att)
 
         AttributeInstance = cls.get_attribute_instance_from_type(att_base.data_type)
 
@@ -95,9 +102,6 @@ class BaseRdfModel:
         att_inst.save()
         return att_inst
 
-    @classmethod
-    def get_schema(cls):
-        return Schema.objects.get(label=cls.schema_label)
 
     @classmethod
     def get_attribute_instance_from_type(cls, type_as_string: str):

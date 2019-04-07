@@ -4,8 +4,8 @@ from MetaDataApi.metadata.models import Attribute
 
 
 class AttributeAdmin(admin.ModelAdmin):
-    list_display = ['object', 'label', 'data_type', 'data_unit', 'description']
-    ordering = ['object', 'label', 'data_type', 'data_unit']
+    list_display = ['object', 'label', 'data_type', 'description']
+    ordering = ['object', 'label', 'data_type']
     actions = []
 
 

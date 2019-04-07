@@ -1,7 +1,6 @@
 from django.db import models
 
 from MetaDataApi.metadata.models.meta import BaseMeta
-from MetaDataApi.metadata.utils.django_model_utils import DjangoModelUtils
 
 
 class ObjectRelation(BaseMeta):
@@ -30,7 +29,16 @@ class ObjectRelation(BaseMeta):
         search_args = dict(locals())
         search_args.pop("cls")
 
-        return DjangoModelUtils.get_object_or_none(cls, **search_args)
+        return cls.get_schema_item(cls, **search_args)
+
+    @classmethod
+    def exists_obj_rel(cls, obj_rel):
+        return cls.exists(
+            obj_rel.label,
+            obj_rel.from_object.label,
+            obj_rel.to_object.label,
+            obj_rel.schema.label
+        )
 
     def __ne__(self, other):
         return not self.__eq__(other)

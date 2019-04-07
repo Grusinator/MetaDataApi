@@ -1,6 +1,7 @@
 from django.db import models
 
 from MetaDataApi.metadata.custom_storages import MediaStorage
+from MetaDataApi.metadata.models.meta import BaseMeta
 
 
 class Schema(models.Model):
@@ -20,6 +21,10 @@ class Schema(models.Model):
                    self.label == other.label
         else:
             return False
+
+    @classmethod
+    def exists(cls, label):
+        BaseMeta.get_schema_item(cls, label=label)
 
     def __ne__(self, other):
         return not self.__eq__(other)

@@ -4,9 +4,8 @@ from PIL import Image
 from django.core.files import File
 from django.db import models
 
-from MetaDataApi.metadata.models.meta.meta_base import BaseMeta
+from MetaDataApi.metadata.models.meta.base_meta import BaseMeta
 from MetaDataApi.metadata.models.meta.object import Object
-from MetaDataApi.metadata.utils.django_model_utils import DjangoModelUtils
 
 
 class Attribute(BaseMeta):
@@ -24,7 +23,6 @@ class Attribute(BaseMeta):
 
     # db Fields
     data_type = models.TextField(choices=data_type_choises)
-    data_unit = models.TextField(blank=True, null=True)
     object = models.ForeignKey(Object, related_name='attributes', on_delete=models.CASCADE)
 
     def __str__(self):
@@ -40,7 +38,11 @@ class Attribute(BaseMeta):
     def exists(cls, label: str, object__label: str):
         search_args = dict(locals())
         search_args.pop("cls")
-        return DjangoModelUtils.get_object_or_none(cls, **search_args)
+        return cls.get_schema_item(cls, **search_args)
+
+    @classmethod
+    def exists_att(cls, att):
+        return cls.exists(att.label, att.object.label)
 
     def __ne__(self, other):
         return not self.__eq__(other)

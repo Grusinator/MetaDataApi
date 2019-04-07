@@ -1,8 +1,7 @@
 from django.db import models
 
-from MetaDataApi.metadata.models.meta.meta_base import BaseMeta
+from MetaDataApi.metadata.models.meta.base_meta import BaseMeta
 from MetaDataApi.metadata.utils import BuildDjangoSearchArgs
-from MetaDataApi.metadata.utils.django_model_utils import DjangoModelUtils
 
 
 class Object(BaseMeta):
@@ -70,7 +69,11 @@ class Object(BaseMeta):
     def exists(cls, label: str, schema__label: str):
         search_args = dict(locals())
         search_args.pop("cls")
-        return DjangoModelUtils.get_object_or_none(cls, **search_args)
+        return cls.get_schema_item(cls, **search_args)
+
+    @classmethod
+    def exists_obj(cls, obj):
+        return cls.exists(obj.label, obj.schema.label)
 
     def __ne__(self, other):
         return not self.__eq__(other)
