@@ -8,7 +8,7 @@ import unittest
 
 import django
 
-from tests.GraphQLTestCase import GraphQLTestCase
+from MetaDataApi.tests.GraphQLTestCase import GraphQLTestCase
 
 # from django.contrib.auth import get_user_model
 

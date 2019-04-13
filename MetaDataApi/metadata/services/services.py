@@ -44,7 +44,8 @@ class ExportSchemaService(Service):
         schema_label = self.cleaned_data['schema_label']
 
         service = RdfSchemaService()
-        schema = BaseMetaDataService.do_meta_item_exists(Schema(label=schema_label))
+        schema = BaseMetaDataService.do_meta_item_exists(
+            Schema(label=schema_label))
         service.export_schema_from_db(schema)
         schema.url = schema.rdfs_file.url
         schema.save()
@@ -70,7 +71,8 @@ class IdentifySchemaFromFileService(Service):
 
         # here we have no idea about the origin if not specified
         # TODO: consider if its better to do something else
-        schema = BaseMetaDataService.do_meta_item_exists(Schema(label=schema_label))
+        schema = BaseMetaDataService.do_meta_item_exists(
+            Schema(label=schema_label))
         if not schema:
             schema = BaseMetaDataService.create_new_empty_schema(schema_label)
 
@@ -102,7 +104,8 @@ class IdentifyDataFromFileService(Service):
 
         # here we have no idea about the origin if not specified
         # TODO: consider if its better to do something else
-        schema = BaseMetaDataService.do_meta_item_exists(Schema(label=schema_label))
+        schema = BaseMetaDataService.do_meta_item_exists(
+            Schema(label=schema_label))
 
         objects = identify.identify_from_json_data(
             data, schema, data_label)
@@ -139,7 +142,8 @@ class IdentifySchemaFromProviderService(Service):
             data = provider_service.read_data_from_endpoint(
                 endpoint, provider_profile.access_token)
 
-            parrent_label = BaseMetaDataService.rest_endpoint_to_label(endpoint)
+            parrent_label = BaseMetaDataService.rest_endpoint_to_label(
+                endpoint)
 
             objects = identify.identify_from_json_data(
                 data, schema, user, parrent_label)
@@ -181,7 +185,8 @@ class IdentifyDataFromProviderService(Service):
             data = provider_service.read_data_from_endpoint(
                 endpoint, provider_profile.access_token)
 
-            parrent_label = BaseMetaDataService.rest_endpoint_to_label(endpoint)
+            parrent_label = BaseMetaDataService.rest_endpoint_to_label(
+                endpoint)
 
             objects = identify.identify_from_json_data(
                 data, schema, parrent_label)
@@ -229,7 +234,8 @@ class IdentifySchemaAndDataFromProviderService(Service):
             data = provider_service.read_data_from_endpoint(
                 endpoint, provider_profile.access_token)
 
-            parrent_label = BaseMetaDataService.rest_endpoint_to_label(endpoint)
+            parrent_label = BaseMetaDataService.rest_endpoint_to_label(
+                endpoint)
 
             objects = identify.identify_from_json_data(
                 data, schema, user, parrent_label)
@@ -343,7 +349,8 @@ class GetTemporalFloatPairsService(Service):
             Attribute.assert_data_type(datetime_att, datetime)
 
         else:
-            raise NotImplementedError("identify not implemented, specify a secondary label")
+            raise NotImplementedError(
+                "identify not implemented, specify a secondary label")
             datetime_att = identify()
 
         service = BaseMetaDataService()

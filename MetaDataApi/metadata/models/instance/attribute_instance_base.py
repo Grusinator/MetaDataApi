@@ -1,6 +1,8 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 
+from MetaDataApi.metadata.models.meta import Attribute
+from MetaDataApi.metadata.utils import DictUtils
 from MetaDataApi.metadata.utils.django_model_utils import DjangoModelUtils
 from .instance_base import BaseInstance
 
@@ -31,6 +33,12 @@ class BaseAttributeInstance(BaseInstance):
         search_args.pop("cls")
 
         return DjangoModelUtils.get_object_or_none(cls, **search_args)
+
+    @classmethod
+    def get_attribute_instance_class_from_data_type(cls, data_type: Attribute.DataType):
+        datatype = DictUtils.inverse_dict(Attribute.data_type_map, data_type.value)
+        return DictUtils.inverse_dict(BaseAttributeInstance.att_inst_to_type_map, datatype)
+
 
     class Meta(BaseInstance.Meta):
         abstract = True

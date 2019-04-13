@@ -4,8 +4,8 @@ from urllib import parse
 
 from django.db import models
 
-from MetaDataApi.metadata.models import Object, ObjectInstance
 # Create your models here.
+from MetaDataApi.metadata.rdf_models import RdfDataProvider
 from MetaDataApi.settings import OAUTH_REDIRECT_URI
 
 
@@ -17,7 +17,8 @@ class ApiTypes(Enum):
 
 class ThirdPartyDataProvider(models.Model):
     provider_name = models.TextField(unique=True)
-    api_type = models.TextField(choices=[(type.value, type.name) for type in ApiTypes])
+    api_type = models.TextField(
+        choices=[(type.value, type.name) for type in ApiTypes])
     api_endpoint = models.TextField()
     authorize_url = models.TextField()
     access_token_url = models.TextField()
@@ -36,12 +37,15 @@ class ThirdPartyDataProvider(models.Model):
         return "%s - %s" % (self.provider_name, self.api_endpoint)
 
     def save(self, *args, **kwargs):
-        data_provider_meta = Object.objects.get(schema__label="meta_data_api", label="data_provider")
-        data_provider_instance = ObjectInstance(base=data_provider_meta)
-        data_provider_instance.save()
-        self.data_provider_instance = data_provider_instance
+        if not self.data_provider_instance:
+            self.data_provider_instance = RdfDataProvider.create_data_provider(
+                str(self.provider_name))
 
         super(ThirdPartyDataProvider, self).save(*args, **kwargs)
+
+    @classmethod
+    def exists(cls, provider_name):
+        return cls.objects.get(provider_name=provider_name)
 
     def do_endpoint_exist(self, endpoint):
         if endpoint not in self.rest_endpoints_list:

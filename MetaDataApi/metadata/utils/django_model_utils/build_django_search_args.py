@@ -2,8 +2,8 @@ from MetaDataApi.metadata.utils.json_utils import IJsonIterator
 
 
 class BuildDjangoSearchArgs(IJsonIterator):
-    from_obj_search_str = "from_relations__from_object__"
-    to_obj_search_str = "to_relations__to_object__"
+    from_obj_rel_search_str = "from_relations__from_object__"
+    to_obj_rel_search_str = "to_relations__to_object__"
 
     def __init__(self):
         super(BuildDjangoSearchArgs, self).__init__()
@@ -21,11 +21,11 @@ class BuildDjangoSearchArgs(IJsonIterator):
             self.search_args[key] = value
 
     def handle_attributes(self, parrent_object, data, label):
-        key = self.from_obj_search_str * self.depth + "label"
+        key = self.from_obj_rel_search_str * self.depth + "label"
         self.add_arg(key, label)
 
     def handle_objects(self, parrent_object, data, label):
-        key = self.from_obj_search_str * self.depth + "label"
+        key = self.from_obj_rel_search_str * self.depth + "label"
         self.add_arg(key, label)
 
     def handle_object_relations(self, parrent_object, data, label):
@@ -42,7 +42,7 @@ class BuildDjangoSearchArgs(IJsonIterator):
         self._add_obj(label, depth, to=True)
 
     def _add_obj(self, label, depth, to=True):
-        obj_str = self.to_obj_search_str if to else self.from_obj_search_str
+        obj_str = self.to_obj_rel_search_str if to else self.from_obj_rel_search_str
         key = obj_str * depth
         # if it is a string assume its a label, else its an object
         if isinstance(label, str):

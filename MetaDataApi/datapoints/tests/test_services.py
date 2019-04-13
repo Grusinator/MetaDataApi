@@ -3,9 +3,6 @@ import unittest
 import django
 from django.test import TransactionTestCase
 
-from MetaDataApi.metadata.services.services import GetTemporalFloatPairsService
-from MetaDataApi.metadata.tests.data import LoadTestData
-
 
 class TestService(TransactionTestCase):
 
@@ -17,7 +14,8 @@ class TestService(TransactionTestCase):
 
     @unittest.skip("needs repair")
     def test_get_temporal_attribute(self):
-
+        from MetaDataApi.metadata.services.services import GetTemporalFloatPairsService
+        from MetaDataApi.metadata.tests.data import LoadTestData
         LoadTestData.init_strava_schema_from_file()
         LoadTestData.init_strava_data_from_file()
 

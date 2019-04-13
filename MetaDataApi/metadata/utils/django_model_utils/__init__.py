@@ -1,3 +1,3 @@
-from .build_search_args_from_json import BuildDjangoSearchArgs
+from .build_django_search_args import BuildDjangoSearchArgs
 # from .build_data_objects_from_json import BuildDataObjectsFromJson
 from .django_model_utils import DjangoModelUtils

@@ -1,5 +1,7 @@
+import inspect
 import logging
-from abc import ABCMeta, abstractmethod
+import uuid
+from abc import ABCMeta
 from enum import Enum
 
 from MetaDataApi.metadata.models import Object, ObjectRelation, Attribute, Schema, ObjectInstance, \
@@ -14,51 +16,68 @@ class BaseRdfModel:
 
     schema_label = None
 
+    class SchemaItems:
+        pass
+
     class ObjectLabels(Enum):
         pass
 
     @classmethod
-    @abstractmethod
     def _get_schema(cls) -> Schema:
-        pass
+        return cls.get_all_schema_items_of_type(Schema)[0]
 
     @classmethod
-    @abstractmethod
-    def _get_objects(cls):
-        pass
+    def _get_objects(cls) -> list:
+        return cls.get_all_schema_items_of_type(Object)
 
     @classmethod
-    @abstractmethod
     def _get_attributes(cls):
-        pass
+        return cls.get_all_schema_items_of_type(Attribute)
 
     @classmethod
-    @abstractmethod
     def _get_object_relations(cls):
-        pass
+        return cls.get_all_schema_items_of_type(ObjectRelation)
 
-    class ObjectRelationLabels(Enum):
-        pass
-
-    class AttributeLabels(Enum):
-        pass
-
-    label_to_db_object = {
-        ObjectLabels: Object,
-        ObjectRelationLabels: ObjectRelation,
-        AttributeLabels: Attribute
-    }
+    @classmethod
+    def get_all_schema_items_of_type(cls, meta_type: type):
+        members = inspect.getmembers(cls.SchemaItems, lambda m: isinstance(m, meta_type))
+        return [member[1] for member in members]
 
     @classmethod
     def create_all_meta_objects(cls):
-        cls._get_schema().save()
-        [obj.save() for obj in cls._get_objects()]
-        [att.save() for att in cls._get_attributes()]
-        [obj_rel.save() for obj_rel in cls._get_object_relations()]
+        schema = cls._get_schema()
+        schema.save()
+        objects = [cls.save_object(obj, schema) for obj in cls._get_objects()]
+        attrs = [cls.save_attribute(att, objects) for att in cls._get_attributes()]
+        obj_rels = [cls.save_object_rel(obj_rel, objects, schema) for obj_rel in cls._get_object_relations()]
+        return objects + attrs + obj_rels
 
     @classmethod
-    def is_schema_items_valid(cls):
-        schema = [Schema.exists(cls._get_schema())]
+    def save_object(cls, obj, schema):
+        obj.schema = schema
+        obj.save()
+        return obj
+
+    @classmethod
+    def save_attribute(cls, att, objects: list):
+        obj_label = att.object.label
+        att.object = list(filter(lambda o: o.label == obj_label, objects))[0]
+        att.save()
+        return att
+
+    @classmethod
+    def save_object_rel(cls, obj_rel, objects: list, schema: Schema):
+        from_obj_label = obj_rel.from_object.label
+        to_obj_label = obj_rel.to_object.label
+        obj_rel.from_object = list(filter(lambda o: o.label == from_obj_label, objects))[0]
+        obj_rel.to_object = list(filter(lambda o: o.label == to_obj_label, objects))[0]
+        obj_rel.schema = schema
+        obj_rel.save()
+        return obj_rel
+
+    @classmethod
+    def do_schema_items_exists(cls):
+        schema = [Schema.exists_schema(cls._get_schema())]
         objs = [Object.exists_obj(obj) for obj in cls._get_objects()]
         atts = [Attribute.exists_att(att) for att in cls._get_attributes()]
         obj_rels = [ObjectRelation.exists_obj_rel(obj_rel) for obj_rel in cls._get_object_relations()]
@@ -89,19 +108,19 @@ class BaseRdfModel:
                                     value):
         att_base = Attribute.exists_att(att)
 
-        AttributeInstance = cls.get_attribute_instance_from_type(att_base.data_type)
+        SpecificAttributeInstance = cls.get_attribute_instance_from_type(att_base.data_type)
 
-        att_inst = AttributeInstance(
+        att_inst = SpecificAttributeInstance(
             object=parrent_obj_inst,
             base=att_base,
             value=value
         )
-        if AttributeInstance is FileAttributeInstance:
-            att_inst.value.save("steve.txt", value)
+        if SpecificAttributeInstance is FileAttributeInstance:
+            ext = None | ".txt"
+            att_inst.value.save(str(uuid.uuid4()) + ext, value)
 
         att_inst.save()
         return att_inst
-
 
     @classmethod
     def get_attribute_instance_from_type(cls, type_as_string: str):

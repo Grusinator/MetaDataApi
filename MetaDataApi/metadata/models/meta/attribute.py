@@ -1,4 +1,5 @@
 from datetime import datetime
+from enum import Enum
 
 from PIL import Image
 from django.core.files import File
@@ -6,20 +7,35 @@ from django.db import models
 
 from MetaDataApi.metadata.models.meta.base_meta import BaseMeta
 from MetaDataApi.metadata.models.meta.object import Object
+from MetaDataApi.metadata.utils import DictUtils
 
 
 class Attribute(BaseMeta):
+    class DataType(Enum):
+        Date = "datetime"
+        Number = "float"
+        Integer = "int"
+        Boolean = "bool"
+        String = "string"
+        File = "file"
+        Image = "image"
+        Undefined = "unknown"
+
+        def __str__(self):
+            return self.value
+
     data_type_map = {
-        datetime: "datetime",
-        float: "float",
-        int: "int",
-        bool: "bool",
-        str: "string",
-        File: "file",
-        Image: "image",
-        type(None): "unknown"
+        datetime: DataType.Date.value,
+        float: DataType.Number.value,
+        int: DataType.Integer.value,
+        bool: DataType.Boolean.value,
+        str: DataType.String.value,
+        File: DataType.File.value,
+        Image: DataType.Image.value,
+        type(None): DataType.Undefined.value
     }
     data_type_choises = [(x, x) for x in data_type_map.values()]
+    # data_type_choises = [(tag, tag.value) for tag in DataType]
 
     # db Fields
     data_type = models.TextField(choices=data_type_choises)
@@ -33,6 +49,11 @@ class Attribute(BaseMeta):
             return self.__dict__ == other.__dict__
         else:
             return False
+
+    @classmethod
+    def datatype_to_data_object(cls, data_type: DataType):
+        return DictUtils.inverse_dict(cls.data_type_map, data_type.value)
+
 
     @classmethod
     def exists(cls, label: str, object__label: str):

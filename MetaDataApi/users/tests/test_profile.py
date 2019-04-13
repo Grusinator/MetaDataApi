@@ -1,8 +1,6 @@
 import django
 from django.test import TransactionTestCase
 
-from MetaDataApi.metadata.tests import LoadTestData
-
 
 class TestProfile(TransactionTestCase):
     """Tests for the application views."""
@@ -17,6 +15,7 @@ class TestProfile(TransactionTestCase):
         from MetaDataApi.users.models import Profile
         from MetaDataApi.users.models import Languages
 
+        from MetaDataApi.metadata.tests import LoadTestData
         LoadTestData.init_foaf()
         user = LoadTestData.init_user()
         profile = Profile(

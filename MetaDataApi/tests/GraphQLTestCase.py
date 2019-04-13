@@ -3,7 +3,6 @@ import unittest
 
 from django.test import Client
 from django.test import RequestFactory, TestCase
-from graphene.test import Client as GrapheneClient
 
 
 # Inherit from this in your test cases
@@ -17,8 +16,8 @@ class GraphQLTestCase(TestCase):
         self._client = Client()
         self.token = None
 
-        from schema import schema
-        self._gqlclient = GrapheneClient(schema)
+        # from schema import schema
+        # self._gqlclient = GrapheneClient(schema)
 
         from django.contrib.auth.models import User
         self.user = User.objects.get(username="guest")
@@ -127,7 +126,7 @@ class GraphQLTestCase(TestCase):
 
     @unittest.skip("needs repair")
     def dict_to_datapoint(self, dict):
-        # from datapoints.models import Datapoint, CategoryTypes
+        # from MetaDataApi.datapoints.models import Datapoint, CategoryTypes
         # us_dict = {}
         # # convert all keys to underscore
         # for key, value in dict.items():

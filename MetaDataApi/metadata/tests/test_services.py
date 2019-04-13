@@ -3,7 +3,7 @@ import os
 import django
 from django.test import TransactionTestCase
 
-import settings
+from MetaDataApi import settings
 from MetaDataApi.metadata.tests.data import LoadTestData
 
 

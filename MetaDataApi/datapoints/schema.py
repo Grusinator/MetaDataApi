@@ -29,13 +29,13 @@
 
 # from MetaDataApi.metadata.schema import AttributeNode as AttributeMetaNode
 
-# from datapoints.schema_processing import ProcessRawData
+# from MetaDataApi.datapoints.schema_processing import ProcessRawData
 # from MetaDataApi.users.models import Profile
 
 # from MetaDataApi.metadata.services import GetTemporalFloatPairsService
 
-# from datapoints.services.google_speech_api import transcribe_file
-# # from datapoints.services.sound_processing_services import SoundClassifier
+# from MetaDataApi.datapoints.services.google_speech_api import transcribe_file
+# # from MetaDataApi.datapoints.services.sound_processing_services import SoundClassifier
 
 # GrapheneCategoryTypes = Enum.from_enum(CategoryTypes)
 

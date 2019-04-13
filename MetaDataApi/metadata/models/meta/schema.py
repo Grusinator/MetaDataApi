@@ -13,7 +13,7 @@ class Schema(models.Model):
         null=True, blank=True, storage=MediaStorage())
 
     def __str__(self):
-        return "S:" + self.label
+        return "S:" + str(self.label)
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
@@ -23,8 +23,12 @@ class Schema(models.Model):
             return False
 
     @classmethod
-    def exists(cls, label):
-        BaseMeta.get_schema_item(cls, label=label)
+    def exists(cls, label: str):
+        return BaseMeta.get_schema_item(cls, label=label)
+
+    @classmethod
+    def exists_schema(cls, schema):
+        return cls.exists(schema.label)
 
     def __ne__(self, other):
         return not self.__eq__(other)

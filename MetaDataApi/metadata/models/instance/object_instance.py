@@ -12,13 +12,22 @@ class ObjectInstance(BaseInstance):
         return "Oi:%s.%s" % (self.base.schema.label, self.base.label)
 
     @classmethod
-    def exists(cls, label, children={}):
+    def exists(cls, label, children=()):
         arg_builder = BuildDjangoSearchArgs()
         search_args = arg_builder.build_from_json(children)
         search_args["label"] = label
         search_args = BuildDjangoSearchArgs.modify_keys_in_dict(
             search_args, lambda x: "base__" + x)
 
+        return DjangoModelUtils.get_object_or_none(cls, **search_args)
+
+    @classmethod
+    def exists_by_parrent_and_attribute_value(cls, parrent_inst_label: str, base_att_label: str):
+        raise NotImplementedError()
+
+        search_args = dict()
+        parrent_key = BuildDjangoSearchArgs.from_obj_rel_search_str + "__label"
+        search_args[parrent_key] = parrent_inst_label
         return DjangoModelUtils.get_object_or_none(cls, **search_args)
 
     def get_related_list(self, include_attributes=False):
