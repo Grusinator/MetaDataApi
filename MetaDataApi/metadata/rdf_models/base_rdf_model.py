@@ -48,7 +48,12 @@ class BaseRdfModel:
     @classmethod
     def create_all_meta_objects(cls):
         schema = cls._get_schema()
-        schema.save()
+        existing_schema = Schema.exists_schema(schema)
+        if not existing_schema:
+            schema.save()
+        else:
+            schema = existing_schema
+
         objects = [cls.save_object(obj, schema) for obj in cls._get_objects()]
         attrs = [cls.save_attribute(att, objects) for att in cls._get_attributes()]
         obj_rels = [cls.save_object_rel(obj_rel, objects, schema) for obj_rel in cls._get_object_relations()]

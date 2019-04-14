@@ -79,6 +79,7 @@ class TestDataProvider(TransactionTestCase):
             '/v3/activities', '/v3/athlete/zones', '/v3/athlete', '/v1/userinfo',
             '/v1/sleep?start={StartDateTime:Y-M-d}&end={EndDateTime:Y-M-d}',
             '/v1/activity?start={StartDateTime:Y-M-d}&end={EndDateTime:Y-M-d}',
-            '/v1/readiness?start={StartDateTime:Y-M-d}&end={EndDateTime:Y-M-d}', 'v1/users/me/dataSources']
+            '/v1/readiness?start={StartDateTime:Y-M-d}&end={EndDateTime:Y-M-d}', 'v1/users/me/dataSources'
+        ]
 
         self.assertListEqual(urls, expected_urls)
