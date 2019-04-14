@@ -64,7 +64,7 @@ class BuildDataObjectsFromJson(IJsonIterator):
         # TODO handle list structures better fix for when list with values
         label = label or parrent_object.base.label
 
-        att = Attribute.exists(label, parrent_object.base.label)
+        att = Attribute.exists_by_label(label, parrent_object.base.label)
 
         # TODO handle if the data of an attribute is a dict
         if isinstance(data, dict):
@@ -91,7 +91,7 @@ class BuildDataObjectsFromJson(IJsonIterator):
         )
 
         # check if an attribute of such type exists
-        att_inst = AttributeInstance.exists(
+        att_inst = AttributeInstance.exists_by_label(
             label, parrent_object.pk, data_as_type)
 
         if att_inst is not None:
@@ -108,7 +108,7 @@ class BuildDataObjectsFromJson(IJsonIterator):
             return self.save_obj(att_inst)
 
     def handle_objects(self, parrent_object: ObjectInstance, data, label: str):
-        obj = Object.exists(label, self.schema.label)
+        obj = Object.exists_by_label(label, self.schema.label)
 
         # it does not exists
         if obj is None:
@@ -141,7 +141,7 @@ class BuildDataObjectsFromJson(IJsonIterator):
         label = label or "%s__to__%s" % (
             parrent_object.base.label, to_object.base.label)
 
-        obj_rel = ObjectRelation.exists(
+        obj_rel = ObjectRelation.exists_by_label(
             label, parrent_object.base.label,
             to_object.base.label, self.schema.label)
 

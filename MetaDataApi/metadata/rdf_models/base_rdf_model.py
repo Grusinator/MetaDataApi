@@ -48,11 +48,7 @@ class BaseRdfModel:
     @classmethod
     def create_all_meta_objects(cls):
         schema = cls._get_schema()
-        existing_schema = Schema.exists_schema(schema)
-        if not existing_schema:
-            schema.save()
-        else:
-            schema = existing_schema
+        schema.create_if_not_exists()
 
         objects = [cls.save_object(obj, schema) for obj in cls._get_objects()]
         attrs = [cls.save_attribute(att, objects) for att in cls._get_attributes()]
@@ -62,44 +58,43 @@ class BaseRdfModel:
     @classmethod
     def save_object(cls, obj, schema):
         obj.schema = schema
-        obj.save()
-        return obj
+        return obj.create_if_not_exists()
 
     @classmethod
     def save_attribute(cls, att, objects: list):
         obj_label = att.object.label
+        # we have to update the object to a newly fetched or saved because otherwise the pk is not in the object
         att.object = list(filter(lambda o: o.label == obj_label, objects))[0]
-        att.save()
-        return att
+        return att.create_if_not_exists()
 
     @classmethod
     def save_object_rel(cls, obj_rel, objects: list, schema: Schema):
         from_obj_label = obj_rel.from_object.label
         to_obj_label = obj_rel.to_object.label
+        # we have to update the object to a newly fetched or saved because otherwise the pk is not in the object
         obj_rel.from_object = list(filter(lambda o: o.label == from_obj_label, objects))[0]
         obj_rel.to_object = list(filter(lambda o: o.label == to_obj_label, objects))[0]
         obj_rel.schema = schema
-        obj_rel.save()
-        return obj_rel
+        return obj_rel.create_if_not_exists()
 
     @classmethod
     def do_schema_items_exists(cls):
-        schema = [Schema.exists_schema(cls._get_schema())]
-        objs = [Object.exists_obj(obj) for obj in cls._get_objects()]
-        atts = [Attribute.exists_att(att) for att in cls._get_attributes()]
-        obj_rels = [ObjectRelation.exists_obj_rel(obj_rel) for obj_rel in cls._get_object_relations()]
+        schema = [Schema.exists(cls._get_schema())]
+        objs = [Object.exists(obj) for obj in cls._get_objects()]
+        atts = [Attribute.exists(att) for att in cls._get_attributes()]
+        obj_rels = [ObjectRelation.exists(obj_rel) for obj_rel in cls._get_object_relations()]
         return all(schema + objs + atts + obj_rels)
 
     @classmethod
     def create_obj_inst(cls, obj: Object):
-        obj_base = Object.exists_obj(obj)
+        obj_base = Object.exists(obj)
         obj = ObjectInstance(base=obj_base)
         obj.save()
         return obj
 
     @classmethod
     def create_obj_rel_inst(cls, obj_rel: ObjectRelation, from_object: ObjectInstance, to_object: ObjectInstance):
-        rel_base = ObjectRelation.exists_obj_rel(obj_rel)
+        rel_base = ObjectRelation.exists(obj_rel)
         rel = ObjectRelationInstance(
             base=rel_base,
             from_object=from_object,
@@ -113,7 +108,7 @@ class BaseRdfModel:
                                     parrent_obj_inst: ObjectInstance,
                                     att: Attribute,
                                     value):
-        att_base = Attribute.exists_att(att)
+        att_base = Attribute.exists(att)
 
         SpecificAttributeInstance = BaseAttributeInstance.get_attribute_instance_from_type(att_base.data_type)
 

@@ -46,7 +46,7 @@ class DataProvider(models.Model):
             self.data_provider_instance = RdfDataProvider.create_data_provider(
                 str(self.provider_name))
 
-        if not Schema.exists(self.provider_name):
+        if not Schema.exists_by_label(self.provider_name):
             Schema.create_new_empty_schema(self.provider_name)
 
         existing_endpoints = RdfDataProvider.get_all_endpoints(self.data_provider_instance)

@@ -18,7 +18,7 @@ class ObjectInstance(BaseInstance):
         default_related_name = '%(model_name)s'
 
     def get_att_inst(self, label) -> BaseAttributeInstance:
-        att_base = Attribute.exists(label, self.base.label)
+        att_base = Attribute.exists_by_label(label, self.base.label)
         SpecificAttributeInstance = BaseAttributeInstance.get_attribute_instance_from_type(att_base.data_type)
         return SpecificAttributeInstance.objects.get(base=att_base, object=self)
 

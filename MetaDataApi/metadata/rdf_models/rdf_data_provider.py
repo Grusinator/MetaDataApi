@@ -101,7 +101,7 @@ class RdfDataProvider(BaseRdfModel):
     def create_data_dump(cls, rest_endpoint: ObjectInstance,
                          file, date: datetime = datetime.now()):
         endpoint_data_dump = cls.create_obj_inst(
-            Object.exists_obj(cls.SchemaItems.endpoint_data_dump)
+            Object.exists(cls.SchemaItems.endpoint_data_dump)
         )
         cls.create_obj_rel_inst(
             obj_rel=cls.SchemaItems.has_generated,
@@ -130,7 +130,7 @@ class RdfDataProvider(BaseRdfModel):
         for endpoint in endpoints:
             name = StringAttributeInstance.objects.filter(
                 object=endpoint,
-                base=Attribute.exists_att(cls.SchemaItems.endpoint_name),
+                base=Attribute.exists(cls.SchemaItems.endpoint_name),
                 value=rest_endpoint_name
             ).first()
             if name:

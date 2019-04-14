@@ -24,16 +24,16 @@ class ObjectRelation(BaseMeta):
             return False
 
     @classmethod
-    def exists(cls, label: str, from_object__label: str,
-               to_object__label: str, schema__label: str):
+    def exists_by_label(cls, label: str, from_object__label: str,
+                        to_object__label: str, schema__label: str):
         search_args = dict(locals())
         search_args.pop("cls")
 
         return cls.get_schema_item(cls, **search_args)
 
     @classmethod
-    def exists_obj_rel(cls, obj_rel):
-        return cls.exists(
+    def exists(cls, obj_rel):
+        return cls.exists_by_label(
             obj_rel.label,
             obj_rel.from_object.label,
             obj_rel.to_object.label,

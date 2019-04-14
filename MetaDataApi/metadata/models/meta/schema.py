@@ -41,15 +41,24 @@ class Schema(models.Model):
         return schema
 
     @classmethod
-    def exists(cls, label: str):
+    def exists_by_label(cls, label: str):
         return BaseMeta.get_schema_item(cls, label=label)
 
     @classmethod
-    def exists_schema(cls, schema):
-        return cls.exists(schema.label)
+    def exists(cls, schema):
+        return cls.exists_by_label(schema.label)
 
     def __ne__(self, other):
         return not self.__eq__(other)
 
     class Meta:
         app_label = 'metadata'
+
+    def create_if_not_exists(self):
+        MetaItemType = type(self)
+        item_found = MetaItemType.exists(self)
+        if not item_found:
+            self.save()
+            return self
+        else:
+            return item_found

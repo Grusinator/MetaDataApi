@@ -5,7 +5,7 @@ class TestingUtils:
 
     @classmethod
     def get_all_items_from_schema(cls, schema_label):
-        schema = Schema.exists(schema_label)
+        schema = Schema.exists_by_label(schema_label)
         objects = list(schema.object_list.all())
         attributes = []
         [attributes.extend(obj.attributes.all()) for obj in objects]
@@ -22,7 +22,7 @@ class TestingUtils:
     @classmethod
     def get_all_object_instances_from_schema(cls, schema_label):
         metas = cls.get_all_items_from_schema(schema_label)
-        metas.remove(Schema.exists(schema_label))
+        metas.remove(Schema.exists_by_label(schema_label))
         instances = []
         for meta in metas:
             if isinstance(meta, (Object, ObjectRelation)):

@@ -73,10 +73,10 @@ class TestModelInstances(TransactionTestCase):
         negative_list = [UtilsForTesting.mutate(
             elm) for elm in list(positive_list)]
 
-        positive_res = [Instance.exists(*args)
+        positive_res = [Instance.exists_by_label(*args)
                         for Instance, *args in positive_list]
 
-        negative_res = [Instance.exists(*args)
+        negative_res = [Instance.exists_by_label(*args)
                         for Instance, *args in negative_list]
 
         pos_type = [type(att).__name__ for att in positive_res]
@@ -106,10 +106,10 @@ class TestModelInstances(TransactionTestCase):
         negative_list = [UtilsForTesting.mutate(
             elm) for elm in list(positive_list)]
 
-        positive_res = [Instance.exists(*args)
+        positive_res = [Instance.exists_by_label(*args)
                         for Instance, *args in positive_list]
 
-        negative_res = [Instance.exists(*args)
+        negative_res = [Instance.exists_by_label(*args)
                         for Instance, *args in negative_list]
 
         pos_type = [type(obj).__name__ for obj in positive_res]

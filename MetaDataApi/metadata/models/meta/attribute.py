@@ -59,14 +59,14 @@ class Attribute(BaseMeta):
         return DictUtils.inverse_dict(cls.data_type_map, data_type.value)
 
     @classmethod
-    def exists(cls, label: str, object__label: str):
+    def exists_by_label(cls, label: str, object__label: str):
         search_args = dict(locals())
         search_args.pop("cls")
         return cls.get_schema_item(cls, **search_args)
 
     @classmethod
-    def exists_att(cls, att):
-        return cls.exists(att.label, att.object.label)
+    def exists(cls, att):
+        return cls.exists_by_label(att.label, att.object.label)
 
     def __ne__(self, other):
         return not self.__eq__(other)

@@ -66,14 +66,14 @@ class Object(BaseMeta):
         return related
 
     @classmethod
-    def exists(cls, label: str, schema__label: str):
+    def exists_by_label(cls, label: str, schema__label: str):
         search_args = dict(locals())
         search_args.pop("cls")
         return cls.get_schema_item(cls, **search_args)
 
     @classmethod
-    def exists_obj(cls, obj):
-        return cls.exists(obj.label, obj.schema.label)
+    def exists(cls, obj):
+        return cls.exists_by_label(obj.label, obj.schema.label)
 
     def __ne__(self, other):
         return not self.__eq__(other)
