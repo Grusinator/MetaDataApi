@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from MetaDataApi.dataproviders.models import ThirdPartyDataProvider
+from MetaDataApi.dataproviders.models import DataProvider
 from MetaDataApi.dataproviders.services import AddDefaultDataProviderService
 
 
@@ -23,4 +23,4 @@ class ThirdPartyDataProviderAdmin(admin.ModelAdmin):
     ]
 
 
-admin.site.register(ThirdPartyDataProvider, ThirdPartyDataProviderAdmin)
+admin.site.register(DataProvider, ThirdPartyDataProviderAdmin)

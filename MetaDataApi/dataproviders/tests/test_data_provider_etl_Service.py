@@ -18,9 +18,9 @@ class TestDataProviderEtlService(TransactionTestCase):
         from MetaDataApi.dataproviders.services import (
             DataProviderEtlService)
 
-        from MetaDataApi.dataproviders.models import ThirdPartyDataProvider
+        from MetaDataApi.dataproviders.models import DataProvider
 
-        data_provider = ThirdPartyDataProvider(
+        data_provider = DataProvider(
             provider_name="dummy")
         # init service
         service = DataProviderEtlService(data_provider)

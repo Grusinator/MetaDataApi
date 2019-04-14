@@ -1,7 +1,7 @@
 import django
 from django.test import TransactionTestCase
 
-from MetaDataApi.dataproviders.models.third_party_data_provider import ApiTypes
+from MetaDataApi.dataproviders.models.data_provider import ApiTypes
 
 
 class TestDataProvider(TransactionTestCase):
@@ -14,7 +14,7 @@ class TestDataProvider(TransactionTestCase):
         django.setup()
 
     def test_create_profile(self):
-        from MetaDataApi.dataproviders.models import ThirdPartyDataProvider
+        from MetaDataApi.dataproviders.models import DataProvider
 
         from MetaDataApi.metadata.models import Schema
         schema = Schema(label="meta_data_api", url="test.com")
@@ -24,7 +24,7 @@ class TestDataProvider(TransactionTestCase):
         object = Object(label="data_provider", schema=schema)
         object.save()
 
-        data_provider = ThirdPartyDataProvider(
+        data_provider = DataProvider(
             provider_name="name",
             api_type=ApiTypes.OauthRest,
             api_endpoint="d",

@@ -7,10 +7,10 @@ from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.shortcuts import render
 
-from MetaDataApi.dataproviders.models import ThirdPartyDataProvider
+from MetaDataApi.dataproviders.models import DataProvider
 from MetaDataApi.settings import OAUTH_REDIRECT_URI
+from MetaDataApi.users.models import DataProviderProfile
 from MetaDataApi.users.models import Profile
-from MetaDataApi.users.models import ThirdPartyProfile
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +21,7 @@ def data_provider_list(request):
     if not request.user.is_authenticated:
         return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
 
-    data_providers = ThirdPartyDataProvider.objects.all()
+    data_providers = DataProvider.objects.all()
 
     return render(request, 'dataproviders.html',
                   {
@@ -31,7 +31,7 @@ def data_provider_list(request):
 
 
 def provider_list_view(ListView):
-    queryset = ThirdPartyDataProvider.objects.all()
+    queryset = DataProvider.objects.all()
 
 
 def oauth2redirect(request):
@@ -45,7 +45,7 @@ def oauth2redirect(request):
 
         provider_name, user_id = state.split(":")
 
-        data_provider = ThirdPartyDataProvider.objects.get(
+        data_provider = DataProvider.objects.get(
             provider_name=provider_name)
 
         data = {
@@ -74,11 +74,11 @@ def oauth2redirect(request):
             profile = Profile.objects.get(user__pk=user_id)
 
         try:
-            tpp = ThirdPartyProfile.objects.get(
+            tpp = DataProviderProfile.objects.get(
                 profile=profile, provider=data_provider)
             tpp.access_token = access_token
         except:
-            tpp = ThirdPartyProfile(
+            tpp = DataProviderProfile(
                 provider=data_provider,
                 access_token=access_token,
                 profile=profile,

@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from MetaDataApi.metadata.services.services import IdentifySchemaAndDataFromProviderService
 # Register your models here.
-from MetaDataApi.users.models import ThirdPartyProfile
+from MetaDataApi.users.models import DataProviderProfile
 
 
 def identify_schema_and_data_from_all_endpoints(modeladmin, request, queryset):
@@ -26,4 +26,4 @@ class ThirdPartyProfileAdmin(admin.ModelAdmin):
     ]
 
 
-admin.site.register(ThirdPartyProfile, ThirdPartyProfileAdmin)
+admin.site.register(DataProviderProfile, ThirdPartyProfileAdmin)

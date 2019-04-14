@@ -15,7 +15,7 @@ class ApiTypes(Enum):
     TokenRest = "Token-rest"
 
 
-class ThirdPartyDataProvider(models.Model):
+class DataProvider(models.Model):
     provider_name = models.TextField(unique=True)
     api_type = models.TextField(
         choices=[(type.value, type.name) for type in ApiTypes])
@@ -41,7 +41,7 @@ class ThirdPartyDataProvider(models.Model):
             self.data_provider_instance = RdfDataProvider.create_data_provider(
                 str(self.provider_name))
 
-        super(ThirdPartyDataProvider, self).save(*args, **kwargs)
+        super(DataProvider, self).save(*args, **kwargs)
 
     @classmethod
     def exists(cls, provider_name):

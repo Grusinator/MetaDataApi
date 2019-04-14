@@ -3,13 +3,13 @@ from graphene_django.filter import DjangoFilterConnectionField
 from graphene_django.types import DjangoObjectType
 from graphql_jwt.decorators import login_required
 
-from MetaDataApi.dataproviders.models import ThirdPartyDataProvider
+from MetaDataApi.dataproviders.models import DataProvider
 from MetaDataApi.dataproviders.services import AddDefaultDataProviderService, LoadDataFromProviderService
 
 
 class DataProviderNode(DjangoObjectType):
     class Meta:
-        model = ThirdPartyDataProvider
+        model = DataProvider
         filter_fields = ['provider_name', ]
         interfaces = (graphene.relay.Node, )
 
@@ -57,10 +57,10 @@ class Query(graphene.ObjectType):
     all_data_providers = DjangoFilterConnectionField(DataProviderNode)
 
     def resolve_data_provider(self, info):
-        return ThirdPartyDataProvider.objects.first()
+        return DataProvider.objects.first()
 
     def resolve_all_data_providers(self, info):
-        return ThirdPartyDataProvider.objects.all()
+        return DataProvider.objects.all()
 
 
 class Mutation(graphene.ObjectType):

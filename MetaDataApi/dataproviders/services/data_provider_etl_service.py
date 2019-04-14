@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 # from jsonschema import validate
 from urllib import request, parse
 
-from MetaDataApi.dataproviders.models import ThirdPartyDataProvider
+from MetaDataApi.dataproviders.models import DataProvider
 from MetaDataApi.dataproviders.services.url_format_helper import UrlFormatHelper
 from MetaDataApi.metadata.models import (
     Schema)
@@ -15,8 +15,8 @@ class DataProviderEtlService:
 
     def __init__(self, dataprovider):
         self.dataprovider = dataprovider if \
-            isinstance(dataprovider, ThirdPartyDataProvider) else \
-            ThirdPartyDataProvider.objects.get(
+            isinstance(dataprovider, DataProvider) else \
+            DataProvider.objects.get(
                 provider_name=StringUtils.standardize_string(dataprovider))
 
     def validate_endpoints(self):

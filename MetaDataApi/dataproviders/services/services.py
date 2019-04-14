@@ -6,8 +6,8 @@ from django.core.exceptions import (
     ObjectDoesNotExist)
 from service_objects.services import Service
 
-from MetaDataApi.dataproviders.default_3rd_data_providers import default_data_providers
-from MetaDataApi.dataproviders.models import ThirdPartyDataProvider
+from MetaDataApi.dataproviders.default_data_providers import default_data_providers
+from MetaDataApi.dataproviders.models import DataProvider
 from MetaDataApi.dataproviders.services.data_provider_etl_service import DataProviderEtlService
 
 
@@ -29,7 +29,7 @@ class AddDefaultDataProviderService(Service):
         for dp in default_providers:
             # test if it exists before creating it
             try:
-                ThirdPartyDataProvider.objects.get(
+                DataProvider.objects.get(
                     provider_name=dp.provider_name)
             except ObjectDoesNotExist:
                 dp.save()
@@ -51,7 +51,7 @@ class LoadDataFromProviderService(Service):
         user = User.objects.get(pk=user_pk)
 
         # get the dataprovider
-        data_provider = ThirdPartyDataProvider.objects.get(
+        data_provider = DataProvider.objects.get(
             provider_name=provider_name)
         # init service
         service = DataProviderEtlService(data_provider)

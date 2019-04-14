@@ -1,9 +1,9 @@
 import json
 
-from MetaDataApi.dataproviders.models import ThirdPartyDataProvider
+from MetaDataApi.dataproviders.models import DataProvider
 
 default_data_providers = [
-    ThirdPartyDataProvider(
+    DataProvider(
         provider_name="endomondo",
         api_type="Oauth2-rest",
         api_endpoint="https://api.endomondo.com/api/1/",
@@ -15,7 +15,7 @@ default_data_providers = [
         rest_endpoints_list=json.dumps([]),
         json_schema_file_url=""
     ),
-    ThirdPartyDataProvider(
+    DataProvider(
         provider_name="withings",
         api_type="Oauth2-rest",
         api_endpoint="https://wbsapi.withings.net/",
@@ -37,7 +37,7 @@ default_data_providers = [
         ]),
         json_schema_file_url=""
     ),
-    ThirdPartyDataProvider(
+    DataProvider(
         provider_name="strava",
         api_type="Oauth2-rest",
         api_endpoint="https://www.strava.com/api/v3/",
@@ -52,7 +52,7 @@ default_data_providers = [
             "/athlete"]),
         json_schema_file_url=""
     ),
-    ThirdPartyDataProvider(
+    DataProvider(
         provider_name="oura",
         api_type="Oauth2-rest",
         api_endpoint="https://api.ouraring.com/",
@@ -71,7 +71,7 @@ default_data_providers = [
             "/v1/readiness?start={StartDateTime:Y-M-d}&end={EndDateTime:Y-M-d}"]),
         json_schema_file_url=""
     ),
-    ThirdPartyDataProvider(
+    DataProvider(
         provider_name="google_fit",
         api_endpoint="https://www.googleapis.com/fitness/",
         authorize_url="https://accounts.google.com/o/oauth2/v2/auth",
@@ -86,7 +86,7 @@ default_data_providers = [
         ]),
         json_schema_file_url=""
     ),
-    ThirdPartyDataProvider(
+    DataProvider(
         provider_name="google_drive",
         api_endpoint="",
         authorize_url="https://accounts.google.com/o/oauth2/v2/auth",
@@ -99,7 +99,7 @@ default_data_providers = [
         rest_endpoints_list=json.dumps([]),
         json_schema_file_url="https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"
     ),
-    ThirdPartyDataProvider(
+    DataProvider(
         provider_name="rescue_time",
         api_endpoint="",
         authorize_url="",
@@ -110,7 +110,7 @@ default_data_providers = [
         rest_endpoints_list=json.dumps([]),
         json_schema_file_url=""
     ),
-    ThirdPartyDataProvider(
+    DataProvider(
         provider_name="template",
         api_endpoint="",
         authorize_url="",

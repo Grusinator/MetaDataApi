@@ -4,7 +4,7 @@ from graphene_django import DjangoObjectType
 from graphql.error import GraphQLError
 from graphql_jwt.decorators import login_required
 
-from MetaDataApi.users.models import Profile, ThirdPartyProfile, Languages
+from MetaDataApi.users.models import Profile, DataProviderProfile, Languages
 
 GrapheneLanguages = Enum.from_enum(Languages)
 
@@ -32,7 +32,7 @@ class ProfileType(DjangoObjectType):
 
 class ThirdPartyProfileType(DjangoObjectType):
     class Meta:
-        model = ThirdPartyProfile
+        model = DataProviderProfile
 
 
 class CreateUser(Mutation):
@@ -109,7 +109,7 @@ class CreateThirdPartyProfile(Mutation):
             raise GraphQLError(
                 "profile object has not been created successfully: " + str(e))
 
-        third_party_profile = ThirdPartyProfile(
+        third_party_profile = DataProviderProfile(
             profile=profile,
             provider=provider,
             access_token=access_token,
@@ -142,4 +142,4 @@ class Query(ObjectType):
     @login_required
     def resolve_third_party_profiles(self, info):
         profile = Profile.objects.get(user=info.context.user)
-        return ThirdPartyProfile.objects.filter(profile=profile)
+        return DataProviderProfile.objects.filter(profile=profile)
