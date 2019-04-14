@@ -2,39 +2,10 @@ import json
 
 from django import forms
 from django.contrib.auth.models import User
-from django.core.exceptions import (
-    ObjectDoesNotExist)
 from service_objects.services import Service
 
-from MetaDataApi.dataproviders.default_data_providers import default_data_providers
 from MetaDataApi.dataproviders.models import DataProvider
 from MetaDataApi.dataproviders.services.data_provider_etl_service import DataProviderEtlService
-
-
-class AddDefaultDataProviderService(Service):
-    provider_name = forms.CharField()
-
-    def process(self):
-        provider_name = self.cleaned_data['provider_name']
-
-        default_providers = default_data_providers
-
-        # select only the chosen one if not
-        if provider_name != "all":
-            provider = list(filter(lambda x: x.provider_name == provider_name,
-                                   default_data_providers))
-            if provider:
-                default_providers = [provider, ]
-
-        for dp in default_providers:
-            # test if it exists before creating it
-            try:
-                DataProvider.objects.get(
-                    provider_name=dp.provider_name)
-            except ObjectDoesNotExist:
-                dp.save()
-
-        return default_data_providers
 
 
 class LoadDataFromProviderService(Service):

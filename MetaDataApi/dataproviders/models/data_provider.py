@@ -2,6 +2,7 @@ import json
 from enum import Enum
 from urllib import parse
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 
 # Create your models here.
@@ -45,7 +46,11 @@ class DataProvider(models.Model):
 
     @classmethod
     def exists(cls, provider_name):
-        return cls.objects.get(provider_name=provider_name)
+        try:
+            return cls.objects.get(provider_name=provider_name)
+        except ObjectDoesNotExist:
+            return None
+
 
     def do_endpoint_exist(self, endpoint):
         if endpoint not in self.rest_endpoints_list:

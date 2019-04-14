@@ -73,7 +73,7 @@ INSTALLED_APPS = [
     'MetaDataApi.users',
     'MetaDataApi.datapoints',
     'MetaDataApi.metadata',
-    'MetaDataApi.dataproviders',
+    'MetaDataApi.dataproviders.apps.DataprovidersConfig',
     'MetaDataApi.app'
 ]
 
