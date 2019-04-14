@@ -65,6 +65,21 @@ class RdfDataProvider(BaseRdfModel):
             to_object=endpoint_data_dump
         )
 
+    class Endpoint:
+        def __init__(self, inst_pk):
+            self.endpoint = ObjectInstance.objects.get(pk=inst_pk)
+
+        @property
+        def name(self):
+            name_att = self.endpoint.get_att_inst(RdfDataProvider.SchemaItems.endpoint_name.label)
+            return name_att.value
+
+        @property
+        def url(self):
+            url_att = self.endpoint.get_att_inst(RdfDataProvider.SchemaItems.endpoint_name.label)
+            return url_att.value
+
+
     @classmethod
     def create_data_provider(cls, name: str):
         data_provider = cls.create_obj_inst(cls.SchemaItems.data_provider)
@@ -124,6 +139,11 @@ class RdfDataProvider(BaseRdfModel):
     def get_endpoint(cls, provider: ObjectInstance, rest_endpoint_name: str):
         endpoints = cls.get_all_endpoints(provider)
         return cls.find_endpoint_with_name(endpoints, rest_endpoint_name)
+
+    @classmethod
+    def get_all_endpoints_as_objects(cls, provider: ObjectInstance):
+        endpoints = cls.get_all_endpoints(provider)
+        return [cls.Endpoint(endpoint.pk) for endpoint in endpoints]
 
     @classmethod
     def find_endpoint_with_name(cls, endpoints: list, rest_endpoint_name: str) -> ObjectInstance:

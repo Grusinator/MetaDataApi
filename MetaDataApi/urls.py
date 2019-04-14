@@ -21,7 +21,7 @@ from django.urls import path, include
 from django.views.generic.base import RedirectView
 from graphene_django.views import GraphQLView
 
-from MetaDataApi.dataproviders.views import data_provider_list, oauth2redirect
+from MetaDataApi.dataproviders.views import data_provider_list, oauth2redirect, data_provider
 
 # from graphene_file_upload.django import FileUploadGraphQLView
 
@@ -29,7 +29,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),
     path('providers/', data_provider_list, name='providers'),
-    # path("provider_list", provider_list_view.as_view(), name='provider_list'),
+                  path('provider/<str:provider_name>', data_provider, name='provider_detail'),
     url(r'^oauth2redirect/$', oauth2redirect, name='oauth2redirect'),
     url(r'^graphql/', GraphQLView.as_view(graphiql=True)),
     url(r'^$', RedirectView.as_view(

@@ -1,21 +1,47 @@
 {% extends "base.html" %}
+{% load data_provider_tags %}
 
-<form method="post" action={{dataprovider.authorize_url}} >
-        <div>
-            <input type="hidden" name="response_type" value="code" />
-            <input type="hidden" name="response_mode" value="form_post" />
-            <input type="hidden" name="client_id" value={{dataprovider.client_id}} />
-            <input type="hidden" name="redirect_uri" value={{dataprovider.redirect_uri}} />
-            <input type="hidden" name="state" value={{dataprovider.provider_name}}/>
-            <input type="hidden" name="nounce" value="vdw9gk13fh"/>
-    
-            {% for scope in {{dataprovider.scope|split}}) %}
-            <input type="hidden" name="scope" value={{scope}} />
-            {% endfor %}
-    
-            {{ dataprovider.scope }}
-            
-            <input type="submit" value="go" />
-        </div>
-        <input type="submit" value="Authorize {{dataprovider.provider_name" />
-    </form>
+{% block content %}
+<div>
+    <h2>{{dataprovider.provider_name}}</h2>
+</div>
+
+
+<table style="width:100%">
+    <col width="30%">
+    <col width="70%">
+    <tr>
+        <th>
+            <div>
+                <h2>
+                    <a %} build_auth_url dataprovider href={% user_id>
+                        Authorize {{dataprovider.provider_name}}
+                    </a>
+                </h2>
+                <p>{{dataprovider.access_token_url}}</p>
+                <p>{{dataprovider.scope}}</p>
+            </div>
+            <div>
+                <h3>Endpoints</h3>
+                {% for endpoint in endpoints %}
+                <div>
+                    <p>
+                        {{endpoint.name}}
+                    </p>
+                    <form method="get">
+                        <input class="btn" name="dummy" type="submit" value="Fetch data">
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+
+
+        </th>
+        <td>
+            <iframe height="600" src={{dataprovider.get_webvowl_url}} width="100%"></iframe>
+        </td>
+    </tr>
+</table>
+
+
+{% endblock %}

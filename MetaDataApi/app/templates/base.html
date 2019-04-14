@@ -1,9 +1,11 @@
 <!doctype html>
+{% load static %}
 <html>
     <head>
-        <title>
-            Meta Data Api
-        </title>
+        <title>Meta Data Api</title>
+        <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+        <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css" rel="stylesheet">
+        <link href="{% static 'app/css/metadataapi.css' %}" rel="stylesheet">
     </head>
 
 <body>
@@ -15,7 +17,7 @@
     </div>
 
     <div>
-        <h1>Personal data</h1>
+        <h1>Meta Data</h1>
     </div>
 
     {% block content %}

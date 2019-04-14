@@ -4,8 +4,9 @@ from urllib import parse
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
-
 # Create your models here.
+from django.urls import reverse
+
 from MetaDataApi.metadata.models import Schema
 from MetaDataApi.metadata.rdf_models import RdfDataProvider
 
@@ -37,6 +38,13 @@ class DataProvider(models.Model):
         on_delete=models.CASCADE,
         null=True, blank=True
     )
+
+    def get_absolute_url(self):
+        return reverse('provider_detail', args=[str(self.provider_name)])
+
+    def get_webvowl_url(self):
+        schema = self.get_schema_for_provider()
+        return "http://visualdataweb.de/webvowl/#iri=" + schema.rdfs_file.url
 
     def __str__(self):
         return "%s - %s" % (self.provider_name, self.api_endpoint)
@@ -86,6 +94,9 @@ class DataProvider(models.Model):
             return True
         else:
             return False
+
+    def get_schema_for_provider(self):
+        return Schema.objects.get(label=self.provider_name)
 
     def build_auth_url(self, logged_in_user_id=None):
 

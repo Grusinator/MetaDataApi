@@ -2,10 +2,7 @@ import json
 import logging
 
 import requests
-from django.conf import settings
 from django.http import HttpResponse
-from django.shortcuts import redirect
-from django.shortcuts import render
 
 from MetaDataApi.dataproviders.models import DataProvider
 from MetaDataApi.settings import OAUTH_REDIRECT_URI
@@ -13,25 +10,6 @@ from MetaDataApi.users.models import DataProviderProfile
 from MetaDataApi.users.models import Profile
 
 logger = logging.getLogger(__name__)
-
-# Create your views here.
-
-
-def data_provider_list(request):
-    if not request.user.is_authenticated:
-        return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
-
-    data_providers = DataProvider.objects.all()
-
-    return render(request, 'dataproviders.html',
-                  {
-                      "dataproviders": data_providers,
-                      "user_id": request.user.pk
-                  })
-
-
-def provider_list_view(ListView):
-    queryset = DataProvider.objects.all()
 
 
 def oauth2redirect(request):
@@ -91,7 +69,7 @@ def oauth2redirect(request):
             """successfully connected your profile with %s
             <a href= "%s"> back <a> """
             % (provider_name,
-                "../providers/")
+               "../providers/")
         )
 
     except Exception as e:

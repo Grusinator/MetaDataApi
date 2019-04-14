@@ -4,21 +4,18 @@
 {% block content %}
 
 
-    <div>
-        <h2>Data Providers</h2>
-    </div>
+<div>
+    <h2>Data Providers</h2>
+</div>
 
-    {% for dp in dataproviders %}
-    <div>
-        <h1>{{ dp.name }}</h1>
-        <h2>
-            <a href = {% build_auth_url dp user_id %}>
-                Authorize {{dp.provider_name}}
-            </a>
-        </h2> 
-        <p>{{dp.access_token_url}}</p>
-        <p>{{dp.scope}}</p>
-    </div> 
-    {% endfor %}
+{% for dp in dataproviders %}
+<div>
+    <h3>
+        <a href={{dp.get_absolute_url}}>
+            {{dp.provider_name}}
+        </a>
+    </h3>
+</div>
+{% endfor %}
 
 {% endblock %}
