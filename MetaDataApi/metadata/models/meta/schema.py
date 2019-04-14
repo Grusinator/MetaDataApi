@@ -1,7 +1,9 @@
+from django.core.files.base import ContentFile
 from django.db import models
 
 from MetaDataApi.metadata.custom_storages import MediaStorage
 from MetaDataApi.metadata.models.meta import BaseMeta
+from MetaDataApi.metadata.utils.common_utils import StringUtils
 
 
 class Schema(models.Model):
@@ -21,6 +23,22 @@ class Schema(models.Model):
                    self.label == other.label
         else:
             return False
+
+    @staticmethod
+    def create_new_empty_schema(schema_label):
+        schema = Schema()
+        schema.label = StringUtils.standardize_string(schema_label)
+        schema.description = ""
+        schema.url = "temp"
+        # quick fix for saving without conflicting with unique url
+
+        # create a dummy file
+        content = ContentFile("")
+        schema.rdfs_file.save(schema_label + ".ttl", content)
+        schema.url = schema.rdfs_file.url
+        schema.save()
+
+        return schema
 
     @classmethod
     def exists(cls, label: str):

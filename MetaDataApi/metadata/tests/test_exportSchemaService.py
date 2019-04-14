@@ -3,6 +3,8 @@ import unittest
 import django
 from django.test import TransactionTestCase
 
+from MetaDataApi.metadata.models import Schema
+
 
 class TestExportSchemaService(TransactionTestCase):
     @classmethod
@@ -12,10 +14,10 @@ class TestExportSchemaService(TransactionTestCase):
 
     @unittest.skip("https://medium.com/@l.peppoloni/how-to-mock-s3-services-in-python-tests-dd5851842946")
     def test_Export(self):
-        from MetaDataApi.metadata.services import ExportSchemaService, BaseMetaDataService
+        from MetaDataApi.metadata.services import ExportSchemaService
         from MetaDataApi.metadata.models import Object, Attribute
         schema_label = "test_schema"
-        schema = BaseMetaDataService.create_new_empty_schema(schema_label)
+        schema = Schema.create_new_empty_schema(schema_label)
 
         test_obj = Object(label="test", schema=schema)
         test_obj.save()

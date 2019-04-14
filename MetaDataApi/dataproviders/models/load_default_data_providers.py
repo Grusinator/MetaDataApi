@@ -34,24 +34,27 @@ class LoadDefaultDataProviders:
             rest_endpoints_list=json.dumps([
                 # "v2/user?action=getdevice",
                 # "measure?action=getmeas",
-                "v2/sleep?action=getsummary&access_token={AuthToken:}&startdateymd={StartDateTime:Y-M-d}&enddateymd={EndDateTime:Y-M-d}",
-                "v2/sleep?action=get&access_token={AuthToken:}&startdate={StartDateTime:UTCSEC}&enddate={EndDateTime:UTCSEC}",
+                {"name": "sleep",
+                 "url": "v2/sleep?action=getsummary&access_token={AuthToken:}&startdateymd={StartDateTime:Y-M-d}&enddateymd={EndDateTime:Y-M-d}"},
+                {"name": "athlete",
+                 "url": "v2/sleep?action=get&access_token={AuthToken:}&startdate={StartDateTime:UTCSEC}&enddate={EndDateTime:UTCSEC}"},
             ]),
             json_schema_file_url=""
         ),
         DataProvider(
             provider_name="strava",
             api_type="Oauth2-rest",
-            api_endpoint="https://www.strava.com/api/v3/",
+            api_endpoint="https://www.strava.com/api/",
             authorize_url="https://www.strava.com/oauth/authorize",
             access_token_url="https://www.strava.com/oauth/token",
             client_id="28148",
             client_secret="ed5f469f798830c7214fc8efad54790799fc3ae1",
             scope=json.dumps(["view_private"]),
             rest_endpoints_list=json.dumps([
-                "/activities",
-                "/athlete/zones",
-                "/athlete"]),
+                {"name": "activity", "url": "/v3/activities"},
+                {"name": "zone", "url": "/v3/athlete/zones"},
+                {"name": "athlete", "url": "/v3/athlete"},
+            ]),
             json_schema_file_url=""
         ),
         DataProvider(
@@ -67,10 +70,11 @@ class LoadDefaultDataProviders:
                 "personal",
                 "daily"]),
             rest_endpoints_list=json.dumps([
-                "/v1/userinfo",
-                "/v1/sleep?start={StartDateTime:Y-M-d}&end={EndDateTime:Y-M-d}",
-                "/v1/activity?start={StartDateTime:Y-M-d}&end={EndDateTime:Y-M-d}",
-                "/v1/readiness?start={StartDateTime:Y-M-d}&end={EndDateTime:Y-M-d}"]),
+                {"name": "user_info", "url": "/v1/userinfo"},
+                {"name": "sleep", "url": "/v1/sleep?start={StartDateTime:Y-M-d}&end={EndDateTime:Y-M-d}"},
+                {"name": "activity", "url": "/v1/activity?start={StartDateTime:Y-M-d}&end={EndDateTime:Y-M-d}"},
+                {"name": "readiness", "url": "/v1/readiness?start={StartDateTime:Y-M-d}&end={EndDateTime:Y-M-d}"}
+            ]),
             json_schema_file_url=""
         ),
         DataProvider(
@@ -84,7 +88,7 @@ class LoadDefaultDataProviders:
                 "https://www.googleapis.com/auth/fitness.activity.read",
             ]),
             rest_endpoints_list=json.dumps([
-                "v1/users/me/dataSources",
+                {"name": "data_source", "url": "v1/users/me/dataSources"},
             ]),
             json_schema_file_url=""
         ),

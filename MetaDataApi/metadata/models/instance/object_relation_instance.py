@@ -6,7 +6,7 @@ from .instance_base import BaseInstance
 
 
 class ObjectRelationInstance(BaseInstance):
-    base = models.ForeignKey('ObjectRelation', on_delete=models.CASCADE)
+    base = models.ForeignKey('ObjectRelation', on_delete=models.CASCADE, related_name="instances")
 
     from_object = models.ForeignKey('ObjectInstance', related_name='to_relations', on_delete=models.CASCADE)
     to_object = models.ForeignKey('ObjectInstance', related_name='from_relations', on_delete=models.CASCADE)
@@ -43,3 +43,4 @@ class ObjectRelationInstance(BaseInstance):
                 "to_object instance must match the base to_object")
 
         return super(ObjectRelationInstance, self).save(*args, **kwargs)
+

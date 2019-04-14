@@ -4,7 +4,6 @@ import os
 from django.conf import settings
 
 from MetaDataApi.metadata.models import Schema, ObjectRelation, Object, Attribute
-from MetaDataApi.metadata.services import BaseMetaDataService
 
 
 class LoadTestData:
@@ -83,7 +82,7 @@ class LoadTestData:
         schema_label = "strava"
         label = "activities"
 
-        schema = BaseMetaDataService.create_new_empty_schema(schema_label)
+        schema = Schema.create_new_empty_schema(schema_label)
 
         user = LoadTestData.init_user()
 
@@ -132,7 +131,7 @@ class LoadTestData:
 
         schema = Schema.objects.filter(label=schema_label).first()
         if not schema:
-            schema = service.create_new_empty_schema(schema_label)
+            schema = Schema.create_new_empty_schema(schema_label)
 
         # Takes to long time to do full
         service.write_to_db_baseschema(sample=True, positive_list=extras)

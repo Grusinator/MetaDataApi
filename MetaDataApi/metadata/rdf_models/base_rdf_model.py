@@ -1,12 +1,14 @@
 import inspect
+import io
 import logging
 import uuid
 from abc import ABCMeta
 from enum import Enum
 
+from django.core.files import File
+
 from MetaDataApi.metadata.models import Object, ObjectRelation, Attribute, Schema, ObjectInstance, \
     ObjectRelationInstance, BaseAttributeInstance, FileAttributeInstance
-from MetaDataApi.metadata.utils import DictUtils
 
 logger = logging.getLogger(__name__)
 
@@ -108,7 +110,7 @@ class BaseRdfModel:
                                     value):
         att_base = Attribute.exists_att(att)
 
-        SpecificAttributeInstance = cls.get_attribute_instance_from_type(att_base.data_type)
+        SpecificAttributeInstance = BaseAttributeInstance.get_attribute_instance_from_type(att_base.data_type)
 
         att_inst = SpecificAttributeInstance(
             object=parrent_obj_inst,
@@ -116,13 +118,18 @@ class BaseRdfModel:
             value=value
         )
         if SpecificAttributeInstance is FileAttributeInstance:
-            ext = None | ".txt"
-            att_inst.value.save(str(uuid.uuid4()) + ext, value)
+            ext = None or ".txt"
+            filename = value.name or cls.get_default_file_name() + ext
+            att_inst.value.save(filename, value)
 
         att_inst.save()
         return att_inst
 
     @classmethod
-    def get_attribute_instance_from_type(cls, type_as_string: str):
-        datatype = DictUtils.inverse_dict(Attribute.data_type_map, type_as_string)
-        return DictUtils.inverse_dict(BaseAttributeInstance.att_inst_to_type_map, datatype)
+    def get_default_file_name(cls) -> str:
+        return str(uuid.uuid4())
+
+    @classmethod
+    def create_file_from_str(cls, text_str, ext: str = ".txt"):
+        file = File(io.BytesIO(text_str), name=cls.get_default_file_name() + ext)
+        return file

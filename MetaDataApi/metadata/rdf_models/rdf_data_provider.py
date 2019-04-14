@@ -99,7 +99,7 @@ class RdfDataProvider(BaseRdfModel):
 
     @classmethod
     def create_data_dump(cls, rest_endpoint: ObjectInstance,
-                         date: datetime, file):
+                         file, date: datetime = datetime.now()):
         endpoint_data_dump = cls.create_obj_inst(
             Object.exists_obj(cls.SchemaItems.endpoint_data_dump)
         )
@@ -126,7 +126,7 @@ class RdfDataProvider(BaseRdfModel):
         return cls.find_endpoint_with_name(endpoints, rest_endpoint_name)
 
     @classmethod
-    def find_endpoint_with_name(cls, endpoints: list, rest_endpoint_name: str):
+    def find_endpoint_with_name(cls, endpoints: list, rest_endpoint_name: str) -> ObjectInstance:
         for endpoint in endpoints:
             name = StringAttributeInstance.objects.filter(
                 object=endpoint,
@@ -137,7 +137,7 @@ class RdfDataProvider(BaseRdfModel):
                 return endpoint
 
     @classmethod
-    def get_all_endpoints(cls, provider: ObjectInstance):
+    def get_all_endpoints(cls, provider: ObjectInstance) -> list:
         search_args = {
             "from_relations__from_object": provider
         }

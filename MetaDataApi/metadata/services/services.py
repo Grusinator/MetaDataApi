@@ -74,7 +74,7 @@ class IdentifySchemaFromFileService(Service):
         schema = BaseMetaDataService.do_meta_item_exists(
             Schema(label=schema_label))
         if not schema:
-            schema = BaseMetaDataService.create_new_empty_schema(schema_label)
+            schema = Schema.create_new_empty_schema(schema_label)
 
         objects = identify.identify_from_json_data(
             data, schema, data_label)
@@ -219,7 +219,7 @@ class IdentifySchemaAndDataFromProviderService(Service):
 
         schema = rdf_service.do_meta_item_exists(Schema(label=provider_name))
         if not schema:
-            schema = rdf_service.create_new_empty_schema(provider_name)
+            schema = Schema.create_new_empty_schema(provider_name)
 
         # select which endpoints
         if endpoint == "all" or endpoint is None:
@@ -270,7 +270,7 @@ class AddJsonSchemaService(Service):
                 # thr.start()  # Will run
 
             except Exception as e:
-                raise GraphQLError(e)
+                raise GraphQLError(str(e))
         elif url == "open_m_health_sample":
             service.write_to_db_baseschema(sample=True)
         else:

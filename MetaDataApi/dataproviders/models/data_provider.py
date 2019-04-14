@@ -6,7 +6,11 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 
 # Create your models here.
+from MetaDataApi.metadata.models import Schema
 from MetaDataApi.metadata.rdf_models import RdfDataProvider
+
+SItems = RdfDataProvider.SchemaItems
+
 from MetaDataApi.settings import OAUTH_REDIRECT_URI
 
 
@@ -42,7 +46,31 @@ class DataProvider(models.Model):
             self.data_provider_instance = RdfDataProvider.create_data_provider(
                 str(self.provider_name))
 
+        if not Schema.exists(self.provider_name):
+            Schema.create_new_empty_schema(self.provider_name)
+
+        existing_endpoints = RdfDataProvider.get_all_endpoints(self.data_provider_instance)
+
+        for endpoint in json.loads(self.rest_endpoints_list):
+            endpoint_url = endpoint["url"]
+            endpoint_name = endpoint["name"]
+            rdf_endpoint = RdfDataProvider.find_endpoint_with_name(existing_endpoints, endpoint_name)
+            if rdf_endpoint:
+                self.update_endpoint_url(endpoint_url, rdf_endpoint)
+            else:
+                RdfDataProvider.create_endpoint_to_data_provider(
+                    self.data_provider_instance,
+                    endpoint_url,
+                    endpoint_name
+                )
         super(DataProvider, self).save(*args, **kwargs)
+
+    @staticmethod
+    def update_endpoint_url(endpoint_url, rdf_endpoint):
+        rdf_endpoint_url = rdf_endpoint.get_att_inst(SItems.endpoint_template_url)
+        if rdf_endpoint_url is not endpoint_url:
+            rdf_endpoint_url.value = endpoint_url
+            rdf_endpoint_url.save()
 
     @classmethod
     def exists(cls, provider_name):
@@ -50,7 +78,6 @@ class DataProvider(models.Model):
             return cls.objects.get(provider_name=provider_name)
         except ObjectDoesNotExist:
             return None
-
 
     def do_endpoint_exist(self, endpoint):
         if endpoint not in self.rest_endpoints_list:

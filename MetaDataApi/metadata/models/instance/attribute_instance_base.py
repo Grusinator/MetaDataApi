@@ -18,6 +18,9 @@ class BaseAttributeInstance(BaseInstance):
         return "Ai:%s.%s:%s" % (self.base.object.label, self.base.label,
                                 str(self.value))
 
+    class Meta(BaseInstance.Meta):
+        abstract = True
+
     # custom restrictions on foreign keys to make sure the instances are of
     # the right meta object type
     def save(self, *args, **kwargs):
@@ -35,10 +38,11 @@ class BaseAttributeInstance(BaseInstance):
         return DjangoModelUtils.get_object_or_none(cls, **search_args)
 
     @classmethod
-    def get_attribute_instance_class_from_data_type(cls, data_type: Attribute.DataType):
+    def get_attribute_instance_from_data_type(cls, data_type: Attribute.DataType):
         datatype = DictUtils.inverse_dict(Attribute.data_type_map, data_type.value)
         return DictUtils.inverse_dict(BaseAttributeInstance.att_inst_to_type_map, datatype)
 
-
-    class Meta(BaseInstance.Meta):
-        abstract = True
+    @classmethod
+    def get_attribute_instance_from_type(cls, type_as_string: str):
+        datatype = DictUtils.inverse_dict(Attribute.data_type_map, type_as_string)
+        return DictUtils.inverse_dict(BaseAttributeInstance.att_inst_to_type_map, datatype)

@@ -1,8 +1,4 @@
-import io
-from datetime import datetime
-
 import django
-from django.core.files import File
 from django.test import TransactionTestCase
 
 
@@ -79,8 +75,7 @@ class TestRdfDataProvider(TransactionTestCase):
         )
         datadump = RdfDataProvider.create_data_dump(
             endpoint,
-            datetime.now(),
-            File(io.BytesIO(b"some initial text data"))
+            RdfDataProvider.create_file_from_str("dummy text")
         )
 
         instances = ObjectInstance.objects.all()

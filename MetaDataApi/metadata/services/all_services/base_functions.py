@@ -3,7 +3,6 @@ from datetime import datetime
 
 from django.core.exceptions import (
     ObjectDoesNotExist, MultipleObjectsReturned)
-from django.core.files.base import ContentFile
 from django.db import transaction
 
 from MetaDataApi.metadata.models import (
@@ -66,22 +65,6 @@ class BaseMetaDataService:
         endpoint_without_args = endpoint.split("?")[0]
         last_elm = endpoint_without_args.split("/")[-1]
         return StringUtils.standardize_string(last_elm)
-
-    @staticmethod
-    def create_new_empty_schema(schema_label):
-        schema = Schema()
-        schema.label = StringUtils.standardize_string(schema_label)
-        schema.description = ""
-        schema.url = "temp"
-        # quick fix for saving without conflicting with unique url
-
-        # create a dummy file
-        content = ContentFile("")
-        schema.rdfs_file.save(schema_label + ".ttl", content)
-        schema.url = schema.rdfs_file.url
-        schema.save()
-
-        return schema
 
     @staticmethod
     def dict_contains_only_attr(data):
@@ -298,7 +281,7 @@ class BaseMetaDataService:
         return search_args
 
     @staticmethod
-    def path_to_object(obj, root_obj, childrens=[]):
+    def path_to_object(obj, root_obj, childrens=()):
         if isinstance(obj, Attribute):
             # add to path
             childrens.append(obj)

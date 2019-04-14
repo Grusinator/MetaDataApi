@@ -50,10 +50,13 @@ class Attribute(BaseMeta):
         else:
             return False
 
+    class Meta:
+        unique_together = ('label', 'object')
+        app_label = 'metadata'
+
     @classmethod
     def datatype_to_data_object(cls, data_type: DataType):
         return DictUtils.inverse_dict(cls.data_type_map, data_type.value)
-
 
     @classmethod
     def exists(cls, label: str, object__label: str):
@@ -78,6 +81,11 @@ class Attribute(BaseMeta):
                 str(data_type_name)
             )
 
-    class Meta:
-        unique_together = ('label', 'object')
-        app_label = 'metadata'
+    @property
+    def all_instances(self):
+        related_names = [tag.value + "attributeinstance" for tag in self.DataType]
+        related_names.remove("unknownattributeinstance")
+        instances = []
+        for related_name in related_names:
+            instances.extend(getattr(self, related_name).all())
+        return instances

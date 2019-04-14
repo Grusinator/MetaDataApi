@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from django import forms
 from service_objects.services import Service
 
@@ -36,4 +34,4 @@ class CreateRdfDataProviderService(Service):
         file = self.changed_data['file']
         provider = DataProvider.exists(provider_name)
         rest_endpoint = RdfDataProvider.get_endpoint(provider.data_provider_instance, rest_endpoint_name)
-        RdfDataProvider.create_data_dump(rest_endpoint, datetime.now(), file)
+        RdfDataProvider.create_data_dump(rest_endpoint, file)
