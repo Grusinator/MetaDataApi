@@ -122,11 +122,11 @@ class RdfDataProvider(BaseRdfModel):
 
     @classmethod
     def get_endpoint(cls, provider: ObjectInstance, rest_endpoint_name: str):
-        search_args = {
-            "from_relations__from_object": provider
-        }
-        endpoints = list(ObjectInstance.objects.filter(**search_args))
+        endpoints = cls.get_all_endpoints(provider)
+        return cls.find_endpoint_with_name(endpoints, rest_endpoint_name)
 
+    @classmethod
+    def find_endpoint_with_name(cls, endpoints: list, rest_endpoint_name: str):
         for endpoint in endpoints:
             name = StringAttributeInstance.objects.filter(
                 object=endpoint,
@@ -135,3 +135,10 @@ class RdfDataProvider(BaseRdfModel):
             ).first()
             if name:
                 return endpoint
+
+    @classmethod
+    def get_all_endpoints(cls, provider: ObjectInstance):
+        search_args = {
+            "from_relations__from_object": provider
+        }
+        return list(ObjectInstance.objects.filter(**search_args))

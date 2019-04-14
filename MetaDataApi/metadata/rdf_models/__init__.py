@@ -1,1 +1,1 @@
-from MetaDataApi.metadata.rdf_models.meta_data_api import RdfDataProvider
+from .rdf_data_provider import RdfDataProvider

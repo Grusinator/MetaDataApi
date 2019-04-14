@@ -4,7 +4,7 @@ from django import forms
 from service_objects.services import Service
 
 from MetaDataApi.dataproviders.models import DataProvider
-from MetaDataApi.metadata.rdf_models.meta_data_api.rdf_data_provider import RdfDataProvider
+from MetaDataApi.metadata.rdf_models.rdf_data_provider import RdfDataProvider
 
 
 class CreateRdfDataProviderEndpointService(Service):

@@ -17,7 +17,7 @@ class TestRdfDataProvider(TransactionTestCase):
         django.setup()
 
     def test_create_all_meta_objects(self):
-        from MetaDataApi.metadata.rdf_models.meta_data_api.rdf_data_provider \
+        from MetaDataApi.metadata.rdf_models.rdf_data_provider \
             import RdfDataProvider
 
         from MetaDataApi.metadata.tests.data import LoadTestData
@@ -37,7 +37,7 @@ class TestRdfDataProvider(TransactionTestCase):
         assert RdfDataProvider.do_schema_items_exists()
 
     def test_create_data_provider(self):
-        from MetaDataApi.metadata.rdf_models.meta_data_api.rdf_data_provider \
+        from MetaDataApi.metadata.rdf_models.rdf_data_provider \
             import RdfDataProvider
         from MetaDataApi.metadata.models import ObjectInstance
 
@@ -48,7 +48,7 @@ class TestRdfDataProvider(TransactionTestCase):
         self.assertTrue(provider in instances)
 
     def test_create_endpoint_to_data_provider(self):
-        from MetaDataApi.metadata.rdf_models.meta_data_api.rdf_data_provider \
+        from MetaDataApi.metadata.rdf_models.rdf_data_provider \
             import RdfDataProvider
         from MetaDataApi.metadata.models import ObjectInstance
 
@@ -65,7 +65,7 @@ class TestRdfDataProvider(TransactionTestCase):
         self.assertTrue(endpoint in instances)
 
     def test_create_data_dump(self):
-        from MetaDataApi.metadata.rdf_models.meta_data_api.rdf_data_provider \
+        from MetaDataApi.metadata.rdf_models.rdf_data_provider \
             import RdfDataProvider
         from MetaDataApi.metadata.models import ObjectInstance
 
@@ -87,7 +87,7 @@ class TestRdfDataProvider(TransactionTestCase):
         self.assertTrue(datadump in instances)
 
     def test_get_endpoint(self):
-        from MetaDataApi.metadata.rdf_models.meta_data_api.rdf_data_provider \
+        from MetaDataApi.metadata.rdf_models.rdf_data_provider \
             import RdfDataProvider
 
         RdfDataProvider.create_all_meta_objects()
