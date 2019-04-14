@@ -38,8 +38,7 @@ class BaseMeta(models.Model):
         raise NotImplementedError
 
     def create_if_not_exists(self):
-        MetaItemType = type(self)
-        item_found = MetaItemType.exists(self)
+        item_found = self.exists(self)
         if not item_found:
             self.save()
             return self
