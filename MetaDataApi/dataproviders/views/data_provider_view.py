@@ -8,7 +8,7 @@ from django.shortcuts import render
 
 from MetaDataApi.dataproviders.models import DataProvider
 from MetaDataApi.dataproviders.services.services import StoreDataFromProviderService
-from MetaDataApi.metadata.rdf_models import RdfDataProvider
+from MetaDataApi.metadata.rdfs_models.rdfs_data_provider import Endpoint
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +35,7 @@ class DataProviderView:
             return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
 
         dataprovider = DataProviderView.get_data_provider(provider_name)
-        endpoints = RdfDataProvider.get_all_endpoints_as_objects(dataprovider.data_provider_instance)
+        endpoints = Endpoint.get_all_endpoints_as_objects(dataprovider.data_provider_instance)
 
         return render(
             request,
@@ -58,10 +58,11 @@ class DataProviderView:
     @staticmethod
     def endpoint_detail(request, provider_name, endpoint_name):
         dataprovider = DataProviderView.get_data_provider(provider_name)
-        endpoint = RdfDataProvider.get_endpoint_as_object(
+        endpoint = Endpoint.get_endpoint_as_object(
             dataprovider.data_provider_instance,
             endpoint_name
         )
+        data_dumps = endpoint.data_dumps
         try:
             data = StoreDataFromProviderService.execute({
                 "provider_name": provider_name,
@@ -77,6 +78,7 @@ class DataProviderView:
             {
                 "dataprovider": dataprovider,
                 "endpoint": endpoint,
+                "data_dumps": data_dumps,
                 "data": str(data),
                 "user_id": request.user.pk
             }

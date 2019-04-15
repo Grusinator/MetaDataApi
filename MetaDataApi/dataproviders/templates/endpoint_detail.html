@@ -3,7 +3,12 @@
 {% block content %}
     <div>
         <h2>{{ dataprovider.provider_name }} {{ endpoint.endpoint_name }}</h2>
-        <p>{{ data }}</p>
+        {# <p>{{ data }}</p>#}
     </div>
+{% for data_dump in data_dumps %}
+<div>
+    <p> {{ data_dump.date_downloaded }} </p>
+</div>
+{% endfor %}
 
 {% endblock %}

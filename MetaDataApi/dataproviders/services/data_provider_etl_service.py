@@ -7,7 +7,8 @@ from MetaDataApi.dataproviders.models import DataProvider
 from MetaDataApi.dataproviders.services.url_format_helper import UrlFormatHelper
 from MetaDataApi.metadata.models import (
     Schema)
-from MetaDataApi.metadata.rdf_models import RdfDataProvider
+from MetaDataApi.metadata.rdfs_models import RdfsDataProvider
+from MetaDataApi.metadata.rdfs_models.rdfs_data_provider import Endpoint
 from MetaDataApi.metadata.services.all_services.base_functions import BaseMetaDataService
 from MetaDataApi.metadata.utils.common_utils import StringUtils
 
@@ -31,7 +32,7 @@ class DataProviderEtlService:
             self.dataprovider.provider_name)
 
     def read_data_from_endpoint(self, endpoint_name: str, auth_token: str = None):
-        endpoint = RdfDataProvider.get_endpoint_as_object(
+        endpoint = Endpoint.get_endpoint_as_object(
             self.dataprovider.data_provider_instance,
             endpoint_name
         )
@@ -57,9 +58,9 @@ class DataProviderEtlService:
         return json_obj
 
     def save_data_to_file(self, endpoint_name: str, data: str):
-        endpoint = RdfDataProvider.get_endpoint(
+        endpoint = RdfsDataProvider.get_endpoint(
             self.dataprovider.data_provider_instance,
             rest_endpoint_name=endpoint_name
         )
-        file = RdfDataProvider.create_file_from_str(data)
-        RdfDataProvider.create_data_dump(endpoint, file)
+        file = RdfsDataProvider.create_file_from_str(data)
+        RdfsDataProvider.create_data_dump(endpoint, file)

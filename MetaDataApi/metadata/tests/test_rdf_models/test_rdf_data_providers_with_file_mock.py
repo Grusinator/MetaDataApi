@@ -13,11 +13,11 @@
 
 
 # @mock_s3
-# class test_rdfDataProviders(TransactionTestCase):
+# class test_RdfsDataProviders(TransactionTestCase):
 #     @classmethod
 #     def setUpClass(cls):
 #         django.setup()
-#         super(test_rdfDataProviders, cls).setUpClass()
+#         super(test_RdfsDataProviders, cls).setUpClass()
 
 #     def setUp(self):
 #         self.client = boto3.client(
@@ -58,20 +58,20 @@
 
 
 #     def test_create_dataprovider(self):
-#         from MetaDataApi.metadata.rdf_models.meta_data_api.rdf_data_provider import RdfDataProvider
+#         from MetaDataApi.metadata.rdfs_models.meta_data_api.rdfs_data_provider import RdfsDataProvider
 
 #         LoadTestData.init_meta_data_api()
-#         RdfDataProvider.create_data_provider()
+#         RdfsDataProvider.create_data_provider()
 
 #     def test_create_datadump(self):
 #         LoadTestData.init_meta_data_api()
 
 #         file = File("test mocked data file")
 
-#         from MetaDataApi.metadata.rdf_models.meta_data_api.rdf_data_provider import RdfDataProvider
+#         from MetaDataApi.metadata.rdfs_models.meta_data_api.rdfs_data_provider import RdfsDataProvider
 #         self.client.create_bucket(Bucket=MY_BUCKET)
-#         provider = RdfDataProvider.create_data_provider()
-#         RdfDataProvider.create_data_dump(
+#         provider = RdfsDataProvider.create_data_provider()
+#         RdfsDataProvider.create_data_dump(
 #             provider, datetime(1, 1, 1, 1, 1, 1), file)
 
 #         from MetaDataApi.metadata.models import FileAttributeInstance

@@ -11,13 +11,13 @@ class TestStoreDataFromProviderService(TransactionTestCase):
     def test_store_data_from_provider_service(self):
         from MetaDataApi.dataproviders.services.services import StoreDataFromProviderService
 
-        from MetaDataApi.dataproviders.models.load_default_data_providers import InitializeDefaultDataProviders
+        from MetaDataApi.dataproviders.models.initialize_data_providers import InitializeDataProviders
         from MetaDataApi.metadata.models import FileAttributeInstance
         from MetaDataApi.metadata.tests import LoadTestData
-        from MetaDataApi.metadata.rdf_models.initialize_rdf_models import InitializeRdfModels
+        from MetaDataApi.metadata.rdfs_models.initialize_rdf_models import InitializeRdfModels
         user = LoadTestData.init_user()
         InitializeRdfModels.create_all_schemas()
-        InitializeDefaultDataProviders.load()
+        InitializeDataProviders.load()
 
         dpp = LoadTestData.init_strava_data_provider_profile()
 

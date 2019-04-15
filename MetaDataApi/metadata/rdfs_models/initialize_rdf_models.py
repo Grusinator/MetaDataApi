@@ -1,8 +1,8 @@
-from . import RdfDataProvider
+from . import RdfsDataProvider
 
 
 class InitializeRdfModels:
-    rdf_models = [RdfDataProvider]
+    rdf_models = [RdfsDataProvider]
 
     @classmethod
     def create_all_schemas(cls):

@@ -2,23 +2,27 @@ import json
 import os
 
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 
+from MetaDataApi.dataproviders.models import DataProvider
+from MetaDataApi.dataproviders.models.initialize_data_providers import InitializeDataProviders
 from MetaDataApi.metadata.models import Schema, ObjectRelation, Object, Attribute
-from MetaDataApi.users.models import Profile
+from MetaDataApi.metadata.services import (
+    JsonSchemaService, DataCleaningService, RdfInstanceService, RdfSchemaService, JsonAnalyser
+)
+from MetaDataApi.users.models import DataProviderProfile, Profile
 
 
 class LoadTestData:
 
     @staticmethod
     def init_user():
-        from django.contrib.auth.models import User
 
         user = User(
             username="test",
             password="test1234"
         )
-
         try:
             user = User.objects.get(username=user.username)
         except:
@@ -30,7 +34,6 @@ class LoadTestData:
     @staticmethod
     def init_profile(user):
         LoadTestData.init_foaf()
-        from MetaDataApi.users.models import Profile
         profile = Profile(
             user=user,
         )
@@ -40,10 +43,14 @@ class LoadTestData:
             profile.save()
         return profile
 
+    @classmethod
+    def init_foaf_person(cls):
+        schema = cls.init_foaf()
+        return Object.objects.get(label="person", schema=schema)
+
     @staticmethod
     def init_foaf():
-        from MetaDataApi.metadata.services import (
-            RdfSchemaService)
+
         rdf_service = RdfSchemaService()
         # just take foaf
         rdf_service.write_to_db(rdf_url="http://xmlns.com/foaf/0.1/")
@@ -54,10 +61,8 @@ class LoadTestData:
     def init_strava_data_provider_profile():
         LoadTestData.init_foaf()
         user = LoadTestData.init_user()
-        from MetaDataApi.dataproviders.models.load_default_data_providers import InitializeDefaultDataProviders
-        InitializeDefaultDataProviders.load()
-        from MetaDataApi.users.models import DataProviderProfile
-        from MetaDataApi.dataproviders.models import DataProvider
+
+        InitializeDataProviders.load()
 
         dataproviderprofile = DataProviderProfile(
             provider=DataProvider.objects.get(provider_name="strava"),
@@ -67,11 +72,8 @@ class LoadTestData:
         dataproviderprofile.save()
         return dataproviderprofile
 
-
     @staticmethod
     def init_meta_data_api():
-        from MetaDataApi.metadata.services import (
-            RdfSchemaService)
         rdf_service = RdfSchemaService()
         rdf_service.write_to_db(
             rdf_url="https://meta-data-api-storage-dev.s3.amazonaws.com/media/schemas/meta_data_api.ttl"
@@ -95,10 +97,6 @@ class LoadTestData:
 
     @staticmethod
     def init_strava_schema_from_file():
-        from MetaDataApi.metadata.services import (
-            RdfInstanceService, DataCleaningService,
-            JsonAnalyser
-        )
 
         LoadTestData.init_foaf()
 
@@ -130,11 +128,6 @@ class LoadTestData:
 
     @staticmethod
     def init_strava_data_from_file():
-        from MetaDataApi.metadata.services import (
-            JsonAnalyser
-        )
-        from MetaDataApi.metadata.models import Schema
-
         user = LoadTestData.init_user()
 
         service = JsonAnalyser()
@@ -157,9 +150,6 @@ class LoadTestData:
 
     @staticmethod
     def init_open_m_health_sample(extras=None):
-        from MetaDataApi.metadata.services import (
-            JsonSchemaService, DataCleaningService
-        )
 
         schema_label = "open_m_health"
 
@@ -178,7 +168,6 @@ class LoadTestData:
 
     @staticmethod
     def init_rdf_base():
-        from MetaDataApi.metadata.services import RdfSchemaService
         rdf_service = RdfSchemaService()
 
         rdf_service.write_to_db_baseschema()

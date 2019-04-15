@@ -1,7 +1,7 @@
 import django
 from django.test import TransactionTestCase
 
-from MetaDataApi.metadata.rdf_models.initialize_rdf_models import InitializeRdfModels
+from MetaDataApi.metadata.rdfs_models.initialize_rdf_models import InitializeRdfModels
 
 
 class TestDataProviderEtlService(TransactionTestCase):

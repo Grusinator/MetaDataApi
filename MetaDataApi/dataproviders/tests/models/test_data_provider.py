@@ -13,10 +13,10 @@ class TestDataProvider(TransactionTestCase):
     def setUpClass(cls):
         super(TestDataProvider, cls).setUpClass()
         django.setup()
-        from MetaDataApi.metadata.rdf_models import RdfDataProvider
-        RdfDataProvider.create_all_meta_objects()
-        from MetaDataApi.dataproviders.models.load_default_data_providers import InitializeDefaultDataProviders
-        InitializeDefaultDataProviders.load()
+        from MetaDataApi.metadata.rdfs_models import RdfsDataProvider
+        RdfsDataProvider.create_all_meta_objects()
+        from MetaDataApi.dataproviders.models.initialize_data_providers import InitializeDataProviders
+        InitializeDataProviders.load()
 
     def test_create_profile(self):
         from MetaDataApi.dataproviders.models import DataProvider
@@ -45,11 +45,11 @@ class TestDataProvider(TransactionTestCase):
         self.assertIsNotNone(data_provider.data_provider_instance)
 
     def test_endpoints_are_created_at_provider_creation(self):
-        from MetaDataApi.dataproviders.models.load_default_data_providers import InitializeDefaultDataProviders
-        InitializeDefaultDataProviders.load()
+        from MetaDataApi.dataproviders.models.initialize_data_providers import InitializeDataProviders
+        InitializeDataProviders.load()
 
-        from MetaDataApi.metadata.rdf_models import RdfDataProvider
-        schema_label = RdfDataProvider.SchemaItems.schema.label
+        from MetaDataApi.metadata.rdfs_models import RdfsDataProvider
+        schema_label = RdfsDataProvider.SchemaItems.schema.label
 
         from MetaDataApi.metadata.utils.testing_utils import TestingUtils
         meta_labels = TestingUtils.get_all_item_labels_from_schema(schema_label)
@@ -64,13 +64,13 @@ class TestDataProvider(TransactionTestCase):
 
         endpoint_obj_inst = list(filter(
             lambda x: isinstance(x, ObjectInstance) and
-                      x.base.label == RdfDataProvider.SchemaItems.rest_endpoint.label,
+                      x.base.label == RdfsDataProvider.SchemaItems.rest_endpoint.label,
             instances
         ))
 
         urls = list(map(lambda x:
                         x.get_att_inst(
-                            RdfDataProvider.SchemaItems.endpoint_template_url.label).value,
+                            RdfsDataProvider.SchemaItems.endpoint_template_url.label).value,
                         endpoint_obj_inst))
 
         expected_urls = [

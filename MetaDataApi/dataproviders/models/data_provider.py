@@ -4,13 +4,12 @@ from urllib import parse
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
-# Create your models here.
 from django.urls import reverse
 
 from MetaDataApi.metadata.models import Schema
-from MetaDataApi.metadata.rdf_models import RdfDataProvider
+from MetaDataApi.metadata.rdfs_models import RdfsDataProvider
 
-SItems = RdfDataProvider.SchemaItems
+SItems = RdfsDataProvider.SchemaItems
 
 from MetaDataApi.settings import OAUTH_REDIRECT_URI
 
@@ -51,22 +50,22 @@ class DataProvider(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.data_provider_instance:
-            self.data_provider_instance = RdfDataProvider.create_data_provider(
+            self.data_provider_instance = RdfsDataProvider.create_data_provider(
                 str(self.provider_name))
 
-        if not Schema.exists_by_label(self.provider_name):
+        if not Schema.exists_by_label(str(self.provider_name)):
             Schema.create_new_empty_schema(self.provider_name)
 
-        existing_endpoints = RdfDataProvider.get_all_endpoints(self.data_provider_instance)
+        existing_endpoints = RdfsDataProvider.get_all_endpoints(self.data_provider_instance)
 
         for endpoint in json.loads(self.rest_endpoints_list):
             endpoint_url = endpoint["url"]
             endpoint_name = endpoint["name"]
-            rdf_endpoint = RdfDataProvider.find_endpoint_with_name(existing_endpoints, endpoint_name)
+            rdf_endpoint = RdfsDataProvider.find_endpoint_with_name(existing_endpoints, endpoint_name)
             if rdf_endpoint:
                 self.update_endpoint_url(endpoint_url, rdf_endpoint)
             else:
-                RdfDataProvider.create_endpoint_to_data_provider(
+                RdfsDataProvider.create_endpoint_to_data_provider(
                     self.data_provider_instance,
                     endpoint_url,
                     endpoint_name

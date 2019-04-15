@@ -2,23 +2,23 @@ import django
 from django.test import TransactionTestCase
 
 
-class TestRdfDataProvider(TransactionTestCase):
+class TestRdfsDataProvider(TransactionTestCase):
     provider_name = "dummyname"
     endpoint_name = "soome_endpoint"
     endpoint_url = "https://awesomeurl.it"
 
     @classmethod
     def setUpClass(cls):
-        super(TestRdfDataProvider, cls).setUpClass()
+        super(TestRdfsDataProvider, cls).setUpClass()
         django.setup()
 
     def test_create_all_meta_objects(self):
-        from MetaDataApi.metadata.rdf_models.rdf_data_provider \
-            import RdfDataProvider
+        from MetaDataApi.metadata.rdfs_models.rdfs_data_provider \
+            import RdfsDataProvider
 
         from MetaDataApi.metadata.tests.data import LoadTestData
         LoadTestData.init_foaf()
-        items = RdfDataProvider.create_all_meta_objects()
+        items = RdfsDataProvider.create_all_meta_objects()
 
         item_labels = [obj.label for obj in items]
 
@@ -30,28 +30,28 @@ class TestRdfDataProvider(TransactionTestCase):
         expected.sort()
         self.assertEquals(expected, item_labels)
 
-        assert RdfDataProvider.do_schema_items_exists()
+        assert RdfsDataProvider.do_schema_items_exists()
 
     def test_create_data_provider(self):
-        from MetaDataApi.metadata.rdf_models.rdf_data_provider \
-            import RdfDataProvider
+        from MetaDataApi.metadata.rdfs_models.rdfs_data_provider \
+            import RdfsDataProvider
         from MetaDataApi.metadata.models import ObjectInstance
 
-        RdfDataProvider.create_all_meta_objects()
-        provider = RdfDataProvider.create_data_provider(self.provider_name)
+        RdfsDataProvider.create_all_meta_objects()
+        provider = RdfsDataProvider.create_data_provider(self.provider_name)
         instances = ObjectInstance.objects.all()
 
         self.assertTrue(provider in instances)
 
     def test_create_endpoint_to_data_provider(self):
-        from MetaDataApi.metadata.rdf_models.rdf_data_provider \
-            import RdfDataProvider
+        from MetaDataApi.metadata.rdfs_models.rdfs_data_provider \
+            import RdfsDataProvider
         from MetaDataApi.metadata.models import ObjectInstance
 
-        RdfDataProvider.create_all_meta_objects()
+        RdfsDataProvider.create_all_meta_objects()
 
-        provider = RdfDataProvider.create_data_provider(self.provider_name)
-        endpoint = RdfDataProvider.create_endpoint_to_data_provider(
+        provider = RdfsDataProvider.create_data_provider(self.provider_name)
+        endpoint = RdfsDataProvider.create_endpoint_to_data_provider(
             provider,
             endpoint_name=self.endpoint_name,
             endpoint_url=self.endpoint_url
@@ -61,39 +61,39 @@ class TestRdfDataProvider(TransactionTestCase):
         self.assertTrue(endpoint in instances)
 
     def test_create_data_dump(self):
-        from MetaDataApi.metadata.rdf_models.rdf_data_provider \
-            import RdfDataProvider
+        from MetaDataApi.metadata.rdfs_models.rdfs_data_provider \
+            import RdfsDataProvider
         from MetaDataApi.metadata.models import ObjectInstance
 
-        RdfDataProvider.create_all_meta_objects()
+        RdfsDataProvider.create_all_meta_objects()
 
-        provider = RdfDataProvider.create_data_provider(self.provider_name)
-        endpoint = RdfDataProvider.create_endpoint_to_data_provider(
+        provider = RdfsDataProvider.create_data_provider(self.provider_name)
+        endpoint = RdfsDataProvider.create_endpoint_to_data_provider(
             provider,
             endpoint_name=self.endpoint_name,
             endpoint_url=self.endpoint_url
         )
-        datadump = RdfDataProvider.create_data_dump(
+        datadump = RdfsDataProvider.create_data_dump(
             endpoint,
-            RdfDataProvider.create_file_from_str("dummy text")
+            RdfsDataProvider.create_file_from_str("dummy text")
         )
 
         instances = ObjectInstance.objects.all()
         self.assertTrue(datadump in instances)
 
     def test_get_endpoint(self):
-        from MetaDataApi.metadata.rdf_models.rdf_data_provider \
-            import RdfDataProvider
+        from MetaDataApi.metadata.rdfs_models.rdfs_data_provider \
+            import RdfsDataProvider
 
-        RdfDataProvider.create_all_meta_objects()
+        RdfsDataProvider.create_all_meta_objects()
 
-        provider = RdfDataProvider.create_data_provider(self.provider_name)
-        endpoint = RdfDataProvider.create_endpoint_to_data_provider(
+        provider = RdfsDataProvider.create_data_provider(self.provider_name)
+        endpoint = RdfsDataProvider.create_endpoint_to_data_provider(
             provider,
             endpoint_name=self.endpoint_name,
             endpoint_url=self.endpoint_url
         )
 
-        fetched = RdfDataProvider.get_endpoint(provider, self.endpoint_name)
+        fetched = RdfsDataProvider.get_endpoint(provider, self.endpoint_name)
 
         self.assertEqual(endpoint, fetched)

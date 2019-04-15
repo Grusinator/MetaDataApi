@@ -3,7 +3,7 @@ import json
 from MetaDataApi.dataproviders.models import DataProvider
 
 
-class InitializeDefaultDataProviders:
+class InitializeDataProviders:
     default_data_providers = [
         DataProvider(
             provider_name="endomondo",

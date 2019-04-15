@@ -2,10 +2,10 @@ from django import forms
 from service_objects.services import Service
 
 from MetaDataApi.dataproviders.models import DataProvider
-from MetaDataApi.metadata.rdf_models.rdf_data_provider import RdfDataProvider
+from MetaDataApi.metadata.rdfs_models.rdfs_data_provider import RdfsDataProvider
 
 
-class CreateRdfDataProviderEndpointService(Service):
+class CreateRdfsDataProviderEndpointService(Service):
     provider_name = forms.CharField()
     url = forms.FileField()
     endpoint_name = forms.CharField()
@@ -16,14 +16,14 @@ class CreateRdfDataProviderEndpointService(Service):
         endpoint_name = self.changed_data['endpoint_name']
 
         provider = DataProvider.exists(provider_name)
-        RdfDataProvider.create_endpoint_to_data_provider(
+        RdfsDataProvider.create_endpoint_to_data_provider(
             provider.data_provider_instance,
             endpoint_url=url,
             endpoint_name=endpoint_name
         )
 
 
-class CreateRdfDataProviderService(Service):
+class CreateRdfsDataProviderService(Service):
     provider_name = forms.CharField()
     rest_endpoint_name = forms.CharField()
     file = forms.FileField()
@@ -33,5 +33,5 @@ class CreateRdfDataProviderService(Service):
         rest_endpoint_name = self.cleaned_data['rest_endpoint_name']
         file = self.changed_data['file']
         provider = DataProvider.exists(provider_name)
-        rest_endpoint = RdfDataProvider.get_endpoint(provider.data_provider_instance, rest_endpoint_name)
-        RdfDataProvider.create_data_dump(rest_endpoint, file)
+        rest_endpoint = RdfsDataProvider.get_endpoint(provider.data_provider_instance, rest_endpoint_name)
+        RdfsDataProvider.create_data_dump(rest_endpoint, file)

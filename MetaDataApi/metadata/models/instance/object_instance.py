@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 
 from MetaDataApi.metadata.models.instance import BaseAttributeInstance
@@ -17,10 +18,21 @@ class ObjectInstance(BaseInstance):
         app_label = 'metadata'
         default_related_name = '%(model_name)s'
 
-    def get_att_inst(self, label) -> BaseAttributeInstance:
+    def get_att_inst(self, label: str) -> BaseAttributeInstance:
         att_base = Attribute.exists_by_label(label, self.base.label)
+        if att_base is None:
+            raise ObjectDoesNotExist("attribute %s does not exists" % self.base.label)
         SpecificAttributeInstance = BaseAttributeInstance.get_attribute_instance_from_type(att_base.data_type)
         return SpecificAttributeInstance.objects.get(base=att_base, object=self)
+
+    def get_child_obj_instance_with_relation(self, relation_label):
+        relations = list(self.to_relations.filter(base__label=relation_label))
+        return [relation.to_object for relation in relations]
+
+    def get_parrent_obj_instance_with_relation(self, relation_label):
+        relations = list(self.from_relations.filter(base__label=relation_label))
+        return [relation.from_object for relation in relations]
+
 
     @classmethod
     def exists(cls, label, children=()):
@@ -35,11 +47,6 @@ class ObjectInstance(BaseInstance):
     @classmethod
     def exists_by_parrent_and_attribute_value(cls, parrent_inst_label: str, base_att_label: str):
         raise NotImplementedError()
-
-        search_args = dict()
-        parrent_key = BuildDjangoSearchArgs.from_obj_rel_search_str + "__label"
-        search_args[parrent_key] = parrent_inst_label
-        return DjangoModelUtils.get_object_or_none(cls, **search_args)
 
     def get_related_list(self, include_attributes=False):
         related = []
