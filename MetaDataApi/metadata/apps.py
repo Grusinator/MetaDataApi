@@ -7,5 +7,7 @@ class MetadataConfig(AppConfig):
     def ready(self):
         from MetaDataApi.metadata.rdfs_models.initialize_rdf_models import InitializeRdfModels
         InitializeRdfModels.create_all_schemas()
-        from MetaDataApi.metadata.tests import LoadTestData
-        LoadTestData.init_foaf()
+        from MetaDataApi.metadata.models import Schema
+        if not Schema.exists_by_label("friend_of_a_friend"):
+            from MetaDataApi.metadata.tests import LoadTestData
+            LoadTestData.init_foaf()
