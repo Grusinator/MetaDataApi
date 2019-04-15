@@ -1,11 +1,10 @@
 import inspect
-import io
 import logging
 import uuid
 from abc import ABCMeta
 from enum import Enum
 
-from django.core.files import File
+from django.core.files.base import ContentFile
 
 from MetaDataApi.metadata.models import Object, ObjectRelation, Attribute, Schema, ObjectInstance, \
     ObjectRelationInstance, BaseAttributeInstance, FileAttributeInstance
@@ -129,6 +128,6 @@ class BaseRdfModel:
         return str(uuid.uuid4())
 
     @classmethod
-    def create_file_from_str(cls, text_str, ext: str = ".txt"):
-        file = File(io.BytesIO(text_str), name=cls.get_default_file_name() + ext)
+    def create_file_from_str(cls, text_str: str, ext: str = ".txt"):
+        file = ContentFile(text_str.encode("utf-8"), name=cls.get_default_file_name() + ext)
         return file

@@ -11,7 +11,7 @@
 {% for dp in dataproviders %}
 <div>
     <h3>
-        <a href={{dp.get_absolute_url}}>
+        <a href={{ dp.get_internal_view_url }}>
             {{dp.provider_name}}
         </a>
     </h3>

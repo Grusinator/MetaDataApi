@@ -3,7 +3,7 @@ import json
 from MetaDataApi.dataproviders.models import DataProvider
 
 
-class LoadDefaultDataProviders:
+class InitializeDefaultDataProviders:
     default_data_providers = [
         DataProvider(
             provider_name="endomondo",
@@ -51,9 +51,9 @@ class LoadDefaultDataProviders:
             client_secret="ed5f469f798830c7214fc8efad54790799fc3ae1",
             scope=json.dumps(["view_private"]),
             rest_endpoints_list=json.dumps([
-                {"name": "activity", "url": "/v3/activities"},
-                {"name": "zone", "url": "/v3/athlete/zones"},
-                {"name": "athlete", "url": "/v3/athlete"},
+                {"name": "activity", "url": "v3/activities"},
+                {"name": "zone", "url": "v3/athlete/zones"},
+                {"name": "athlete", "url": "v3/athlete"},
             ]),
             json_schema_file_url=""
         ),
@@ -70,10 +70,10 @@ class LoadDefaultDataProviders:
                 "personal",
                 "daily"]),
             rest_endpoints_list=json.dumps([
-                {"name": "user_info", "url": "/v1/userinfo"},
-                {"name": "sleep", "url": "/v1/sleep?start={StartDateTime:Y-M-d}&end={EndDateTime:Y-M-d}"},
-                {"name": "activity", "url": "/v1/activity?start={StartDateTime:Y-M-d}&end={EndDateTime:Y-M-d}"},
-                {"name": "readiness", "url": "/v1/readiness?start={StartDateTime:Y-M-d}&end={EndDateTime:Y-M-d}"}
+                {"name": "user_info", "url": "v1/userinfo"},
+                {"name": "sleep", "url": "v1/sleep?start={StartDateTime:Y-M-d}&end={EndDateTime:Y-M-d}"},
+                {"name": "activity", "url": "v1/activity?start={StartDateTime:Y-M-d}&end={EndDateTime:Y-M-d}"},
+                {"name": "readiness", "url": "v1/readiness?start={StartDateTime:Y-M-d}&end={EndDateTime:Y-M-d}"}
             ]),
             json_schema_file_url=""
         ),

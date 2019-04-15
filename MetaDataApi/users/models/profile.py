@@ -12,13 +12,16 @@ class Languages(Enum):
 
 
 class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     birthdate = models.DateField(null=True, blank=True)
     language = models.TextField(
         blank=False, max_length=2,
-        choices=[(tag.value, tag.name) for tag in Languages])
+        choices=[(tag.value, tag.name) for tag in Languages],
+        default=Languages.Danish
+    )
     profilepicture = models.ImageField(
         upload_to='profilepictures', null=True, blank=True)
-    audio_threshold = models.FloatField(null=True, blank=True)
+    audio_threshold = models.FloatField(null=True, blank=True, default=3.0)
     profile_description = models.TextField(null=True, blank=True)
     foaf_person = models.ForeignKey(
         "metadata.ObjectInstance",
@@ -26,15 +29,13 @@ class Profile(models.Model):
         null=True, blank=True
     )
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-
     def __str__(self):
         return "%i - %s - %s" % (self.id, self.user.username, self.language)
 
     def get_data_provider_profile(self, provider_name):
-        tpdp_profile = self.data_provider_profiles.get(
+        data_provider_profile = self.data_provider_profiles.get(
             provider__provider_name=provider_name)
-        return tpdp_profile
+        return data_provider_profile
 
     def save(self, *args, **kwargs):
         person_meta = Object.objects.get(schema__label="friend_of_a_friend", label="person")

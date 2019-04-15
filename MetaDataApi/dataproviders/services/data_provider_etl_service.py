@@ -1,7 +1,7 @@
 import json
 from datetime import datetime, timedelta
 # from jsonschema import validate
-from urllib import request, parse
+from urllib import request
 
 from MetaDataApi.dataproviders.models import DataProvider
 from MetaDataApi.dataproviders.services.url_format_helper import UrlFormatHelper
@@ -14,7 +14,7 @@ from MetaDataApi.metadata.utils.common_utils import StringUtils
 
 class DataProviderEtlService:
 
-    def __init__(self, dataprovider):
+    def __init__(self, dataprovider: DataProvider):
         self.dataprovider = dataprovider if \
             isinstance(dataprovider, DataProvider) else \
             DataProvider.objects.get(
@@ -30,20 +30,21 @@ class DataProviderEtlService:
         return schema or Schema.create_new_empty_schema(
             self.dataprovider.provider_name)
 
-    def read_data_from_endpoint(self, endpoint, auth_token=None):
-        endpoint = UrlFormatHelper.standardize_url(endpoint)
+    def read_data_from_endpoint(self, endpoint_name: str, auth_token: str = None):
+        endpoint = RdfDataProvider.get_endpoint_as_object(
+            self.dataprovider.data_provider_instance,
+            endpoint_name
+        )
 
-        self.dataprovider.do_endpoint_exist(endpoint)
-
-        endpoint = UrlFormatHelper.build_args_for_url(
-            endpoint,
+        endpoint_url = UrlFormatHelper.build_args_for_url(
+            endpoint.url,
             StartDateTime=datetime.now() - timedelta(days=30),
             EndDateTime=datetime.now(),
             AuthToken=auth_token)
 
-        url = parse.urljoin(self.dataprovider.api_endpoint, endpoint)
+        url = UrlFormatHelper.join_urls(self.dataprovider.api_endpoint, endpoint_url)
+
         data = self.request_json_from_endpoint(auth_token, url)
-        self.save_data_to_file(endpoint, data)
         return data
 
     @staticmethod
@@ -55,7 +56,7 @@ class DataProviderEtlService:
         json_obj = json.loads(html)
         return json_obj
 
-    def save_data_to_file(self, endpoint_name, data):
+    def save_data_to_file(self, endpoint_name: str, data: str):
         endpoint = RdfDataProvider.get_endpoint(
             self.dataprovider.data_provider_instance,
             rest_endpoint_name=endpoint_name

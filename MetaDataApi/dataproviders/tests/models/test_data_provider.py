@@ -15,8 +15,8 @@ class TestDataProvider(TransactionTestCase):
         django.setup()
         from MetaDataApi.metadata.rdf_models import RdfDataProvider
         RdfDataProvider.create_all_meta_objects()
-        from MetaDataApi.dataproviders.models.load_default_data_providers import LoadDefaultDataProviders
-        LoadDefaultDataProviders.load()
+        from MetaDataApi.dataproviders.models.load_default_data_providers import InitializeDefaultDataProviders
+        InitializeDefaultDataProviders.load()
 
     def test_create_profile(self):
         from MetaDataApi.dataproviders.models import DataProvider
@@ -45,8 +45,8 @@ class TestDataProvider(TransactionTestCase):
         self.assertIsNotNone(data_provider.data_provider_instance)
 
     def test_endpoints_are_created_at_provider_creation(self):
-        from MetaDataApi.dataproviders.models.load_default_data_providers import LoadDefaultDataProviders
-        LoadDefaultDataProviders.load()
+        from MetaDataApi.dataproviders.models.load_default_data_providers import InitializeDefaultDataProviders
+        InitializeDefaultDataProviders.load()
 
         from MetaDataApi.metadata.rdf_models import RdfDataProvider
         schema_label = RdfDataProvider.SchemaItems.schema.label

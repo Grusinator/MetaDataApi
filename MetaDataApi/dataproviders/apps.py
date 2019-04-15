@@ -5,5 +5,5 @@ class DataprovidersConfig(AppConfig):
     name = 'MetaDataApi.dataproviders'
 
     def ready(self):
-        from MetaDataApi.dataproviders.models.load_default_data_providers import LoadDefaultDataProviders
-        LoadDefaultDataProviders.load()
+        from MetaDataApi.dataproviders.models.load_default_data_providers import InitializeDefaultDataProviders
+        InitializeDefaultDataProviders.load()

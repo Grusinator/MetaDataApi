@@ -2,8 +2,10 @@ import json
 import os
 
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 
 from MetaDataApi.metadata.models import Schema, ObjectRelation, Object, Attribute
+from MetaDataApi.users.models import Profile
 
 
 class LoadTestData:
@@ -16,11 +18,27 @@ class LoadTestData:
             username="test",
             password="test1234"
         )
+
         try:
-            return User.objects.get(username=user.username)
+            user = User.objects.get(username=user.username)
         except:
             user.save()
-            return user
+
+        LoadTestData.init_profile(user)
+        return user
+
+    @staticmethod
+    def init_profile(user):
+        LoadTestData.init_foaf()
+        from MetaDataApi.users.models import Profile
+        profile = Profile(
+            user=user,
+        )
+        try:
+            return Profile.objects.get(user=user)
+        except ObjectDoesNotExist:
+            profile.save()
+        return profile
 
     @staticmethod
     def init_foaf():
@@ -31,6 +49,24 @@ class LoadTestData:
         rdf_service.write_to_db(rdf_url="http://xmlns.com/foaf/0.1/")
 
         return rdf_service.schema
+
+    @staticmethod
+    def init_strava_data_provider_profile():
+        LoadTestData.init_foaf()
+        user = LoadTestData.init_user()
+        from MetaDataApi.dataproviders.models.load_default_data_providers import InitializeDefaultDataProviders
+        InitializeDefaultDataProviders.load()
+        from MetaDataApi.users.models import DataProviderProfile
+        from MetaDataApi.dataproviders.models import DataProvider
+
+        dataproviderprofile = DataProviderProfile(
+            provider=DataProvider.objects.get(provider_name="strava"),
+            access_token="174323610143cdcd159f7792c1c4ec5637a96e12",
+            profile=Profile.objects.get(user=user)
+        )
+        dataproviderprofile.save()
+        return dataproviderprofile
+
 
     @staticmethod
     def init_meta_data_api():

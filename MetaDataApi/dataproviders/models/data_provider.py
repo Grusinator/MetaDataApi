@@ -39,7 +39,7 @@ class DataProvider(models.Model):
         null=True, blank=True
     )
 
-    def get_absolute_url(self):
+    def get_internal_view_url(self):
         return reverse('provider_detail', args=[str(self.provider_name)])
 
     def get_webvowl_url(self):

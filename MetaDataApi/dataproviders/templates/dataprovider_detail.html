@@ -14,7 +14,7 @@
         <th>
             <div>
                 <h2>
-                    <a %} build_auth_url dataprovider href={% user_id>
+                    <a href= {% build_auth_url dataprovider user_id %}>
                         Authorize {{dataprovider.provider_name}}
                     </a>
                 </h2>
@@ -28,6 +28,9 @@
                     <p>
                         {{endpoint.name}}
                     </p>
+                    <a href={{ endpoint.get_internal_view_url }}>
+                        fetch data
+                    </a>
                     <form method="get">
                         <input class="btn" name="dummy" type="submit" value="Fetch data">
                     </form>
@@ -38,7 +41,7 @@
 
         </th>
         <td>
-            <iframe height="600" src={{dataprovider.get_webvowl_url}} width="100%"></iframe>
+            <iframe height="600" width="100%" src={{ dataprovider.get_webvowl_url }}></iframe>
         </td>
     </tr>
 </table>

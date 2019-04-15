@@ -1,4 +1,5 @@
 import re
+from urllib import parse
 
 
 class UrlFormatHelper:
@@ -15,7 +16,7 @@ class UrlFormatHelper:
     }
 
     @classmethod
-    def build_args_for_url(cls, endpoint_url, **inserted_arguments):
+    def build_args_for_url(cls, endpoint_url, **inserted_arguments) -> str:
         for key in inserted_arguments.keys():
             cls.validate(key)
 
@@ -38,6 +39,13 @@ class UrlFormatHelper:
     def standardize_url(cls, url):
         # remove first slash if exists
         return url[1:] if url[0] == "/" else url
+
+    @classmethod
+    def join_urls(cls, base: str, endpoint: str):
+        return parse.urljoin(
+            cls.standardize_url(base),
+            cls.standardize_url(endpoint)
+        )
 
     @classmethod
     def build_url_arg_def(cls, data_format: str, url_arg_name: str):

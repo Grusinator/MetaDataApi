@@ -212,8 +212,8 @@ except Exception as e:
 
 # TODO change to python decouple
 
-OAUTH_REDIRECT_URI = "https://meta-data-api.herokuapp.com/oauth2redirect/"
-# OAUTH_REDIRECT_URI = "http://localhost:8000/oauth2redirect/"
+# OAUTH_REDIRECT_URI = "https://meta-data-api.herokuapp.com/oauth2redirect/"
+OAUTH_REDIRECT_URI = "http://localhost:8000/oauth2redirect/"
 
 # AWS
 AWS_STORAGE_BUCKET_NAME = os.environ.get(

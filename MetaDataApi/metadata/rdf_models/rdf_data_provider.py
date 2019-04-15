@@ -1,5 +1,9 @@
 from datetime import datetime
 
+from django.urls import reverse
+
+from MetaDataApi.dataproviders.models.rdf_model_not_correctly_initialized_exception import \
+    RdfModelNotCorrectlyInitializedException
 from MetaDataApi.metadata.models import (
     Schema, Object, Attribute,
     ObjectRelation, ObjectInstance,
@@ -76,12 +80,17 @@ class RdfDataProvider(BaseRdfModel):
 
         @property
         def url(self):
-            url_att = self.endpoint.get_att_inst(RdfDataProvider.SchemaItems.endpoint_name.label)
+            url_att = self.endpoint.get_att_inst(RdfDataProvider.SchemaItems.endpoint_template_url.label)
             return url_att.value
 
+        def get_internal_view_url(self):
+            return reverse('endpoint_detail', args=[str("strava"), self.name])
 
     @classmethod
     def create_data_provider(cls, name: str):
+        if not cls.do_schema_items_exists():
+            raise RdfModelNotCorrectlyInitializedException()
+
         data_provider = cls.create_obj_inst(cls.SchemaItems.data_provider)
         cls.create_att_inst_to_obj_inst(
             data_provider,
@@ -141,9 +150,21 @@ class RdfDataProvider(BaseRdfModel):
         return cls.find_endpoint_with_name(endpoints, rest_endpoint_name)
 
     @classmethod
+    def get_all_endpoints(cls, provider: ObjectInstance) -> list:
+        search_args = {
+            "from_relations__from_object": provider
+        }
+        return list(ObjectInstance.objects.filter(**search_args))
+
+    @classmethod
     def get_all_endpoints_as_objects(cls, provider: ObjectInstance):
         endpoints = cls.get_all_endpoints(provider)
         return [cls.Endpoint(endpoint.pk) for endpoint in endpoints]
+
+    @classmethod
+    def get_endpoint_as_object(cls, provider: ObjectInstance, endpoint_name: str):
+        endpoint = cls.get_endpoint(provider, endpoint_name)
+        return cls.Endpoint(endpoint.pk)
 
     @classmethod
     def find_endpoint_with_name(cls, endpoints: list, rest_endpoint_name: str) -> ObjectInstance:
@@ -155,10 +176,3 @@ class RdfDataProvider(BaseRdfModel):
             ).first()
             if name:
                 return endpoint
-
-    @classmethod
-    def get_all_endpoints(cls, provider: ObjectInstance) -> list:
-        search_args = {
-            "from_relations__from_object": provider
-        }
-        return list(ObjectInstance.objects.filter(**search_args))

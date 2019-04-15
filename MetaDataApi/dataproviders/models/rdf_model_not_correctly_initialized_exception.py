@@ -1,0 +1,2 @@
+class RdfModelNotCorrectlyInitializedException(Exception):
+    pass
