@@ -16,7 +16,7 @@ class RdfSchemaService(BaseRdfSchemaService):
         super(RdfSchemaService, self).__init__()
         self.schema = None
 
-    def export_schema_from_db(self, schema):
+    def export_schema_from_db(self, schema: Schema):
         g = Graph()
         # reset objects created (exported)
         self.touched_meta_items = []

@@ -6,6 +6,12 @@
     {# <p>{{ data }}</p>#}
 </div>
 
+<div>
+    <a href="{{dataprovider.get_internal_view_url}}">
+        Back to: {{dataprovider.provider_name}}
+    </a>
+</div>
+
 
 <form method="get">
     <input name="store_data" type="hidden" value="True"/>

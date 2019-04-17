@@ -47,8 +47,7 @@ class ExportSchemaService(Service):
         schema_label = self.cleaned_data['schema_label']
 
         service = RdfSchemaService()
-        schema = BaseMetaDataService.do_meta_item_exists(
-            Schema(label=schema_label))
+        schema = Schema.exists_by_label(schema_label)
         service.export_schema_from_db(schema)
         schema.url = schema.rdfs_file.url
         schema.save()
@@ -111,7 +110,7 @@ class IdentifyDataFromFileService(Service):
             Schema(label=schema_label))
 
         objects = identify.identify_from_json_data(
-            data, schema, data_label)
+            data, schema, user, data_label)
 
         return objects
 
@@ -227,6 +226,9 @@ class LoadSchemaAndDataFromDataDump(Service):
 
         objects = identify.identify_from_json_data(
             data_as_json, schema, user, parrent_label)
+
+        service = RdfSchemaService()
+        service.export_schema_from_db(schema)
 
         DataDump(data_dump_pk).loaded = True
 

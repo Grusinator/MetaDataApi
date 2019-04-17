@@ -18,27 +18,18 @@
                         Authorize {{dataprovider.provider_name}}
                     </a>
                 </h2>
-                <p>{{dataprovider.access_token_url}}</p>
                 <p>{{dataprovider.scope}}</p>
             </div>
             <div>
                 <h3>Endpoints</h3>
                 {% for endpoint in endpoints %}
                 <div>
-                    <p>
-                        {{endpoint.name}}
-                    </p>
                     <a href="{{ endpoint.get_internal_view_url }}">
-                        fetch data
+                        {{endpoint.name}}
                     </a>
-                    <form method="get">
-                        <input class="btn" name="dummy" type="submit" value="Fetch data">
-                    </form>
                 </div>
                 {% endfor %}
             </div>
-
-
         </th>
         <td>
             <iframe height="600" width="100%" src="{{ dataprovider.get_webvowl_url }}"></iframe>
