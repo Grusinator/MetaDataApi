@@ -4,6 +4,7 @@ from service_objects.services import Service
 
 from MetaDataApi.dataproviders.models import DataProvider
 from MetaDataApi.dataproviders.services.data_provider_etl_service import DataProviderEtlService
+from MetaDataApi.metadata.utils import JsonUtils
 
 
 class StoreDataFromProviderService(Service):
@@ -32,6 +33,8 @@ class StoreDataFromProviderService(Service):
         data = service.read_data_from_endpoint(
             endpoint_name, thirdpartyprofile.access_token)
 
-        service.save_data_to_file(endpoint_name, str(data))
+        data = JsonUtils.clean(data)
+
+        service.save_data_to_file(endpoint_name, data)
 
         return data

@@ -1,6 +1,8 @@
 import django
 from django.test import TransactionTestCase
 
+from MetaDataApi.metadata.utils.django_model_utils import DjangoModelUtils
+
 
 class TestRdfsDataProvider(TransactionTestCase):
     provider_name = "dummyname"
@@ -24,7 +26,7 @@ class TestRdfsDataProvider(TransactionTestCase):
 
         expected = ['data_provider', 'rest_endpoint', 'endpoint_data_dump', 'data_dump_file', 'date_downloaded',
                     'file_origin_url', 'endpoint_name', 'data_provider_name', 'has_generated', 'has_rest_endpoint',
-                    'endpoint_template_url']
+                    'endpoint_template_url', 'loaded']
 
         item_labels.sort()
         expected.sort()
@@ -75,7 +77,7 @@ class TestRdfsDataProvider(TransactionTestCase):
         )
         datadump = RdfsDataProvider.create_data_dump(
             endpoint,
-            RdfsDataProvider.create_file_from_str("dummy text")
+            DjangoModelUtils.convert_str_to_file("dummy text")
         )
 
         instances = ObjectInstance.objects.all()

@@ -1,12 +1,12 @@
 from datetime import datetime
 
-from MetaDataApi.dataproviders.models.rdf_model_not_correctly_initialized_exception import \
-    RdfModelNotCorrectlyInitializedException
 from MetaDataApi.metadata.models import (
     Schema, Object, Attribute,
     ObjectRelation, ObjectInstance,
     StringAttributeInstance)
 from MetaDataApi.metadata.rdfs_models.base_rdfs_model import BaseRdfModel
+from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.rdf_model_not_correctly_initialized_exception import \
+    RdfModelNotCorrectlyInitializedException
 
 
 class RdfsDataProvider(BaseRdfModel):
@@ -52,6 +52,13 @@ class RdfsDataProvider(BaseRdfModel):
             object=endpoint_data_dump,
             data_type=Attribute.DataType.String
         )
+
+        loaded = Attribute(
+            label="loaded",
+            object=endpoint_data_dump,
+            data_type=Attribute.DataType.Boolean
+        )
+
 
         has_rest_endpoint = ObjectRelation(
             schema=schema,
@@ -122,6 +129,12 @@ class RdfsDataProvider(BaseRdfModel):
             endpoint_data_dump,
             cls.SchemaItems.data_dump_file,
             value=file
+        )
+
+        cls.create_att_inst_to_obj_inst(
+            endpoint_data_dump,
+            cls.SchemaItems.loaded,
+            value=False
         )
         return endpoint_data_dump
 

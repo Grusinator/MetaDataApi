@@ -6,7 +6,6 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 
 from MetaDataApi.dataproviders.models import DataProvider
-from MetaDataApi.dataproviders.models.initialize_data_providers import InitializeDataProviders
 from MetaDataApi.metadata.models import Schema, ObjectRelation, Object, Attribute
 from MetaDataApi.metadata.services import (
     JsonSchemaService, DataCleaningService, RdfInstanceService, RdfSchemaService, JsonAnalyser
@@ -28,7 +27,6 @@ class LoadTestData:
         except:
             user.save()
 
-        LoadTestData.init_profile(user)
         return user
 
     @staticmethod
@@ -61,11 +59,14 @@ class LoadTestData:
     def init_strava_data_provider_profile():
         LoadTestData.init_foaf()
         user = LoadTestData.init_user()
+        LoadTestData.init_profile(user)
 
-        InitializeDataProviders.load()
+        provider = DataProvider.objects.filter(provider_name="strava").first()
+
+        assert provider, "Remember to init DataProviders before loading provider profile"
 
         dataproviderprofile = DataProviderProfile(
-            provider=DataProvider.objects.get(provider_name="strava"),
+            provider=provider,
             access_token="174323610143cdcd159f7792c1c4ec5637a96e12",
             profile=Profile.objects.get(user=user)
         )

@@ -5,6 +5,7 @@ from django.core.files import File
 from django.db import models
 
 from MetaDataApi.metadata.custom_storages import MediaStorage
+from MetaDataApi.metadata.utils.django_model_utils import DjangoModelUtils
 from .attribute_instance_base import BaseAttributeInstance
 
 
@@ -58,6 +59,9 @@ class FileAttributeInstance(BaseAttributeInstance):
 
     class Meta(BaseAttributeInstance.Meta):
         default_related_name = '%(model_name)s'
+
+    def read_as_str(self):
+        return DjangoModelUtils.convert_file_to_str(self.value.file)
 
 
 # define the mapping between type and InstanceClass

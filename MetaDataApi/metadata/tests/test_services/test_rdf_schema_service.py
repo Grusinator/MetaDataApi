@@ -12,8 +12,8 @@ class TestRdfSchemaService(TransactionTestCase):
     # Django requires an explicit setup() when running tests in PTVS
     @classmethod
     def setUpClass(cls):
-        django.setup()
         super(TestRdfSchemaService, cls).setUpClass()
+        django.setup()
 
     def test_create_default_graphs(self):
         from MetaDataApi.metadata.services import RdfSchemaService

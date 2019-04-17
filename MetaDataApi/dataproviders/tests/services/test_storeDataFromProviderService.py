@@ -1,6 +1,8 @@
 import django
 from django.test import TransactionTestCase
 
+from MetaDataApi.metadata.utils import JsonUtils
+
 
 class TestStoreDataFromProviderService(TransactionTestCase):
     @classmethod
@@ -27,8 +29,11 @@ class TestStoreDataFromProviderService(TransactionTestCase):
             "user_pk": user.pk
         })
 
+        data = JsonUtils.validate(data)
+
         fileAtt = FileAttributeInstance.objects.get()
 
-        file = fileAtt.value.file.read()
+        file_as_str = fileAtt.read_as_str()
+        file = JsonUtils.validate(file_as_str)
 
         self.assertEqual(data, file)

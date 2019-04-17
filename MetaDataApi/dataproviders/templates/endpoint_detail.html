@@ -1,14 +1,64 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div>
-        <h2>{{ dataprovider.provider_name }} {{ endpoint.endpoint_name }}</h2>
-        {# <p>{{ data }}</p>#}
-    </div>
-{% for data_dump in data_dumps %}
 <div>
-    <p> {{ data_dump.date_downloaded }} </p>
+    <h2>{{ dataprovider.provider_name }} {{ endpoint.endpoint_name }}</h2>
+    {# <p>{{ data }}</p>#}
 </div>
-{% endfor %}
+
+
+<form method="get">
+    <input name="store_data" type="hidden" value="True"/>
+    <input type="submit" value="Store data"/>
+</form>
+
+
+<form method="get">
+    <input name="load_all" type="hidden" value="True"/>
+    <input type="submit" value="Load all"/>
+</form>
+
+<table style="width:100%">
+    <!--    <col width="30%">-->
+    <!--    <col width="70%">-->
+
+
+    {% for data_dump in data_dumps %}
+    <div>
+        <tr>
+            <th>
+                <p> {{ data_dump.file }} </p>
+            </th>
+            <td>
+                <p> {{ data_dump.date_downloaded }} </p>
+            </td>
+            <!--            <td>-->
+            <!--                <p> {{ data_dump.file.url }} </p>-->
+            <!--            </td>-->
+            <td>
+                <form action={{data_dump.file.url}} method="get">
+                    <input type="submit" value="File"/>
+                </form>
+            </td>
+            <td>
+                <p> {{ data_dump.loaded }} </p>
+            </td>
+            <td>
+                <form method="get">
+                    <input name="load_file" type="hidden" value={{data_dump.pk}}/>
+                    <input type="submit" value="Load file"/>
+                </form>
+            </td>
+
+        </tr>
+
+
+    </div>
+    {% endfor %}
+
+</table>
 
 {% endblock %}
+
+
+

@@ -9,6 +9,7 @@ from django.shortcuts import render
 from MetaDataApi.dataproviders.models import DataProvider
 from MetaDataApi.dataproviders.services.services import StoreDataFromProviderService
 from MetaDataApi.metadata.rdfs_models.rdfs_data_provider import Endpoint
+from MetaDataApi.metadata.services.services import IdentifySchemaAndDataFromDataDump
 
 logger = logging.getLogger(__name__)
 
@@ -63,14 +64,27 @@ class DataProviderView:
             endpoint_name
         )
         data_dumps = endpoint.data_dumps
-        try:
-            data = StoreDataFromProviderService.execute({
-                "provider_name": provider_name,
-                "endpoint_name": endpoint_name,
-                "user_pk": request.user.pk
-            })
-        except Exception as e:
-            raise Http404('data error')
+        data_dumps.sort(key=lambda x: x.date_downloaded, reverse=True)
+
+        generate_data_dump_pk = request.GET.get('load_file', None)
+        if generate_data_dump_pk:
+            try:
+                IdentifySchemaAndDataFromDataDump.execute({
+                    "data_dump_pk": generate_data_dump_pk,
+                    "user_pk": request.user.pk
+                })
+            except Exception as e:
+                raise Http404('data error')
+
+        if request.GET.get('store_data', False):
+            try:
+                StoreDataFromProviderService.execute({
+                    "provider_name": provider_name,
+                    "endpoint_name": endpoint_name,
+                    "user_pk": request.user.pk
+                })
+            except Exception as e:
+                raise Http404('data error')
 
         return render(
             request,
@@ -79,7 +93,6 @@ class DataProviderView:
                 "dataprovider": dataprovider,
                 "endpoint": endpoint,
                 "data_dumps": data_dumps,
-                "data": str(data),
                 "user_id": request.user.pk
             }
         )

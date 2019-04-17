@@ -1,7 +1,7 @@
 import django
 from django.test import TransactionTestCase
 
-from MetaDataApi.metadata.rdfs_models.initialize_rdf_models import InitializeRdfModels
+from MetaDataApi.metadata.utils import JsonUtils
 
 
 class TestDataProviderEtlService(TransactionTestCase):
@@ -13,7 +13,11 @@ class TestDataProviderEtlService(TransactionTestCase):
 
     def test_read_data_from_endpoint_correctly(self):
         from MetaDataApi.metadata.tests import LoadTestData
+        from MetaDataApi.metadata.rdfs_models.initialize_rdf_models import InitializeRdfModels
         InitializeRdfModels.create_all_schemas()
+
+        from MetaDataApi.dataproviders.models.initialize_data_providers import InitializeDataProviders
+        InitializeDataProviders.load()
 
         dp_profile = LoadTestData.init_strava_data_provider_profile()
 
@@ -23,6 +27,8 @@ class TestDataProviderEtlService(TransactionTestCase):
         service = DataProviderEtlService(dp_profile.provider)
 
         data = service.read_data_from_endpoint(endpoint_name, dp_profile.access_token)
+
+        json_data = JsonUtils.validate(data)
 
         expected = [{'resource_state': 2, 'athlete': {'id': 41124303, 'resource_state': 1}, 'name': 'Morning Run',
                      'distance': 3218.7, 'moving_time': 3600, 'elapsed_time': 3600, 'total_elevation_gain': 3.0,
@@ -38,4 +44,4 @@ class TestDataProviderEtlService(TransactionTestCase):
                      'has_heartrate': False, 'heartrate_opt_out': False, 'display_hide_heartrate_option': False,
                      'pr_count': 0, 'total_photo_count': 0, 'has_kudoed': False}]
 
-        self.assertEqual(expected, data)
+        self.assertEqual(expected, json_data)

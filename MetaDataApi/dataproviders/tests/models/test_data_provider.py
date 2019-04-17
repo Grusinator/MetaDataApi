@@ -1,8 +1,7 @@
+import json
+
 import django
 from django.test import TransactionTestCase
-
-from MetaDataApi.dataproviders.models.data_provider import ApiTypes
-from MetaDataApi.metadata.models import ObjectInstance
 
 
 class TestDataProvider(TransactionTestCase):
@@ -13,21 +12,13 @@ class TestDataProvider(TransactionTestCase):
     def setUpClass(cls):
         super(TestDataProvider, cls).setUpClass()
         django.setup()
+
+    def test_create_data_provider_instance(self):
         from MetaDataApi.metadata.rdfs_models import RdfsDataProvider
         RdfsDataProvider.create_all_meta_objects()
-        from MetaDataApi.dataproviders.models.initialize_data_providers import InitializeDataProviders
-        InitializeDataProviders.load()
-
-    def test_create_profile(self):
         from MetaDataApi.dataproviders.models import DataProvider
 
-        from MetaDataApi.metadata.models import Schema
-        schema = Schema(label="meta_data_api", url="test.com")
-        schema.save()
-
-        from MetaDataApi.metadata.models import Object
-        object = Object(label="data_provider", schema=schema)
-        object.save()
+        from MetaDataApi.dataproviders.models.data_provider import ApiTypes
 
         data_provider = DataProvider(
             provider_name="name",
@@ -38,13 +29,17 @@ class TestDataProvider(TransactionTestCase):
             client_id="d",
             client_secret="d",
             scope="d",
-            rest_endpoints_list="d",
+            rest_endpoints_list=json.dumps([{"name": "dummy", "url": "test.com"}])
         )
         data_provider.save()
 
         self.assertIsNotNone(data_provider.data_provider_instance)
+        self.assertIsNotNone(data_provider.data_provider_instance.pk)
 
     def test_endpoints_are_created_at_provider_creation(self):
+        from MetaDataApi.metadata.rdfs_models import RdfsDataProvider
+        RdfsDataProvider.create_all_meta_objects()
+
         from MetaDataApi.dataproviders.models.initialize_data_providers import InitializeDataProviders
         InitializeDataProviders.load()
 
@@ -52,16 +47,17 @@ class TestDataProvider(TransactionTestCase):
         schema_label = RdfsDataProvider.SchemaItems.schema.label
 
         from MetaDataApi.metadata.utils.testing_utils import TestingUtils
-        meta_labels = TestingUtils.get_all_item_labels_from_schema(schema_label)
+        meta_labels = set(TestingUtils.get_all_item_labels_from_schema(schema_label))
 
-        expected_labels = ['meta_data_api', 'data_provider', 'endpoint_data_dump', 'rest_endpoint',
+        expected_labels = {'meta_data_api', 'data_provider', 'endpoint_data_dump', 'rest_endpoint',
                            'data_provider_name', 'data_dump_file', 'date_downloaded', 'file_origin_url',
-                           'endpoint_name', 'endpoint_template_url', 'has_generated', 'has_rest_endpoint']
+                           'endpoint_name', 'endpoint_template_url', 'has_generated', 'has_rest_endpoint', 'loaded'}
 
-        self.assertListEqual(meta_labels, expected_labels)
+        self.assertSetEqual(meta_labels, expected_labels)
 
         instances = TestingUtils.get_all_object_instances_from_schema(schema_label)
 
+        from MetaDataApi.metadata.models import ObjectInstance
         endpoint_obj_inst = list(filter(
             lambda x: isinstance(x, ObjectInstance) and
                       x.base.label == RdfsDataProvider.SchemaItems.rest_endpoint.label,
@@ -76,10 +72,10 @@ class TestDataProvider(TransactionTestCase):
         expected_urls = [
             'v2/sleep?action=getsummary&access_token={AuthToken:}&startdateymd={StartDateTime:Y-M-d}&enddateymd={EndDateTime:Y-M-d}',
             'v2/sleep?action=get&access_token={AuthToken:}&startdate={StartDateTime:UTCSEC}&enddate={EndDateTime:UTCSEC}',
-            '/v3/activities', '/v3/athlete/zones', '/v3/athlete', '/v1/userinfo',
-            '/v1/sleep?start={StartDateTime:Y-M-d}&end={EndDateTime:Y-M-d}',
-            '/v1/activity?start={StartDateTime:Y-M-d}&end={EndDateTime:Y-M-d}',
-            '/v1/readiness?start={StartDateTime:Y-M-d}&end={EndDateTime:Y-M-d}', 'v1/users/me/dataSources'
+            'v3/activities', 'v3/athlete/zones', 'v3/athlete', 'v1/userinfo',
+            'v1/sleep?start={StartDateTime:Y-M-d}&end={EndDateTime:Y-M-d}',
+            'v1/activity?start={StartDateTime:Y-M-d}&end={EndDateTime:Y-M-d}',
+            'v1/readiness?start={StartDateTime:Y-M-d}&end={EndDateTime:Y-M-d}', 'v1/users/me/dataSources'
         ]
 
         self.assertListEqual(urls, expected_urls)

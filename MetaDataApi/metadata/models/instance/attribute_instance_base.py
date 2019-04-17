@@ -31,7 +31,7 @@ class BaseAttributeInstance(BaseInstance):
         return super(BaseAttributeInstance, self).save(*args, **kwargs)
 
     @classmethod
-    def exists(cls, base__label, object__pk, value):
+    def exists_by_label(cls, base__label, object__pk, value):
         search_args = dict(locals())
         search_args.pop("cls")
 

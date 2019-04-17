@@ -46,7 +46,7 @@ class JsonSchemaService(BaseMetaDataService):
 
         self.schema = self.do_meta_item_exists(Schema(label=schema_label))
         if not self.schema:
-            self.schema = self.create_new_empty_schema(schema_label)
+            self.schema = Schema.create_new_empty_schema(schema_label)
 
         return_objects = self._iterate_schema(data, label, filename=filename)
 

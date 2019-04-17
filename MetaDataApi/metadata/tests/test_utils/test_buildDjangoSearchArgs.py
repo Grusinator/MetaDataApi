@@ -1,15 +1,16 @@
+import django
 from django.test import TransactionTestCase
 
 from MetaDataApi.metadata.utils.django_model_utils import BuildDjangoSearchArgs
 
 
-class TestBuildDjangoSearchArgs(TransactionTestCase):
+class test_buildDjangoSearchArgs(TransactionTestCase):
 
     # Django requires an explicit setup() when running tests in PTVS
     @classmethod
     def setUpClass(cls):
-        super(TestBuildDjangoSearchArgs, cls).setUpClass()
-        # django.setup()
+        super(test_buildDjangoSearchArgs, cls).setUpClass()
+        django.setup()
 
     def test_build_search_args_from_json(self):
 

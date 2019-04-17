@@ -13,8 +13,8 @@ class TestRdfInstanceService(TransactionTestCase):
     # Django requires an explicit setup() when running tests in PTVS
     @classmethod
     def setUpClass(cls):
-        django.setup()
         super(TestRdfInstanceService, cls).setUpClass()
+        django.setup()
 
     def test_(self):
         from MetaDataApi.metadata.services import (

@@ -1,4 +1,3 @@
-import json
 from datetime import datetime, timedelta
 # from jsonschema import validate
 from urllib import request
@@ -11,6 +10,7 @@ from MetaDataApi.metadata.rdfs_models import RdfsDataProvider
 from MetaDataApi.metadata.rdfs_models.rdfs_data_provider import Endpoint
 from MetaDataApi.metadata.services.all_services.base_functions import BaseMetaDataService
 from MetaDataApi.metadata.utils.common_utils import StringUtils
+from MetaDataApi.metadata.utils.django_model_utils import DjangoModelUtils
 
 
 class DataProviderEtlService:
@@ -45,22 +45,22 @@ class DataProviderEtlService:
 
         url = UrlFormatHelper.join_urls(self.dataprovider.api_endpoint, endpoint_url)
 
-        data = self.request_json_from_endpoint(auth_token, url)
+        data = self.request_from_endpoint(auth_token, url)
         return data
 
     @staticmethod
-    def request_json_from_endpoint(auth_token, url):
+    def request_from_endpoint(auth_token, url):
         header = {"Authorization": "Bearer %s" % auth_token}
         req = request.Request(url, None, header)
         response = request.urlopen(req)
         html = response.read()
-        json_obj = json.loads(html)
-        return json_obj
+
+        return html
 
     def save_data_to_file(self, endpoint_name: str, data: str):
         endpoint = RdfsDataProvider.get_endpoint(
             self.dataprovider.data_provider_instance,
             rest_endpoint_name=endpoint_name
         )
-        file = RdfsDataProvider.create_file_from_str(data)
+        file = DjangoModelUtils.convert_str_to_file(data, filetype=DjangoModelUtils.FileType.JSON)
         RdfsDataProvider.create_data_dump(endpoint, file)

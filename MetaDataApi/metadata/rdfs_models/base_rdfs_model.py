@@ -1,10 +1,7 @@
 import inspect
 import logging
-import uuid
 from abc import ABCMeta
 from enum import Enum
-
-from django.core.files.base import ContentFile
 
 from MetaDataApi.metadata.models import Object, ObjectRelation, Attribute, Schema, ObjectInstance, \
     ObjectRelationInstance, BaseAttributeInstance, FileAttributeInstance
@@ -116,18 +113,9 @@ class BaseRdfModel:
             value=value
         )
         if SpecificAttributeInstance is FileAttributeInstance:
-            ext = None or ".txt"
-            filename = value.name or cls.get_default_file_name() + ext
-            att_inst.value.save(filename, value)
+            att_inst.value.save(value.name, value)
 
         att_inst.save()
         return att_inst
 
-    @classmethod
-    def get_default_file_name(cls) -> str:
-        return str(uuid.uuid4())
 
-    @classmethod
-    def create_file_from_str(cls, text_str: str, ext: str = ".txt"):
-        file = ContentFile(text_str.encode("utf-8"), name=cls.get_default_file_name() + ext)
-        return file
