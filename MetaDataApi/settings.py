@@ -215,7 +215,7 @@ except Exception as e:
 
 # TODO change to python decouple
 
-OAUTH_REDIRECT_URI = "oauth2redirect/"
+OAUTH_REDIRECT_URI = "oauth2redirect"
 
 oauth_mapper = {
     "PROD": "https://meta-data-api.herokuapp.com/",
