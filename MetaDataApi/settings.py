@@ -37,8 +37,11 @@ try:
 except:
     SECRET_KEY = 'ymcvw8ej))e=9jo89315q_r$imri(u0-ae!utev&ck4rs6cz+d'
 
+ENV = os.environ.get('ENV') or "LOCAL"
+
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+
+DEBUG = ENV == "PROD"
 
 ALLOWED_HOSTS = ["*"]
 
@@ -212,8 +215,15 @@ except Exception as e:
 
 # TODO change to python decouple
 
-# OAUTH_REDIRECT_URI = "https://meta-data-api.herokuapp.com/oauth2redirect/"
-OAUTH_REDIRECT_URI = "http://localhost:8000/oauth2redirect/"
+OAUTH_REDIRECT_URI = "oauth2redirect/"
+
+oauth_mapper = {
+    "PROD": "https://meta-data-api.herokuapp.com/",
+    "DEV": "https://meta-data-api-dev.herokuapp.com/",
+    "LOCAL": "http://localhost:8000/"
+}
+
+OAUTH_REDIRECT_URI = oauth_mapper[ENV] + OAUTH_REDIRECT_URI
 
 # AWS
 AWS_STORAGE_BUCKET_NAME = os.environ.get(
