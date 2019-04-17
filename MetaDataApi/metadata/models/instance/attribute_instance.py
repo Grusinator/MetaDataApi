@@ -57,6 +57,10 @@ class ImageAttributeInstance(BaseAttributeInstance):
 class FileAttributeInstance(BaseAttributeInstance):
     value = models.FileField(upload_to="datafiles", storage=MediaStorage())
 
+    def __str__(self):
+        return "Ai:%s.%s:%s" % (self.base.object.label, self.base.label,
+                                str(self.value.file.name))
+
     class Meta(BaseAttributeInstance.Meta):
         default_related_name = '%(model_name)s'
 
