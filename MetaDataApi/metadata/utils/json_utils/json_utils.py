@@ -1,9 +1,13 @@
 import json
+from typing import Union
+
+JsonType = Union[dict, list]
 
 
 class JsonUtils:
+
     @staticmethod
-    def validate(text: str):
+    def validate(text: str) -> JsonType:
         return json.loads(text)
 
     @staticmethod

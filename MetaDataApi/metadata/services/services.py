@@ -220,12 +220,13 @@ class LoadSchemaAndDataFromDataDump(Service):
         data_dump = DataDump(data_dump_pk)
         parrent_label = data_dump.endpoint.name
 
-        data = DjangoModelUtils.convert_file_to_str(data_dump.file)
+        data_as_str = DjangoModelUtils.convert_file_to_str(data_dump.file)
+        data_as_json = JsonUtils.validate(data_as_str)
 
         schema = data_dump.endpoint.data_provider.schema
 
         objects = identify.identify_from_json_data(
-            data, schema, user, parrent_label)
+            data_as_json, schema, user, parrent_label)
 
         DataDump(data_dump_pk).loaded = True
 

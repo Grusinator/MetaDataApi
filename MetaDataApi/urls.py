@@ -22,6 +22,7 @@ from django.views.generic.base import RedirectView
 from graphene_django.views import GraphQLView
 
 from MetaDataApi.dataproviders.views import DataProviderView, oauth2redirect
+from MetaDataApi.dataproviders.views.endpoint_detail_view import endpoint_detail_view
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -37,7 +38,7 @@ urlpatterns = [
                       name='provider_detail'),
                   path(
                       'provider/<str:provider_name>/endpoint/<str:endpoint_name>',
-                      DataProviderView.endpoint_detail,
+                      endpoint_detail_view,
                       name='endpoint_detail'
                   ),
     url(r'^oauth2redirect/$', oauth2redirect, name='oauth2redirect'),

@@ -175,7 +175,6 @@ class LoadTestData:
 
     @classmethod
     def loadStravaActivities(cls):
-        # load the file
         testfile = os.path.join(
             settings.BASE_DIR,
             "MetaDataApi/metadata/tests/data/json/strava_activities.json")

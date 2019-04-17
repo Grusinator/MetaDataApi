@@ -3,9 +3,9 @@ import logging
 from django.contrib.auth.models import User
 
 from MetaDataApi.metadata.models import (
-    ObjectInstance)
-from MetaDataApi.metadata.services.all_services.base_functions import BaseMetaDataService
+    Schema)
 from MetaDataApi.metadata.utils.django_model_utils.build_data_objects_from_json import BuildDataObjectsFromJson
+from MetaDataApi.metadata.utils.json_utils.json_utils import JsonType
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -21,16 +21,14 @@ class JsonAnalyser:
         self._object_function = None
         self._obj_rel_function = None
 
-    def identify_from_json_data(self, input_data, schema, owner: User, parrent_label=None):
-        # setup how the loop handles each type of object occurrence
+    def identify_from_json_data(self, input_data: JsonType,
+                                schema: Schema,
+                                owner: User,
+                                parrent_label: str = None):
 
         builder = BuildDataObjectsFromJson(schema, owner)
 
-        person = ObjectInstance(
-            base=BaseMetaDataService.get_foaf_person()
-        )
-        person.save()
-        # TODO: Relate to logged in foaf person object instance instead
+        person = owner.profile.foaf_person
 
         input_data = self._inject_parrent_label_as_root_key(input_data, parrent_label)
 
