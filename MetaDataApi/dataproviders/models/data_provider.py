@@ -35,7 +35,8 @@ class DataProvider(models.Model):
     data_provider_instance = models.ForeignKey(
         "metadata.ObjectInstance",
         on_delete=models.CASCADE,
-        null=True, blank=True
+        null=True, blank=True,
+        related_name="db_data_provider"
     )
 
     def get_internal_view_url(self):

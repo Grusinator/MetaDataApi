@@ -1,10 +1,11 @@
+from MetaDataApi.metadata.models import ObjectInstance
 from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.rdfs_data_provider import RdfsDataProvider
 
 
 class DataDump:
 
-    def __init__(self, data_dump):
-        self.data_dump = data_dump
+    def __init__(self, data_dump_pk):
+        self.data_dump = ObjectInstance.objects.get(pk=data_dump_pk)
 
     @property
     def pk(self):
@@ -28,11 +29,20 @@ class DataDump:
             RdfsDataProvider.SchemaItems.loaded.label
         ).value
 
+    @loaded.setter
+    def loaded(self, value: bool):
+        loaded = self.data_dump.get_att_inst(
+            RdfsDataProvider.SchemaItems.loaded.label
+        )
+        RdfsDataProvider.update_att_of_obj(loaded, value)
+
     @property
     def endpoint(self):
-        return self.data_dump.get_parrent_obj_instance_with_relation(
-            RdfsDataProvider.SchemaItems.has_generated
-        ).first().value
+        from . import Endpoint
+        endpoint = self.data_dump.get_parrent_obj_instances_with_relation(
+            RdfsDataProvider.SchemaItems.has_generated.label
+        )[0]
+        return Endpoint(endpoint.pk)
 
     @classmethod
     def get_all_as_obj(cls, endpoint):

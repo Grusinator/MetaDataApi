@@ -7,7 +7,7 @@ from .data_provider import DataProviderO
 
 
 class Endpoint:
-    def __init__(self, inst_pk):
+    def __init__(self, inst_pk: int):
         self.endpoint = ObjectInstance.objects.get(pk=inst_pk)
 
     @property
@@ -22,17 +22,17 @@ class Endpoint:
 
     @property
     def data_dumps(self):
-        data_dumps = self.endpoint.get_child_obj_instance_with_relation(
+        data_dumps = self.endpoint.get_child_obj_instances_with_relation(
             RdfsDataProvider.SchemaItems.has_generated.label
         )
-        return [DataDump(data_dump) for data_dump in data_dumps]
+        return [DataDump(data_dump.pk) for data_dump in data_dumps]
 
     @property
     def data_provider(self):
-        data_provider = self.endpoint.get_parrent_obj_instance_with_relation(
+        data_provider = self.endpoint.get_parrent_obj_instances_with_relation(
             RdfsDataProvider.SchemaItems.has_rest_endpoint.label
-        )
-        return DataProviderO(data_provider[0].pk)
+        )[0]
+        return DataProviderO(data_provider.pk)
 
     @classmethod
     def get_all_endpoints_as_objects(cls, provider: ObjectInstance):

@@ -1,5 +1,4 @@
 from MetaDataApi.metadata.models import ObjectInstance, Schema
-from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.rdfs_data_provider import RdfsDataProvider
 
 
 class DataProviderO:
@@ -7,8 +6,12 @@ class DataProviderO:
         self.data_provider = ObjectInstance.objects.get(pk=inst_pk)
 
     @property
+    def db_data_provider(self):
+        return self.data_provider.db_data_provider.first()
+
+    @property
     def schema(self):
-        return Schema.exists(RdfsDataProvider.SchemaItems.schema)
+        return Schema.objects.get(label=self.db_data_provider.provider_name)
 
     @property
     def endpoints(self):

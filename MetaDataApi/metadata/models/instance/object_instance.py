@@ -25,11 +25,11 @@ class ObjectInstance(BaseInstance):
         SpecificAttributeInstance = BaseAttributeInstance.get_attribute_instance_from_type(att_base.data_type)
         return SpecificAttributeInstance.objects.get(base=att_base, object=self)
 
-    def get_child_obj_instance_with_relation(self, relation_label):
+    def get_child_obj_instances_with_relation(self, relation_label: str):
         relations = list(self.to_relations.filter(base__label=relation_label))
         return [relation.to_object for relation in relations]
 
-    def get_parrent_obj_instance_with_relation(self, relation_label):
+    def get_parrent_obj_instances_with_relation(self, relation_label: str):
         relations = list(self.from_relations.filter(base__label=relation_label))
         return [relation.from_object for relation in relations]
 

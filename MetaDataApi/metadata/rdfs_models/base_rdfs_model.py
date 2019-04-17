@@ -118,4 +118,7 @@ class BaseRdfModel:
         att_inst.save()
         return att_inst
 
-
+    @classmethod
+    def update_att_of_obj(cls, att_inst: BaseAttributeInstance, value):
+        att_inst.value = value
+        att_inst.save()

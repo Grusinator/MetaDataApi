@@ -13,6 +13,7 @@ from MetaDataApi.metadata.models import *
 from MetaDataApi.metadata.rdfs_models.rdfs_data_provider import DataDump
 from MetaDataApi.metadata.utils import JsonUtils
 from MetaDataApi.metadata.utils.common_utils import StringUtils
+from MetaDataApi.metadata.utils.django_model_utils import DjangoModelUtils
 from MetaDataApi.settings import MEDIA_ROOT
 from .all_services import *
 
@@ -205,7 +206,7 @@ class IdentifyDataFromProviderService(Service):
         return rdf_file, object_list
 
 
-class IdentifySchemaAndDataFromDataDump(Service):
+class LoadSchemaAndDataFromDataDump(Service):
     data_dump_pk = forms.CharField()
     user_pk = forms.IntegerField()
 
@@ -219,12 +220,14 @@ class IdentifySchemaAndDataFromDataDump(Service):
         data_dump = DataDump(data_dump_pk)
         parrent_label = data_dump.endpoint.name
 
-        data = data_dump.file
+        data = DjangoModelUtils.convert_file_to_str(data_dump.file)
 
         schema = data_dump.endpoint.data_provider.schema
 
         objects = identify.identify_from_json_data(
             data, schema, user, parrent_label)
+
+        DataDump(data_dump_pk).loaded = True
 
         return objects
 

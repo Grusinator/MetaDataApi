@@ -38,9 +38,9 @@ class TestObjectInstance(TransactionTestCase):
         )
         rel.save()
 
-        found_child = parrent.get_child_obj_instance_with_relation(rel.base.label)
+        found_child = parrent.get_child_obj_instances_with_relation(rel.base.label)
 
-        found_parrent = child.get_parrent_obj_instance_with_relation(rel.base.label)
+        found_parrent = child.get_parrent_obj_instances_with_relation(rel.base.label)
 
         self.assertEqual(child, found_child[0])
         self.assertEqual(parrent, found_parrent[0])

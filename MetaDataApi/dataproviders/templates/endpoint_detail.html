@@ -19,10 +19,6 @@
 </form>
 
 <table style="width:100%">
-    <!--    <col width="30%">-->
-    <!--    <col width="70%">-->
-
-
     {% for data_dump in data_dumps %}
     <div>
         <tr>
@@ -36,7 +32,7 @@
             <!--                <p> {{ data_dump.file.url }} </p>-->
             <!--            </td>-->
             <td>
-                <form action={{data_dump.file.url}} method="get">
+                <form action="{{ data_dump.file.url }}" method="get">
                     <input type="submit" value="File"/>
                 </form>
             </td>
@@ -44,8 +40,11 @@
                 <p> {{ data_dump.loaded }} </p>
             </td>
             <td>
+                <p> {{ data_dump.pk }} </p>
+            </td>
+            <td>
                 <form method="get">
-                    <input name="load_file" type="hidden" value={{data_dump.pk}}/>
+                    <input name="load_file" type="hidden" value="{{ data_dump.pk }}"/>
                     <input type="submit" value="Load file"/>
                 </form>
             </td>

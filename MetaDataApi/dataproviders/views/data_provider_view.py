@@ -9,7 +9,7 @@ from django.shortcuts import render
 from MetaDataApi.dataproviders.models import DataProvider
 from MetaDataApi.dataproviders.services.services import StoreDataFromProviderService
 from MetaDataApi.metadata.rdfs_models.rdfs_data_provider import Endpoint
-from MetaDataApi.metadata.services.services import IdentifySchemaAndDataFromDataDump
+from MetaDataApi.metadata.services.services import LoadSchemaAndDataFromDataDump
 
 logger = logging.getLogger(__name__)
 
@@ -66,14 +66,14 @@ class DataProviderView:
         data_dumps = endpoint.data_dumps
         data_dumps.sort(key=lambda x: x.date_downloaded, reverse=True)
 
-        generate_data_dump_pk = request.GET.get('load_file', None)
-        if generate_data_dump_pk:
+        load_data_dump_pk = request.GET.get('load_file', None)
+        if load_data_dump_pk:
             try:
-                IdentifySchemaAndDataFromDataDump.execute({
-                    "data_dump_pk": generate_data_dump_pk,
+                LoadSchemaAndDataFromDataDump.execute({
+                    "data_dump_pk": int(load_data_dump_pk),
                     "user_pk": request.user.pk
                 })
-            except Exception as e:
+            except NotImplementedError as e:
                 raise Http404('data error')
 
         if request.GET.get('store_data', False):

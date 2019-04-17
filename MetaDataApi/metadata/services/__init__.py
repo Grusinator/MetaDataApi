@@ -4,4 +4,4 @@ from .services import (DeleteSchemaService, BaseMetaDataService, AddRdfSchemaSer
                        RdfSchemaService, JsonSchemaService, DataCleaningService, ExportSchemaService,
                        GetTemporalFloatPairsService, IdentifyDataFromFileService, IdentifyDataFromProviderService,
                        IdentifySchemaFromFileService, IdentifySchemaFromProviderService,
-                       IdentifySchemaAndDataFromDataDump)
+                       LoadSchemaAndDataFromDataDump)
