@@ -20,6 +20,9 @@
                 </h2>
                 <p>{{dataprovider.scope}}</p>
             </div>
+            <a href="{{dataprovider.get_webvowl_url}}">
+                View Schema {{dataprovider.provider_name}}
+            </a>
             <div>
                 <h3>Endpoints</h3>
                 {% for endpoint in endpoints %}
@@ -31,6 +34,7 @@
                 {% endfor %}
             </div>
         </th>
+
         <td>
             <iframe height="600" width="100%" src="{{ dataprovider.get_webvowl_url }}"></iframe>
         </td>
