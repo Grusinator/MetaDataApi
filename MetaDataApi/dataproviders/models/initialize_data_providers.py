@@ -120,6 +120,17 @@ class InitializeDataProviders:
                 json_schema_file_url=""
             ),
             DataProvider(
+                provider_name="polar",
+                api_endpoint="https://www.polaraccesslink.com/",
+                authorize_url="https://flow.polar.com/oauth2/authorization",
+                access_token_url="https://polarremote.com/v2/oauth2/token",
+                client_id="37b4731d-bb3a-4666-a4fa-6eb1fdffa146",
+                client_secret="5b552591-64e2-4180-a372-697082aebbfe",
+                scope=json.dumps([]),
+                rest_endpoints_list=json.dumps([{"name": "notifications", "url": "/v3/notifications"}]),
+                json_schema_file_url=""
+            ),
+            DataProvider(
                 provider_name="template",
                 api_endpoint="",
                 authorize_url="",

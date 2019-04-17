@@ -22,6 +22,7 @@ class TestSchemaIdentificationService(TransactionTestCase):
         from MetaDataApi.metadata.models import Schema
 
         user = LoadTestData.init_user()
+        LoadTestData.init_profile(user)
         LoadTestData.init_foaf()
 
         LoadTestData.init_open_m_health_sample(extras=[
@@ -58,6 +59,7 @@ class TestSchemaIdentificationService(TransactionTestCase):
 
         LoadTestData.init_foaf()
         user = LoadTestData.init_user()
+        LoadTestData.init_profile(user)
         schema = Schema(label="strava")
         schema.save()
 

@@ -118,9 +118,8 @@ class DataProvider(models.Model):
             "response_mode": "form_post",
             "state": state,
         }
-
-        if any([not bool(value.strip(" ")) for value in args.values()]):
-            return ""
+        if args["scope"] == "" or None:
+            args.pop("scope")
 
         args_string = parse.urlencode(tuple(args.items()))
 
