@@ -131,6 +131,28 @@ class InitializeDataProviders:
                 json_schema_file_url=""
             ),
             DataProvider(
+                provider_name="facebook",
+                api_endpoint="",
+                authorize_url="",
+                access_token_url="",
+                client_id="284033629198396",
+                client_secret="5246a47abb8ad290a7a2f59c914bc7d7",
+                scope=json.dumps([]),
+                rest_endpoints_list=json.dumps([]),
+                json_schema_file_url=""
+            ),
+            DataProvider(
+                provider_name="spotify",
+                api_endpoint="https://api.spotify.com/",
+                authorize_url="https://accounts.spotify.com/authorize",
+                access_token_url="https://accounts.spotify.com/api/token",
+                client_id="acfb3400228146bdbd8dbf8de4046cd0",
+                client_secret="2909ad767fc449f491cf33336869b457",
+                scope=json.dumps(["user-read-recently-played"]),
+                rest_endpoints_list=json.dumps([{"name": "notifications", "url": "v1/me/player/recently-played"}]),
+                json_schema_file_url=""
+            ),
+            DataProvider(
                 provider_name="template",
                 api_endpoint="",
                 authorize_url="",
