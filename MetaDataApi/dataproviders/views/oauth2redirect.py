@@ -17,7 +17,7 @@ class OauthRedirectRequestException(Exception):
     pass
 
 
-def oauth2redirect(request):
+def oauth2redirect_view(request):
     code = get_auth_code(request)
     scope = get_scope(request)
     profile = validate_and_get_profile(request)

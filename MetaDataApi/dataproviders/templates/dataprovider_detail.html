@@ -33,6 +33,16 @@
                 </div>
                 {% endfor %}
             </div>
+            <div>
+                <h3>Objects</h3>
+                {% for object in dataprovider.get_schema_for_provider.object_list.all %}
+                <div>
+                    <a href="{{ object.get_internal_view_url }}">
+                        {{object.label }}
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
         </th>
 
         <td>

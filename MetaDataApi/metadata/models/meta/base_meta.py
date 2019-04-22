@@ -44,3 +44,8 @@ class BaseMeta(models.Model):
             return self
         else:
             return item_found
+
+    @classmethod
+    def get_all_labels(cls, **kwargs):
+        object_list = cls.objects.filter(**kwargs)
+        return [obj.label for obj in object_list]

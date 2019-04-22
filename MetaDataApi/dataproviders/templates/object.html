@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load data_provider_tags %}
+
+{% block content %}
+
+<div>
+    <h2>Object - {{ object_view.object.label }}</h2>
+</div>
+
+<table id="object_instances">
+    {# table header #}
+    <tr>
+        {% for attribute_label in object_view.get_selected_attribute_labels %}
+        <td>
+            {{ attribute_label }}
+        </td>
+        {% endfor %}
+    </tr>
+    {% for attribute_labels in object_view.get_selected_object_instance_attributes %}
+    <tr>
+        {% for attribute_label in attribute_labels %}
+        <td>
+            {{ attribute_label }}
+        </td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

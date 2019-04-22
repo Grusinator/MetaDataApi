@@ -120,6 +120,7 @@ class LoadTestData:
         schema = Schema.create_new_empty_schema(schema_label)
 
         user = LoadTestData.init_user()
+        LoadTestData.init_profile(user)
 
         service.identify_from_json_data(
             data, schema, user, parrent_label=label)
@@ -130,6 +131,7 @@ class LoadTestData:
     @staticmethod
     def init_strava_data_from_file():
         user = LoadTestData.init_user()
+        LoadTestData.init_profile(user)
 
         service = JsonAnalyser()
 

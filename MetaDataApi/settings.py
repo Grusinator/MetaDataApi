@@ -41,7 +41,7 @@ ENV = os.environ.get('ENV') or "LOCAL"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
-DEBUG = ENV == "PROD"
+DEBUG = ENV != "PROD"
 
 ALLOWED_HOSTS = ["*"]
 

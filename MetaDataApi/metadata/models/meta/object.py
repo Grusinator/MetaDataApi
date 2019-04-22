@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 from MetaDataApi.metadata.models.meta.base_meta import BaseMeta
 from MetaDataApi.metadata.utils import BuildDjangoSearchArgs
@@ -77,6 +78,10 @@ class Object(BaseMeta):
 
     def __ne__(self, other):
         return not self.__eq__(other)
+
+    def get_internal_view_url(self):
+        schema = self.schema
+        return reverse('objects', args=[str(schema.label), self.label])
 
     class Meta:
         unique_together = ('label', 'schema')

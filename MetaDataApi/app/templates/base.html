@@ -1,27 +1,57 @@
 <!doctype html>
 {% load static %}
 <html>
-    <head>
-        <title>Meta Data Api</title>
-        <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
-        <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css" rel="stylesheet">
-        <link href="{% static 'app/css/metadataapi.css' %}" rel="stylesheet">
-    </head>
+<head>
+    <title>Meta Data Api</title>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css" rel="stylesheet">
+    <link href="base.css" rel="stylesheet">
+
+    <style>
+        #object_instances {
+            font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        #object_instances td, #object_instances th {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        #object_instances tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        #object_instances tr:hover {
+            background-color: #ddd;
+        }
+
+        #object_instances th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: left;
+            background-color: #4CAF50;
+            color: white;
+        }
+
+    </style>
+</head>
 
 <body>
-    <div class="topnav">
-        <a class="active" href="/admin/">Admin</a>
-        <a href="/accounts/login/">Login</a>
-        <a href="/providers/">Providers</a>
-        <a href="/graphql/">Graphql</a>
-    </div>
+<div class="topnav">
+    <a class="active" href="/admin/">Admin</a>
+    <a href="/accounts/login/">Login</a>
+    <a href="/providers/">Providers</a>
+    <a href="/graphql/">Graphql</a>
+</div>
 
-    <div>
-        <h1>Meta Data</h1>
-    </div>
+<div>
+    <h1>Meta Data</h1>
+</div>
 
-    {% block content %}
-        replace me
-    {% endblock content %}
+{% block content %}
+replace me
+{% endblock content %}
 </body>
 </html>

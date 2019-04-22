@@ -23,7 +23,7 @@ class ObjectInstance(BaseInstance):
         if att_base is None:
             raise ObjectDoesNotExist("attribute %s does not exists" % self.base.label)
         SpecificAttributeInstance = BaseAttributeInstance.get_attribute_instance_from_type(att_base.data_type)
-        return SpecificAttributeInstance.objects.get(base=att_base, object=self)
+        return SpecificAttributeInstance.objects.filter(base=att_base, object=self).first()
 
     def get_child_obj_instances_with_relation(self, relation_label: str):
         relations = list(self.to_relations.filter(base__label=relation_label))
@@ -74,6 +74,13 @@ class ObjectInstance(BaseInstance):
             # related.append(Attribute.objects.filter(object=self))
 
         return related
+
+    def get_all_attributes(self):
+        attributes = []
+        for AttInstance in BaseAttributeInstance.att_inst_to_type_map.keys():
+            attributes.extend(AttInstance.objects.filter(object=self))
+        return attributes
+
 
     # def object_childrens_to_json(self):
     #     raise NotImplementedError
