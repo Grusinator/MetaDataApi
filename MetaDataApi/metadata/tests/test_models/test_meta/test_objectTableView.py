@@ -13,11 +13,10 @@ class TestObjectTableView(TransactionTestCase):
         super(TestObjectTableView, cls).setUpClass()
         django.setup()
 
+    def setUp(self):
         from MetaDataApi.metadata.tests import LoadTestData
         LoadTestData.init_strava_schema_from_file()
         LoadTestData.init_strava_data_from_file()
-
-    def setUp(self):
         obj = Object.objects.get(label="activities")
         from MetaDataApi.metadata.models.meta.object_table_view import ObjectTableView
         self.table_view = ObjectTableView(obj)

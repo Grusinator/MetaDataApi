@@ -7,8 +7,7 @@
     <h2>Object - {{ object_view.object.label }}</h2>
 </div>
 
-<table id="object_instances">
-    {# table header #}
+    <table id="table">
     <tr>
         {% for attribute_label in object_view.get_selected_attribute_labels %}
         <td>

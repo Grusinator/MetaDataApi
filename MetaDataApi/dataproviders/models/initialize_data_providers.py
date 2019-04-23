@@ -149,7 +149,7 @@ class InitializeDataProviders:
                 client_id="acfb3400228146bdbd8dbf8de4046cd0",
                 client_secret="2909ad767fc449f491cf33336869b457",
                 scope=json.dumps(["user-read-recently-played"]),
-                rest_endpoints_list=json.dumps([{"name": "notifications", "url": "v1/me/player/recently-played"}]),
+                rest_endpoints_list=json.dumps([{"name": "recently_played", "url": "v1/me/player/recently-played"}]),
                 json_schema_file_url=""
             ),
             DataProvider(

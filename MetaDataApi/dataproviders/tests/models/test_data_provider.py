@@ -3,6 +3,8 @@ import json
 import django
 from django.test import TransactionTestCase
 
+from MetaDataApi.metadata.utils.testing_utils import TestingUtils
+
 
 class TestDataProvider(TransactionTestCase):
     """Tests for the application views."""
@@ -13,11 +15,14 @@ class TestDataProvider(TransactionTestCase):
         super(TestDataProvider, cls).setUpClass()
         django.setup()
 
-    def test_create_data_provider_instance(self):
+    def setUp(self):
         from MetaDataApi.metadata.rdfs_models import RdfsDataProvider
         RdfsDataProvider.create_all_meta_objects()
-        from MetaDataApi.dataproviders.models import DataProvider
+        from MetaDataApi.dataproviders.models.initialize_data_providers import InitializeDataProviders
+        InitializeDataProviders.load()
 
+    def test_create_data_provider_instance(self):
+        from MetaDataApi.dataproviders.models import DataProvider
         from MetaDataApi.dataproviders.models.data_provider import ApiTypes
 
         data_provider = DataProvider(
@@ -38,12 +43,6 @@ class TestDataProvider(TransactionTestCase):
 
     def test_endpoints_are_created_at_provider_creation(self):
         from MetaDataApi.metadata.rdfs_models import RdfsDataProvider
-        RdfsDataProvider.create_all_meta_objects()
-
-        from MetaDataApi.dataproviders.models.initialize_data_providers import InitializeDataProviders
-        InitializeDataProviders.load()
-
-        from MetaDataApi.metadata.rdfs_models import RdfsDataProvider
         schema_label = RdfsDataProvider.SchemaItems.schema.label
 
         from MetaDataApi.metadata.utils.testing_utils import TestingUtils
@@ -54,6 +53,10 @@ class TestDataProvider(TransactionTestCase):
                            'endpoint_name', 'endpoint_template_url', 'has_generated', 'has_rest_endpoint', 'loaded'}
 
         self.assertSetEqual(meta_labels, expected_labels)
+
+    def test_urls_are_created_correct_reggression(self):
+        from MetaDataApi.metadata.rdfs_models import RdfsDataProvider
+        schema_label = RdfsDataProvider.SchemaItems.schema.label
 
         instances = TestingUtils.get_all_object_instances_from_schema(schema_label)
 
@@ -75,7 +78,7 @@ class TestDataProvider(TransactionTestCase):
             'v3/activities', 'v3/athlete/zones', 'v3/athlete', 'v1/userinfo',
             'v1/sleep?start={StartDateTime:Y-M-d}&end={EndDateTime:Y-M-d}',
             'v1/activity?start={StartDateTime:Y-M-d}&end={EndDateTime:Y-M-d}',
-            'v1/readiness?start={StartDateTime:Y-M-d}&end={EndDateTime:Y-M-d}', 'v1/users/me/dataSources'
-        ]
+            'v1/readiness?start={StartDateTime:Y-M-d}&end={EndDateTime:Y-M-d}', 'v1/users/me/dataSources',
+            '/v3/notifications', 'v1/me/player/recently-played']
 
         self.assertListEqual(urls, expected_urls)
