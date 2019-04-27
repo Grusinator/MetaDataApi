@@ -11,6 +11,9 @@ jobs:
         environment:
           POSTGRES_USER: root
           POSTGRES_DB: circle_test
+          TZ: DK
+          LC_ALL: c.UTF-8
+          LANG: c.UTF-8
     steps:
       - checkout
       - run: sudo chown -R circleci:circleci /usr/local/bin
