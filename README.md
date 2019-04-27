@@ -1,4 +1,5 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/18b599f8a9594f39b0e109f1bc7a349d)](https://www.codacy.com/app/Grusinator/MetaDataApi?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Grusinator/MetaDataApi&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://api.codacy.com/project/badge/Coverage/18b599f8a9594f39b0e109f1bc7a349d)](https://www.codacy.com/app/Grusinator/MetaDataApi?utm_source=github.com&utm_medium=referral&utm_content=Grusinator/MetaDataApi&utm_campaign=Badge_Coverage)
 [![CircleCI](https://circleci.com/gh/Grusinator/MetaDataApi.svg?style=svg)](https://circleci.com/gh/Grusinator/MetaDataApi)
 
 # MetaDataApi
