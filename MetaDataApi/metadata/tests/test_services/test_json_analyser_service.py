@@ -142,7 +142,7 @@ class TestSchemaIdentificationService(TransactionTestCase):
                 'name - StringAttributeInstance : 8 x ~30 sek interval med bakke',
                 'name - StringAttributeInstance : 8x30 sek interval',
                 'name - StringAttributeInstance : 9 x ~30 sek interval', 'name - StringAttributeInstance : Evening Run',
-                'name - StringAttributeInstance : LÃ¸b med phillip', 'name - StringAttributeInstance : Morgen',
+                'name - StringAttributeInstance : Løb med phillip', 'name - StringAttributeInstance : Morgen',
                 'name - StringAttributeInstance : Morning Run', 'person__to__activities - ObjectRelationInstance',
                 'photo_count - IntAttributeInstance : 0', 'pr_count - IntAttributeInstance : 0',
                 'pr_count - IntAttributeInstance : 5', 'private - BoolAttributeInstance : False',
