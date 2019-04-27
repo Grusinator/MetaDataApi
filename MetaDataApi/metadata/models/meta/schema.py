@@ -1,7 +1,7 @@
 from django.core.files.base import ContentFile
 from django.db import models
 
-from MetaDataApi.metadata.custom_storages import MediaStorage
+from MetaDataApi.metadata.custom_storages import PublicMediaStorage
 from MetaDataApi.metadata.models.meta import BaseMeta
 from MetaDataApi.metadata.utils.common_utils import StringUtils
 
@@ -12,7 +12,7 @@ class Schema(models.Model):
     url = models.URLField(unique=True)
     rdfs_file = models.FileField(
         upload_to="schemas",
-        null=True, blank=True, storage=MediaStorage())
+        null=True, blank=True, storage=PublicMediaStorage())
 
     def __str__(self):
         return "S:" + str(self.label)

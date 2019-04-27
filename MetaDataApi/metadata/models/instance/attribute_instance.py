@@ -3,8 +3,9 @@ from datetime import datetime
 from PIL import Image
 from django.core.files import File
 from django.db import models
+from django.urls import reverse
 
-from MetaDataApi.metadata.custom_storages import MediaStorage
+from MetaDataApi.metadata.custom_storages import PrivateMediaStorage
 from MetaDataApi.metadata.utils.django_model_utils import DjangoModelUtils
 from .attribute_instance_base import BaseAttributeInstance
 
@@ -48,18 +49,23 @@ class FloatAttributeInstance(BaseAttributeInstance):
 
 
 class ImageAttributeInstance(BaseAttributeInstance):
-    value = models.ImageField(upload_to="images", storage=MediaStorage())
+    value = models.ImageField(upload_to="images", storage=PrivateMediaStorage())
 
     class Meta(BaseAttributeInstance.Meta):
         default_related_name = '%(model_name)s'
 
 
 class FileAttributeInstance(BaseAttributeInstance):
-    value = models.FileField(upload_to="datafiles", storage=MediaStorage())
+    storage_path = "datafiles/"
+    value = models.FileField(upload_to=storage_path, storage=PrivateMediaStorage())
 
     def __str__(self):
         return "Ai:%s.%s:%s" % (self.base.object.label, self.base.label,
                                 str(self.value.file.name))
+
+    def get_internal_view_url(self):
+        return reverse('datafile', args=[str(self.value).split("/")[1]])
+
 
     class Meta(BaseAttributeInstance.Meta):
         default_related_name = '%(model_name)s'

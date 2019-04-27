@@ -248,8 +248,11 @@ AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
 STATICFILES_LOCATION = 'static'
 STATICFILES_STORAGE = 'MetaDataApi.metadata.custom_storages.StaticStorage'
 
-MEDIAFILES_LOCATION = 'media'
-DEFAULT_FILE_STORAGE = 'MetaDataApi.metadata.custom_storages.MediaStorage'
+PUBLIC_MEDIA_LOCATION = 'media/public'
+PUBLIC_FILE_STORAGE = 'MetaDataApi.metadata.custom_storages.PublicMediaStorage'
+
+PRIVATE_MEDIA_LOCATION = 'media/private'
+PRIVATE_FILE_STORAGE = 'MetaDataApi.metadata.custom_storages.PrivateMediaStorage'
 
 LOGGING = {
     'version': 1,
