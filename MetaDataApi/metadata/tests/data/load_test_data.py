@@ -1,4 +1,3 @@
-import json
 import os
 
 from django.conf import settings
@@ -110,8 +109,7 @@ class LoadTestData:
         testfile = os.path.join(
             settings.BASE_DIR,
             "MetaDataApi/metadata/tests/data/json/strava_activities.json")
-        with open(testfile, encoding='utf-8') as f:
-            data = JsonUtils.validate(f.read())
+        data = JsonUtils.read_json_file(testfile)
 
         service = JsonAnalyser()
 
@@ -140,8 +138,7 @@ class LoadTestData:
         testfile = os.path.join(
             settings.BASE_DIR,
             "MetaDataApi/metadata/tests/data/json/strava_activities.json")
-        with open(testfile) as f:
-            data = json.loads(f.read())
+        data = JsonUtils.read_json_file(testfile)
 
         schema = Schema.objects.get(label="strava")
 
@@ -181,8 +178,7 @@ class LoadTestData:
         testfile = os.path.join(
             settings.BASE_DIR,
             "MetaDataApi/metadata/tests/data/json/strava_activities.json")
-        with open(testfile) as f:
-            data = json.loads(f.read())
+        data = JsonUtils.read_json_file(testfile)
         return data
 
     @classmethod
