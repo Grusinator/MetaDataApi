@@ -1,15 +1,13 @@
 from datetime import datetime
 from unittest import TestCase
 
-from pytz import timezone
-
 from MetaDataApi.dataproviders.services.url_format_helper import UrlFormatHelper
 
 
 class TestUrlFormatHelper(TestCase):
     def test_build_args_for_url(self):
-        start_time = datetime(2018, 3, 4).astimezone(timezone("UTC"))
-        end_time = datetime(2018, 5, 4).astimezone(timezone("UTC"))
+        start_time = datetime(2018, 3, 4)
+        end_time = datetime(2018, 5, 4)
 
         endpoint = "testendpoint?start={StartDateTime:UTCSEC}&end={EndDateTime:UTCSEC}"
 
