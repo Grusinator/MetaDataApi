@@ -16,6 +16,6 @@ class TestUrlFormatHelper(TestCase):
         output_endpoint = UrlFormatHelper.build_args_for_url(
             endpoint, StartDateTime=start_time, EndDateTime=end_time)
 
-        expected = "testendpoint?start=1520118000&end=1525384800"
+        expected = "testendpoint?start=%i&end=%i" % (start_time.timestamp(), end_time.timestamp())
 
         self.assertEqual(expected, output_endpoint)
