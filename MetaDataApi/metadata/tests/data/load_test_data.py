@@ -10,6 +10,7 @@ from MetaDataApi.metadata.models import Schema, ObjectRelation, Object, Attribut
 from MetaDataApi.metadata.services import (
     JsonSchemaService, DataCleaningService, RdfInstanceService, RdfSchemaService, JsonAnalyser
 )
+from MetaDataApi.metadata.utils import JsonUtils
 from MetaDataApi.users.models import DataProviderProfile, Profile
 
 
@@ -109,8 +110,8 @@ class LoadTestData:
         testfile = os.path.join(
             settings.BASE_DIR,
             "MetaDataApi/metadata/tests/data/json/strava_activities.json")
-        with open(testfile) as f:
-            data = json.loads(f.read())
+        with open(testfile, encoding='utf-8') as f:
+            data = JsonUtils.validate(f.read())
 
         service = JsonAnalyser()
 
