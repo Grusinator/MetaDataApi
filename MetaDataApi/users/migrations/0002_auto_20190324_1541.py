@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='profile',
             name='foaf_person',
-            field=models.ForeignKey(default=2, on_delete=django.db.models.deletion.CASCADE, related_name='profile',
+            field=models.ForeignKey(default=None, on_delete=django.db.models.deletion.CASCADE, related_name='profile',
                                     to='metadata.ObjectInstance'),
             preserve_default=False,
         ),
