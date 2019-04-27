@@ -3,8 +3,6 @@ import json
 import django
 from django.test import TransactionTestCase
 
-from MetaDataApi.metadata.utils.testing_utils import TestingUtils
-
 
 class TestDataProvider(TransactionTestCase):
     """Tests for the application views."""
@@ -58,6 +56,7 @@ class TestDataProvider(TransactionTestCase):
         from MetaDataApi.metadata.rdfs_models import RdfsDataProvider
         schema_label = RdfsDataProvider.SchemaItems.schema.label
 
+        from MetaDataApi.metadata.utils.testing_utils import TestingUtils
         instances = TestingUtils.get_all_object_instances_from_schema(schema_label)
 
         from MetaDataApi.metadata.models import ObjectInstance
