@@ -29,7 +29,7 @@ class ObjectTableView:
         for instance in self.instances:
             attribute_values = []
             for att in self.selected_attributes:
-                att_inst = instance.get_att_inst(att.label)
+                att_inst = instance.get_att_inst_with_label(att.label)
                 attribute_value = str(att_inst.value) if att_inst else ""
                 attribute_values.append(attribute_value)
             instances_with_attributes.append(attribute_values)

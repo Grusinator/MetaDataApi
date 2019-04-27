@@ -57,25 +57,25 @@ class DataProvider(models.Model):
         if not Schema.exists_by_label(str(self.provider_name)):
             Schema.create_new_empty_schema(self.provider_name)
 
-        existing_endpoints = RdfsDataProvider.get_all_endpoints(self.data_provider_instance)
-
-        for endpoint in json.loads(self.rest_endpoints_list):
-            endpoint_url = endpoint["url"]
-            endpoint_name = endpoint["name"]
-            rdf_endpoint = RdfsDataProvider.find_endpoint_with_name(existing_endpoints, endpoint_name)
-            if rdf_endpoint:
-                self.update_endpoint_url(endpoint_url, rdf_endpoint)
-            else:
-                RdfsDataProvider.create_endpoint_to_data_provider(
-                    self.data_provider_instance,
-                    endpoint_url,
-                    endpoint_name
-                )
+        # existing_endpoints = RdfsDataProvider.get_all_endpoints(self.data_provider_instance)
+        #
+        # for endpoint in json.loads(self.rest_endpoints_list):
+        #     endpoint_url = endpoint["url"]
+        #     endpoint_name = endpoint["name"]
+        #     rdf_endpoint = RdfsDataProvider.find_endpoint_with_name(existing_endpoints, endpoint_name)
+        #     if rdf_endpoint:
+        #         self.update_endpoint_url(endpoint_url, rdf_endpoint)
+        #     else:
+        #         RdfsDataProvider.create_endpoint_to_data_provider(
+        #             self.data_provider_instance,
+        #             endpoint_url,
+        #             endpoint_name
+        #         )
         super(DataProvider, self).save(*args, **kwargs)
 
     @staticmethod
     def update_endpoint_url(endpoint_url, rdf_endpoint):
-        rdf_endpoint_url = rdf_endpoint.get_att_inst(SItems.endpoint_template_url)
+        rdf_endpoint_url = rdf_endpoint.get_att_inst_with_label(SItems.endpoint_template_url)
         if rdf_endpoint_url is not endpoint_url:
             rdf_endpoint_url.value = endpoint_url
             rdf_endpoint_url.save()

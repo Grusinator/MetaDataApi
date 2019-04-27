@@ -14,7 +14,7 @@ class RdfsDataFetchScheduling(BaseRdfModel):
         has_data_fetch_schedule = ObjectRelation(
             schema=schema,
             label="has_data_fetch_schedule",
-            from_object=RdfsDataProvider.SchemaItems.rest_endpoint,
+            from_object=RdfsDataProvider.SchemaItems.endpoint,
             to_object=data_fetch_schedule
         )
         time_interval = Attribute(

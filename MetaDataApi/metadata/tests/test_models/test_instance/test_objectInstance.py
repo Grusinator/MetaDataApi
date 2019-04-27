@@ -15,20 +15,36 @@ class TestObjectInstance(TransactionTestCase):
     def test_get_att_inst(self):
         self.fail()
 
+    def test_equal(self):
+        from MetaDataApi.metadata.tests import LoadTestData
+        foaf = LoadTestData.init_foaf_person()
+
+        from MetaDataApi.metadata.models import ObjectInstance
+        from MetaDataApi.metadata.models import Attribute
+        first_name = Attribute.objects.get(label="first_name")
+        peter = ObjectInstance(base=foaf)
+        peter.save()
+        peter.create_att_inst(first_name, "peter")
+
+        anders = ObjectInstance(base=foaf)
+        anders.save()
+        anders.create_att_inst(first_name, "peter")
+
+        self.assertIsNot(anders, peter)
+        self.assertEqual(peter, anders)
+        self.assertEqual(peter, {("first_name", "peter")})
+        self.assertIsNot(anders, {("first_name", "peter")})
+
     def test_get_child_and_parrent_obj_instance_with_relation(self):
         from MetaDataApi.metadata.models import ObjectInstance, ObjectRelationInstance, ObjectRelation
 
         from MetaDataApi.metadata.tests import LoadTestData
         foaf = LoadTestData.init_foaf_person()
 
-        parrent = ObjectInstance(
-            base=foaf,
-        )
+        parrent = ObjectInstance(base=foaf)
         parrent.save()
 
-        child = ObjectInstance(
-            base=foaf,
-        )
+        child = ObjectInstance(base=foaf)
         child.save()
 
         rel = ObjectRelationInstance(
@@ -44,4 +60,3 @@ class TestObjectInstance(TransactionTestCase):
 
         self.assertEqual(child, found_child[0])
         self.assertEqual(parrent, found_parrent[0])
-

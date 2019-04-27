@@ -11,6 +11,7 @@ from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.rdf_model_not_correctly
 
 class RdfsDataProvider(BaseRdfModel):
     class SchemaItems:
+
         schema = Schema(label="meta_data_api")
 
         data_provider = Object(label="data_provider", schema=schema)
@@ -21,17 +22,29 @@ class RdfsDataProvider(BaseRdfModel):
             data_type=Attribute.DataType.String
         )
 
-        rest_endpoint = Object(label="rest_endpoint", schema=schema)
+        scope = Attribute(
+            label="scope",
+            object=data_provider,
+            data_type=Attribute.DataType.String
+        )
+
+        endpoint = Object(label="endpoint", schema=schema)
+
+        api_type = Attribute(
+            label="api_type",
+            object=endpoint,
+            data_type=Attribute.DataType.String
+        )
 
         endpoint_template_url = Attribute(
             label="endpoint_template_url",
-            object=rest_endpoint,
+            object=endpoint,
             data_type=Attribute.DataType.String
         )
 
         endpoint_name = Attribute(
             label="endpoint_name",
-            object=rest_endpoint,
+            object=endpoint,
             data_type=Attribute.DataType.String
         )
 
@@ -59,18 +72,17 @@ class RdfsDataProvider(BaseRdfModel):
             data_type=Attribute.DataType.Boolean
         )
 
-
-        has_rest_endpoint = ObjectRelation(
+        provider_has_endpoint = ObjectRelation(
             schema=schema,
-            label="has_rest_endpoint",
+            label="provider_has_endpoint",
             from_object=data_provider,
-            to_object=rest_endpoint
+            to_object=endpoint
         )
 
         has_generated = ObjectRelation(
             schema=schema,
             label="has_generated",
-            from_object=rest_endpoint,
+            from_object=endpoint,
             to_object=endpoint_data_dump
         )
 
@@ -90,9 +102,9 @@ class RdfsDataProvider(BaseRdfModel):
     @classmethod
     def create_endpoint_to_data_provider(cls, data_provider, endpoint_url: str,
                                          endpoint_name: str):
-        rest_endpoint = cls.create_obj_inst(cls.SchemaItems.rest_endpoint)
+        rest_endpoint = cls.create_obj_inst(cls.SchemaItems.endpoint)
         cls.create_obj_rel_inst(
-            cls.SchemaItems.has_rest_endpoint,
+            cls.SchemaItems.provider_has_endpoint,
             data_provider,
             rest_endpoint,
         )
@@ -147,7 +159,7 @@ class RdfsDataProvider(BaseRdfModel):
     def get_all_endpoints(cls, provider: ObjectInstance) -> list:
         search_args = {
             "from_relations__from_object": provider,
-            "base": Object.exists(RdfsDataProvider.SchemaItems.rest_endpoint)
+            "base": Object.exists(RdfsDataProvider.SchemaItems.endpoint)
         }
         return list(ObjectInstance.objects.filter(**search_args))
 

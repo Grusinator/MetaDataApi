@@ -12,14 +12,14 @@ from MetaDataApi.metadata.utils import DictUtils
 
 class Attribute(BaseMeta):
     class DataType(Enum):
-        Date = "datetime"
-        Number = "float"
-        Integer = "int"
-        Boolean = "bool"
-        String = "string"
-        File = "file"
-        Image = "image"
-        Undefined = "unknown"
+        Date = "Date"
+        Number = "Number"
+        Integer = "Integer"
+        Boolean = "Boolean"
+        String = "String"
+        File = "File"
+        Image = "Image"
+        Undefined = "Undefined"
 
         def __str__(self):
             return self.value

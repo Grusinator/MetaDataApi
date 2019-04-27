@@ -62,12 +62,12 @@ class TestDataProvider(TransactionTestCase):
         from MetaDataApi.metadata.models import ObjectInstance
         endpoint_obj_inst = list(filter(
             lambda x: isinstance(x, ObjectInstance) and
-                      x.base.label == RdfsDataProvider.SchemaItems.rest_endpoint.label,
+                      x.base.label == RdfsDataProvider.SchemaItems.endpoint.label,
             instances
         ))
 
         urls = list(map(lambda x:
-                        x.get_att_inst(
+                        x.get_att_inst_with_label(
                             RdfsDataProvider.SchemaItems.endpoint_template_url.label).value,
                         endpoint_obj_inst))
 

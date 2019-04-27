@@ -1,0 +1,42 @@
+[
+  {
+    "provider_name": "withings",
+    "client_id": "a80378abe1059ef7c415cf79b09b1270f828c4a0fbfdc52dbec06ae5f71b4bb6",
+    "client_secret": "1f1d852451385469a56ef6494cbd2e94c07421c3ee5ffbfca63216079fd36d1a"
+  },
+  {
+    "provider_name": "strava",
+    "client_id": "28148",
+    "client_secret": "ed5f469f798830c7214fc8efad54790799fc3ae1"
+  },
+  {
+    "provider_name": "oura",
+    "client_id": "Q43N7PFF2RI3SF52",
+    "client_secret": "CX6MEERKWUBIMBMRZOVY6BAAQLF5KDDL"
+  },
+  {
+    "provider_name": "google_fit",
+    "client_id": "166351402500-m9302qf47ua66qbr1gdbgrronssnm2v2.apps.googleusercontent.com",
+    "client_secret": "W_jKUZmRCGl05G-TMYuFPbjY"
+  },
+  {
+    "provider_name": "google_drive",
+    "client_id": "166351402500-m9302qf47ua66qbr1gdbgrronssnm2v2.apps.googleusercontent.com",
+    "client_secret": "W_jKUZmRCGl05G-TMYuFPbjY"
+  },
+  {
+    "provider_name": "polar",
+    "client_id": "37b4731d-bb3a-4666-a4fa-6eb1fdffa146",
+    "client_secret": "5b552591-64e2-4180-a372-697082aebbfe"
+  },
+  {
+    "provider_name": "facebook",
+    "client_id": "284033629198396",
+    "client_secret": "5246a47abb8ad290a7a2f59c914bc7d7"
+  },
+  {
+    "provider_name": "spotify",
+    "client_id": "acfb3400228146bdbd8dbf8de4046cd0",
+    "client_secret": "2909ad767fc449f491cf33336869b457"
+  }
+]

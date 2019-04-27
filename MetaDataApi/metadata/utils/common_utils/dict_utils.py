@@ -9,4 +9,4 @@ class DictUtils:
             index = values.index(value)
             return keys[index]
         except Exception as e:
-            return None
+            raise Exception("could not find key of value: %s in dict: %s" % (value, str(dictionary)))

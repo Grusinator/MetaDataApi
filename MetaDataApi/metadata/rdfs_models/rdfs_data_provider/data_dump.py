@@ -13,25 +13,25 @@ class DataDump:
 
     @property
     def date_downloaded(self):
-        return self.data_dump.get_att_inst(
+        return self.data_dump.get_att_inst_with_label(
             RdfsDataProvider.SchemaItems.date_downloaded.label
         ).value
 
     @property
     def file(self):
-        return self.data_dump.get_att_inst(
+        return self.data_dump.get_att_inst_with_label(
             RdfsDataProvider.SchemaItems.data_dump_file.label
         ).value
 
     @property
     def loaded(self) -> bool:
-        return self.data_dump.get_att_inst(
+        return self.data_dump.get_att_inst_with_label(
             RdfsDataProvider.SchemaItems.loaded.label
         ).value
 
     @loaded.setter
     def loaded(self, value: bool):
-        loaded = self.data_dump.get_att_inst(
+        loaded = self.data_dump.get_att_inst_with_label(
             RdfsDataProvider.SchemaItems.loaded.label
         )
         RdfsDataProvider.update_att_of_obj(loaded, value)

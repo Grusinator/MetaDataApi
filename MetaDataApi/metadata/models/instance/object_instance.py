@@ -14,16 +14,35 @@ class ObjectInstance(BaseInstance):
     def __str__(self):
         return "Oi:%s.%s" % (self.base.schema.label, self.base.label)
 
+    def __eq__(self, other):
+        if isinstance(other, type(self)):
+            other = self.build_atts_as_tuple_set_from_inst(other)
+        else:
+            other = set(other)
+        own = self.build_atts_as_tuple_set_from_inst(self)
+        return own == other
+
+    @classmethod
+    def build_atts_as_tuple_set_from_inst(cls, obj_inst):
+        return {(att_inst.base.label, att_inst.value) for att_inst in obj_inst.get_all_attribute_instances()}
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
     class Meta:
         app_label = 'metadata'
         default_related_name = '%(model_name)s'
 
-    def get_att_inst(self, label: str) -> BaseAttributeInstance:
+    def get_att_inst_with_label(self, label: str) -> BaseAttributeInstance:
+        all_atts = self.get_all_att_insts_with_label(label)
+        return all_atts[0]
+
+    def get_all_att_insts_with_label(self, label: str) -> list:
         att_base = Attribute.exists_by_label(label, self.base.label)
         if att_base is None:
             raise ObjectDoesNotExist("attribute %s does not exists" % self.base.label)
         SpecificAttributeInstance = BaseAttributeInstance.get_attribute_instance_from_type(att_base.data_type)
-        return SpecificAttributeInstance.objects.filter(base=att_base, object=self).first()
+        return SpecificAttributeInstance.objects.filter(base=att_base, object=self)
 
     def get_child_obj_instances_with_relation(self, relation_label: str):
         relations = list(self.to_relations.filter(base__label=relation_label))
@@ -33,6 +52,14 @@ class ObjectInstance(BaseInstance):
         relations = list(self.from_relations.filter(base__label=relation_label))
         return [relation.from_object for relation in relations]
 
+    def create_att_inst(self, att: Attribute, value):
+        SpecificAttributeInstance = BaseAttributeInstance.get_attribute_instance_from_type(att.data_type)
+        att_inst = SpecificAttributeInstance(
+            base=att,
+            object=self,
+            value=value
+        )
+        att_inst.save()
 
     @classmethod
     def exists(cls, label, children=()):
@@ -75,13 +102,11 @@ class ObjectInstance(BaseInstance):
 
         return related
 
-    def get_all_attributes(self):
-        attributes = []
+    def get_all_attribute_instances(self):
+        attribute_instances = []
         for AttInstance in BaseAttributeInstance.att_inst_to_type_map.keys():
-            attributes.extend(AttInstance.objects.filter(object=self))
-        return attributes
-
+            attribute_instances.extend(AttInstance.objects.filter(object=self))
+        return attribute_instances
 
     # def object_childrens_to_json(self):
     #     raise NotImplementedError
-

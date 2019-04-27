@@ -44,5 +44,5 @@ class BaseAttributeInstance(BaseInstance):
 
     @classmethod
     def get_attribute_instance_from_type(cls, type_as_string: str):
-        datatype = DictUtils.inverse_dict(Attribute.data_type_map, type_as_string)
+        datatype = DictUtils.inverse_dict(Attribute.data_type_map, str(type_as_string))
         return DictUtils.inverse_dict(BaseAttributeInstance.att_inst_to_type_map, datatype)

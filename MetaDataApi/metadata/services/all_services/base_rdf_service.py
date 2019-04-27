@@ -109,7 +109,8 @@ class BaseRdfSchemaService(BaseMetaDataService):
         # self._split_rdfs_url(range)[1]
         try:
             dtype = self.rdfs_data_type_map.get(type_name)
-            return Attribute.data_type_map[dtype]
+            data_type_enum_value = Attribute.data_type_map[dtype]
+            return Attribute.DataType(data_type_enum_value)
         except Exception as e:
             return Attribute.data_type_map.get(None)
 

@@ -14,8 +14,6 @@ class InitializeDataProviders:
                 api_endpoint="https://api.endomondo.com/api/1/",
                 authorize_url="https://www.endomondo.com/oauth/authorize",
                 access_token_url="https://api.endomondo.com/oauth/access_token",
-                client_id="",
-                client_secret="",
                 scope=json.dumps([]),
                 rest_endpoints_list=json.dumps([]),
                 json_schema_file_url=""
@@ -26,8 +24,6 @@ class InitializeDataProviders:
                 api_endpoint="https://wbsapi.withings.net/",
                 authorize_url="https://account.withings.com/oauth2_user/authorize2",
                 access_token_url="https://account.withings.com/oauth2/token",
-                client_id="a80378abe1059ef7c415cf79b09b1270f828c4a0fbfdc52dbec06ae5f71b4bb6",
-                client_secret="1f1d852451385469a56ef6494cbd2e94c07421c3ee5ffbfca63216079fd36d1a",
                 scope=json.dumps([
                     # issues with multiple scopes for some reason, but first when i log in
                     # "user.info",
@@ -50,8 +46,6 @@ class InitializeDataProviders:
                 api_endpoint="https://www.strava.com/api/",
                 authorize_url="https://www.strava.com/oauth/authorize",
                 access_token_url="https://www.strava.com/oauth/token",
-                client_id="28148",
-                client_secret="ed5f469f798830c7214fc8efad54790799fc3ae1",
                 scope=json.dumps(["view_private"]),
                 rest_endpoints_list=json.dumps([
                     {"name": "activity", "url": "v3/activities"},
@@ -66,8 +60,6 @@ class InitializeDataProviders:
                 api_endpoint="https://api.ouraring.com/",
                 authorize_url="https://cloud.ouraring.com/oauth/authorize",
                 access_token_url="https://api.ouraring.com/oauth/token",
-                client_id="Q43N7PFF2RI3SF52",
-                client_secret="CX6MEERKWUBIMBMRZOVY6BAAQLF5KDDL",
                 scope=json.dumps([
                     "email",
                     "personal",
@@ -85,8 +77,6 @@ class InitializeDataProviders:
                 api_endpoint="https://www.googleapis.com/fitness/",
                 authorize_url="https://accounts.google.com/o/oauth2/v2/auth",
                 access_token_url="https://www.googleapis.com/oauth2/v4/token",
-                client_id="166351402500-m9302qf47ua66qbr1gdbgrronssnm2v2.apps.googleusercontent.com",
-                client_secret="W_jKUZmRCGl05G-TMYuFPbjY",
                 scope=json.dumps([
                     "https://www.googleapis.com/auth/fitness.activity.read",
                 ]),
@@ -100,8 +90,6 @@ class InitializeDataProviders:
                 api_endpoint="",
                 authorize_url="https://accounts.google.com/o/oauth2/v2/auth",
                 access_token_url="https://www.googleapis.com/oauth2/v4/token",
-                client_id="166351402500-m9302qf47ua66qbr1gdbgrronssnm2v2.apps.googleusercontent.com",
-                client_secret="W_jKUZmRCGl05G-TMYuFPbjY",
                 scope=json.dumps([
                     "https://www.googleapis.com/auth/drive",  # full access, change later
                 ]),
@@ -124,8 +112,6 @@ class InitializeDataProviders:
                 api_endpoint="https://www.polaraccesslink.com/",
                 authorize_url="https://flow.polar.com/oauth2/authorization",
                 access_token_url="https://polarremote.com/v2/oauth2/token",
-                client_id="37b4731d-bb3a-4666-a4fa-6eb1fdffa146",
-                client_secret="5b552591-64e2-4180-a372-697082aebbfe",
                 scope=json.dumps([]),
                 rest_endpoints_list=json.dumps([{"name": "notifications", "url": "/v3/notifications"}]),
                 json_schema_file_url=""
@@ -135,8 +121,6 @@ class InitializeDataProviders:
                 api_endpoint="",
                 authorize_url="",
                 access_token_url="",
-                client_id="284033629198396",
-                client_secret="5246a47abb8ad290a7a2f59c914bc7d7",
                 scope=json.dumps([]),
                 rest_endpoints_list=json.dumps([]),
                 json_schema_file_url=""
@@ -146,8 +130,6 @@ class InitializeDataProviders:
                 api_endpoint="https://api.spotify.com/",
                 authorize_url="https://accounts.spotify.com/authorize",
                 access_token_url="https://accounts.spotify.com/api/token",
-                client_id="acfb3400228146bdbd8dbf8de4046cd0",
-                client_secret="2909ad767fc449f491cf33336869b457",
                 scope=json.dumps(["user-read-recently-played"]),
                 rest_endpoints_list=json.dumps([{"name": "recently_played", "url": "v1/me/player/recently-played"}]),
                 json_schema_file_url=""
@@ -157,8 +139,6 @@ class InitializeDataProviders:
                 api_endpoint="",
                 authorize_url="",
                 access_token_url="",
-                client_id="",
-                client_secret="",
                 scope=json.dumps([]),
                 rest_endpoints_list=json.dumps([]),
                 json_schema_file_url=""
