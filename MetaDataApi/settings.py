@@ -157,24 +157,12 @@ ML_models_dir = os.path.join(
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
-
+dj_pass_val = 'django.contrib.auth.password_validation.'
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.' +
-                'UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.' +
-                'MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.' +
-                'CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.' +
-                'NumericPasswordValidator',
-    },
+    {'NAME': dj_pass_val + 'UserAttributeSimilarityValidator', },
+    {'NAME': dj_pass_val + 'MinimumLengthValidator', },
+    {'NAME': dj_pass_val + 'CommonPasswordValidator', },
+    {'NAME': dj_pass_val + 'NumericPasswordValidator', },
 ]
 
 LOGIN_REDIRECT_URL = '/'
@@ -203,9 +191,6 @@ ENV_PATH = os.path.abspath(os.path.dirname(__file__))
 MEDIA_ROOT = os.path.join(ENV_PATH, 'media/')
 
 MEDIA_URL = '/media/'
-
-# Activate Django-Heroku.
-django_heroku.settings(locals())
 
 try:
     with open('api_keys.json') as f:
@@ -305,3 +290,6 @@ ADMIN_REORDER = (
      },
     {'app': 'dataproviders', 'label': 'dataproviders'},
 )
+
+# Activate Django-Heroku.
+django_heroku.settings(locals())
