@@ -3,7 +3,6 @@
 [![CircleCI](https://circleci.com/gh/Grusinator/MetaDataApi.svg?style=svg)](https://circleci.com/gh/Grusinator/MetaDataApi)
 
 # MetaDataApi
-tags: Quantified Self, Biohacking, RDF, OWL, Oauth, graphql, JSONSchema, OpenMHealth
 ## Description
 This project aims to gather relevant data from a lot of services an analyse on top. You might call it HumanIntelligence 
 It is based on the semantic web idea, so json data can just be loaded in from Api endpoints, that you create.  
