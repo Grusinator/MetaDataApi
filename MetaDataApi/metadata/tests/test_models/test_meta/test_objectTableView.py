@@ -19,13 +19,14 @@ class TestObjectTableView(TransactionTestCase):
         LoadTestData.init_strava_data_from_file()
         obj = Object.objects.get(label="activities")
         from MetaDataApi.metadata.models.meta.object_table_view import ObjectTableView
-        self.table_view = ObjectTableView(obj)
+        self.table_view = ObjectTableView(obj, max_number_of_atts=9)
+
 
     def test_attribute_labels_are_generated_correctly(self):
         att_labels = self.table_view.get_selected_attribute_labels()
 
         excpected_att_labels = ['resource_state', 'name', 'distance', 'moving_time', 'elapsed_time',
-                                'total_elevation_gain', 'type', 'workout_type', 'id', 'external_id']
+                                'total_elevation_gain', 'type', 'workout_type', 'id']
 
         self.assertListEqual(excpected_att_labels, att_labels)
 
