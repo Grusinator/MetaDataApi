@@ -12,8 +12,8 @@ jobs:
           POSTGRES_USER: root
           POSTGRES_DB: circle_test
           TZ: "Europe/Copenhagen"
-          LC_ALL: c.UTF-8
-          LANG: c.UTF-8
+    #          LC_ALL: c.UTF-8
+    #          LANG: c.UTF-8
     steps:
       - checkout
       - run: sudo chown -R circleci:circleci /usr/local/bin
