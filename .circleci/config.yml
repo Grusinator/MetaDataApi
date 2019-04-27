@@ -11,7 +11,7 @@ jobs:
         environment:
           POSTGRES_USER: root
           POSTGRES_DB: circle_test
-          TZ: "Europe/Copenhagen"
+          TZ: "Etc/UTC" #"Europe/Copenhagen"
     #          LC_ALL: c.UTF-8
     #          LANG: c.UTF-8
     steps:
