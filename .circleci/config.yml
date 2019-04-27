@@ -1,7 +1,7 @@
 version: 2
 jobs:
   build:
-    working_directory: ~/MetaDataApi/MetaDataApi
+    working_directory: ~/MetaDataApi
     docker:
       - image: circleci/python:3.7
         environment:
