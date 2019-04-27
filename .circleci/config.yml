@@ -21,7 +21,7 @@ jobs:
       - run:
           command: |
             sudo pip install pipenv
-            pipenv install --dev
+            pipenv install
       - save_cache:
           key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
           paths:
@@ -31,8 +31,8 @@ jobs:
       - run:
           command: |
             pipenv run python manage.py test
-      #            coverage xml -i
-      #            python-codacy-coverage -r coverage.xml
+            coverage xml -i
+            python-codacy-coverage -r coverage.xml
       - store_test_results:
           path: test-results
       - store_artifacts:

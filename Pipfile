@@ -35,6 +35,8 @@ django-oauth-toolkit = "*"
 requests = "*"
 django-modeladmin-reorder = "*"
 # tensorflow = "==1.3.0"
+coverage = "*"
+codacy-coverage = "*"
 
 [dev-packages]
 pep8 = "*"
@@ -45,8 +47,7 @@ pytest-django = "*"
 gql = "*"
 jupyter = "*"
 moto = "*"
-coverage = "*"
-#codacy-coverage = "*"
+
 
 [requires]
 python_version = "3.7"
