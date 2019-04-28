@@ -1,3 +1,4 @@
+
 from MetaDataApi.metadata.models import Schema
 from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.base_rdfs_object import BaseRdfsObject
 
@@ -7,22 +8,19 @@ from MetaDataApi.metadata.utils.json_utils.json_utils import JsonType
 class DataProviderO(BaseRdfsObject):
     from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.rdfs_data_provider import RdfsDataProvider
     SI = RdfsDataProvider.SchemaItems
+    MetaObject = SI.data_provider
 
-    def __init__(self, inst_pk: int = None, db_data_provider=None):
-        if inst_pk and db_data_provider:
-            raise Exception("do not specify both DataProviderO")
-        elif db_data_provider:
-            db_data_provider.save()
-            super(DataProviderO, self).__init__(db_data_provider.pk)
-            self.db_data_provider_private = db_data_provider
-            self.scope = db_data_provider.scope
-            self.provider_name = db_data_provider.provider_name
-            self.rest_endpoint_list = db_data_provider.rest_endpoints_list
-        elif inst_pk:
+    def __init__(self, inst_pk: int = None, json_object: dict = None):
+        if not inst_pk:
+            from MetaDataApi.dataproviders.models import DataProvider
+            self.db_data_provider_private = DataProvider(**json_object)
+            self.db_data_provider_private.save()
+            json_object["endpoints"] = json_object.pop("rest_endpoints_list")
+
+            self.create_self(json_object)
+        else:
             super(DataProviderO, self).__init__(inst_pk)
             self.db_data_provider_private = self.self_ref.db_data_provider.first()
-        else:
-            raise Exception("specify at least one DataProviderO")
 
     @property
     def db_data_provider(self):
@@ -62,21 +60,21 @@ class DataProviderO(BaseRdfsObject):
 
     @property
     def scope(self):
-        return self.getAttribute(self.SI.scope)
+        return self.getAttributes(self.SI.scope)
 
     @scope.setter
     def scope(self, value):
         self.setAttribute(self.SI.scope, value)
 
     @property
-    def rest_endpoints_list(self):
+    def endpoints(self):
         endpoints = self.getChildObjects(self.SI.provider_has_endpoint)
 
         from MetaDataApi.metadata.rdfs_models.rdfs_data_provider import Endpoint
         return [Endpoint(endpoint.pk) for endpoint in endpoints]
 
-    @rest_endpoints_list.setter
-    def rest_endpoint_list(self, value: JsonType):
+    @endpoints.setter
+    def endpoints(self, value: JsonType):
         from MetaDataApi.metadata.rdfs_models.rdfs_data_provider import Endpoint
         self.setChildObjects(self.SI.provider_has_endpoint, Endpoint, value)
 

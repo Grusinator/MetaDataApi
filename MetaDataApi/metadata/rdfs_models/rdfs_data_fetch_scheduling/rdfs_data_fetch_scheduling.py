@@ -2,10 +2,10 @@ from MetaDataApi.metadata.models import (
     Schema, Object, Attribute,
     ObjectRelation)
 from MetaDataApi.metadata.rdfs_models import RdfsDataProvider
-from MetaDataApi.metadata.rdfs_models.base_rdfs_model import BaseRdfModel
+from MetaDataApi.metadata.rdfs_models.base_rdfs_model import BaseRdfsModel
 
 
-class RdfsDataFetchScheduling(BaseRdfModel):
+class RdfsDataFetchScheduling(BaseRdfsModel):
     class SchemaItems:
         schema = Schema(label="meta_data_api")
 

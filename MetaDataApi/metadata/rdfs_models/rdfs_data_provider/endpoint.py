@@ -22,9 +22,17 @@ class Endpoint(BaseRdfsObject):
     def name(self):
         return self.getAttribute(SI.endpoint_name)
 
+    @name.setter
+    def name(self, value):
+        self.setAttribute(SI.endpoint_name, value)
+
     @property
     def url(self):
         return self.getAttribute(SI.endpoint_template_url)
+
+    @url.setter
+    def url(self, value):
+        self.setAttribute(SI.endpoint_template_url, value)
 
     @property
     def data_dumps(self):

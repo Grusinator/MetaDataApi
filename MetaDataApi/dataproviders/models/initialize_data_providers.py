@@ -1,9 +1,18 @@
 import json
+import logging
 
 from MetaDataApi.dataproviders.models import DataProvider
-
+from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.data_provider import DataProviderO
+from MetaDataApi.metadata.utils import JsonUtils
+logger = logging.getLogger(__name__)
 
 class InitializeDataProviders:
+    local_client_file = "data_providers.json"
+
+    @classmethod
+    def load_client_ids_and_secrets(cls):
+        # TODO try or AWS
+        return JsonUtils.read_json_file(cls.local_client_file)
 
     @staticmethod
     def get_default_data_providers():
@@ -152,6 +161,19 @@ class InitializeDataProviders:
                 cls.update_values(data_provider)
             else:
                 data_provider.save()
+
+    @classmethod
+    def load_from_json(cls):
+        providers = cls.load_client_ids_and_secrets()
+        [cls.try_create_provider(provider) for provider in providers]
+
+    @classmethod
+    def try_create_provider(cls, provider: dict):
+        try:
+            DataProviderO(json_object=provider)
+        except Exception as e:
+            logger.error("error durring loading of dataprovider %s" % provider["provider_name"])
+
 
     @classmethod
     def update_values(cls, data_provider):

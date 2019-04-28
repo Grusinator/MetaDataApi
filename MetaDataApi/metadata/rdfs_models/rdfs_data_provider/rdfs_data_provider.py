@@ -4,12 +4,12 @@ from MetaDataApi.metadata.models import (
     Schema, Object, Attribute,
     ObjectRelation, ObjectInstance,
     StringAttributeInstance)
-from MetaDataApi.metadata.rdfs_models.base_rdfs_model import BaseRdfModel
+from MetaDataApi.metadata.rdfs_models.base_rdfs_model import BaseRdfsModel
 from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.rdf_model_not_correctly_initialized_exception import \
     RdfModelNotCorrectlyInitializedException
 
 
-class RdfsDataProvider(BaseRdfModel):
+class RdfsDataProvider(BaseRdfsModel):
     class SchemaItems:
 
         schema = Schema(label="meta_data_api")
