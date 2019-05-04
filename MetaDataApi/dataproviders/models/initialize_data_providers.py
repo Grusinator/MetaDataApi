@@ -20,8 +20,74 @@ class InitializeDataProviders:
 
         try:
             return JsonUtils.read_json_file(cls.local_client_file)
-        except FileExistsError as e:
+        except FileNotFoundError as e:
             return cls.get_providers_from_aws()
+
+
+    @classmethod
+    def load(cls):
+        for data_provider in cls.get_default_data_providers():
+            if DataProvider.exists(data_provider.provider_name):
+                cls.update_values(data_provider)
+            else:
+                data_provider.save()
+
+    @classmethod
+    def load_from_json(cls):
+        providers = cls.load_client_ids_and_secrets()
+        [cls.try_create_provider(provider) for provider in providers]
+
+    @classmethod
+    def try_create_provider(cls, provider: dict):
+        try:
+            DataProviderO(json_object=provider)
+        except Exception as e:
+            logger.error("error durring loading of dataprovider %s" % provider["provider_name"])
+
+    @classmethod
+    def update_values(cls, data_provider):
+        existing_dp = DataProvider.objects.filter(provider_name=data_provider.provider_name)
+        existing_dp.update(
+            api_endpoint=data_provider.api_endpoint,
+            authorize_url=data_provider.authorize_url,
+            access_token_url=data_provider.access_token_url,
+            client_id=data_provider.client_id,
+            client_secret=data_provider.client_secret,
+            scope=data_provider.scope,
+            rest_endpoints_list=data_provider.rest_endpoints_list,
+            json_schema_file_url=data_provider.json_schema_file_url
+        )
+
+    @classmethod
+    def get_providers_from_aws(cls):
+        path = "media/private/"
+        file_name = path + "data_providers.json"
+        return cls.read_file_from_aws(file_name)
+
+    @classmethod
+    def read_file_from_aws(cls, file_name: str):
+        s3_resource = cls.get_aws_session()
+        text = cls.read_aws_file(file_name, s3_resource)
+        json_obj = JsonUtils.validate(text)
+        return json_obj
+
+    @classmethod
+    def read_aws_file(cls, file_name, s3_resource):
+        file = s3_resource.Object(settings.AWS_STORAGE_BUCKET_NAME, file_name)
+        file_stream = io.BytesIO()
+        file.download_fileobj(file_stream)
+        string = file_stream.getvalue().decode("utf-8")
+        return string
+
+    @staticmethod
+    def get_aws_session():
+        session = boto3.Session(
+            aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+            region_name=settings.AWS_S3_REGION_NAME
+        )
+        s3_resource = session.resource('s3')
+        return s3_resource
 
     @staticmethod
     def get_default_data_providers():
@@ -162,68 +228,3 @@ class InitializeDataProviders:
                 json_schema_file_url=""
             ),
         ]
-
-    @classmethod
-    def load(cls):
-        for data_provider in cls.get_default_data_providers():
-            if DataProvider.exists(data_provider.provider_name):
-                cls.update_values(data_provider)
-            else:
-                data_provider.save()
-
-    @classmethod
-    def load_from_json(cls):
-        providers = cls.load_client_ids_and_secrets()
-        [cls.try_create_provider(provider) for provider in providers]
-
-    @classmethod
-    def try_create_provider(cls, provider: dict):
-        try:
-            DataProviderO(json_object=provider)
-        except Exception as e:
-            logger.error("error durring loading of dataprovider %s" % provider["provider_name"])
-
-    @classmethod
-    def update_values(cls, data_provider):
-        existing_dp = DataProvider.objects.filter(provider_name=data_provider.provider_name)
-        existing_dp.update(
-            api_endpoint=data_provider.api_endpoint,
-            authorize_url=data_provider.authorize_url,
-            access_token_url=data_provider.access_token_url,
-            client_id=data_provider.client_id,
-            client_secret=data_provider.client_secret,
-            scope=data_provider.scope,
-            rest_endpoints_list=data_provider.rest_endpoints_list,
-            json_schema_file_url=data_provider.json_schema_file_url
-        )
-
-    @classmethod
-    def get_providers_from_aws(cls):
-        path = "media/private/"
-        file_name = path + "data_providers.json"
-        return cls.read_file_from_aws(file_name)
-
-    @classmethod
-    def read_file_from_aws(cls, file_name: str):
-        s3_resource = cls.get_aws_session()
-        text = cls.read_aws_file(file_name, s3_resource)
-        json_obj = JsonUtils.validate(text)
-        return json_obj
-
-    @classmethod
-    def read_aws_file(cls, file_name, s3_resource):
-        file = s3_resource.Object(settings.AWS_STORAGE_BUCKET_NAME, file_name)
-        file_stream = io.BytesIO()
-        file.download_fileobj(file_stream)
-        string = file_stream.getvalue().decode("utf-8")
-        return string
-
-    @staticmethod
-    def get_aws_session():
-        session = boto3.Session(
-            aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
-            region_name=settings.AWS_S3_REGION_NAME
-        )
-        s3_resource = session.resource('s3')
-        return s3_resource
