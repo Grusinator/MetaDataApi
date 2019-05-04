@@ -58,7 +58,7 @@ class RdfsDataProvider(BaseRdfsModel):
         date_downloaded = Attribute(
             label="date_downloaded",
             object=endpoint_data_dump,
-            data_type=Attribute.DataType.Date
+            data_type=Attribute.DataType.DateTime
         )
         file_origin_url = Attribute(
             label="file_origin_url",
@@ -100,8 +100,7 @@ class RdfsDataProvider(BaseRdfsModel):
         return data_provider
 
     @classmethod
-    def create_endpoint_to_data_provider(cls, data_provider, endpoint_url: str,
-                                         endpoint_name: str):
+    def create_endpoint_to_data_provider(cls, data_provider, endpoint_name: str, endpoint_url: str):
         rest_endpoint = cls.create_obj_inst(cls.SchemaItems.endpoint)
         cls.create_obj_rel_inst(
             cls.SchemaItems.provider_has_endpoint,

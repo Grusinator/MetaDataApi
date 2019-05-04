@@ -12,7 +12,7 @@ from MetaDataApi.metadata.utils import DictUtils
 
 class Attribute(BaseMeta):
     class DataType(Enum):
-        Date = "Date"
+        DateTime = "DateTime"
         Number = "Number"
         Integer = "Integer"
         Boolean = "Boolean"
@@ -25,7 +25,7 @@ class Attribute(BaseMeta):
             return self.value
 
     data_type_map = {
-        datetime: DataType.Date.value,
+        datetime: DataType.DateTime.value,
         float: DataType.Number.value,
         int: DataType.Integer.value,
         bool: DataType.Boolean.value,
@@ -80,12 +80,3 @@ class Attribute(BaseMeta):
                 attribute.data_type,
                 str(data_type_name)
             )
-
-    @property
-    def all_instances(self):
-        related_names = [tag.value + "attributeinstance" for tag in self.DataType]
-        related_names.remove("unknownattributeinstance")
-        instances = []
-        for related_name in related_names:
-            instances.extend(getattr(self, related_name).all())
-        return instances

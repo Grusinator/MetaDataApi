@@ -1,4 +1,4 @@
-from MetaDataApi.metadata.models import Schema, ObjectRelation, Object
+from MetaDataApi.metadata.models import Schema, ObjectRelation, Object, BaseAttributeInstance
 
 
 class TestingUtils:
@@ -28,5 +28,5 @@ class TestingUtils:
             if isinstance(meta, (Object, ObjectRelation)):
                 instances.extend(meta.instances.all())
             else:
-                instances.extend(meta.all_instances)
+                instances.extend(BaseAttributeInstance.get_all_instances_from_base(meta))
         return instances

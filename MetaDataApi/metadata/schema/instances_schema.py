@@ -325,7 +325,7 @@ class Query(graphene.ObjectType):
     @login_required
     def resolve_all_generic_attribute_instances(self, info):
         att_instance_types = [DateTimeAttributeInstance,
-                              FloatAttributeInstance,  StringAttributeInstance]
+                              FloatAttributeInstance, StringAttributeInstance]
 
         generic_list = []
         for AttributeInstance in att_instance_types:

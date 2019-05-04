@@ -17,7 +17,7 @@ class TestDataProvider(TransactionTestCase):
         from MetaDataApi.metadata.rdfs_models import RdfsDataProvider
         RdfsDataProvider.create_all_meta_objects()
         from MetaDataApi.dataproviders.models.initialize_data_providers import InitializeDataProviders
-        InitializeDataProviders.load()
+        InitializeDataProviders.load_from_json()
 
     def test_create_data_provider_instance(self):
         from MetaDataApi.dataproviders.models import DataProvider
@@ -46,9 +46,12 @@ class TestDataProvider(TransactionTestCase):
         from MetaDataApi.metadata.utils.testing_utils import TestingUtils
         meta_labels = set(TestingUtils.get_all_item_labels_from_schema(schema_label))
 
-        expected_labels = {'meta_data_api', 'data_provider', 'endpoint_data_dump', 'rest_endpoint',
-                           'data_provider_name', 'data_dump_file', 'date_downloaded', 'file_origin_url',
-                           'endpoint_name', 'endpoint_template_url', 'has_generated', 'has_rest_endpoint', 'loaded'}
+        expected_labels = {
+            'meta_data_api', 'data_provider', 'endpoint_data_dump', 'api_type',
+            'data_provider_name', 'data_dump_file', 'date_downloaded', 'file_origin_url',
+            'endpoint_name', 'endpoint_template_url', 'has_generated', 'loaded',
+            'scope', 'provider_has_endpoint', 'endpoint'
+        }
 
         self.assertSetEqual(meta_labels, expected_labels)
 

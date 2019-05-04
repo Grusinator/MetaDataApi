@@ -4,6 +4,7 @@ import logging
 from MetaDataApi.dataproviders.models import DataProvider
 from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.data_provider import DataProviderO
 from MetaDataApi.metadata.utils import JsonUtils
+
 logger = logging.getLogger(__name__)
 
 class InitializeDataProviders:

@@ -16,7 +16,7 @@ class UrlFormatHelper:
     }
 
     @classmethod
-    def build_args_for_url(cls, endpoint_url, **inserted_arguments) -> str:
+    def build_args_for_url(cls, endpoint_url: str, **inserted_arguments) -> str:
         for key in inserted_arguments.keys():
             cls.validate(key)
 

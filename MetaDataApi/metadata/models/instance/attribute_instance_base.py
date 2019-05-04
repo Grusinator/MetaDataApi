@@ -46,3 +46,21 @@ class BaseAttributeInstance(BaseInstance):
     def get_attribute_instance_from_type(cls, type_as_string: str):
         datatype = DictUtils.inverse_dict(Attribute.data_type_map, str(type_as_string))
         return DictUtils.inverse_dict(BaseAttributeInstance.att_inst_to_type_map, datatype)
+
+    @classmethod
+    def get_data_type(cls):
+        return cls.att_inst_to_type_map[cls]
+
+    @classmethod
+    def get_all_instance_types(cls):
+        return list(cls.att_inst_to_type_map.keys())
+
+    @classmethod
+    def get_all_instances_from_base(cls, att_base: Attribute):
+        instance_types = cls.get_all_instance_types()
+        related_names = [instance_type.__name__.lower() for instance_type in instance_types]
+        instances = []
+        for related_name in related_names:
+            related_manager = getattr(att_base, related_name)
+            instances.extend(related_manager.all())
+        return instances

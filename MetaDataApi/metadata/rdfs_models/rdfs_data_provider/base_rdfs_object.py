@@ -26,7 +26,7 @@ class BaseRdfsObject:
     def getAttribute(self, att: Attribute):
         return self.self_ref.get_att_inst_with_label(att.label)
 
-    def getAttributes(self, att: Attribute):
+    def getAttributes(self, att: Attribute) -> list:
         return self.self_ref.get_all_att_insts_with_label(att.label)
 
     def setAttribute(self, att: Attribute, value):

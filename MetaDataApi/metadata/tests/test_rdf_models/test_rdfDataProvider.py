@@ -24,9 +24,11 @@ class TestRdfsDataProvider(TransactionTestCase):
 
         item_labels = [obj.label for obj in items]
 
-        expected = ['data_provider', 'rest_endpoint', 'endpoint_data_dump', 'data_dump_file', 'date_downloaded',
-                    'file_origin_url', 'endpoint_name', 'data_provider_name', 'has_generated', 'has_rest_endpoint',
-                    'endpoint_template_url', 'loaded']
+        expected = [
+            'api_type', 'data_dump_file', 'data_provider', 'data_provider_name', 'date_downloaded', 'endpoint',
+            'endpoint_data_dump', 'endpoint_name', 'endpoint_template_url', 'file_origin_url', 'has_generated',
+            'loaded', 'provider_has_endpoint', 'scope'
+        ]
 
         item_labels.sort()
         expected.sort()

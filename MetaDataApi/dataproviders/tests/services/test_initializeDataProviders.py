@@ -23,4 +23,9 @@ class TestInitializeDataProviders(TransactionTestCase):
         from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.data_provider import DataProviderO
         dpOs = [DataProviderO(dp.data_provider_instance.pk) for dp in dps]
 
-        self.assertEqual(dps, None)
+        assert len(dpOs) == len(dps)
+        assert len(dpOs) > 10
+
+        self.assertListEqual([dp.provider_name for dp in dps], [dpO.provider_name.value for dpO in dpOs])
+        self.assertListEqual([dp.client_id for dp in dps], [dpO.client_id for dpO in dpOs])
+        self.assertListEqual(dps, [dpO.db_data_provider for dpO in dpOs])

@@ -56,7 +56,7 @@ class LoadTestData:
         return rdf_service.schema
 
     @staticmethod
-    def init_strava_data_provider_profile():
+    def init_strava_data_provider_profile() -> DataProviderProfile:
         LoadTestData.init_foaf()
         user = LoadTestData.init_user()
         LoadTestData.init_profile(user)
@@ -71,6 +71,16 @@ class LoadTestData:
             profile=Profile.objects.get(user=user)
         )
         dataproviderprofile.save()
+
+        endpoint_name = "activity"
+        endpoint_url = "v3/activities"
+        from MetaDataApi.metadata.rdfs_models import RdfsDataProvider
+        RdfsDataProvider.create_endpoint_to_data_provider(
+            provider.data_provider_instance,
+            endpoint_name,
+            endpoint_url
+        )
+
         return dataproviderprofile
 
     @staticmethod

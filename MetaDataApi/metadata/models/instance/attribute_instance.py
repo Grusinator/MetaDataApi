@@ -6,11 +6,13 @@ from django.db import models
 from django.urls import reverse
 
 from MetaDataApi.metadata.custom_storages import PrivateMediaStorage
+from MetaDataApi.metadata.models.meta import Attribute
 from MetaDataApi.metadata.utils.django_model_utils import DjangoModelUtils
 from .attribute_instance_base import BaseAttributeInstance
 
 
 class StringAttributeInstance(BaseAttributeInstance):
+    data_type = Attribute.DataType.String
     value = models.TextField()
 
     class Meta(BaseAttributeInstance.Meta):
@@ -18,7 +20,7 @@ class StringAttributeInstance(BaseAttributeInstance):
 
 
 class DateTimeAttributeInstance(BaseAttributeInstance):
-    # must have timestamp and value
+    data_type = Attribute.DataType.DateTime
     value = models.DateTimeField()
 
     class Meta(BaseAttributeInstance.Meta):
@@ -26,7 +28,7 @@ class DateTimeAttributeInstance(BaseAttributeInstance):
 
 
 class BoolAttributeInstance(BaseAttributeInstance):
-    # must have timestamp and value
+    data_type = Attribute.DataType.Boolean
     value = models.BooleanField()
 
     class Meta(BaseAttributeInstance.Meta):
@@ -34,7 +36,7 @@ class BoolAttributeInstance(BaseAttributeInstance):
 
 
 class IntAttributeInstance(BaseAttributeInstance):
-    # must have timestamp and value
+    data_type = Attribute.DataType.Integer
     value = models.IntegerField()
 
     class Meta(BaseAttributeInstance.Meta):
@@ -42,6 +44,7 @@ class IntAttributeInstance(BaseAttributeInstance):
 
 
 class FloatAttributeInstance(BaseAttributeInstance):
+    data_type = Attribute.DataType.Number
     value = models.FloatField()
 
     class Meta(BaseAttributeInstance.Meta):
@@ -49,6 +52,7 @@ class FloatAttributeInstance(BaseAttributeInstance):
 
 
 class ImageAttributeInstance(BaseAttributeInstance):
+    data_type = Attribute.DataType.Image
     value = models.ImageField(upload_to="images", storage=PrivateMediaStorage())
 
     class Meta(BaseAttributeInstance.Meta):
@@ -56,6 +60,7 @@ class ImageAttributeInstance(BaseAttributeInstance):
 
 
 class FileAttributeInstance(BaseAttributeInstance):
+    data_type = Attribute.DataType.File
     storage_path = "datafiles/"
     value = models.FileField(upload_to=storage_path, storage=PrivateMediaStorage())
 

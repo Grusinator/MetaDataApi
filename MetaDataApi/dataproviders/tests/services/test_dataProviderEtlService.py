@@ -21,10 +21,10 @@ class TestDataProviderEtlService(TransactionTestCase):
 
         dp_profile = LoadTestData.init_strava_data_provider_profile()
 
-        endpoint_name = "activity"
-
         from MetaDataApi.dataproviders.services import DataProviderEtlService
         service = DataProviderEtlService(dp_profile.provider)
+
+        endpoint_name = "activity"
 
         data = service.read_data_from_endpoint(endpoint_name, dp_profile.access_token)
 
