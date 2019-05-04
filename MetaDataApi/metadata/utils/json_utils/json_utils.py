@@ -13,7 +13,7 @@ class JsonUtils:
 
     @staticmethod
     def validate(text: str) -> JsonType:
-        return json.loads(text)
+        return json.loads(str(text))
 
     @staticmethod
     def clean(text: str) -> str:

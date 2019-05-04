@@ -29,3 +29,9 @@ class TestInitializeDataProviders(TransactionTestCase):
         self.assertListEqual([dp.provider_name for dp in dps], [dpO.provider_name.value for dpO in dpOs])
         self.assertListEqual([dp.client_id for dp in dps], [dpO.client_id for dpO in dpOs])
         self.assertListEqual(dps, [dpO.db_data_provider for dpO in dpOs])
+
+    def test_get_providers_from_aws(self):
+        from MetaDataApi.dataproviders.models.initialize_data_providers import InitializeDataProviders
+
+        json = InitializeDataProviders.get_providers_from_aws()
+        assert json
