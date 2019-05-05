@@ -17,7 +17,7 @@ class TestDataProvider(TransactionTestCase):
         from MetaDataApi.metadata.rdfs_models import RdfsDataProvider
         RdfsDataProvider.create_all_meta_objects()
         from MetaDataApi.dataproviders.models.initialize_data_providers import InitializeDataProviders
-        InitializeDataProviders.load_from_json()
+        InitializeDataProviders.load()
 
     def test_create_data_provider_instance(self):
         from MetaDataApi.dataproviders.models import DataProvider
@@ -49,8 +49,9 @@ class TestDataProvider(TransactionTestCase):
         expected_labels = {
             'meta_data_api', 'data_provider', 'endpoint_data_dump', 'api_type',
             'data_provider_name', 'data_dump_file', 'date_downloaded', 'file_origin_url',
-            'endpoint_name', 'endpoint_template_url', 'has_generated', 'loaded',
-            'scope', 'provider_has_endpoint', 'endpoint'
+            'endpoint_name', 'endpoint_url', 'has_generated', 'loaded',
+            'scope', 'provider_has_endpoint', 'endpoint', 'access_token_url',
+            'authorize_url'
         }
 
         self.assertSetEqual(meta_labels, expected_labels)
@@ -71,7 +72,7 @@ class TestDataProvider(TransactionTestCase):
 
         urls = list(map(lambda x:
                         x.get_att_inst_with_label(
-                            RdfsDataProvider.SchemaItems.endpoint_template_url.label).value,
+                            RdfsDataProvider.SchemaItems.endpoint_url.label).value,
                         endpoint_obj_inst))
 
         expected_urls = [

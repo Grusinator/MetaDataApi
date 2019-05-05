@@ -198,3 +198,26 @@ class LoadTestData:
         cls.init_open_m_health_sample()
         cls.init_strava_schema_from_file()
         cls.init_strava_data_from_file()
+
+    @classmethod
+    def load_dummy_provider(cls):
+        return {
+            "provider_name": "strava",
+            "api_type": "Oauth2-rest",
+            "api_endpoint": "https://www.strava.com/api/",
+            "authorize_url": "https://www.strava.com/oauth/authorize",
+            "access_token_url": "https://www.strava.com/oauth/token",
+            "client_id": "12345",
+            "client_secret": "very_secret",
+            "scope": ["scope1", "scope2", "scope3"],
+            "endpoints": [
+                {
+                    "endpoint_name": "activity",
+                    "endpoint_url": "v3/activities"
+                },
+                {
+                    "endpoint_name": "zone",
+                    "endpoint_url": "v3/athlete/zones"
+                },
+            ],
+        }

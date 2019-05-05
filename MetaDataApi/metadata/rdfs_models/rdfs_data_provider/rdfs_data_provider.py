@@ -28,16 +28,27 @@ class RdfsDataProvider(BaseRdfsModel):
             data_type=Attribute.DataType.String
         )
 
-        endpoint = Object(label="endpoint", schema=schema)
-
         api_type = Attribute(
             label="api_type",
-            object=endpoint,
+            object=data_provider,
             data_type=Attribute.DataType.String
         )
 
-        endpoint_template_url = Attribute(
-            label="endpoint_template_url",
+        authorize_url = Attribute(
+            label="authorize_url",
+            object=data_provider,
+            data_type=Attribute.DataType.String
+        )
+        access_token_url = Attribute(
+            label="access_token_url",
+            object=data_provider,
+            data_type=Attribute.DataType.String
+        )
+
+        endpoint = Object(label="endpoint", schema=schema)
+
+        endpoint_url = Attribute(
+            label="endpoint_url",
             object=endpoint,
             data_type=Attribute.DataType.String
         )
@@ -109,7 +120,7 @@ class RdfsDataProvider(BaseRdfsModel):
         )
         cls.create_att_inst_to_obj_inst(
             rest_endpoint,
-            cls.SchemaItems.endpoint_template_url,
+            cls.SchemaItems.endpoint_url,
             endpoint_url
         )
 

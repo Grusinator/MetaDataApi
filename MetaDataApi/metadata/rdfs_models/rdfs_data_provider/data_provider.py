@@ -10,21 +10,36 @@ class DataProviderO(BaseRdfsObject):
     SI = RdfsDataProvider.SchemaItems
     MetaObject = SI.data_provider
 
-    def __init__(self, inst_pk: int = None, json_object: dict = None):
-        if not inst_pk:
-            from MetaDataApi.dataproviders.models import DataProvider
-            self.db_data_provider_private = DataProvider(**json_object)
-            self.db_data_provider_private.save()
-            json_object["endpoints"] = json_object.pop("rest_endpoints_list")
-
-            self.create_self(json_object)
+    def __init__(self, inst_pk: int = None, json_object: dict = dict()):
+        if inst_pk is None:
+            self.create_data_provider_with_db_obj(json_object)
         else:
             super(DataProviderO, self).__init__(inst_pk)
-            self.db_data_provider_private = self.self_ref.db_data_provider.first()
+            self._db_data_provider = self.get_db_data_provider_from_obj_inst()
+            self.update_from_json(json_object)
+
+    def get_db_data_provider_from_obj_inst(self):
+        from MetaDataApi.dataproviders.models import DataProvider
+        return DataProvider.objects.get(data_provider_instance=self.object_instance)
+
+    def create_data_provider_with_db_obj(self, json_object):
+        self.create_db_data_provider(json_object)
+        self.create_self(json_object)
+
+    def create_db_data_provider(self, json_object):
+        from MetaDataApi.dataproviders.models import DataProvider
+        db_params = self.filter_db_provider_params(json_object)
+        self._db_data_provider = DataProvider(**db_params)
+        self._db_data_provider.save()
+
+    @staticmethod
+    def filter_db_provider_params(json_object):
+        keys = ["provider_name", "client_id", "client_secret", ]
+        return {k: v for k, v in json_object.items() if k in keys}
 
     @property
     def db_data_provider(self):
-        return self.db_data_provider_private
+        return self._db_data_provider
 
     @property
     def schema(self):
@@ -32,31 +47,51 @@ class DataProviderO(BaseRdfsObject):
 
     @property
     def provider_name(self):
-        return self.getAttribute(self.SI.data_provider_name)
+        return self.get_attribute_value(self.SI.data_provider_name)
 
     @provider_name.setter
     def provider_name(self, value: str):
         self.setAttribute(self.SI.data_provider_name, value)
 
     @property
-    def api_endpoint(self):
-        return self.db_data_provider_private.api_endpoint
+    def endpoint_template_url(self):
+        return self.get_attribute_value(self.SI.endpoint_url)
+
+    @endpoint_template_url.setter
+    def endpoint_template_url(self, value: str):
+        self.setAttribute(self.SI.endpoint_url, value)
 
     @property
     def authorize_url(self):
-        return self.db_data_provider_private.authorize_url
+        return self.get_attribute_value(self.SI.authorize_url)
+
+    @authorize_url.setter
+    def authorize_url(self, value: str):
+        self.setAttribute(self.SI.authorize_url, value)
 
     @property
     def access_token_url(self):
-        return self.db_data_provider_private.access_token_url
+        return self.get_attribute_value(self.SI.access_token_url)
+
+    @access_token_url.setter
+    def access_token_url(self, value: str):
+        self.setAttribute(self.SI.access_token_url, value)
+
+    @property
+    def api_type(self):
+        return self.get_attribute_value(self.SI.api_type)
+
+    @api_type.setter
+    def api_type(self, value: str):
+        self.setAttribute(self.SI.api_type, value)
 
     @property
     def client_id(self):
-        return self.db_data_provider_private.client_id
+        return self._db_data_provider.client_id
 
     @property
     def client_secret(self):
-        return self.db_data_provider_private.client_secret
+        return self._db_data_provider.client_secret
 
     @property
     def scope(self):
@@ -84,4 +119,4 @@ class DataProviderO(BaseRdfsObject):
 
     @property
     def data_provider_instance(self):
-        return self.self_ref
+        return self.object_instance

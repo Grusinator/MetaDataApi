@@ -105,7 +105,7 @@ class BaseRdfsModel:
                                     value):
         att_base = Attribute.exists(att)
 
-        SpecificAttributeInstance = BaseAttributeInstance.get_attribute_instance_from_type(att_base.data_type)
+        SpecificAttributeInstance = BaseAttributeInstance.get_attribute_instance_from_data_type(att_base.data_type)
 
         att_inst = SpecificAttributeInstance(
             object=parrent_obj_inst,

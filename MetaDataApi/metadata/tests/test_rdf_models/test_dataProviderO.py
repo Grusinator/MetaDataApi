@@ -15,29 +15,11 @@ class TestDataProviderO(TransactionTestCase):
 
         from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.data_provider import DataProviderO
 
-        dpo = DataProviderO(
-            json_object={
-                "provider_name": "strava",
-                "api_type": "Oauth2-rest",
-                "api_endpoint": "https://www.strava.com/api/",
-                "authorize_url": "https://www.strava.com/oauth/authorize",
-                "access_token_url": "https://www.strava.com/oauth/token",
-                "client_id": "12345",
-                "client_secret": "very_secret",
-                "scope": ["scope1", "scope2", "scope3"],
-                "rest_endpoints_list": [
-                    {
-                        "name": "activity",
-                        "url": "v3/activities"
-                    },
-                    {
-                        "name": "zone",
-                        "url": "v3/athlete/zones"
-                    },
-                ],
-                "json_schema_file_url": "dummy"
-            }
-        )
+        from MetaDataApi.metadata.tests import LoadTestData
+        json_obj = LoadTestData.load_dummy_provider()
+
+        dpo = DataProviderO(json_object=json_obj)
+        self.assertEqual(2, len(dpo.endpoints))
 
         from MetaDataApi.metadata.rdfs_models import RdfsDataProvider
         from MetaDataApi.metadata.models import ObjectInstance
@@ -46,5 +28,19 @@ class TestDataProviderO(TransactionTestCase):
 
         self.assertEqual(3, len(dpo.scope))
 
-        endp_as_inst = list(map(lambda x: x.self_ref, dpo.endpoints))
+        endp_as_inst = list(map(lambda x: x.object_instance, dpo.endpoints))
         self.assertListEqual(endp_as_inst, endpoints)
+        self.assertEqual(dpo.api_type, "Oauth2-rest")
+
+    def test_set_and_get_provider_atts(self):
+        from MetaDataApi.metadata.rdfs_models import RdfsDataProvider
+        RdfsDataProvider.create_all_meta_objects()
+        from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.data_provider import DataProviderO
+        dpo = DataProviderO()
+        from MetaDataApi.metadata.tests import LoadTestData
+        json_obj = LoadTestData.load_dummy_provider()
+        del json_obj["client_id"], json_obj["client_secret"], json_obj["scope"], json_obj["endpoints"]
+        for key, value in json_obj.items():
+            setattr(dpo, key, value)
+            returned_value = getattr(dpo, key)
+            self.assertEqual(value, returned_value)

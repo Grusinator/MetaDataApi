@@ -40,9 +40,9 @@ class ObjectInstance(BaseInstance):
     def get_all_att_insts_with_label(self, label: str) -> list:
         att_base = Attribute.exists_by_label(label, self.base.label)
         if att_base is None:
-            raise ObjectDoesNotExist("attribute %s does not exists" % self.base.label)
-        SpecificAttributeInstance = BaseAttributeInstance.get_attribute_instance_from_type(att_base.data_type)
-        return SpecificAttributeInstance.objects.filter(base=att_base, object=self)
+            raise ObjectDoesNotExist("attribute %s on object %s does not exists" % (label, self.base.label))
+        SpecificAttributeInstance = BaseAttributeInstance.get_attribute_instance_from_data_type(att_base.data_type)
+        return list(SpecificAttributeInstance.objects.filter(base=att_base, object=self))
 
     def get_child_obj_instances_with_relation(self, relation_label: str):
         relations = list(self.to_relations.filter(base__label=relation_label))
@@ -53,9 +53,9 @@ class ObjectInstance(BaseInstance):
         return [relation.from_object for relation in relations]
 
     def create_att_inst(self, att: Attribute, value):
-        SpecificAttributeInstance = BaseAttributeInstance.get_attribute_instance_from_type(att.data_type)
+        SpecificAttributeInstance = BaseAttributeInstance.get_attribute_instance_from_data_type(att.data_type)
         att_inst = SpecificAttributeInstance(
-            base=att,
+            base=Attribute.exists(att),
             object=self,
             value=value
         )

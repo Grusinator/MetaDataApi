@@ -75,7 +75,7 @@ class DataProvider(models.Model):
 
     @staticmethod
     def update_endpoint_url(endpoint_url, rdf_endpoint):
-        rdf_endpoint_url = rdf_endpoint.get_att_inst_with_label(SItems.endpoint_template_url)
+        rdf_endpoint_url = rdf_endpoint.get_att_inst_with_label(SItems.endpoint_url)
         if rdf_endpoint_url is not endpoint_url:
             rdf_endpoint_url.value = endpoint_url
             rdf_endpoint_url.save()

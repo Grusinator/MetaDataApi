@@ -39,12 +39,12 @@ class BaseAttributeInstance(BaseInstance):
 
     @classmethod
     def get_attribute_instance_from_data_type(cls, data_type: Attribute.DataType):
-        datatype = DictUtils.inverse_dict(Attribute.data_type_map, data_type.value)
-        return DictUtils.inverse_dict(BaseAttributeInstance.att_inst_to_type_map, datatype)
-
-    @classmethod
-    def get_attribute_instance_from_type(cls, type_as_string: str):
-        datatype = DictUtils.inverse_dict(Attribute.data_type_map, str(type_as_string))
+        if isinstance(data_type, Attribute.DataType):
+            data_type = data_type.value
+        # TODO fix odd
+        if data_type == "string":
+            data_type = "String"
+        datatype = DictUtils.inverse_dict(Attribute.data_type_map, data_type)
         return DictUtils.inverse_dict(BaseAttributeInstance.att_inst_to_type_map, datatype)
 
     @classmethod

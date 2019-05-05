@@ -1,57 +1,85 @@
 import logging
 
-from MetaDataApi.metadata.models import ObjectInstance, Attribute, ObjectRelation
+from MetaDataApi.metadata.models import ObjectInstance, Attribute, ObjectRelation, Object
 from MetaDataApi.metadata.rdfs_models.base_rdfs_model import BaseRdfsModel
 from MetaDataApi.metadata.utils import JsonUtils
 from MetaDataApi.metadata.utils.json_utils.json_utils import JsonType
 
 logger = logging.getLogger(__name__)
 
+
 class BaseRdfsObject:
+    SI = None
     MetaObject = None
 
     def __init__(self, inst_pk):
-        self.self_ref = ObjectInstance.objects.get(pk=inst_pk)
+        self.object_instance = ObjectInstance.objects.get(pk=inst_pk)
+
+    # TODO this breaks debugging
+    # def __getattribute__(self, name):
+    #     att = getattr(self.SI, name)
+    #     return self.getAttribute(att)
+    #
+    #     # raise Exception("not a valid attribute")
+    #     # return super(BaseRdfsObject, self).__getattribute__(name)
+
+    # def __setattr__(self, name, value):
+    #     if hasattr(self.SI, name):
+    #         att = getattr(self.SI, name)
+    #         self.setAttribute(att, value)
+    #     else:
+    #         return super(BaseRdfsObject, self).__setattr__(name, value)
+
+    def get_base_object(self):
+        return Object.exists(self.MetaObject)
 
     def create_self(self, json_object: dict):
-        self.self_ref = ObjectInstance(base=self.MetaObject)
-        self.self_ref.save()
-        for key, value in json_object.items():
-            try:
-                setattr(self, key, value)
-            except Exception as e:
-                logger.warning("could not set key: %s " %key)
-                pass
+        self.object_instance = ObjectInstance(base=self.get_base_object())
+        self.object_instance.save()
+        self.update_from_json(json_object)
+
+    def update_from_json(self, json_object):
+        if json_object is not None:
+            for key, value in json_object.items():
+                try:
+                    setattr(self, key, value)
+                except Exception as e:
+                    logger.warning("could not set key: %s  with value: %s" % (key, value))
+                    pass
 
     def getAttribute(self, att: Attribute):
-        return self.self_ref.get_att_inst_with_label(att.label)
+        return self.object_instance.get_att_inst_with_label(att.label)
+
+    def get_attribute_value(self, att: Attribute):
+        return self.getAttribute(att).value
 
     def getAttributes(self, att: Attribute) -> list:
-        return self.self_ref.get_all_att_insts_with_label(att.label)
+        return self.object_instance.get_all_att_insts_with_label(att.label)
 
     def setAttribute(self, att: Attribute, value):
-        att_instances = self.self_ref.get_all_att_insts_with_label(att.label)
+        att_instances = self.object_instance.get_all_att_insts_with_label(att.label)
         diff_elms = self.get_attribute_set_diffence(value, att_instances)
-        [self.self_ref.create_att_inst(att, att_value) for att_value in diff_elms]
+        [self.object_instance.create_att_inst(att, att_value) for att_value in diff_elms]
 
     def getParrentObjects(self, rel: ObjectRelation):
-        return self.self_ref.get_parrent_obj_instances_with_relation(rel.label)
+        return self.object_instance.get_parrent_obj_instances_with_relation(rel.label)
 
     def getChildObjects(self, rel: ObjectRelation):
-        return self.self_ref.get_child_obj_instances_with_relation(rel.label)
+        return self.object_instance.get_child_obj_instances_with_relation(rel.label)
 
     def setChildObjects(self, rel: ObjectRelation, RdfsObjectType: type, value: JsonType):
 
-        obj_instances = self.self_ref.get_child_obj_instances_with_relation(rel.label)
+        obj_instances = self.object_instance.get_child_obj_instances_with_relation(rel.label)
         diff_elms = self.get_json_set_diffence(value, obj_instances)
 
         # RdfsObjectType is a class type used to instantiate the related object assuming that all dict keys match
         # the arguments
-        endpoints = [RdfsObjectType(json_object=diff) for diff in diff_elms]
-        [BaseRdfsModel.create_obj_rel_inst(rel, self.self_ref, endpoint.self_ref) for endpoint in endpoints]
+        child_objects = [RdfsObjectType(json_object=diff) for diff in diff_elms]
+        self.create_relations(child_objects, rel)
 
-
-
+    def create_relations(self, child_objects, rel):
+        for child_object in child_objects:
+            BaseRdfsModel.create_obj_rel_inst(rel, self.object_instance, child_object.object_instance)
 
     @staticmethod
     def get_json_set_diffence(list1: JsonType, list2: JsonType):

@@ -26,7 +26,7 @@ class TestRdfsDataProvider(TransactionTestCase):
 
         expected = [
             'api_type', 'data_dump_file', 'data_provider', 'data_provider_name', 'date_downloaded', 'endpoint',
-            'endpoint_data_dump', 'endpoint_name', 'endpoint_template_url', 'file_origin_url', 'has_generated',
+            'endpoint_data_dump', 'endpoint_name', 'endpoint_url', 'file_origin_url', 'has_generated',
             'loaded', 'provider_has_endpoint', 'scope'
         ]
 

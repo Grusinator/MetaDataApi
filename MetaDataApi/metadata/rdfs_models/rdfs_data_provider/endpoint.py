@@ -19,20 +19,20 @@ class Endpoint(BaseRdfsObject):
             super(Endpoint, self).__init__(inst_pk)
 
     @property
-    def name(self):
+    def endpoint_name(self):
         return self.getAttribute(SI.endpoint_name)
 
-    @name.setter
-    def name(self, value):
+    @endpoint_name.setter
+    def endpoint_name(self, value):
         self.setAttribute(SI.endpoint_name, value)
 
     @property
-    def url(self):
-        return self.getAttribute(SI.endpoint_template_url)
+    def endpoint_url(self):
+        return self.getAttribute(SI.endpoint_url)
 
-    @url.setter
-    def url(self, value):
-        self.setAttribute(SI.endpoint_template_url, value)
+    @endpoint_url.setter
+    def endpoint_url(self, value):
+        self.setAttribute(SI.endpoint_url, value)
 
     @property
     def data_dumps(self):
@@ -60,4 +60,4 @@ class Endpoint(BaseRdfsObject):
 
     def get_internal_view_url(self):
         schema = self.data_provider.schema
-        return reverse('endpoint_detail', args=[str(schema.label), self.name])
+        return reverse('endpoint_detail', args=[str(schema.label), self.endpoint_name])
