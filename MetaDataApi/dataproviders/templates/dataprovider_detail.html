@@ -18,7 +18,6 @@
                         Authorize {{dataprovider.provider_name}}
                     </a>
                 </h2>
-                <p>{{dataprovider.scope}}</p>
             </div>
             <a href="{{dataprovider.get_webvowl_url}}">
                 View Schema {{dataprovider.provider_name}}
@@ -28,7 +27,7 @@
                 {% for endpoint in endpoints %}
                 <div>
                     <a href="{{ endpoint.get_internal_view_url }}">
-                        {{endpoint.name}}
+                        {{ endpoint.endpoint_name }}
                     </a>
                 </div>
                 {% endfor %}

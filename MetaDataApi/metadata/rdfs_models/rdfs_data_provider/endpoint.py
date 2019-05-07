@@ -20,7 +20,7 @@ class Endpoint(BaseRdfsObject):
 
     @property
     def endpoint_name(self):
-        return self.getAttribute(SI.endpoint_name)
+        return self.getAttribute(SI.endpoint_name).value
 
     @endpoint_name.setter
     def endpoint_name(self, value):
@@ -28,7 +28,7 @@ class Endpoint(BaseRdfsObject):
 
     @property
     def endpoint_url(self):
-        return self.getAttribute(SI.endpoint_url)
+        return self.getAttribute(SI.endpoint_url).value
 
     @endpoint_url.setter
     def endpoint_url(self, value):
@@ -61,3 +61,13 @@ class Endpoint(BaseRdfsObject):
     def get_internal_view_url(self):
         schema = self.data_provider.schema
         return reverse('endpoint_detail', args=[str(schema.label), self.endpoint_name])
+
+    def validate(self):
+        valid = not self.is_string_none(self.endpoint_name) and \
+                not self.is_string_none(self.endpoint_url)
+
+        if not valid:
+            raise Exception()
+
+    def is_string_none(self, string):
+        return string == None or string == ""

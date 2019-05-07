@@ -56,6 +56,9 @@ class BaseRdfsObject:
     def getAttributes(self, att: Attribute) -> list:
         return self.object_instance.get_all_att_insts_with_label(att.label)
 
+    def get_attribute_values(self, att: Attribute):
+        return [att_inst.value for att_inst in self.getAttributes(att)]
+
     def setAttribute(self, att: Attribute, value):
         att_instances = self.object_instance.get_all_att_insts_with_label(att.label)
         diff_elms = self.get_attribute_set_diffence(value, att_instances)

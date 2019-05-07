@@ -37,6 +37,8 @@ class DataProviderEtlService:
             endpoint_name
         )
 
+        endpoint.validate()
+
         endpoint_url = UrlFormatHelper.build_args_for_url(
             endpoint.endpoint_url.value,
             StartDateTime=datetime.now() - timedelta(days=30),

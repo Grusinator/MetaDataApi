@@ -1,6 +1,4 @@
-import json
 from enum import Enum
-from urllib import parse
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
@@ -10,8 +8,6 @@ from MetaDataApi.metadata.models import Schema
 from MetaDataApi.metadata.rdfs_models import RdfsDataProvider
 
 SItems = RdfsDataProvider.SchemaItems
-
-from MetaDataApi.settings import OAUTH_REDIRECT_URI
 
 
 class ApiTypes(Enum):
@@ -97,35 +93,6 @@ class DataProvider(models.Model):
 
     def get_schema_for_provider(self):
         return Schema.objects.get(label=self.provider_name)
-
-    def build_auth_url(self, logged_in_user_id=None):
-
-        state = "%s:%s" % (self.provider_name,
-                           logged_in_user_id or "AnonomousUser")
-
-        try:
-            scopes = json.loads(self.scope)
-            scopes = " ".join(scopes)
-        except:
-            scopes = ""
-
-        args = {
-            "client_id": self.client_id,
-            "redirect_uri": OAUTH_REDIRECT_URI,
-            "scope": scopes,
-            "nounce": "sdfkjlhasdfdhfas",
-            "response_type": "code",
-            "response_mode": "form_post",
-            "state": state,
-        }
-        if args["scope"] == "" or None:
-            args.pop("scope")
-
-        args_string = parse.urlencode(tuple(args.items()))
-
-        url = "%s?%s" % (self.authorize_url, args_string)
-
-        return url
 
     class Meta:
         app_label = 'dataproviders'

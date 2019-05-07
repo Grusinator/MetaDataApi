@@ -7,7 +7,7 @@ from django.shortcuts import redirect
 from django.shortcuts import render
 
 from MetaDataApi.dataproviders.models import DataProvider
-from MetaDataApi.metadata.rdfs_models.rdfs_data_provider import Endpoint
+from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.data_provider import DataProviderO
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +32,7 @@ class DataProviderView:
             return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
 
         dataprovider = DataProviderView.get_data_provider(provider_name)
-        endpoints = Endpoint.get_all_endpoints_as_objects(dataprovider.data_provider_instance)
+        endpoints = dataprovider.endpoints
 
         return render(
             request,
@@ -48,8 +48,8 @@ class DataProviderView:
     def get_data_provider(provider_name):
         try:
             dataprovider = DataProvider.objects.get(provider_name=provider_name)
+            return DataProviderO(dataprovider.data_provider_instance.pk)
         except ObjectDoesNotExist:
             raise Http404('provider does not exist')
-        return dataprovider
 
 
