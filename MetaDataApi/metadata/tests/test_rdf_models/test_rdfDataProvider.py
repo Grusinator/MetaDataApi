@@ -27,7 +27,7 @@ class TestRdfsDataProvider(TransactionTestCase):
         expected = [
             'api_type', 'data_dump_file', 'data_provider', 'data_provider_name', 'date_downloaded', 'endpoint',
             'endpoint_data_dump', 'endpoint_name', 'endpoint_url', 'file_origin_url', 'has_generated',
-            'loaded', 'provider_has_endpoint', 'scope'
+            'loaded', 'provider_has_endpoint', 'scope', "api_endpoint", "access_token_url", "authorize_url"
         ]
 
         item_labels.sort()

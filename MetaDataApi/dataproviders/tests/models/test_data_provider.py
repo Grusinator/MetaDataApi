@@ -51,7 +51,7 @@ class TestDataProvider(TransactionTestCase):
             'data_provider_name', 'data_dump_file', 'date_downloaded', 'file_origin_url',
             'endpoint_name', 'endpoint_url', 'has_generated', 'loaded',
             'scope', 'provider_has_endpoint', 'endpoint', 'access_token_url',
-            'authorize_url'
+            'authorize_url', "api_endpoint"
         }
 
         self.assertSetEqual(meta_labels, expected_labels)
