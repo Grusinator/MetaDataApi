@@ -42,6 +42,8 @@ class UrlFormatHelper:
 
     @classmethod
     def join_urls(cls, base: str, endpoint: str):
+        if base == "" or endpoint == "":
+            raise Exception("empty string to url join")
         return parse.urljoin(
             cls.standardize_url(base),
             cls.standardize_url(endpoint)

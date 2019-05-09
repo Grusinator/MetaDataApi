@@ -5,6 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 
 from MetaDataApi.dataproviders.models import DataProvider
+from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.data_provider import DataProviderO
 from MetaDataApi.metadata.utils import JsonUtils
 from MetaDataApi.settings import OAUTH_REDIRECT_URI
 from MetaDataApi.users.models import DataProviderProfile
@@ -45,7 +46,7 @@ def request_acess_token(code, data_provider):
     url = data_provider.access_token_url
     r = requests.post(url, data=data, allow_redirects=True)
     if not r.ok:
-        raise OauthRedirectRequestException("the token request did not return with ok")
+        raise OauthRedirectRequestException("the token request did not return with ok. Reason: %s" % r.reason)
 
     json_obj = JsonUtils.validate(r.content)
 
@@ -60,8 +61,8 @@ def request_acess_token(code, data_provider):
 def validate_and_get_provider(request):
     provider_name, _ = get_state(request)
     try:
-        return DataProvider.objects.get(
-            provider_name=provider_name)
+        dp = DataProvider.objects.get(provider_name=provider_name)
+        return DataProviderO(dp.data_provider_instance.pk)
     except ObjectDoesNotExist as e:
         logger.error(str(e))
         raise OauthRedirectRequestException(
@@ -99,11 +100,11 @@ def validate_and_get_profile(request):
 def save_data_provider_profile(access_token, data_provider, profile):
     try:
         tpp = DataProviderProfile.objects.get(
-            profile=profile, provider=data_provider)
+            profile=profile, provider=data_provider.db_data_provider)
         tpp.access_token = access_token
     except ObjectDoesNotExist:
         tpp = DataProviderProfile(
-            provider=data_provider,
+            provider=data_provider.db_data_provider,
             access_token=access_token,
             profile=profile
         )

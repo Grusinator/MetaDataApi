@@ -3,6 +3,7 @@ from django.urls import reverse
 from MetaDataApi.metadata.models import ObjectInstance
 from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.base_rdfs_object import BaseRdfsObject
 from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.rdfs_data_provider import RdfsDataProvider
+from MetaDataApi.metadata.utils.common_utils import StringUtils
 from .data_dump import DataDump
 from .data_provider import DataProviderO
 
@@ -63,11 +64,8 @@ class Endpoint(BaseRdfsObject):
         return reverse('endpoint_detail', args=[str(schema.label), self.endpoint_name])
 
     def validate(self):
-        valid = not self.is_string_none(self.endpoint_name) and \
-                not self.is_string_none(self.endpoint_url)
+        valid = not StringUtils.is_string_none(self.endpoint_name) and \
+                not StringUtils.is_string_none(self.endpoint_url)
 
         if not valid:
             raise Exception()
-
-    def is_string_none(self, string):
-        return string == None or string == ""

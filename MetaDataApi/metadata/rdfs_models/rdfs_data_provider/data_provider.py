@@ -4,6 +4,7 @@ from django.conf import settings
 
 from MetaDataApi.metadata.models import Schema
 from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.base_rdfs_object import BaseRdfsObject
+from MetaDataApi.metadata.utils.common_utils import StringUtils
 from MetaDataApi.metadata.utils.json_utils.json_utils import JsonType
 
 
@@ -56,12 +57,12 @@ class DataProviderO(BaseRdfsObject):
         self.setAttribute(self.SI.data_provider_name, value)
 
     @property
-    def endpoint_template_url(self):
-        return self.get_attribute_value(self.SI.endpoint_url)
+    def api_endpoint(self):
+        return self.get_attribute_value(self.SI.api_endpoint)
 
-    @endpoint_template_url.setter
-    def endpoint_template_url(self, value: str):
-        self.setAttribute(self.SI.endpoint_url, value)
+    @api_endpoint.setter
+    def api_endpoint(self, value: str):
+        self.setAttribute(self.SI.api_endpoint, value)
 
     @property
     def authorize_url(self):
@@ -163,3 +164,10 @@ class DataProviderO(BaseRdfsObject):
         url = "%s?%s" % (self.authorize_url, args_string)
 
         return url
+
+    def validate(self):
+        valid = not StringUtils.is_string_none(self.api_endpoint) and \
+                not StringUtils.is_string_none(self.access_token_url)
+
+        if not valid:
+            raise Exception("data provider validation error")

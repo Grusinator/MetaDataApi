@@ -44,6 +44,11 @@ class RdfsDataProvider(BaseRdfsModel):
             object=data_provider,
             data_type=Attribute.DataType.String
         )
+        api_endpoint = Attribute(
+            label="api_endpoint",
+            object=data_provider,
+            data_type=Attribute.DataType.String
+        )
 
         endpoint = Object(label="endpoint", schema=schema)
 

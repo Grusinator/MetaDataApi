@@ -5,15 +5,16 @@ JsonType = Union[dict, list]
 
 
 class JsonUtils:
+    encoding = "utf-8"
 
     @classmethod
     def read_json_file(cls, filename):
-        with open(filename, encoding='utf-8') as f:
+        with open(filename, encoding=cls.encoding) as f:
             return cls.validate(f.read())
 
-    @staticmethod
-    def validate(text: str) -> JsonType:
-        return json.loads(str(text))
+    @classmethod
+    def validate(cls, text: str) -> JsonType:
+        return json.loads(text, encoding=cls.encoding)
 
     @staticmethod
     def clean(text: str) -> str:

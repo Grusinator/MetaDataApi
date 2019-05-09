@@ -25,3 +25,7 @@ class StringUtils:
         # string = re.sub('/^[\W_]+|[\W_]+$/', '', string)
 
         return string
+
+    @staticmethod
+    def is_string_none(string):
+        return string == None or string == ""

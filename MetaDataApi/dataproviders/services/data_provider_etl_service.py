@@ -38,15 +38,16 @@ class DataProviderEtlService:
         )
 
         endpoint.validate()
+        endpoint.data_provider.validate()
 
         endpoint_url = UrlFormatHelper.build_args_for_url(
-            endpoint.endpoint_url.value,
+            endpoint.endpoint_url,
             StartDateTime=datetime.now() - timedelta(days=30),
             EndDateTime=datetime.now(),
             AuthToken=auth_token
         )
 
-        url = UrlFormatHelper.join_urls(self.dataprovider.api_endpoint, endpoint_url)
+        url = UrlFormatHelper.join_urls(endpoint.data_provider.api_endpoint, endpoint_url)
 
         data = self.request_from_endpoint(auth_token, url)
         return data
