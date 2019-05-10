@@ -66,6 +66,9 @@ class Endpoint(BaseRdfsObject):
     def validate(self):
         valid = not StringUtils.is_string_none(self.endpoint_name) and \
                 not StringUtils.is_string_none(self.endpoint_url)
-
         if not valid:
             raise Exception()
+
+    def to_json(self):
+        att_names = ["endpoint_name", "endpoint_url"]
+        return self.build_json_from_att_names(att_names)

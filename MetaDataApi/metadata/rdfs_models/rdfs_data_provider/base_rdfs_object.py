@@ -44,7 +44,7 @@ class BaseRdfsObject:
                 try:
                     setattr(self, key, value)
                 except Exception as e:
-                    logger.warning("could not set key: %s  with value: %s" % (key, value))
+                    logger.warning("could not set key: %s  with value: %s ____ exc: %s" % (key, value, e))
                     pass
 
     def getAttribute(self, att: Attribute):
@@ -71,9 +71,12 @@ class BaseRdfsObject:
         return self.object_instance.get_child_obj_instances_with_relation(rel.label)
 
     def setChildObjects(self, rel: ObjectRelation, RdfsObjectType: type, value: JsonType):
-
         obj_instances = self.object_instance.get_child_obj_instances_with_relation(rel.label)
-        diff_elms = self.get_json_set_diffence(value, obj_instances)
+
+        existing_rdf_obj = [RdfsObjectType(obj_inst.pk) for obj_inst in obj_instances]
+        as_json = [obj.to_json() for obj in existing_rdf_obj]
+        # TODO figure out how to compare
+        diff_elms = self.get_json_set_diffence(value, as_json)
 
         # RdfsObjectType is a class type used to instantiate the related object assuming that all dict keys match
         # the arguments
@@ -100,3 +103,6 @@ class BaseRdfsObject:
         if not isinstance(list1, (list, set, tuple)):
             list1 = [list1]
         return set(list1) - set(list2)
+
+    def build_json_from_att_names(self, att_names: list):
+        return {att_name: getattr(self, att_name) for att_name in att_names}

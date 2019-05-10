@@ -14,11 +14,13 @@ class DataProviderO(BaseRdfsObject):
     MetaObject = SI.data_provider
 
     def __init__(self, inst_pk: int = None, json_object: dict = dict()):
+        del json_object["json_schema_file_url"]
         if inst_pk is None:
             self.create_data_provider_with_db_obj(json_object)
         else:
             super(DataProviderO, self).__init__(inst_pk)
             self._db_data_provider = self.get_db_data_provider_from_obj_inst()
+
             self.update_from_json(json_object)
 
     def get_db_data_provider_from_obj_inst(self):
