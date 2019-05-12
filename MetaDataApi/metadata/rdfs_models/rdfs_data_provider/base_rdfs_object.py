@@ -51,7 +51,8 @@ class BaseRdfsObject:
         return self.object_instance.get_att_inst_with_label(att.label)
 
     def get_attribute_value(self, att: Attribute):
-        return self.getAttribute(att).value
+        att_inst = self.getAttribute(att)
+        return att_inst.value if att_inst is not None else None
 
     def getAttributes(self, att: Attribute) -> list:
         return self.object_instance.get_all_att_insts_with_label(att.label)
@@ -61,7 +62,8 @@ class BaseRdfsObject:
 
     def setAttribute(self, att: Attribute, value):
         att_instances = self.object_instance.get_all_att_insts_with_label(att.label)
-        diff_elms = self.get_attribute_set_diffence(value, att_instances)
+        att_inst_values = list(map(lambda x: x.value, att_instances))
+        diff_elms = self.get_attribute_set_difference(value, att_inst_values)
         [self.object_instance.create_att_inst(att, att_value) for att_value in diff_elms]
 
     def getParrentObjects(self, rel: ObjectRelation):
@@ -107,10 +109,10 @@ class BaseRdfsObject:
         return diff_elms
 
     @staticmethod
-    def get_attribute_set_diffence(list1, list2):
+    def get_attribute_set_difference(list1, list2):
         if not isinstance(list1, (list, set, tuple)):
             list1 = [list1]
-        return set(list1) - set(list2)
+        return list(set(list1) - set(list2))
 
     def build_json_from_att_names(self, att_names: list) -> str:
         return JsonUtils.dumps({att_name: getattr(self, att_name) for att_name in att_names})

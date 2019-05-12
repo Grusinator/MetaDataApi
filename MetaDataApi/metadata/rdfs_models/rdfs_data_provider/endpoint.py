@@ -21,7 +21,7 @@ class Endpoint(BaseRdfsObject):
 
     @property
     def endpoint_name(self):
-        return self.getAttribute(SI.endpoint_name).value
+        return self.get_attribute_value(SI.endpoint_name)
 
     @endpoint_name.setter
     def endpoint_name(self, value):
@@ -29,7 +29,7 @@ class Endpoint(BaseRdfsObject):
 
     @property
     def endpoint_url(self):
-        return self.getAttribute(SI.endpoint_url).value
+        return self.get_attribute_value(SI.endpoint_url)
 
     @endpoint_url.setter
     def endpoint_url(self, value):
@@ -47,7 +47,7 @@ class Endpoint(BaseRdfsObject):
 
     @property
     def api_type(self):
-        return self.getAttribute(SI.api_type)
+        return self.get_attribute_value(SI.api_type)
 
     @classmethod
     def get_all_endpoints_as_objects(cls, provider: ObjectInstance):

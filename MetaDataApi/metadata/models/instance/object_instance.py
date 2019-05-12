@@ -1,3 +1,5 @@
+import logging
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 
@@ -6,6 +8,8 @@ from MetaDataApi.metadata.models.instance.instance_base import BaseInstance
 from MetaDataApi.metadata.models.meta import Attribute
 from MetaDataApi.metadata.utils import BuildDjangoSearchArgs
 from MetaDataApi.metadata.utils.django_model_utils import DjangoModelUtils
+
+logger = logging.getLogger(__name__)
 
 
 class ObjectInstance(BaseInstance):
@@ -35,8 +39,14 @@ class ObjectInstance(BaseInstance):
 
     def get_att_inst_with_label(self, label: str) -> BaseAttributeInstance:
         all_atts = self.get_all_att_insts_with_label(label)
-        if len(all_atts) != 1:
-            raise Exception("att inst: %s did not return 1 but: %s" % (label, len(all_atts)))
+        if len(all_atts) > 1:
+            warn_msg = "att inst: %s did not return 1 but: %s" % (label, len(all_atts))
+            logger.warning(warn_msg)
+            raise Exception(warn_msg)
+        if len(all_atts) == 0:
+            warn_msg = "no att returned"
+            logger.warning(warn_msg)
+            return None
         return all_atts[0]
 
     def get_all_att_insts_with_label(self, label: str) -> list:
