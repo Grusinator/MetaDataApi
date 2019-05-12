@@ -69,6 +69,6 @@ class Endpoint(BaseRdfsObject):
         if not valid:
             raise Exception()
 
-    def to_json(self):
+    def to_json(self) -> str:
         att_names = ["endpoint_name", "endpoint_url"]
         return self.build_json_from_att_names(att_names)

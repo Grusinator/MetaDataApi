@@ -83,5 +83,6 @@ class TestDataProvider(TransactionTestCase):
             'v1/activity?start={StartDateTime:Y-M-d}&end={EndDateTime:Y-M-d}',
             'v1/readiness?start={StartDateTime:Y-M-d}&end={EndDateTime:Y-M-d}', 'v1/users/me/dataSources',
             '/v3/notifications', 'v1/me/player/recently-played']
-
+        expected_urls.sort()
+        urls.sort()
         self.assertListEqual(urls, expected_urls)

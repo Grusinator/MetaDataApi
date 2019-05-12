@@ -38,10 +38,10 @@ class InitializeDataProviders:
         provider_name = provider_data["provider_name"]
         data_provider = DataProvider.exists(provider_name)
         if data_provider is None:
-            DataProviderO(json_object=provider_data)
+            return DataProviderO(json_object=provider_data)
         else:
             pk = data_provider.data_provider_instance.pk
-            DataProviderO(inst_pk=pk, json_object=provider_data)
+            return DataProviderO(inst_pk=pk, json_object=provider_data)
 
     @classmethod
     def get_providers_from_aws(cls):

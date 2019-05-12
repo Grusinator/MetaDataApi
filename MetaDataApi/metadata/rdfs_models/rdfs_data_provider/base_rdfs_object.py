@@ -71,17 +71,25 @@ class BaseRdfsObject:
         return self.object_instance.get_child_obj_instances_with_relation(rel.label)
 
     def setChildObjects(self, rel: ObjectRelation, RdfsObjectType: type, value: JsonType):
-        obj_instances = self.object_instance.get_child_obj_instances_with_relation(rel.label)
-
-        existing_rdf_obj = [RdfsObjectType(obj_inst.pk) for obj_inst in obj_instances]
-        as_json = [obj.to_json() for obj in existing_rdf_obj]
-        # TODO figure out how to compare
-        diff_elms = self.get_json_set_diffence(value, as_json)
-
+        existing_as_json_set = self.existing_objects_as_json_set(RdfsObjectType, rel)
+        new_as_json_set = self.value_to_json(value)
+        diff_elms = new_as_json_set - existing_as_json_set
         # RdfsObjectType is a class type used to instantiate the related object assuming that all dict keys match
         # the arguments
-        child_objects = [RdfsObjectType(json_object=diff) for diff in diff_elms]
+        child_objects = [RdfsObjectType(json_object=JsonUtils.validate(diff)) for diff in diff_elms]
         self.create_relations(child_objects, rel)
+
+    def value_to_json(self, value: JsonType):
+        if isinstance(value, list):
+            return {JsonUtils.dumps(val) for val in value}
+        elif isinstance(value, dict):
+            return set(JsonUtils.dumps(value))
+
+    def existing_objects_as_json_set(self, RdfsObjectType, rel):
+        obj_instances = self.object_instance.get_child_obj_instances_with_relation(rel.label)
+        existing_rdf_obj = [RdfsObjectType(obj_inst.pk) for obj_inst in obj_instances]
+        return {obj.to_json() for obj in existing_rdf_obj}
+
 
     def create_relations(self, child_objects, rel):
         for child_object in child_objects:
@@ -104,5 +112,5 @@ class BaseRdfsObject:
             list1 = [list1]
         return set(list1) - set(list2)
 
-    def build_json_from_att_names(self, att_names: list):
-        return {att_name: getattr(self, att_name) for att_name in att_names}
+    def build_json_from_att_names(self, att_names: list) -> str:
+        return JsonUtils.dumps({att_name: getattr(self, att_name) for att_name in att_names})

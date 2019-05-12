@@ -14,7 +14,6 @@ class DataProviderO(BaseRdfsObject):
     MetaObject = SI.data_provider
 
     def __init__(self, inst_pk: int = None, json_object: dict = dict()):
-        del json_object["json_schema_file_url"]
         if inst_pk is None:
             self.create_data_provider_with_db_obj(json_object)
         else:

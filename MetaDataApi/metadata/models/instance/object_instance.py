@@ -36,7 +36,7 @@ class ObjectInstance(BaseInstance):
     def get_att_inst_with_label(self, label: str) -> BaseAttributeInstance:
         all_atts = self.get_all_att_insts_with_label(label)
         if len(all_atts) != 1:
-            raise Exception("att inst did not return 1 but: %s" % len(all_atts))
+            raise Exception("att inst: %s did not return 1 but: %s" % (label, len(all_atts)))
         return all_atts[0]
 
     def get_all_att_insts_with_label(self, label: str) -> list:

@@ -1,3 +1,4 @@
+import hashlib
 import json
 from typing import Union
 
@@ -20,6 +21,18 @@ class JsonUtils:
     def clean(text: str) -> str:
         json_obj = json.loads(text)
         return json.dumps(json_obj, indent=4)
+
+    @staticmethod
+    def dumps(json_obj: JsonType) -> str:
+        return json.dumps(json_obj)
+
+    @staticmethod
+    def hash(text: str) -> str:
+        return hashlib.sha1(text)
+
+    @classmethod
+    def dump_and_hash(cls, json_obj: JsonType):
+        return cls.hash(cls.dumps(json_obj))
 
     @classmethod
     def to_tuple_set_key_value(cls, json_obj: JsonType):

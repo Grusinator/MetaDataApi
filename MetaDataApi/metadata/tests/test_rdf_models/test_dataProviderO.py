@@ -12,7 +12,6 @@ class TestDataProviderO(TransactionTestCase):
     def test_create_provider(self):
         from MetaDataApi.metadata.rdfs_models import RdfsDataProvider
         RdfsDataProvider.create_all_meta_objects()
-
         from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.data_provider import DataProviderO
 
         from MetaDataApi.metadata.tests import LoadTestData
@@ -29,6 +28,8 @@ class TestDataProviderO(TransactionTestCase):
         self.assertEqual(3, len(dpo.scope))
 
         endp_as_inst = list(map(lambda x: x.object_instance, dpo.endpoints))
+        endp_as_inst.sort(key=lambda x: x.pk)
+        endpoints.sort(key=lambda x: x.pk)
         self.assertListEqual(endp_as_inst, endpoints)
         self.assertEqual(dpo.api_type, "Oauth2-rest")
 
@@ -44,3 +45,15 @@ class TestDataProviderO(TransactionTestCase):
             setattr(dpo, key, value)
             returned_value = getattr(dpo, key)
             self.assertEqual(value, returned_value)
+
+    def test_scopes_created_once_only(self):
+        from MetaDataApi.metadata.rdfs_models import RdfsDataProvider
+        RdfsDataProvider.create_all_meta_objects()
+
+        from MetaDataApi.metadata.tests import LoadTestData
+        json_obj = LoadTestData.load_dummy_provider()
+
+        from MetaDataApi.dataproviders.models.initialize_data_providers import InitializeDataProviders
+        InitializeDataProviders.create_if_does_not_exists(json_obj)
+        dpo = InitializeDataProviders.create_if_does_not_exists(json_obj)
+        self.assertEqual(3, len(dpo.scope))

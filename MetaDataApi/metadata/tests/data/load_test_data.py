@@ -202,7 +202,7 @@ class LoadTestData:
     @classmethod
     def load_dummy_provider(cls):
         return {
-            "provider_name": "strava",
+            "provider_name": "strava1",
             "api_type": "Oauth2-rest",
             "api_endpoint": "https://www.strava.com/api/",
             "authorize_url": "https://www.strava.com/oauth/authorize",
