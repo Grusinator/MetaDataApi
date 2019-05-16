@@ -22,6 +22,7 @@ class TestStoreDataFromProviderService(TransactionTestCase):
         InitializeDataProviders.load()
 
         dpp = LoadTestData.init_strava_data_provider_profile()
+        LoadTestData.create_dummy_provider(dpp)
 
         data = StoreDataFromProviderService.execute({
             "provider_name": dpp.provider.provider_name,

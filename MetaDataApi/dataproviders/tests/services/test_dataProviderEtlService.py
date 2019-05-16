@@ -18,8 +18,8 @@ class TestDataProviderEtlService(TransactionTestCase):
 
         from MetaDataApi.dataproviders.models.initialize_data_providers import InitializeDataProviders
         InitializeDataProviders.load()
-
         dp_profile = LoadTestData.init_strava_data_provider_profile()
+        LoadTestData.create_dummy_provider(dp_profile)
 
         from MetaDataApi.dataproviders.services import DataProviderEtlService
         service = DataProviderEtlService(dp_profile.provider)

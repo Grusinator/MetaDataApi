@@ -200,7 +200,7 @@ class LoadTestData:
         cls.init_strava_data_from_file()
 
     @classmethod
-    def load_dummy_provider(cls):
+    def load_dummy_provider_json(cls):
         return {
             "provider_name": "strava1",
             "api_type": "Oauth2-rest",
@@ -221,3 +221,15 @@ class LoadTestData:
                 },
             ],
         }
+
+    @classmethod
+    def create_dummy_provider(cls, dp_profile):
+        # TODO this should be refactored
+        json_provider_obj = LoadTestData.load_dummy_provider_json()
+        del json_provider_obj["client_id"]
+        del json_provider_obj["client_secret"]
+        from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.data_provider import DataProviderO
+        dpo = DataProviderO(inst_pk=dp_profile.provider.data_provider_instance.pk, json_object=json_provider_obj)
+        dpo.validate()
+
+        return dp_profile

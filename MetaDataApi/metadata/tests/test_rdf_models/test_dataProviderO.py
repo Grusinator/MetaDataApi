@@ -15,7 +15,7 @@ class TestDataProviderO(TransactionTestCase):
         from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.data_provider import DataProviderO
 
         from MetaDataApi.metadata.tests import LoadTestData
-        json_obj = LoadTestData.load_dummy_provider()
+        json_obj = LoadTestData.load_dummy_provider_json()
 
         dpo = DataProviderO(json_object=json_obj)
         self.assertEqual(2, len(dpo.endpoints))
@@ -39,7 +39,7 @@ class TestDataProviderO(TransactionTestCase):
         from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.data_provider import DataProviderO
         dpo = DataProviderO()
         from MetaDataApi.metadata.tests import LoadTestData
-        json_obj = LoadTestData.load_dummy_provider()
+        json_obj = LoadTestData.load_dummy_provider_json()
         del json_obj["client_id"], json_obj["client_secret"], json_obj["scope"], json_obj["endpoints"]
         for key, value in json_obj.items():
             setattr(dpo, key, value)
@@ -51,7 +51,7 @@ class TestDataProviderO(TransactionTestCase):
         RdfsDataProvider.create_all_meta_objects()
 
         from MetaDataApi.metadata.tests import LoadTestData
-        json_obj = LoadTestData.load_dummy_provider()
+        json_obj = LoadTestData.load_dummy_provider_json()
 
         from MetaDataApi.dataproviders.models.initialize_data_providers import InitializeDataProviders
         InitializeDataProviders.create_if_does_not_exists(json_obj)

@@ -48,4 +48,7 @@ class TestObjectTableView(TransactionTestCase):
             ['2', 'Morgen', '4395.6', '1406', '2149', '22.0', 'Run', '0', '1853676308', ],
             ['2', 'Løb med phillip', '11867.8', '2283', '660103', '51.9', 'Run', '0', '1853632245', ]]
 
+        att_inst_values.sort(key=lambda x: x[3])
+        excpected_att_values.sort(key=lambda x: x[3])
+
         self.assertListEqual(excpected_att_values, att_inst_values)
