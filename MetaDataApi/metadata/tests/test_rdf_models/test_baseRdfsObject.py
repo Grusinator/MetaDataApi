@@ -10,66 +10,35 @@ class TestBaseRdfsObject(TransactionTestCase):
         super(TestBaseRdfsObject, cls).setUpClass()
         # django.setup()
 
-    @unittest.skip
-    def test_get_base_object(self):
-        self.fail()
+    def test_get_all_schema_items_of_type_stringattribute(self):
+        from MetaDataApi.metadata.rdfs_models.rdfs_data_provider import Endpoint
+        from MetaDataApi.metadata.rdfs_models.descriptors import StringAttributeDescriptor
+        descriptors = Endpoint.get_all_schema_items_of_type(StringAttributeDescriptor)
+        descriptor_labels = list(map(lambda x: x.label, descriptors))
+        descriptor_labels.sort()
+        expected = ["endpoint_name", "endpoint_url"]
+        self.assertListEqual(expected, descriptor_labels)
 
-    @unittest.skip
-    def test_create_self(self):
-        self.fail()
+    def test_get_all_schema_items_of_type_relation(self):
+        from MetaDataApi.metadata.rdfs_models.descriptors import ObjectRelationDescriptor
+        from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.data_provider import DataProviderO
+        descriptors = DataProviderO.get_all_schema_items_of_type(ObjectRelationDescriptor)
+        descriptor_labels = list(map(lambda x: x.label, descriptors))
+        descriptor_labels.sort()
+        expected = ["data_provider_has_endpoint"]
+        self.assertListEqual(expected, descriptor_labels)
 
-    @unittest.skip
-    def test_update_from_json(self):
-        self.fail()
+    def test_get_all_schema_items_of_type_base_attribute(self):
+        from MetaDataApi.metadata.rdfs_models.rdfs_data_provider import Endpoint
+        from MetaDataApi.metadata.rdfs_models.descriptors.attributes.base_attribute_descriptor import \
+            BaseAttributeDescriptor
+        descriptors = Endpoint.get_all_schema_items_of_type(BaseAttributeDescriptor)
+        descriptor_labels = list(map(lambda x: x.label, descriptors))
+        descriptor_labels.sort()
+        expected = ["endpoint_name", "endpoint_url"]
+        self.assertListEqual(expected, descriptor_labels)
 
-    @unittest.skip
-    def test_getAttribute(self):
-        self.fail()
-
-    @unittest.skip
-    def test_get_attribute_value(self):
-        self.fail()
-
-    @unittest.skip
-    def test_getAttributes(self):
-        self.fail()
-
-    @unittest.skip
-    def test_get_attribute_values(self):
-        self.fail()
-
-    @unittest.skip
-    def test_setAttribute(self):
-        self.fail()
-
-    @unittest.skip
-    def test_getParrentObjects(self):
-        self.fail()
-
-    @unittest.skip
-    def test_getChildObjects(self):
-        self.fail()
-
-    @unittest.skip
-    def test_setChildObjects(self):
-        self.fail()
-
-    @unittest.skip
-    def test_value_to_json(self):
-        self.fail()
-
-    @unittest.skip
-    def test_existing_objects_as_json_set(self):
-        self.fail()
-
-    @unittest.skip
-    def test_create_relations(self):
-        self.fail()
-
-    @unittest.skip
-    def test_get_json_set_diffence(self):
-        self.fail()
-
+    unittest.skip("move to other method")
     def test_get_attribute_set_diffence(self):
         from MetaDataApi.metadata.rdfs_models.base_rdfs_object import BaseRdfsObject
         test_data = [

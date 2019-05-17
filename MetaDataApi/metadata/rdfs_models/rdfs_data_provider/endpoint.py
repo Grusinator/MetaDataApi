@@ -11,10 +11,10 @@ class Endpoint(BaseRdfsObject):
     endpoint_name = StringAttributeDescriptor()
     endpoint_url = StringAttributeDescriptor()
 
-    # from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.data_dump import DataDump
-    # from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.data_provider import DataProviderO
-    has_data_dump = ObjectRelationDescriptor(None, has_many=True)
-    data_provider = ObjectRelationDescriptor(None, parrent_relation=True)
+    from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.data_dump import DataDump
+    from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.data_provider import DataProviderO
+    has_data_dump = ObjectRelationDescriptor(DataDump, has_many=True)
+    data_provider = ObjectRelationDescriptor(DataProviderO, parrent_relation=True)
 
     def __init__(self, inst_pk: int = None, json_object: dict = None):
         if not inst_pk:
@@ -62,6 +62,7 @@ class Endpoint(BaseRdfsObject):
         if not valid:
             raise Exception()
 
+    # TODO fix
     def to_json(self) -> str:
         att_names = ["endpoint_name", "endpoint_url"]
         return self.build_json_from_att_names(att_names)

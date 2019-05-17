@@ -14,4 +14,4 @@ class InitializeRdfModels:
     def create_all_schemas_from_descriptor(cls):
         for rdf_model in cls.rdf_models:
             for rdf_object in rdf_model.SchemaObjects:
-                rdf_object.initialize_schema()
+                rdf_object.initialize_schema_objects()

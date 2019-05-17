@@ -136,10 +136,6 @@ class DataProviderO(BaseRdfsObject):
     #     self.setChildObjects(self.SI.provider_has_endpoint, Endpoint, value)
 
     @property
-    def json_schema_file_url(self):
-        return ""
-
-    @property
     def data_provider_instance(self):
         return self.object_instance
 

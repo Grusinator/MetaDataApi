@@ -12,7 +12,7 @@ class ObjectRelationDescriptor(BaseDescriptor):
         self.parrent_relation = parrent_relation
         self.rdfs_object_type = rdfs_object_type
 
-    def __get__(self, instance):
+    def __get__(self, instance, obj_type=None):
         if self.parrent_relation:
             return self.get_parrent_objects(instance)
         else:
