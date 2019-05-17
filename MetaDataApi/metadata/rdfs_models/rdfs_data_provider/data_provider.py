@@ -4,6 +4,10 @@ from django.conf import settings
 
 from MetaDataApi.metadata.models import Schema
 from MetaDataApi.metadata.rdfs_models.base_rdfs_object import BaseRdfsObject
+from MetaDataApi.metadata.rdfs_models.descriptors.attributes.string_attribute_descriptor import \
+    StringAttributeDescriptor
+from MetaDataApi.metadata.rdfs_models.descriptors.relation_descriptor import ObjectRelationDescriptor
+from MetaDataApi.metadata.rdfs_models.rdfs_data_provider import Endpoint
 from MetaDataApi.metadata.utils.common_utils import StringUtils
 from MetaDataApi.metadata.utils.json_utils.json_utils import JsonType
 
@@ -12,6 +16,9 @@ class DataProviderO(BaseRdfsObject):
     from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.rdfs_data_provider import RdfsDataProvider
     SI = RdfsDataProvider.SchemaItems
     MetaObject = SI.data_provider
+
+    data_provider_name = StringAttributeDescriptor()
+    data_provider_has_endpoint = ObjectRelationDescriptor(Endpoint, has_many=True)
 
     def __init__(self, inst_pk: int = None, json_object: dict = dict()):
         if inst_pk is None:
@@ -49,13 +56,13 @@ class DataProviderO(BaseRdfsObject):
     def schema(self):
         return Schema.exists_by_label(self.db_data_provider.provider_name)
 
-    @property
-    def provider_name(self):
-        return self.get_attribute_value(self.SI.data_provider_name)
-
-    @provider_name.setter
-    def provider_name(self, value: str):
-        self.setAttribute(self.SI.data_provider_name, value)
+    # @property
+    # def provider_name(self):
+    #     return self.get_attribute_value(self.SI.data_provider_name)
+    #
+    # @provider_name.setter
+    # def provider_name(self, value: str):
+    #     self.setAttribute(self.SI.data_provider_name, value)
 
     @property
     def api_endpoint(self):
