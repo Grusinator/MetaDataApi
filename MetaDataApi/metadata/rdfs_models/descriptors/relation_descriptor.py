@@ -1,16 +1,21 @@
+import logging
+
 from MetaDataApi.metadata.models import ObjectRelation, ObjectRelationInstance, ObjectInstance
 from MetaDataApi.metadata.rdfs_models.descriptors.base_descriptor import BaseDescriptor
+from MetaDataApi.metadata.rdfs_models.descriptors.object_list_singleton import RdfsModelInitializedList
 from MetaDataApi.metadata.utils.json_utils.json_utils import JsonType, JsonUtils
+
+logger = logging.getLogger(__name__)
 
 
 class ObjectRelationDescriptor(BaseDescriptor):
     meta_type = ObjectRelation
 
-    def __init__(self, rdfs_object_type, has_many: bool = True, parrent_relation=False):
+    def __init__(self, to_object, has_many: bool = True, parrent_relation=False):
         super(ObjectRelationDescriptor, self).__init__(self.meta_type)
         self.has_many = has_many
         self.parrent_relation = parrent_relation
-        self.rdfs_object_type = rdfs_object_type
+        self.to_object = to_object
 
     def __get__(self, instance, obj_type=None):
         if self.parrent_relation:
@@ -28,8 +33,12 @@ class ObjectRelationDescriptor(BaseDescriptor):
         pass
 
     @property
-    def RdfsObjectType(self):
-        return self.rdfs_object_type
+    def rdfs_model(self):
+        if isinstance(self.to_object, str):
+            return RdfsModelInitializedList.get_by_name(self.to_object)
+        else:
+            RdfsModelInitializedList.set(self.to_object)
+        return self.to_object
 
     def get_parrent_objects(self, instance):
         return instance.object_instance.get_parrent_obj_instances_with_relation(self.label)
@@ -47,7 +56,7 @@ class ObjectRelationDescriptor(BaseDescriptor):
         self.create_relations(child_objects, instance.object_instance)
 
     def create_child_object(self, child):
-        RdfsObjectType = self.RdfsObjectType
+        RdfsObjectType = self.rdfs_model
         return RdfsObjectType(json_object=JsonUtils.validate(child))
 
     def create_relations(self, child_objects, object_instance):
@@ -78,5 +87,5 @@ class ObjectRelationDescriptor(BaseDescriptor):
 
     def existing_objects_as_json_set(self, object_instance):
         obj_instances = object_instance.get_child_obj_instances_with_relation(self.label)
-        existing_rdf_obj = [self.RdfsObjectType(obj_inst.pk) for obj_inst in obj_instances]
+        existing_rdf_obj = [self.rdfs_model(obj_inst.pk) for obj_inst in obj_instances]
         return {obj.to_json() for obj in existing_rdf_obj}

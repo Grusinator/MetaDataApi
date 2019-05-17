@@ -10,5 +10,5 @@ class DataDump:
     date_downloaded = DateTimeAttributeDescriptor()
     file = FileAttributeDescriptor()
     loaded = BoolAttributeDescriptor()
-    # from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.endpoint import Endpoint
-    has_endpoint = ObjectRelationDescriptor(None, parrent_relation=True)
+    file_origin_url = StringAttributeDescriptor()
+    has_endpoint = ObjectRelationDescriptor("Endpoint", parrent_relation=True)

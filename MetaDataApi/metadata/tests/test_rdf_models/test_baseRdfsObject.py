@@ -40,7 +40,7 @@ class TestBaseRdfsObject(TransactionTestCase):
 
     unittest.skip("move to other method")
     def test_get_attribute_set_diffence(self):
-        from MetaDataApi.metadata.rdfs_models.base_rdfs_object import BaseRdfsObject
+        from MetaDataApi.metadata.rdfs_models.base_rdfs_object import BaseRdfsModel
         test_data = [
             # new , existing
             (1, [1, 2, 3]),
@@ -57,7 +57,7 @@ class TestBaseRdfsObject(TransactionTestCase):
             []
         ]
         for test, expected in zip(test_data, expected):
-            output = BaseRdfsObject.get_attribute_set_difference(*test)
+            output = BaseRdfsModel.get_attribute_set_difference(*test)
             self.assertEqual(output, expected, msg=str(test))
 
     @unittest.skip

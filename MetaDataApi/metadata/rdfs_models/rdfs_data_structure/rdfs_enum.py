@@ -1,8 +1,8 @@
 from MetaDataApi.metadata.models import Schema, Object, Attribute, ObjectRelation
-from MetaDataApi.metadata.rdfs_models.base_rdfs_model import BaseRdfsModel
+from MetaDataApi.metadata.rdfs_models.base_rdfs_schema import BaseRdfsSchema
 
 
-class RdfsEnum(BaseRdfsModel):
+class RdfsEnum(BaseRdfsSchema):
     class SchemaItems:
         schema = Schema(label="meta_data_api")
 

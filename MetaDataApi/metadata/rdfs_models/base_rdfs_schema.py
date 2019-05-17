@@ -9,7 +9,7 @@ from MetaDataApi.metadata.models import Object, ObjectRelation, Attribute, Schem
 logger = logging.getLogger(__name__)
 
 
-class BaseRdfsModel:
+class BaseRdfsSchema:
     __metaclass__ = ABCMeta
 
     schema_label = None
