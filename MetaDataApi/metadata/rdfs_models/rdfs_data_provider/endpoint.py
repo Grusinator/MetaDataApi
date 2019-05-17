@@ -54,6 +54,7 @@ class Endpoint(BaseRdfsObject):
         endpoints = RdfsDataProvider.get_all_endpoints(provider)
         return [Endpoint(endpoint.pk) for endpoint in endpoints]
 
+    # TODO dont do it this way
     @classmethod
     def get_endpoint_as_object(cls, provider: ObjectInstance, endpoint_name: str):
         endpoint = RdfsDataProvider.get_endpoint(provider, endpoint_name)

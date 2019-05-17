@@ -45,7 +45,9 @@ def handle_load_data_from_dump(request):
                 "user_pk": request.user.pk
             })
         except NotImplementedError as e:
-            raise Http404('data error')
+            error_msg = 'data error: %s' % e
+            logger.error(error_msg)
+            raise Http404(error_msg)
 
 
 def handle_store_data(endpoint_name, provider_name, request):
@@ -57,4 +59,6 @@ def handle_store_data(endpoint_name, provider_name, request):
                 "user_pk": request.user.pk
             })
         except Exception as e:
-            raise Http404('data error')
+            error_msg = 'data error: %s' % e
+            logger.error(error_msg)
+            raise Http404(error_msg)
