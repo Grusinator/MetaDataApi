@@ -6,11 +6,11 @@ from MetaDataApi.metadata.utils.json_utils.json_utils import JsonType, JsonUtils
 class ObjectRelationDescriptor(BaseDescriptor):
     meta_type = ObjectRelation
 
-    def __init__(self, RelatedObject, has_many: bool = True, parrent_relation=False):
+    def __init__(self, rdfs_object_type, has_many: bool = True, parrent_relation=False):
         super(ObjectRelationDescriptor, self).__init__(self.meta_type)
         self.has_many = has_many
         self.parrent_relation = parrent_relation
-        self._rdfs_object_type = RelatedObject
+        self.rdfs_object_type = rdfs_object_type
 
     def __get__(self, instance):
         if self.parrent_relation:
@@ -29,7 +29,7 @@ class ObjectRelationDescriptor(BaseDescriptor):
 
     @property
     def RdfsObjectType(self):
-        return self._rdfs_object_type
+        return self.rdfs_object_type
 
     def get_parrent_objects(self, instance):
         return instance.object_instance.get_parrent_obj_instances_with_relation(self.label)
@@ -43,8 +43,12 @@ class ObjectRelationDescriptor(BaseDescriptor):
         diff_elms = new_as_json_set - existing_as_json_set
         # RdfsObjectType is a class type used to instantiate the related object assuming that all dict keys match
         # the arguments
-        child_objects = [self.RdfsObjectType(json_object=JsonUtils.validate(diff)) for diff in diff_elms]
+        child_objects = [self.create_child_object(child) for child in diff_elms]
         self.create_relations(child_objects, instance.object_instance)
+
+    def create_child_object(self, child):
+        RdfsObjectType = self.RdfsObjectType
+        return RdfsObjectType(json_object=JsonUtils.validate(child))
 
     def create_relations(self, child_objects, object_instance):
         for child_object in child_objects:
@@ -52,7 +56,12 @@ class ObjectRelationDescriptor(BaseDescriptor):
 
     @classmethod
     def create_obj_rel_inst(cls, obj_rel_label, from_object: ObjectInstance, to_object: ObjectInstance):
-        rel_base = ObjectRelation.exists_by_label(obj_rel_label, from_object.base.label)
+        rel_base = ObjectRelation.exists_by_label(
+            obj_rel_label,
+            from_object.base.label,
+            to_object.base.label,
+            from_object.base.schema.label
+        )
         rel = ObjectRelationInstance(
             base=rel_base,
             from_object=from_object,

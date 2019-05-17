@@ -17,6 +17,8 @@ class DefaultRdfsObjectFactory:
 
         class_attributes = {attribute.label: cls.get_descriptor(attribute) for attribute in attributes}
 
+        # TODO Do the same with relations
+
         Object = type(object_instance.base.label, (BaseRdfsModel,), class_attributes)
 
         object = Object()

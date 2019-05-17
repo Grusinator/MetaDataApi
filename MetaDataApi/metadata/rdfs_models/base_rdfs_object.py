@@ -1,8 +1,9 @@
+import inspect
 import logging
 
-from MetaDataApi.metadata.models import ObjectInstance, Attribute, ObjectRelation, Object
-from MetaDataApi.metadata.rdfs_models.base_rdfs_model import BaseRdfsModel
-from MetaDataApi.metadata.utils import JsonUtils
+from MetaDataApi.metadata.models import ObjectInstance, Attribute, ObjectRelation, Object, Schema
+from MetaDataApi.metadata.rdfs_models.descriptors.base_descriptor import BaseDescriptor
+from MetaDataApi.metadata.rdfs_models.descriptors.relation_descriptor import ObjectRelationDescriptor
 from MetaDataApi.metadata.utils.json_utils.json_utils import JsonType
 
 logger = logging.getLogger(__name__)
@@ -10,31 +11,24 @@ logger = logging.getLogger(__name__)
 
 class BaseRdfsObject:
     SI = None
-    MetaObject = None
+    schema_label = "meta_data_api"
 
     def __init__(self, inst_pk):
         self.object_instance = ObjectInstance.objects.get(pk=inst_pk)
 
-    # TODO this breaks debugging
-    # def __getattribute__(self, name):
-    #     att = getattr(self.SI, name)
-    #     return self.getAttribute(att)
-    #
-    #     # raise Exception("not a valid attribute")
-    #     # return super(BaseRdfsObject, self).__getattribute__(name)
+    def set_attributes(self, json_obj: JsonType):
+        self.update_from_json(json_obj)
 
-    # def __setattr__(self, name, value):
-    #     if hasattr(self.SI, name):
-    #         att = getattr(self.SI, name)
-    #         self.setAttribute(att, value)
-    #     else:
-    #         return super(BaseRdfsObject, self).__setattr__(name, value)
+    @property
+    def base_object(self):
+        return Object.exists_by_label(self.label, self.schema_label)
 
-    def get_base_object(self):
-        return Object.exists(self.MetaObject)
+    @property
+    def label(self):
+        return type(self).__name__.lower()
 
     def create_self(self, json_object: dict):
-        self.object_instance = ObjectInstance(base=self.get_base_object())
+        self.object_instance = ObjectInstance(base=self.base_object)
         self.object_instance.save()
         self.update_from_json(json_object)
 
@@ -47,72 +41,39 @@ class BaseRdfsObject:
                     logger.warning("could not set key: %s  with value: %s ____ exc: %s" % (key, value, e))
                     pass
 
-    def getAttribute(self, att: Attribute):
-        return self.object_instance.get_att_inst_with_label(att.label)
+    def initialize_schema(self):
+        if not Schema.exists_by_label(self.schema_label):
+            Schema.create_new_empty_schema(self.schema_label)
+        if not Object.exists_by_label(self.label, self.schema_label):
+            Object(schema=Schema.exists_by_label(self.schema_label), label=self.label).save()
 
-    def get_attribute_value(self, att: Attribute):
-        att_inst = self.getAttribute(att)
-        return att_inst.value if att_inst is not None else None
+        self.initialize_attributes()
+        self.initialize_object_relations()
 
-    def getAttributes(self, att: Attribute) -> list:
-        return self.object_instance.get_all_att_insts_with_label(att.label)
+    def initialize_object_relations(self):
+        relation_properties = self.get_all_schema_items_of_type(ObjectRelationDescriptor)
+        for rel_property in relation_properties:
+            ObjectRelation(
+                label=rel_property.__name__,
+                from_object=self.object_instance,
+                to_object=rel_property.RdfsObjectType.object_instance,
+                schema=Schema.exists_by_label(self.schema_label)
+            ).create_if_not_exists()
 
-    def get_attribute_values(self, att: Attribute):
-        return [att_inst.value for att_inst in self.getAttributes(att)]
+    def initialize_attributes(self):
+        attribute_properties = self.get_all_schema_items_of_type(ObjectRelationDescriptor)
+        for att_property in attribute_properties:
+            Attribute(
+                label=att_property.__name__,
+                object=self.object_instance,
+                data_type=att_property.instance_type.data_type
+            ).create_if_not_exists()
 
-    def setAttribute(self, att: Attribute, value):
-        att_instances = self.object_instance.get_all_att_insts_with_label(att.label)
-        att_inst_values = list(map(lambda x: x.value, att_instances))
-        diff_elms = self.get_attribute_set_difference(value, att_inst_values)
-        [self.object_instance.create_att_inst(att, att_value) for att_value in diff_elms]
+    @classmethod
+    def get_all_schema_items_of_type(cls, descriptor_type: type) -> list:
+        members = inspect.getmembers(cls, lambda m: isinstance(m, descriptor_type) or issubclass(m, descriptor_type))
+        return [cls.as_descriptor(member) for member in members]
 
-    def getParrentObjects(self, rel: ObjectRelation):
-        return self.object_instance.get_parrent_obj_instances_with_relation(rel.label)
-
-    def getChildObjects(self, rel: ObjectRelation):
-        return self.object_instance.get_child_obj_instances_with_relation(rel.label)
-
-    def setChildObjects(self, rel: ObjectRelation, RdfsObjectType: type, value: JsonType):
-        existing_as_json_set = self.existing_objects_as_json_set(RdfsObjectType, rel)
-        new_as_json_set = self.value_to_json(value)
-        diff_elms = new_as_json_set - existing_as_json_set
-        # RdfsObjectType is a class type used to instantiate the related object assuming that all dict keys match
-        # the arguments
-        child_objects = [RdfsObjectType(json_object=JsonUtils.validate(diff)) for diff in diff_elms]
-        self.create_relations(child_objects, rel)
-
-    def value_to_json(self, value: JsonType):
-        if isinstance(value, list):
-            return {JsonUtils.dumps(val) for val in value}
-        elif isinstance(value, dict):
-            return set(JsonUtils.dumps(value))
-
-    def existing_objects_as_json_set(self, RdfsObjectType, rel):
-        obj_instances = self.object_instance.get_child_obj_instances_with_relation(rel.label)
-        existing_rdf_obj = [RdfsObjectType(obj_inst.pk) for obj_inst in obj_instances]
-        return {obj.to_json() for obj in existing_rdf_obj}
-
-
-    def create_relations(self, child_objects, rel):
-        for child_object in child_objects:
-            BaseRdfsModel.create_obj_rel_inst(rel, self.object_instance, child_object.object_instance)
-
-    @staticmethod
-    def get_json_set_diffence(list1: JsonType, list2: JsonType):
-        if len(list2) is 0:
-            return list1
-
-        list1 = JsonUtils.to_tuple_set_key_value(list1)
-        list2 = JsonUtils.to_tuple_set_key_value(list2)
-
-        diff_elms = set(list1) - set(list2)
-        return diff_elms
-
-    @staticmethod
-    def get_attribute_set_difference(list1, list2):
-        if not isinstance(list1, (list, set, tuple)):
-            list1 = [list1]
-        return list(set(list1) - set(list2))
-
-    def build_json_from_att_names(self, att_names: list) -> str:
-        return JsonUtils.dumps({att_name: getattr(self, att_name) for att_name in att_names})
+    @classmethod
+    def as_descriptor(cls, member) -> BaseDescriptor:
+        return member[1]

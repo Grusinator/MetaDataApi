@@ -7,17 +7,18 @@ from MetaDataApi.metadata.rdfs_models.base_rdfs_object import BaseRdfsObject
 from MetaDataApi.metadata.rdfs_models.descriptors.attributes.string_attribute_descriptor import \
     StringAttributeDescriptor
 from MetaDataApi.metadata.rdfs_models.descriptors.relation_descriptor import ObjectRelationDescriptor
-from MetaDataApi.metadata.rdfs_models.rdfs_data_provider import Endpoint
 from MetaDataApi.metadata.utils.common_utils import StringUtils
-from MetaDataApi.metadata.utils.json_utils.json_utils import JsonType
 
 
 class DataProviderO(BaseRdfsObject):
-    from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.rdfs_data_provider import RdfsDataProvider
-    SI = RdfsDataProvider.SchemaItems
-    MetaObject = SI.data_provider
-
     data_provider_name = StringAttributeDescriptor()
+    api_endpoint = StringAttributeDescriptor()
+    scope = StringAttributeDescriptor(has_many=True)
+    api_type = StringAttributeDescriptor()
+    authorize_url = StringAttributeDescriptor()
+    access_token_url = StringAttributeDescriptor()
+
+    from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.endpoint import Endpoint
     data_provider_has_endpoint = ObjectRelationDescriptor(Endpoint, has_many=True)
 
     def __init__(self, inst_pk: int = None, json_object: dict = dict()):
@@ -64,37 +65,37 @@ class DataProviderO(BaseRdfsObject):
     # def provider_name(self, value: str):
     #     self.setAttribute(self.SI.data_provider_name, value)
 
-    @property
-    def api_endpoint(self):
-        return self.get_attribute_value(self.SI.api_endpoint)
-
-    @api_endpoint.setter
-    def api_endpoint(self, value: str):
-        self.setAttribute(self.SI.api_endpoint, value)
-
-    @property
-    def authorize_url(self):
-        return self.get_attribute_value(self.SI.authorize_url)
-
-    @authorize_url.setter
-    def authorize_url(self, value: str):
-        self.setAttribute(self.SI.authorize_url, value)
-
-    @property
-    def access_token_url(self):
-        return self.get_attribute_value(self.SI.access_token_url)
-
-    @access_token_url.setter
-    def access_token_url(self, value: str):
-        self.setAttribute(self.SI.access_token_url, value)
-
-    @property
-    def api_type(self):
-        return self.get_attribute_value(self.SI.api_type)
-
-    @api_type.setter
-    def api_type(self, value: str):
-        self.setAttribute(self.SI.api_type, value)
+    # @property
+    # def api_endpoint(self):
+    #     return self.get_attribute_value(self.SI.api_endpoint)
+    #
+    # @api_endpoint.setter
+    # def api_endpoint(self, value: str):
+    #     self.setAttribute(self.SI.api_endpoint, value)
+    #
+    # @property
+    # def authorize_url(self):
+    #     return self.get_attribute_value(self.SI.authorize_url)
+    #
+    # @authorize_url.setter
+    # def authorize_url(self, value: str):
+    #     self.setAttribute(self.SI.authorize_url, value)
+    #
+    # @property
+    # def access_token_url(self):
+    #     return self.get_attribute_value(self.SI.access_token_url)
+    #
+    # @access_token_url.setter
+    # def access_token_url(self, value: str):
+    #     self.setAttribute(self.SI.access_token_url, value)
+    #
+    # @property
+    # def api_type(self):
+    #     return self.get_attribute_value(self.SI.api_type)
+    #
+    # @api_type.setter
+    # def api_type(self, value: str):
+    #     self.setAttribute(self.SI.api_type, value)
 
     @property
     def client_id(self):
@@ -114,25 +115,25 @@ class DataProviderO(BaseRdfsObject):
         self._db_data_provider.client_secret = value
         self._db_data_provider.save()
 
-    @property
-    def scope(self):
-        return self.get_attribute_values(self.SI.scope)
+    # @property
+    # def scope(self):
+    #     return self.get_attribute_values(self.SI.scope)
+    #
+    # @scope.setter
+    # def scope(self, value):
+    #     self.setAttribute(self.SI.scope, value)
 
-    @scope.setter
-    def scope(self, value):
-        self.setAttribute(self.SI.scope, value)
-
-    @property
-    def endpoints(self):
-        endpoints = self.getChildObjects(self.SI.provider_has_endpoint)
-
-        from MetaDataApi.metadata.rdfs_models.rdfs_data_provider import Endpoint
-        return [Endpoint(endpoint.pk) for endpoint in endpoints]
-
-    @endpoints.setter
-    def endpoints(self, value: JsonType):
-        from MetaDataApi.metadata.rdfs_models.rdfs_data_provider import Endpoint
-        self.setChildObjects(self.SI.provider_has_endpoint, Endpoint, value)
+    # @property
+    # def endpoints(self):
+    #     endpoints = self.getChildObjects(self.SI.provider_has_endpoint)
+    #
+    #     from MetaDataApi.metadata.rdfs_models.rdfs_data_provider import Endpoint
+    #     return [Endpoint(endpoint.pk) for endpoint in endpoints]
+    #
+    # @endpoints.setter
+    # def endpoints(self, value: JsonType):
+    #     from MetaDataApi.metadata.rdfs_models.rdfs_data_provider import Endpoint
+    #     self.setChildObjects(self.SI.provider_has_endpoint, Endpoint, value)
 
     @property
     def json_schema_file_url(self):
@@ -144,7 +145,7 @@ class DataProviderO(BaseRdfsObject):
 
     def build_auth_url(self, logged_in_user_id=None):
 
-        state = "%s:%s" % (self.provider_name,
+        state = "%s:%s" % (self.data_provider_name,
                            logged_in_user_id or "AnonomousUser")
 
         try:

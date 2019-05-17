@@ -1,17 +1,20 @@
 from django.urls import reverse
 
-from MetaDataApi.metadata.models import ObjectInstance
 from MetaDataApi.metadata.rdfs_models.base_rdfs_object import BaseRdfsObject
-from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.rdfs_data_provider import RdfsDataProvider
+from MetaDataApi.metadata.rdfs_models.descriptors.attributes.string_attribute_descriptor import \
+    StringAttributeDescriptor
+from MetaDataApi.metadata.rdfs_models.descriptors.relation_descriptor import ObjectRelationDescriptor
 from MetaDataApi.metadata.utils.common_utils import StringUtils
-from .data_dump import DataDump
-from .data_provider import DataProviderO
-
-SI = RdfsDataProvider.SchemaItems
 
 
 class Endpoint(BaseRdfsObject):
-    MetaObject = SI.endpoint
+    endpoint_name = StringAttributeDescriptor()
+    endpoint_url = StringAttributeDescriptor()
+
+    # from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.data_dump import DataDump
+    # from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.data_provider import DataProviderO
+    has_data_dump = ObjectRelationDescriptor(None, has_many=True)
+    data_provider = ObjectRelationDescriptor(None, parrent_relation=True)
 
     def __init__(self, inst_pk: int = None, json_object: dict = None):
         if not inst_pk:
@@ -19,46 +22,35 @@ class Endpoint(BaseRdfsObject):
         else:
             super(Endpoint, self).__init__(inst_pk)
 
-    @property
-    def endpoint_name(self):
-        return self.get_attribute_value(SI.endpoint_name)
-
-    @endpoint_name.setter
-    def endpoint_name(self, value):
-        self.setAttribute(SI.endpoint_name, value)
-
-    @property
-    def endpoint_url(self):
-        return self.get_attribute_value(SI.endpoint_url)
-
-    @endpoint_url.setter
-    def endpoint_url(self, value):
-        self.setAttribute(SI.endpoint_url, value)
-
-    @property
-    def data_dumps(self):
-        data_dumps = self.getChildObjects(SI.has_generated)
-        return [DataDump(data_dump.pk) for data_dump in data_dumps]
-
-    @property
-    def data_provider(self):
-        data_provider = self.getParrentObjects(SI.provider_has_endpoint)[0]
-        return DataProviderO(data_provider.pk)
-
-    @property
-    def api_type(self):
-        return self.get_attribute_value(SI.api_type)
-
-    @classmethod
-    def get_all_endpoints_as_objects(cls, provider: ObjectInstance):
-        endpoints = RdfsDataProvider.get_all_endpoints(provider)
-        return [Endpoint(endpoint.pk) for endpoint in endpoints]
-
-    # TODO dont do it this way
-    @classmethod
-    def get_endpoint_as_object(cls, provider: ObjectInstance, endpoint_name: str):
-        endpoint = RdfsDataProvider.get_endpoint(provider, endpoint_name)
-        return Endpoint(endpoint.pk)
+    # @property
+    # def endpoint_name(self):
+    #     return self.get_attribute_value(SI.endpoint_name)
+    #
+    # @endpoint_name.setter
+    # def endpoint_name(self, value):
+    #     self.setAttribute(SI.endpoint_name, value)
+    #
+    # @property
+    # def endpoint_url(self):
+    #     return self.get_attribute_value(SI.endpoint_url)
+    #
+    # @endpoint_url.setter
+    # def endpoint_url(self, value):
+    #     self.setAttribute(SI.endpoint_url, value)
+    #
+    # @property
+    # def data_dumps(self):
+    #     data_dumps = self.getChildObjects(SI.has_generated)
+    #     return [DataDump(data_dump.pk) for data_dump in data_dumps]
+    #
+    # @property
+    # def data_provider(self):
+    #     data_provider = self.getParrentObjects(SI.provider_has_endpoint)[0]
+    #     return DataProviderO(data_provider.pk)
+    #
+    # @property
+    # def api_type(self):
+    #     return self.get_attribute_value(SI.api_type)
 
     def get_internal_view_url(self):
         schema = self.data_provider.schema
