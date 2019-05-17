@@ -1,7 +1,7 @@
 from django.urls import reverse
 
 from MetaDataApi.metadata.models import ObjectInstance
-from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.base_rdfs_object import BaseRdfsObject
+from MetaDataApi.metadata.rdfs_models.base_rdfs_object import BaseRdfsObject
 from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.rdfs_data_provider import RdfsDataProvider
 from MetaDataApi.metadata.utils.common_utils import StringUtils
 from .data_dump import DataDump

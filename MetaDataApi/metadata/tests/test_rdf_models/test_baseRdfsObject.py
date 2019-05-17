@@ -71,7 +71,7 @@ class TestBaseRdfsObject(TransactionTestCase):
         self.fail()
 
     def test_get_attribute_set_diffence(self):
-        from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.base_rdfs_object import BaseRdfsObject
+        from MetaDataApi.metadata.rdfs_models.base_rdfs_object import BaseRdfsObject
         test_data = [
             # new , existing
             (1, [1, 2, 3]),

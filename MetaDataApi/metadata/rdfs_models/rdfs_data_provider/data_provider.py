@@ -3,7 +3,7 @@ from urllib import parse
 from django.conf import settings
 
 from MetaDataApi.metadata.models import Schema
-from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.base_rdfs_object import BaseRdfsObject
+from MetaDataApi.metadata.rdfs_models.base_rdfs_object import BaseRdfsObject
 from MetaDataApi.metadata.utils.common_utils import StringUtils
 from MetaDataApi.metadata.utils.json_utils.json_utils import JsonType
 
