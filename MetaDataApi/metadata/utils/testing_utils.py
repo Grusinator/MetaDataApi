@@ -14,10 +14,9 @@ class TestingUtils:
 
     @classmethod
     def get_all_item_labels_from_schema(cls, schema_label):
-        return list(map(
-            lambda x: x.label,
-            cls.get_all_items_from_schema(schema_label)
-        ))
+        labels = list(map(lambda x: x.label, cls.get_all_items_from_schema(schema_label)))
+        labels.sort()
+        return labels
 
     @classmethod
     def get_all_object_instances_from_schema(cls, schema_label):

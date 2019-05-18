@@ -32,7 +32,8 @@ class DataProviderEtlService:
             self.dataprovider.provider_name)
 
     def read_data_from_endpoint(self, endpoint_name: str, auth_token: str = None):
-        endpoint = Endpoint.get_endpoint_as_object(
+        endpoint = self.dataprovider
+        Endpoint.get_endpoint_as_object(
             self.dataprovider.data_provider_instance,
             endpoint_name
         )

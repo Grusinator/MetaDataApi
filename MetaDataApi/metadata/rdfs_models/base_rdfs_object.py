@@ -48,8 +48,8 @@ class BaseRdfsModel:
         cls.initialize_schema()
         cls.initialize_object()
         cls.initialize_attributes()
-        pending_relations = cls.initialize_object_relations()
-        return pending_relations
+        # pending_relations = cls.initialize_object_relations()
+        # return pending_relations
 
     @classmethod
     def initialize_object(cls):
@@ -69,17 +69,18 @@ class BaseRdfsModel:
         relation_descriptors = cls.get_all_schema_items_of_type(ObjectRelationDescriptor)
         pending_relations = []
         for rel_descriptor in relation_descriptors:
-            if cls.has_to_object_been_initialized(rel_descriptor):
+            if cls.has_from_and_to_object_been_initialized(rel_descriptor):
                 cls.create_relation(rel_descriptor)
             else:
                 pending_relations.append((cls.get_base_object(), rel_descriptor.label, rel_descriptor.to_object))
         return pending_relations
 
     @classmethod
-    def has_to_object_been_initialized(cls, rel_descriptor):
+    def has_from_and_to_object_been_initialized(cls, rel_descriptor):
         try:
             model = rel_descriptor.rdfs_model
-            return bool(model)
+            from_obj, to_obj = cls.get_from_and_to_objects(rel_descriptor)
+            return bool(model) and from_obj and to_obj
         except ModelNotInitializedException as e:
             return False
 

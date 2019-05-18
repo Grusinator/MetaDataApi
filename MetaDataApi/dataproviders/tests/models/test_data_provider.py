@@ -85,4 +85,4 @@ class TestDataProvider(TransactionTestCase):
             '/v3/notifications', 'v1/me/player/recently-played']
         expected_urls.sort()
         urls.sort()
-        self.assertListEqual(urls, expected_urls)
+        self.assertListEqual(expected_urls, urls)

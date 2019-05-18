@@ -18,9 +18,12 @@ class InitializeRdfModels:
         for rdf_model in cls.rdf_models:
             for rdf_object in rdf_model.SchemaObjects:
                 if rdf_object not in cls.initialized_objects:
-                    pending_relations = rdf_object.initialize_schema_objects()
-                    cls.pending_relations.extend(pending_relations)
-                    cls.delete_confirmed_pending()
+                    rdf_object.initialize_schema_objects()
+
+        for rdf_model in cls.rdf_models:
+            for rdf_object in rdf_model.SchemaObjects:
+                cls.pending_relations.extend(rdf_object.initialize_object_relations())
+        cls.delete_confirmed_pending()
 
     @classmethod
     def delete_confirmed_pending(cls):
