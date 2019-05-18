@@ -23,23 +23,12 @@ PROJECT_DIR = os.path.dirname(__file__)
 
 # PROJECT_ROOT = os.path.dirname(os.path.realpath(__file__))
 
-# app/fixtures is a default fixture dir and should not be added
-# FIXTURE_DIRS = (os.path.join(PROJECT_ROOT, 'fixtures'),)
-
-# from django.core.management import call_command
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 try:
     SECRET_KEY = os.environ['SECRET_KEY']
 except:
     SECRET_KEY = 'ymcvw8ej))e=9jo89315q_r$imri(u0-ae!utev&ck4rs6cz+d'
 
 ENV = os.environ.get('ENV') or "LOCAL"
-
-# SECURITY WARNING: don't run with debug turned on in production!
 
 DEBUG = ENV != "PROD"
 
@@ -74,6 +63,7 @@ INSTALLED_APPS = [
     'MetaDataApi.datapoints',
     'MetaDataApi.metadata',
     'MetaDataApi.dataproviders.apps.DataprovidersConfig',
+    'MetaDataApi.graph',
     'MetaDataApi.app'
 ]
 
@@ -138,6 +128,16 @@ DATABASES = {
         'PORT': '5432',
     }
 }
+
+# NEO4J_DATABASES = {
+#     'default': {
+#         'HOST': 'localhost',
+#         'PORT': 7474,
+#         'ENDPOINT': '/db/data'
+#     }
+# }
+
+# DATABASE_ROUTERS = ['neo4django.utils.Neo4djangoIntegrationRouter']
 
 GRAPHENE = {
     'SCHEMA': 'MetaDataApi.schema.schema',
