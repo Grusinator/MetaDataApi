@@ -13,4 +13,4 @@ class MetadataConfig(AppConfig):
                 from MetaDataApi.metadata.tests import LoadTestData
                 LoadTestData.init_foaf()
         except Exception:
-            print("could not load ")
+            print("could not load foaf")
