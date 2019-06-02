@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import json
+import logging
 import os
 import posixpath
 
@@ -20,6 +21,8 @@ import django_heroku
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 PROJECT_DIR = os.path.dirname(__file__)
+
+logger = logging.getLogger(__name__)
 
 # PROJECT_ROOT = os.path.dirname(os.path.realpath(__file__))
 
@@ -132,8 +135,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'meta-data-api',
-        'USER': 'django',
-        'PASSWORD': '',
+        'USER': 'django2',
+        'PASSWORD': 'dev1234',
         'HOST': 'localhost',
         'PORT': '5432',
     }
@@ -189,11 +192,15 @@ MEDIA_ROOT = os.path.join(ENV_PATH, 'media/')
 
 MEDIA_URL = '/media/'
 
+api_keys = {}
 try:
     with open('api_keys.json') as f:
         api_keys = json.load(f)
+except FileNotFoundError as e:
+    logger.warning("api_keys.json was not found")
 except Exception as e:
-    api_keys = {}
+    logger.warning("could not read api_keys.json")
+
 
 # TODO change to python decouple
 
