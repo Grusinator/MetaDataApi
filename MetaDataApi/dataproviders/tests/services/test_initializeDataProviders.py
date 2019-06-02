@@ -32,7 +32,7 @@ class TestInitializeDataProviders(TransactionTestCase):
                                '166351402500-m9302qf47ua66qbr1gdbgrronssnm2v2.apps.googleusercontent.com', '',
                                '37b4731d-bb3a-4666-a4fa-6eb1fdffa146', '284033629198396',
                                'acfb3400228146bdbd8dbf8de4046cd0', '']
-        self.assertListEqual([dp.provider_name for dp in dps], [dpO.provider_name for dpO in dpOs])
+        self.assertListEqual([dp.provider_name for dp in dps], [dpO.data_provider_name for dpO in dpOs])
         self.assertListEqual([dp.client_id for dp in dps], [dpO.client_id for dpO in dpOs])
         self.assertListEqual([dpO.client_id for dpO in dpOs], expected_client_ids)
         self.assertListEqual(dps, [dpO.db_data_provider for dpO in dpOs])

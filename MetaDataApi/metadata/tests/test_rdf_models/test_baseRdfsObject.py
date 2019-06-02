@@ -35,7 +35,7 @@ class TestBaseRdfsObject(TransactionTestCase):
         descriptors = Endpoint.get_all_schema_items_of_type(BaseAttributeDescriptor)
         descriptor_labels = list(map(lambda x: x.label, descriptors))
         descriptor_labels.sort()
-        expected = ["endpoint_name", "endpoint_url"]
+        expected = ["api_type", "endpoint_name", "endpoint_url"]
         self.assertListEqual(expected, descriptor_labels)
 
     unittest.skip("move to other method")
