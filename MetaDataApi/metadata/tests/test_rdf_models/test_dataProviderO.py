@@ -34,8 +34,8 @@ class TestDataProviderO(TransactionTestCase):
         self.assertEqual(dpo.api_type, "Oauth2-rest")
 
     def test_set_and_get_provider_atts(self):
-        from MetaDataApi.metadata.rdfs_models import RdfsDataProvider
-        RdfsDataProvider.create_all_meta_objects()
+        from MetaDataApi.metadata.rdfs_models.initialize_rdf_models import InitializeRdfModels
+        InitializeRdfModels.create_all_schemas_from_descriptor()
         from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.data_provider import DataProviderO
         dpo = DataProviderO()
         from MetaDataApi.metadata.tests import LoadTestData

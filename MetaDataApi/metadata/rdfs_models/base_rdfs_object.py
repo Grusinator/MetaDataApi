@@ -22,12 +22,11 @@ class BaseRdfsModel:
 
     @classmethod
     def get_base_object(cls):
-        return Object.exists_by_label(cls.object_label(), cls.schema_label)
+        return Object.exists_by_label(cls.object_label(), cls.schema_label, raise_error=False)
 
     @classmethod
     def object_label(cls):
         return cls.__name__.lower()
-
 
     def create_self(self, json_object: dict):
         self.object_instance = ObjectInstance(base=self.get_base_object())

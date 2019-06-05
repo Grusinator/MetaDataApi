@@ -21,7 +21,7 @@ class DataProviderO(BaseRdfsModel):
     access_token_url = StringAttributeDescriptor()
 
     from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.endpoint import Endpoint
-    data_provider_has_endpoint = ObjectRelationDescriptor(Endpoint, has_many=True)
+    endpoints = ObjectRelationDescriptor(Endpoint, has_many=True)
 
     def __init__(self, inst_pk: int = None, json_object: dict = dict()):
         if inst_pk is None:
@@ -37,7 +37,7 @@ class DataProviderO(BaseRdfsModel):
         return DataProvider.objects.get(data_provider_instance=self.object_instance)
 
     def create_data_provider_with_db_obj(self, json_object):
-        self.create_db_data_provider(json_object)
+        # self.create_db_data_provider(json_object)
         self.create_self(json_object)
 
     def create_db_data_provider(self, json_object):

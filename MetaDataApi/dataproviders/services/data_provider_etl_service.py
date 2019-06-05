@@ -2,42 +2,33 @@ from datetime import datetime, timedelta
 # from jsonschema import validate
 from urllib import request
 
-from MetaDataApi.dataproviders.models import DataProvider
 from MetaDataApi.dataproviders.services.url_format_helper import UrlFormatHelper
 from MetaDataApi.metadata.models import (
     Schema)
 from MetaDataApi.metadata.rdfs_models import RdfsDataProvider
-from MetaDataApi.metadata.rdfs_models.rdfs_data_provider import Endpoint
+from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.data_provider import DataProviderO
 from MetaDataApi.metadata.services.all_services.base_functions import BaseMetaDataService
-from MetaDataApi.metadata.utils.common_utils import StringUtils
 from MetaDataApi.metadata.utils.django_model_utils import DjangoModelUtils
 
 
 class DataProviderEtlService:
 
-    def __init__(self, dataprovider: DataProvider):
-        self.dataprovider = dataprovider if \
-            isinstance(dataprovider, DataProvider) else \
-            DataProvider.objects.get(
-                provider_name=StringUtils.standardize_string(dataprovider))
+    def __init__(self, dataprovider: DataProviderO):
+        self.dataprovider = dataprovider
 
     def validate_endpoints(self):
         pass
 
     def get_related_schema(self):
         schema = BaseMetaDataService.do_meta_item_exists(
-            Schema(label=self.dataprovider.provider_name)
+            Schema(label=self.dataprovider.data_provider_name)
         )
         return schema or Schema.create_new_empty_schema(
-            self.dataprovider.provider_name)
+            self.dataprovider.data_provider_name)
 
     def read_data_from_endpoint(self, endpoint_name: str, auth_token: str = None):
-        endpoint = self.dataprovider
-        Endpoint.get_endpoint_as_object(
-            self.dataprovider.data_provider_instance,
-            endpoint_name
-        )
-
+        dp = self.dataprovider
+        endpoint = next(filter(lambda x: x.endpoint_name == endpoint_name, dp.endpoints), None)
         endpoint.validate()
         endpoint.data_provider.validate()
 

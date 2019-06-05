@@ -74,6 +74,10 @@ class BaseRdfsSchema:
 
     @classmethod
     def do_schema_items_exists(cls):
+        # TODO remake based on descriptors, ignore for now
+        logger.warning("schema validation is not being done")
+        return True
+
         schema = [Schema.exists(cls._get_schema())]
         objs = [Object.exists(obj) for obj in cls._get_objects()]
         atts = [Attribute.exists(att) for att in cls._get_attributes()]

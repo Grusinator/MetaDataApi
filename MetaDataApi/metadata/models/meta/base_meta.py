@@ -14,15 +14,19 @@ class BaseMeta(models.Model):
     description = models.TextField(null=True, blank=True)
 
     @staticmethod
-    def get_schema_item(obj_type, **search_kwargs):
+    def get_schema_item(obj_type, raise_error=False, **search_kwargs):
         try:
             return obj_type.objects.get(**search_kwargs)
         except ObjectDoesNotExist as e:
             logger.error(str(e))
+            if raise_error:
+                raise e
             return None
         except MultipleObjectsReturned as e:
             logger.error(str(e))
             print("Warning: found multiple where it should not")
+            if raise_error:
+                raise e
             return obj_type.objects.filter(**search_kwargs).first()
 
     class Meta:

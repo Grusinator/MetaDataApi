@@ -67,10 +67,12 @@ class Object(BaseMeta):
         return related
 
     @classmethod
-    def exists_by_label(cls, label: str, schema__label: str):
+    def exists_by_label(cls, label: str, schema__label: str, raise_error: bool = False):
         search_args = dict(locals())
         search_args.pop("cls")
-        return cls.get_schema_item(cls, **search_args)
+        search_args.pop("raise_error")
+        return cls.get_schema_item(cls, raise_error=raise_error, **search_args)
+
 
     @classmethod
     def exists(cls, obj):

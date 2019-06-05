@@ -20,6 +20,7 @@ class RdfsDataProvider(BaseRdfsSchema):
         DataDump
     ]
 
+    # Deprecated
     class SchemaItems:
 
         schema = Schema(label="meta_data_api")

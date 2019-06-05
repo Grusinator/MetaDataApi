@@ -125,22 +125,12 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'meta-data-api',
-        'USER': 'django2',
-        'PASSWORD': 'dev1234',
+        'USER': 'django',
+        'PASSWORD': '',
         'HOST': 'localhost',
         'PORT': '5432',
     }
 }
-
-# NEO4J_DATABASES = {
-#     'default': {
-#         'HOST': 'localhost',
-#         'PORT': 7474,
-#         'ENDPOINT': '/db/data'
-#     }
-# }
-
-# DATABASE_ROUTERS = ['neo4django.utils.Neo4djangoIntegrationRouter']
 
 GRAPHENE = {
     'SCHEMA': 'MetaDataApi.schema.schema',

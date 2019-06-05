@@ -16,7 +16,8 @@ class TestInitializeRdfModels(TransactionTestCase):
 
         labels = TestingUtils.get_all_item_labels_from_schema("meta_data_api")
         expected = ['access_token_url', 'api_endpoint', 'api_type', 'api_type', 'authorize_url', 'client_id',
-                    'client_secret', 'data_provider_has_endpoint', 'data_provider_name', 'datadump', 'dataprovidero',
-                    'date_downloaded', 'endpoint', 'endpoint_name', 'endpoint_url', 'file', 'file_origin_url',
+                    'client_secret', 'data_provider_name', 'datadump', 'dataprovidero',
+                    'date_downloaded', 'endpoint', 'endpoint_name', 'endpoint_url', 'endpoints', 'file',
+                    'file_origin_url',
                     'has_data_dump', 'loaded', 'meta_data_api', 'scope']
         self.assertListEqual(expected, labels)
