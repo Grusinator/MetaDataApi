@@ -21,8 +21,8 @@ class TestBaseRdfsObject(TransactionTestCase):
 
     def test_get_all_schema_items_of_type_relation(self):
         from MetaDataApi.metadata.rdfs_models.descriptors import ObjectRelationDescriptor
-        from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.data_provider import gDataProvider
-        descriptors = gDataProvider.get_all_schema_items_of_type(ObjectRelationDescriptor)
+        from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.data_provider import GrpDataProvider
+        descriptors = GrpDataProvider.get_all_schema_items_of_type(ObjectRelationDescriptor)
         descriptor_labels = list(map(lambda x: x.label, descriptors))
         descriptor_labels.sort()
         expected = ["endpoints"]

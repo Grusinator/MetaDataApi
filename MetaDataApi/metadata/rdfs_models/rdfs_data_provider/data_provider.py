@@ -10,7 +10,7 @@ from MetaDataApi.metadata.rdfs_models.descriptors.relation_descriptor import Obj
 from MetaDataApi.metadata.utils.common_utils import StringUtils
 
 
-class gDataProvider(BaseRdfsModel):
+class GrpDataProvider(BaseRdfsModel):
     data_provider_name = StringAttributeDescriptor()
     api_endpoint = StringAttributeDescriptor()
     scope = StringAttributeDescriptor(has_many=True)
@@ -27,7 +27,7 @@ class gDataProvider(BaseRdfsModel):
         if inst_pk is None:
             self.create_data_provider_with_db_obj(json_object)
         else:
-            super(gDataProvider, self).__init__(inst_pk)
+            super(GrpDataProvider, self).__init__(inst_pk)
             self._db_data_provider = self.get_db_data_provider_from_obj_inst()
 
             self.update_from_json(json_object)

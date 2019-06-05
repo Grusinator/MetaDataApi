@@ -6,7 +6,7 @@ from MetaDataApi.metadata.models import (
     StringAttributeInstance)
 from MetaDataApi.metadata.rdfs_models.base_rdfs_schema import BaseRdfsSchema
 from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.data_dump import DataDump
-from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.data_provider import gDataProvider
+from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.data_provider import GrpDataProvider
 from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.endpoint import Endpoint
 from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.rdf_model_not_correctly_initialized_exception import \
     RdfModelNotCorrectlyInitializedException
@@ -15,7 +15,7 @@ from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.rdf_model_not_correctly
 class RdfsDataProvider(BaseRdfsSchema):
     schema = Schema(label="meta_data_api")
     SchemaObjects = [
-        gDataProvider,
+        GrpDataProvider,
         Endpoint,
         DataDump
     ]
