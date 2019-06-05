@@ -12,12 +12,12 @@ class TestDataProviderO(TransactionTestCase):
     def test_create_provider(self):
         from MetaDataApi.metadata.rdfs_models import RdfsDataProvider
         RdfsDataProvider.create_all_meta_objects()
-        from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.data_provider import DataProviderO
+        from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.data_provider import gDataProvider
 
         from MetaDataApi.metadata.tests import LoadTestData
         json_obj = LoadTestData.load_dummy_provider_json()
 
-        dpo = DataProviderO(json_object=json_obj)
+        dpo = gDataProvider(json_object=json_obj)
         self.assertEqual(2, len(dpo.endpoints))
 
         from MetaDataApi.metadata.rdfs_models import RdfsDataProvider
@@ -36,8 +36,8 @@ class TestDataProviderO(TransactionTestCase):
     def test_set_and_get_provider_atts(self):
         from MetaDataApi.metadata.rdfs_models.initialize_rdf_models import InitializeRdfModels
         InitializeRdfModels.create_all_schemas_from_descriptor()
-        from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.data_provider import DataProviderO
-        dpo = DataProviderO()
+        from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.data_provider import gDataProvider
+        dpo = gDataProvider()
         from MetaDataApi.metadata.tests import LoadTestData
         json_obj = LoadTestData.load_dummy_provider_json()
         del json_obj["client_id"], json_obj["client_secret"], json_obj["scope"], json_obj["endpoints"]

@@ -20,8 +20,8 @@ class TestInitializeDataProviders(TransactionTestCase):
         from MetaDataApi.dataproviders.models import DataProvider
         dps = list(DataProvider.objects.all())
 
-        from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.data_provider import DataProviderO
-        dpOs = [DataProviderO(dp.data_provider_instance.pk) for dp in dps]
+        from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.data_provider import gDataProvider
+        dpOs = [gDataProvider(dp.data_provider_instance.pk) for dp in dps]
 
         assert len(dpOs) == len(dps)
         assert len(dpOs) > 10

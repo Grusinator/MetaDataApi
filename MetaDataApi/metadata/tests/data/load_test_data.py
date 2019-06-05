@@ -228,8 +228,8 @@ class LoadTestData:
         json_provider_obj = LoadTestData.load_dummy_provider_json()
         del json_provider_obj["client_id"]
         del json_provider_obj["client_secret"]
-        from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.data_provider import DataProviderO
-        dpo = DataProviderO(inst_pk=dp_profile.provider.data_provider_instance.pk, json_object=json_provider_obj)
+        from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.data_provider import gDataProvider
+        dpo = gDataProvider(inst_pk=dp_profile.provider.data_provider_instance.pk, json_object=json_provider_obj)
         dpo.validate()
 
         return dp_profile

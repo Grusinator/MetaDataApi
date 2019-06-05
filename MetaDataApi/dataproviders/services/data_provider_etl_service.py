@@ -6,14 +6,14 @@ from MetaDataApi.dataproviders.services.url_format_helper import UrlFormatHelper
 from MetaDataApi.metadata.models import (
     Schema)
 from MetaDataApi.metadata.rdfs_models import RdfsDataProvider
-from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.data_provider import DataProviderO
+from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.data_provider import gDataProvider
 from MetaDataApi.metadata.services.all_services.base_functions import BaseMetaDataService
 from MetaDataApi.metadata.utils.django_model_utils import DjangoModelUtils
 
 
 class DataProviderEtlService:
 
-    def __init__(self, dataprovider: DataProviderO):
+    def __init__(self, dataprovider: gDataProvider):
         self.dataprovider = dataprovider
 
     def validate_endpoints(self):

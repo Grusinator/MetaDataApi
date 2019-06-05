@@ -5,7 +5,7 @@ import boto3
 from django.conf import settings
 
 from MetaDataApi.dataproviders.models import DataProvider
-from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.data_provider import DataProviderO
+from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.data_provider import gDataProvider
 from MetaDataApi.metadata.utils import JsonUtils
 
 logger = logging.getLogger(__name__)
@@ -38,10 +38,10 @@ class InitializeDataProviders:
         provider_name = provider_data["provider_name"]
         data_provider = DataProvider.exists(provider_name)
         if data_provider is None:
-            return DataProviderO(json_object=provider_data)
+            return gDataProvider(json_object=provider_data)
         else:
             pk = data_provider.data_provider_instance.pk
-            return DataProviderO(inst_pk=pk, json_object=provider_data)
+            return gDataProvider(inst_pk=pk, json_object=provider_data)
 
     @classmethod
     def get_providers_from_aws(cls):
