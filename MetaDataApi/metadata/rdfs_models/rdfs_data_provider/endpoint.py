@@ -13,7 +13,7 @@ class Endpoint(BaseRdfsModel):
     endpoint_url = StringAttributeDescriptor()
     api_type = StringAttributeDescriptor()
     has_data_dump = ObjectRelationDescriptor(DataDump, has_many=True)
-    data_provider = ObjectRelationDescriptor("DataProviderO", parrent_relation=True)
+    data_provider = ObjectRelationDescriptor("GrpDataProvider", parrent_relation=True)
 
     def __init__(self, inst_pk: int = None, json_object: dict = None):
         if not inst_pk:
