@@ -18,7 +18,7 @@ class TestStoreDataFromProviderService(TransactionTestCase):
         from MetaDataApi.metadata.tests import LoadTestData
         from MetaDataApi.metadata.rdfs_models.initialize_rdf_models import InitializeRdfModels
         user = LoadTestData.init_user()
-        InitializeRdfModels.create_all_schemas()
+        InitializeRdfModels.create_all_schemas_from_descriptor()
         InitializeDataProviders.load()
 
         dpp = LoadTestData.init_strava_data_provider_profile()

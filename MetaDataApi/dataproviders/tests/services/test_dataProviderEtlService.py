@@ -14,7 +14,7 @@ class TestDataProviderEtlService(TransactionTestCase):
     def test_read_data_from_endpoint_correctly(self):
         from MetaDataApi.metadata.tests import LoadTestData
         from MetaDataApi.metadata.rdfs_models.initialize_rdf_models import InitializeRdfModels
-        InitializeRdfModels.create_all_schemas()
+        InitializeRdfModels.create_all_schemas_from_descriptor()
 
         from MetaDataApi.dataproviders.models.initialize_data_providers import InitializeDataProviders
         InitializeDataProviders.load()

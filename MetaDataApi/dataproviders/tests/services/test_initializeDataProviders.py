@@ -12,7 +12,7 @@ class TestInitializeDataProviders(TransactionTestCase):
 
     def test_load_from_json(self):
         from MetaDataApi.metadata.rdfs_models.initialize_rdf_models import InitializeRdfModels
-        InitializeRdfModels.create_all_schemas()
+        InitializeRdfModels.create_all_schemas_from_descriptor()
 
         from MetaDataApi.dataproviders.models.initialize_data_providers import InitializeDataProviders
         InitializeDataProviders.load()
