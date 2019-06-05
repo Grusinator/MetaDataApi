@@ -35,6 +35,7 @@ django-oauth-toolkit = "*"
 requests = "*"
 django-modeladmin-reorder = "*"
 # tensorflow = "==1.3.0"
+django-dynamic-model = "*"
 
 [dev-packages]
 pep8 = "*"

@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'storages',
     'admin_reorder',
     'graphene_file_upload',
+    'dynamic_models',
     'MetaDataApi.users',
     'MetaDataApi.datapoints',
     'MetaDataApi.metadata',
