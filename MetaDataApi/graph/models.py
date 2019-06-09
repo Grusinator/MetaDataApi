@@ -1,3 +1,6 @@
+from django.db import models
+
+
 from dynamic_models.models import AbstractModelSchema, AbstractFieldSchema
 
 
@@ -7,3 +10,7 @@ class ModelSchema(AbstractModelSchema):
 
 class FieldSchema(AbstractFieldSchema):
     pass
+
+
+class Dummy(models.Model):
+    value = models.IntegerField()

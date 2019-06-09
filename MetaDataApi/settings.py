@@ -51,6 +51,7 @@ AUTHENTICATION_BACKENDS = [
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
+    'dynamic_models',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -62,11 +63,10 @@ INSTALLED_APPS = [
     'storages',
     'admin_reorder',
     'graphene_file_upload',
-    'dynamic_models',
     'MetaDataApi.users',
     'MetaDataApi.datapoints',
     'MetaDataApi.metadata',
-    'MetaDataApi.dataproviders.apps.DataprovidersConfig',
+    'MetaDataApi.dataproviders',
     'MetaDataApi.graph',
     'MetaDataApi.app'
 ]
@@ -115,23 +115,23 @@ WSGI_APPLICATION = 'MetaDataApi.wsgi.application'
 #     }
 # }
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'djongo',
-#         'NAME': 'meta-data-api',
-#     }
-# }
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'djongo',
         'NAME': 'meta-data-api',
-        'USER': 'django',
-        'PASSWORD': '',
-        'HOST': 'localhost',
-        'PORT': '5432',
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'meta-data-api',
+#         'USER': 'django',
+#         'PASSWORD': '',
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#     }
+# }
 
 GRAPHENE = {
     'SCHEMA': 'MetaDataApi.schema.schema',
@@ -284,6 +284,7 @@ ADMIN_REORDER = (
      )
      },
     {'app': 'dataproviders', 'label': 'dataproviders'},
+    {'app': 'graph', 'label': 'graph'},
 )
 
 # Activate Django-Heroku.
