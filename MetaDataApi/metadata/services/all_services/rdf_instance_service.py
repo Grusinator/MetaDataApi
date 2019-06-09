@@ -5,7 +5,7 @@ from rdflib import Graph, Literal
 from rdflib.namespace import RDF
 
 from MetaDataApi.metadata.models import (
-    ObjectInstance, ObjectRelationInstance,
+    Node, Edge,
     RDFDataDump
 )
 from MetaDataApi.metadata.models import (
@@ -49,7 +49,7 @@ class RdfInstanceService(BaseRdfSchemaService):
             # generate a id for the node
 
             # object
-            if isinstance(inst, ObjectInstance):
+            if isinstance(inst, Node):
                 # inst name is tag + primary key
                 inst_uri = self.create_uri_ref(inst)
                 g.add((inst_uri, RDF.type, inst_class_uri))
@@ -65,7 +65,7 @@ class RdfInstanceService(BaseRdfSchemaService):
                 value = Literal(inst.value)
                 g.add((obj_inst_uri, attr_base_uri, value))
 
-            elif isinstance(inst, ObjectRelationInstance):
+            elif isinstance(inst, Edge):
                 from_obj_inst_uri = self.create_uri_ref(inst.from_object)
                 to_obj_inst_uri = self.create_uri_ref(inst.to_object)
                 relation_base_uri = self.create_uri_ref(inst.base)

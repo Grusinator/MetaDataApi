@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from MetaDataApi.metadata.models import Attribute
+from MetaDataApi.metadata.models import SchemaAttribute
 
 
 class AttributeAdmin(admin.ModelAdmin):
@@ -9,4 +9,4 @@ class AttributeAdmin(admin.ModelAdmin):
     actions = []
 
 
-admin.site.register(Attribute, AttributeAdmin)
+admin.site.register(SchemaAttribute, AttributeAdmin)

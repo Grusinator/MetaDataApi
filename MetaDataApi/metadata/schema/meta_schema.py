@@ -5,7 +5,7 @@ from graphene_django.types import DjangoObjectType
 from graphene_file_upload.scalars import Upload
 from graphql_jwt.decorators import login_required
 
-from MetaDataApi.metadata.models import Schema, Object, Attribute, ObjectRelation
+from MetaDataApi.metadata.models import Schema, SchemaAttribute, SchemaEdge
 from MetaDataApi.metadata.services import *
 
 
@@ -21,7 +21,7 @@ class SchemaNode(DjangoObjectType):
 
 class ObjectNode(DjangoObjectType):
     class Meta:
-        model = Object
+        model = SchemaNode
         filter_fields = {
             'label': ["icontains", "exact", "istartswith"],
             'description': ["icontains", "exact", "istartswith"],
@@ -32,7 +32,7 @@ class ObjectNode(DjangoObjectType):
 
 class AttributeNode(DjangoObjectType):
     class Meta:
-        model = Attribute
+        model = SchemaAttribute
         filter_fields = {
             'label': ["icontains", "exact", "istartswith"],
             'description': ["icontains", "exact", "istartswith"],
@@ -43,7 +43,7 @@ class AttributeNode(DjangoObjectType):
 
 class ObjectRelationNode(DjangoObjectType):
     class Meta:
-        model = ObjectRelation
+        model = SchemaEdge
         filter_fields = {
             'label': ["icontains", "exact", "istartswith"],
             'description': ["icontains", "exact", "istartswith"],
@@ -163,32 +163,10 @@ class IdentifyDataFromProvider(graphene.Mutation):
         [args.pop(x) for x in ["info", "self"]]
         args["user_pk"] = info.context.user.pk
 
-        rdf_file, object_list = IdentifyDataFromProviderService.execute(args)
+        rdf_file, schema_nodes = IdentifyDataFromProviderService.execute(args)
 
-        return IdentifyDataFromProvider(identified_objects=len(object_list),
+        return IdentifyDataFromProvider(identified_objects=len(schema_nodes),
                                         rdf_dump_url=rdf_file.url)
-
-
-class IdentifySchemaAndDataFromProvider(graphene.Mutation):
-    identified_objects = graphene.Int()
-    rdf_dump_url = graphene.String()
-
-    class Arguments:
-        provider_name = graphene.String()
-        endpoint = graphene.String()
-
-    @login_required
-    def mutate(self, info, provider_name, endpoint):
-        args = dict(locals())
-        [args.pop(x) for x in ["info", "self"]]
-        args["user_pk"] = info.context.user.pk
-
-        rdf_file, object_list = IdentifySchemaAndDataFromProviderService.execute(
-            args)
-
-        return IdentifyDataFromProvider(identified_objects=len(object_list),
-                                        rdf_dump_url=rdf_file.url)
-
 
 class AddJsonSchema(graphene.Mutation):
     succes = graphene.Boolean()
@@ -230,24 +208,6 @@ class AddRdfSchema(graphene.Mutation):
         return AddRdfSchema(succes=True)
 
 
-# TODO fix reference
-
-# class AddPersonReferenceToBaseObjects(graphene.Mutation):
-#     objects_added = graphene.Int()
-#
-#     class Arguments:
-#         schema_label = graphene.String()
-#
-#     @login_required
-#     def mutate(self, info, schema_label):
-#         args = locals()
-#         [args.pop(x) for x in ["info", "self", "args"]]
-#
-#         objects = AddPersonReferenceToBaseObjectsService.execute(args)
-#
-#         return AddPersonReferenceToBaseObjects(objects_added=len(objects))
-
-
 # wrap all queries and mutations
 class Query(graphene.ObjectType):
     schema = graphene.relay.Node.Field(SchemaNode)
@@ -260,7 +220,7 @@ class Query(graphene.ObjectType):
     all_attributes = DjangoFilterConnectionField(AttributeNode)
 
     object_relation = graphene.relay.Node.Field(ObjectRelationNode)
-    all_object_relations = DjangoFilterConnectionField(ObjectRelationNode)
+    all_schema_edges = DjangoFilterConnectionField(ObjectRelationNode)
 
 
 class Mutation(graphene.ObjectType):
@@ -269,11 +229,8 @@ class Mutation(graphene.ObjectType):
     delete_schema = DeleteSchema.Field()
     identify_data = IdentifyDataFromFile.Field()
     export_schema = ExportSchema.Field()
-    # add_person_reference = AddPersonReferenceToBaseObjects.Field()
     identify_data_from_provider = IdentifyDataFromProvider.Field()
     identify_data_from_file = IdentifyDataFromFile.Field()
     identify_schema_from_provider = IdentifySchemaFromProvider.Field()
     identify_schema_from_file = IdentifySchemaFromFile.Field()
 
-    identify_schema_and_data_from_provider = IdentifySchemaAndDataFromProvider.Field()
-    # identify_schema_and_data_from_file = IdentifySchemaAndDataFromFile.Field()

@@ -5,7 +5,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 
 from MetaDataApi.dataproviders.models import DataProvider
-from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.data_provider import GrpDataProvider
 from MetaDataApi.metadata.utils import JsonUtils
 from MetaDataApi.settings import OAUTH_REDIRECT_URI
 from MetaDataApi.users.models import DataProviderProfile
@@ -62,7 +61,7 @@ def validate_and_get_provider(request):
     provider_name, _ = get_state(request)
     try:
         dp = DataProvider.objects.get(provider_name=provider_name)
-        return GrpDataProvider(dp.data_provider_instance.pk)
+        return DataProvider(dp.data_provider_instance.pk)
     except ObjectDoesNotExist as e:
         logger.error(str(e))
         raise OauthRedirectRequestException(

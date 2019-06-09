@@ -1,6 +1,0 @@
-from MetaDataApi.metadata.rdfs_models.descriptors.attributes.bool_attribute_descriptor import BoolAttributeDescriptor
-from MetaDataApi.metadata.rdfs_models.descriptors.attributes.datetime_attribute_descriptor import \
-    DateTimeAttributeDescriptor
-from MetaDataApi.metadata.rdfs_models.descriptors.attributes.file_attribute_descriptor import FileAttributeDescriptor
-from MetaDataApi.metadata.rdfs_models.descriptors.attributes.string_attribute_descriptor import \
-    StringAttributeDescriptor

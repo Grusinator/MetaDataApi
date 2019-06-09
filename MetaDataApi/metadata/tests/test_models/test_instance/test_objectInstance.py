@@ -19,14 +19,14 @@ class TestObjectInstance(TransactionTestCase):
         from MetaDataApi.metadata.tests import LoadTestData
         foaf = LoadTestData.init_foaf_person()
 
-        from MetaDataApi.metadata.models import ObjectInstance
-        from MetaDataApi.metadata.models import Attribute
-        first_name = Attribute.objects.get(label="first_name")
-        peter = ObjectInstance(base=foaf)
+        from MetaDataApi.metadata.models import Node
+        from MetaDataApi.metadata.models import SchemaAttribute
+        first_name = SchemaAttribute.objects.get(label="first_name")
+        peter = Node(base=foaf)
         peter.save()
         peter.create_att_inst(first_name, "peter")
 
-        anders = ObjectInstance(base=foaf)
+        anders = Node(base=foaf)
         anders.save()
         anders.create_att_inst(first_name, "peter")
 
@@ -36,19 +36,19 @@ class TestObjectInstance(TransactionTestCase):
         self.assertIsNot(anders, {("first_name", "peter")})
 
     def test_get_child_and_parrent_obj_instance_with_relation(self):
-        from MetaDataApi.metadata.models import ObjectInstance, ObjectRelationInstance, ObjectRelation
+        from MetaDataApi.metadata.models import Node, Edge, SchemaEdge
 
         from MetaDataApi.metadata.tests import LoadTestData
         foaf = LoadTestData.init_foaf_person()
 
-        parrent = ObjectInstance(base=foaf)
+        parrent = Node(base=foaf)
         parrent.save()
 
-        child = ObjectInstance(base=foaf)
+        child = Node(base=foaf)
         child.save()
 
-        rel = ObjectRelationInstance(
-            base=ObjectRelation.objects.get(label="knows"),
+        rel = Edge(
+            base=SchemaEdge.objects.get(label="knows"),
             from_object=parrent,
             to_object=child
         )

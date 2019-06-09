@@ -5,12 +5,12 @@ from MetaDataApi.metadata.models import *
 
 models = (
     # meta
-    FloatAttributeInstance,
-    StringAttributeInstance,
-    IntAttributeInstance,
-    BoolAttributeInstance,
-    ImageAttributeInstance,
-    FileAttributeInstance,
+    FloatAttribute,
+    StringAttribute,
+    IntAttribute,
+    BoolAttribute,
+    ImageAttribute,
+    FileAttribute,
 )
 
 

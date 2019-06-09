@@ -14,11 +14,10 @@ class TestStoreDataFromProviderService(TransactionTestCase):
         from MetaDataApi.dataproviders.services.services import StoreDataFromProviderService
 
         from MetaDataApi.dataproviders.models.initialize_data_providers import InitializeDataProviders
-        from MetaDataApi.metadata.models import FileAttributeInstance
+        from MetaDataApi.metadata.models import FileAttribute
         from MetaDataApi.metadata.tests import LoadTestData
-        from MetaDataApi.metadata.rdfs_models.initialize_rdf_models import InitializeRdfModels
+
         user = LoadTestData.init_user()
-        InitializeRdfModels.create_all_schemas_from_descriptor()
         InitializeDataProviders.load()
 
         dpp = LoadTestData.init_strava_data_provider_profile()
@@ -32,7 +31,7 @@ class TestStoreDataFromProviderService(TransactionTestCase):
 
         data = JsonUtils.validate(data)
 
-        fileAtt = FileAttributeInstance.objects.get()
+        fileAtt = FileAttribute.objects.get()
 
         file_as_str = fileAtt.read_as_str()
         file = JsonUtils.validate(file_as_str)

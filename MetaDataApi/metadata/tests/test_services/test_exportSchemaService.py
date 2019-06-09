@@ -15,14 +15,14 @@ class TestExportSchemaService(TransactionTestCase):
     @unittest.skip("https://medium.com/@l.peppoloni/how-to-mock-s3-services-in-python-tests-dd5851842946")
     def test_Export(self):
         from MetaDataApi.metadata.services import ExportSchemaService
-        from MetaDataApi.metadata.models import Object, Attribute
+        from MetaDataApi.metadata.models import SchemaNode, SchemaAttribute
         schema_label = "test_schema"
         schema = Schema.create_new_empty_schema(schema_label)
 
-        test_obj = Object(label="test", schema=schema)
+        test_obj = SchemaNode(label="test", schema=schema)
         test_obj.save()
 
-        att = Attribute(label="att", object=test_obj)
+        att = SchemaAttribute(label="att", object=test_obj)
         att.save()
 
         ExportSchemaService.execute({

@@ -3,7 +3,7 @@ from enum import Enum
 from django.contrib.auth.models import User
 from django.db import models
 
-from MetaDataApi.metadata.models import ObjectInstance, Object
+from MetaDataApi.metadata.models import Node, SchemaNode
 
 
 class Languages(Enum):
@@ -24,7 +24,7 @@ class Profile(models.Model):
     audio_threshold = models.FloatField(null=True, blank=True, default=3.0)
     profile_description = models.TextField(null=True, blank=True)
     foaf_person = models.ForeignKey(
-        "metadata.ObjectInstance",
+        "metadata.Node",
         on_delete=models.CASCADE,
         null=True, blank=True
     )
@@ -38,8 +38,8 @@ class Profile(models.Model):
         return data_provider_profile
 
     def save(self, *args, **kwargs):
-        person_meta = Object.objects.get(schema__label="friend_of_a_friend", label="person")
-        person_instance = ObjectInstance(base=person_meta)
+        person_meta = SchemaNode.objects.get(schema__label="friend_of_a_friend", label="person")
+        person_instance = Node(base=person_meta)
         person_instance.save()
         self.foaf_person = person_instance
 

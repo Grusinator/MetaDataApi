@@ -12,7 +12,7 @@ GrapheneLanguages = Enum.from_enum(Languages)
 class UserType(DjangoObjectType):
     class Meta:
         model = User
-        #interfaces = (Node, )
+        # interfaces = (SchemaNode, )
         # filter_fields = {
         #    'username': ['exact', 'icontains', 'istartswith'],
         #    'email': ['exact', 'icontains'],
@@ -23,7 +23,7 @@ class ProfileType(DjangoObjectType):
     class Meta:
         model = Profile
         # Allow for some more advanced filtering here
-        #interfaces = (graphene.Node, )
+        # interfaces = (graphene.SchemaNode, )
         # filter_fields = {
         #    'name': ['exact', 'icontains', 'istartswith'],
         #    'notes': ['exact', 'icontains'],

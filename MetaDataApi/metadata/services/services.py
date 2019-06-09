@@ -8,9 +8,9 @@ from django.contrib.auth.models import User
 from graphql import GraphQLError
 from service_objects.services import Service
 
+from MetaDataApi.dataproviders.models import DataDump
 from MetaDataApi.dataproviders.services.data_provider_etl_service import DataProviderEtlService
 from MetaDataApi.metadata.models import *
-from MetaDataApi.metadata.rdfs_models.rdfs_data_provider import DataDump
 from MetaDataApi.metadata.utils import JsonUtils
 from MetaDataApi.metadata.utils.common_utils import StringUtils
 from MetaDataApi.metadata.utils.django_model_utils import DjangoModelUtils
@@ -184,7 +184,7 @@ class IdentifyDataFromProviderService(Service):
             endpoints = [endpoint, ]
 
         # identify objects for each endpoint
-        object_list = []
+        schema_nodes = []
         for endpoint in endpoints:
             data = provider_service.read_data_from_endpoint(
                 endpoint, provider_profile.access_token)
@@ -196,13 +196,13 @@ class IdentifyDataFromProviderService(Service):
 
             objects = identify.identify_from_json_data(
                 json_data, schema, parrent_label)
-            object_list.extend(objects)
+            schema_nodes.extend(objects)
 
         # generate rdf file from data
         rdf_file = rdf_service.export_instances_to_rdf_file(
             schema, objects)
 
-        return rdf_file, object_list
+        return rdf_file, schema_nodes
 
 
 class LoadSchemaAndDataFromDataDump(Service):
@@ -320,20 +320,20 @@ class GetTemporalFloatPairsService(Service):
         datetime_label = self.cleaned_data['datetime_label']
         datetime_object_label = self.cleaned_data['datetime_object_label']
 
-        value_att = Attribute.objects.get(
+        value_att = SchemaAttribute.objects.get(
             label=attribute_label,
             object__label=object_label,
             object__schema__label=schema_label)
 
-        Attribute.assert_data_type(value_att, float)
+        SchemaAttribute.assert_data_type(value_att, float)
 
         if datetime_label:
-            datetime_att = Attribute.objects.get(
+            datetime_att = SchemaAttribute.objects.get(
                 label=datetime_label,
                 object__label=datetime_object_label or object_label,
                 object__schema__label=schema_label
             )
-            Attribute.assert_data_type(datetime_att, datetime)
+            SchemaAttribute.assert_data_type(datetime_att, datetime)
 
         else:
             raise NotImplementedError(

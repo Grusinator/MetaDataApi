@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from MetaDataApi.metadata.models import ObjectInstance
+from MetaDataApi.metadata.models import Node
 
 
 class ObjectInstanceAdmin(admin.ModelAdmin):
@@ -9,4 +9,4 @@ class ObjectInstanceAdmin(admin.ModelAdmin):
     actions = []
 
 
-admin.site.register(ObjectInstance, ObjectInstanceAdmin)
+admin.site.register(Node, ObjectInstanceAdmin)

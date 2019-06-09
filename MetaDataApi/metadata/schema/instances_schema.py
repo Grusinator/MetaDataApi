@@ -1,43 +1,25 @@
 import graphene
-from graphene import (ObjectType, Field, Enum)
+from graphene import (ObjectType, Field)
 from graphene_django.filter import DjangoFilterConnectionField
 from graphene_django.types import DjangoObjectType
 from graphene_file_upload.scalars import Upload
-from graphql.error import GraphQLError
 from graphql_jwt.decorators import login_required
 
-from MetaDataApi.datapoints.schema_processing import ProcessRawData
 from MetaDataApi.metadata.models import (
-    Attribute, Object, Schema
-)
-from MetaDataApi.metadata.models import (
-    RawData, CategoryTypes,
-    ObjectInstance,
-    FloatAttributeInstance,
-    StringAttributeInstance,
-    DateTimeAttributeInstance)
+    Node,
+    FloatAttribute,
+    StringAttribute,
+    DateTimeAttribute)
 from MetaDataApi.metadata.schema.meta_schema import AttributeNode as AttributeMetaNode
 from MetaDataApi.metadata.services.services import GetTemporalFloatPairsService
 from MetaDataApi.users.schema import UserType
 
+
 # from MetaDataApi.datapoints.services.sound_processing_services import SoundClassifier
-
-GrapheneCategoryTypes = Enum.from_enum(CategoryTypes)
-
-
-# specific ( only for query )
-
-
-class RawDataType(DjangoObjectType):
-    class Meta:
-        model = RawData
-        interfaces = (graphene.relay.Node, )
-        filter_fields = ['value', ]
-
 
 class ObjectInstanceNode(DjangoObjectType):
     class Meta:
-        model = ObjectInstance
+        model = Node
         filter_fields = {
             'base__label': ["icontains", "exact", "istartswith"]
         }
@@ -46,7 +28,7 @@ class ObjectInstanceNode(DjangoObjectType):
 
 class StringAttributeNode(DjangoObjectType):
     class Meta:
-        model = StringAttributeInstance
+        model = StringAttribute
         interfaces = (graphene.relay.Node, )
         filter_fields = {
             "base__label": ["exact", "icontains", "istartswith"]
@@ -55,7 +37,7 @@ class StringAttributeNode(DjangoObjectType):
 
 class TemporalAttributeNode(DjangoObjectType):
     class Meta:
-        model = DateTimeAttributeInstance
+        model = DateTimeAttribute
         interfaces = (graphene.relay.Node, )
         filter_fields = {
             "base__label": ["exact", "icontains", "istartswith"]
@@ -64,7 +46,7 @@ class TemporalAttributeNode(DjangoObjectType):
 
 class FloatAttributeNode(DjangoObjectType):
     class Meta:
-        model = FloatAttributeInstance
+        model = FloatAttribute
         interfaces = (graphene.relay.Node, )
         filter_fields = {
             "base__label": ["exact", "icontains", "istartswith"]
@@ -114,164 +96,6 @@ class GetTemporalFloatPairs(graphene.Mutation):
         return GetTemporalFloatPairs(data=return_data)
 
 
-class CreateRawData(graphene.Mutation):
-    rawdata = Field(RawDataType)
-
-    class Arguments:
-        starttime = graphene.DateTime()
-        stoptime = graphene.DateTime()
-        files = Upload()  # image and audio
-        value = graphene.Float()
-        std = graphene.Float()
-        text = graphene.String()
-
-        # meta params
-        source = graphene.String()
-        category = GrapheneCategoryTypes()
-        label = graphene.String()
-
-    @login_required
-    def mutate(self, info, source, category, label, starttime, stoptime=None,
-               value=None, std=None, text=None, files=None):
-
-        # handle metadata here
-
-        # Raw data should be processed into datapoints
-        try:
-            function = ProcessRawData.select_mutate_variant(self, category)
-
-            datalist = function(self, info, source, category, label, starttime,
-                                stoptime=None, value=None, std=None, text=None,
-                                files=None)
-
-            for data in datalist:
-                if isinstance(StringAttributeInstance):
-                    data.save()
-                elif isinstance(RawData):
-                    data.metadata = None
-                    data.save()
-                    # make sure that the raw data is passed to response
-                    rawdata = data
-        except:
-            pass
-            print("eror occored while processing raw data..")
-
-            rawdata = RawData(
-                starttime=starttime,
-                stoptime=stoptime,
-                image=None,
-                audio=None,
-                value=value,
-                std=std,
-                text=text,
-                metadata=None,
-                owner=info.context.user
-            )
-
-            rawdata.save()
-
-        return CreateRawData(rawdata=rawdata)
-
-
-class CreateDatapoint(graphene.Mutation):
-    datapoint = Field(GenericAttributeNode)
-    # TODO create mutations for each data_type using metaclasses
-
-    class Arguments:
-        value = graphene.Float()
-        meta_attribute = graphene.String()
-        meta_object = graphene.String()
-        meta_schema = graphene.String()
-
-    @login_required
-    def mutate(self, info, meta_schema, meta_object, meta_attribute,
-               value):
-
-        raise NotImplementedError()
-        # get the object type from metadata and create an instance
-        try:
-            schema = Schema.objects.get(label=meta_schema)
-            object = Object.objects.get(
-                label=meta_object,
-                schema=schema)
-            attribute = Attribute.objects.get(
-                label=meta_attribute,
-                object=object)
-        except Exception as e:
-            raise GraphQLError(
-                """no metadata object correspond to the
-                combination of source, category and label""")
-
-        object_inst = ObjectInstance(
-            base=object,
-            schema=schema,
-            owner=info.context.user
-        )
-
-        object_inst.save()
-
-        return CreateDatapoint(datapoint)
-
-
-class CreateRawData(graphene.Mutation):
-    rawdata = Field(RawDataType)
-
-    class Arguments:
-        starttime = graphene.DateTime()
-        stoptime = graphene.DateTime()
-        files = Upload()  # image and audio
-        value = graphene.Float()
-        std = graphene.Float()
-        text = graphene.String()
-
-        # meta params
-        source = graphene.String()
-        category = GrapheneCategoryTypes()
-        label = graphene.String()
-
-    @login_required
-    def mutate(self, info, source, category, label, starttime, stoptime=None,
-               value=None, std=None, text=None, files=None):
-
-        # handle metadata here
-
-        # Raw data should be processed into datapoints
-        try:
-            function = ProcessRawData.select_mutate_variant(self, category)
-
-            datalist = function(self, info, source, category, label, starttime,
-                                stoptime=None, value=None, std=None, text=None,
-                                files=None)
-
-            for data in datalist:
-                if isinstance(StringAttributeInstance):
-                    data.save()
-                elif isinstance(RawData):
-                    data.metadata = None
-                    data.save()
-                    # make sure that the raw data is passed to response
-                    rawdata = data
-        except:
-            pass
-            print("eror occored while processing raw data..")
-
-            rawdata = RawData(
-                starttime=starttime,
-                stoptime=stoptime,
-                image=None,
-                audio=None,
-                value=value,
-                std=std,
-                text=text,
-                metadata=None,
-                owner=info.context.user
-            )
-
-            rawdata.save()
-
-        return CreateRawData(rawdata=rawdata)
-
-
 # test upload
 class UploadFile(graphene.Mutation):
     class Arguments:
@@ -306,9 +130,6 @@ class Upload2Files(graphene.Mutation):
 
 
 class Query(graphene.ObjectType):
-    # TODO add attribute querys by using decorator or metaclass
-    all_rawdata = graphene.List(RawDataType)
-
     object_instance = graphene.relay.Node.Field(ObjectInstanceNode)
     all_object_instances = DjangoFilterConnectionField(ObjectInstanceNode)
 
@@ -324,8 +145,8 @@ class Query(graphene.ObjectType):
 
     @login_required
     def resolve_all_generic_attribute_instances(self, info):
-        att_instance_types = [DateTimeAttributeInstance,
-                              FloatAttributeInstance, StringAttributeInstance]
+        att_instance_types = [DateTimeAttribute,
+                              FloatAttribute, StringAttribute]
 
         generic_list = []
         for AttributeInstance in att_instance_types:
@@ -340,15 +161,8 @@ class Query(graphene.ObjectType):
 
         return generic_list
 
-    @login_required
-    def resolve_all_rawdata(self, info):
-        datapointlist = RawData.objects.filter(owner=info.context.user)
-        return datapointlist
-
 
 class Mutation(graphene.ObjectType):
-    create_datapoint = CreateDatapoint.Field()
-    create_rawdata = CreateRawData.Field()
     upload_file = UploadFile.Field()
     upload2_files = Upload2Files.Field()
     get_temporal_float_pairs = GetTemporalFloatPairs.Field()

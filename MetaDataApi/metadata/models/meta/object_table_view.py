@@ -1,8 +1,8 @@
-from MetaDataApi.metadata.models import Object
+from MetaDataApi.metadata.models import SchemaNode
 
 
 class ObjectTableView:
-    def __init__(self, obj: Object, max_number_of_atts=None):
+    def __init__(self, obj: SchemaNode, max_number_of_atts=None):
         self.object = obj
         self.max_number_of_atts = max_number_of_atts or 10
         self.selected_attributes = []

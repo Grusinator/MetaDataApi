@@ -2,8 +2,8 @@ from MetaDataApi.metadata.utils.json_utils import IJsonIterator
 
 
 class BuildDjangoSearchArgs(IJsonIterator):
-    from_obj_rel_search_str = "from_relations__from_object__"
-    to_obj_rel_search_str = "to_relations__to_object__"
+    from_obj_rel_search_str = "from_edge__from_object__"
+    to_obj_rel_search_str = "to_edge__to_object__"
 
     def __init__(self):
         super(BuildDjangoSearchArgs, self).__init__()
@@ -28,7 +28,7 @@ class BuildDjangoSearchArgs(IJsonIterator):
         key = self.from_obj_rel_search_str * self.depth + "label"
         self.add_arg(key, label)
 
-    def handle_object_relations(self, parrent_object, data, label):
+    def handle_schema_edges(self, parrent_object, data, label):
         pass
 
     def build_from_json(self, data):

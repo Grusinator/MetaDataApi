@@ -1,14 +1,13 @@
-from MetaDataApi.metadata.models.instance.attribute_instance import (
-    StringAttributeInstance,
-    DateTimeAttributeInstance,
-    BoolAttributeInstance,
-    FloatAttributeInstance,
-    IntAttributeInstance,
-    ImageAttributeInstance,
-    FileAttributeInstance
+from MetaDataApi.metadata.models.instance.Attribute import (
+    StringAttribute,
+    DateTimeAttribute,
+    BoolAttribute,
+    FloatAttribute,
+    IntAttribute,
+    ImageAttribute,
+    FileAttribute
 )
-
-from MetaDataApi.metadata.models.instance.attribute_instance_base import BaseAttributeInstance
-from MetaDataApi.metadata.models.instance.instance_base import BaseInstance
-from MetaDataApi.metadata.models.instance.object_instance import ObjectInstance
-from MetaDataApi.metadata.models.instance.object_relation_instance import ObjectRelationInstance
+from MetaDataApi.metadata.models.instance.BaseAttribute import BaseAttribute
+from MetaDataApi.metadata.models.instance.BaseInstance import BaseInstance
+from MetaDataApi.metadata.models.instance.Edge import Edge
+from MetaDataApi.metadata.models.instance.Node import Node

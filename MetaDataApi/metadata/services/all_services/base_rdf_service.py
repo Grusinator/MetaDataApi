@@ -5,11 +5,11 @@ from rdflib import Namespace, URIRef
 from rdflib.namespace import RDFS, XSD
 
 from MetaDataApi.metadata.models import (
-    Object, Attribute, ObjectRelation)
-from MetaDataApi.metadata.models import (
-    ObjectInstance, ObjectRelationInstance,
-    StringAttributeInstance
+    Node, Edge,
+    StringAttribute
 )
+from MetaDataApi.metadata.models import (
+    SchemaNode, SchemaAttribute, SchemaEdge)
 from .base_functions import BaseMetaDataService
 
 
@@ -51,14 +51,14 @@ class BaseRdfSchemaService(BaseMetaDataService):
     def create_uri_ref(self, item):
         # this is just for labeling with letter in uri
         conv = {
-            Attribute: "A",
-            Object: "O",
-            ObjectRelation: "R",
+            SchemaAttribute: "A",
+            SchemaNode: "O",
+            SchemaEdge: "R",
 
             # instances
-            ObjectInstance: "Oi",
-            ObjectRelationInstance: "Ri",
-            StringAttributeInstance: "Ai",
+            Node: "Oi",
+            Edge: "Ri",
+            StringAttribute: "Ai",
         }
         # add all types of attr instances
         for item_type in list(self.att_inst_to_type_map.keys()):
@@ -109,15 +109,15 @@ class BaseRdfSchemaService(BaseMetaDataService):
         # self._split_rdfs_url(range)[1]
         try:
             dtype = self.rdfs_data_type_map.get(type_name)
-            data_type_enum_value = Attribute.data_type_map[dtype]
-            return Attribute.DataType(data_type_enum_value)
+            data_type_enum_value = SchemaAttribute.data_type_map[dtype]
+            return SchemaAttribute.DataType(data_type_enum_value)
         except Exception as e:
-            return Attribute.data_type_map.get(None)
+            return SchemaAttribute.data_type_map.get(None)
 
     def att_type_to_rdfs_uri(self, attr_type):
 
         # inverse of data_type_map
-        data_type = self.inverse_dict(Attribute.data_type_map, attr_type)
+        data_type = self.inverse_dict(SchemaAttribute.data_type_map, attr_type)
 
         # default to string if nonetype
         data_type = data_type if data_type != type(None) else str

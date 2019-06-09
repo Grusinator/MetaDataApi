@@ -6,7 +6,7 @@ from rdflib.namespace import RDF, RDFS, DCTERMS, DC, OWL
 from rdflib.plugin import register, Parser
 
 from MetaDataApi.metadata.models import (
-    Schema, Object, Attribute, ObjectRelation)
+    Schema, SchemaNode, SchemaAttribute, SchemaEdge)
 from MetaDataApi.metadata.utils.common_utils import StringUtils
 from .base_rdf_service import BaseRdfSchemaService
 
@@ -26,7 +26,7 @@ class RdfSchemaService(BaseRdfSchemaService):
         # to know which have been exported
         self.touched_meta_items.append(self.schema)
 
-        objects = Object.objects.filter(schema=self.schema)
+        objects = SchemaNode.objects.filter(schema=self.schema)
 
         # to know which have been exported
         self.touched_meta_items.extend(objects)
@@ -83,7 +83,7 @@ class RdfSchemaService(BaseRdfSchemaService):
                 # to know which have been exported
                 self.touched_meta_items.extend(attributes)
 
-        relations = ObjectRelation.objects.filter(schema=self.schema)
+        relations = SchemaEdge.objects.filter(schema=self.schema)
         # to know which have been exported
         self.touched_meta_items.extend(relations)
 
@@ -318,7 +318,7 @@ class RdfSchemaService(BaseRdfSchemaService):
                 pass
             else:
                 object = self._try_create_meta_item(
-                    Object(
+                    SchemaNode(
                         label=str(label),
                         description=str(comment),
                         schema=self.schema
@@ -392,10 +392,10 @@ class RdfSchemaService(BaseRdfSchemaService):
 
                 # TODO: consider the case if 2 objects has the same label?
                 if not from_object:
-                    from_object = Object.objects.filter(
+                    from_object = SchemaNode.objects.filter(
                         label=from_obj_label, schema=from_schema).first()
                 if not to_object:
-                    to_object = Object.objects.filter(
+                    to_object = SchemaNode.objects.filter(
                         label=to_obj_label, schema=to_schema).first()
 
             # if no such 2 objects exists
@@ -403,7 +403,7 @@ class RdfSchemaService(BaseRdfSchemaService):
                 continue
             if from_object and to_object:
                 object_relation = self._try_create_meta_item(
-                    ObjectRelation(
+                    SchemaEdge(
                         from_object=from_object,
                         to_object=to_object,
                         label=label,
@@ -440,7 +440,7 @@ class RdfSchemaService(BaseRdfSchemaService):
 
                 # if not found look in the database
                 if object is None:
-                    object = Object.objects.filter(label=obj_label).first()
+                    object = SchemaNode.objects.filter(label=obj_label).first()
             except Exception as e:
                 continue
 
@@ -451,7 +451,7 @@ class RdfSchemaService(BaseRdfSchemaService):
                 continue
 
             attribute = self._try_create_meta_item(
-                Attribute(
+                SchemaAttribute(
                     data_type=self.rdfs_to_att_type(range),
                     label=label,
                     object=object

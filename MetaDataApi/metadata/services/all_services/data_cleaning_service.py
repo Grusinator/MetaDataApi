@@ -1,5 +1,5 @@
 from MetaDataApi.metadata.models import (
-    Object, ObjectRelation
+    SchemaNode, SchemaEdge
 )
 from .base_functions import BaseMetaDataService
 
@@ -14,14 +14,14 @@ class DataCleaningService(BaseMetaDataService):
 
         self.schema = schema
 
-        root_objects = Object.objects.filter(
-            from_relations=None,
+        root_objects = SchemaNode.objects.filter(
+            from_edge=None,
             schema=self.schema
         )
         for obj in root_objects:
             label = "person_has_%s" % obj.label
             self._try_create_meta_item(
-                ObjectRelation(
+                SchemaEdge(
                     from_object=foaf,
                     to_object=obj,
                     schema=self.schema,

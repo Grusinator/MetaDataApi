@@ -1,9 +1,9 @@
-from MetaDataApi.metadata.models import Schema, Object, ObjectInstance
+from MetaDataApi.metadata.models import Schema, SchemaNode, Node
 from MetaDataApi.metadata.utils import json_utils
 
 
 class FindObjectJsonChildren(json_utils.IJsonIterator):
-    base_arg_name = "from_relations__from_object__"
+    base_arg_name = "from_edge__from_object__"
 
     def __init__(self, schema: str):
         super(FindObjectJsonChildren, self).__init__()
@@ -16,13 +16,13 @@ class FindObjectJsonChildren(json_utils.IJsonIterator):
 
     def handle_objects(self, parrent_object, data, label):
         try:
-            obj = Object.objects.get(schema=self.schema, label=label)
-            obj_inst = ObjectInstance(base=obj)
+            obj = SchemaNode.objects.get(schema=self.schema, label=label)
+            obj_inst = Node(base=obj)
             self.childrens.append((obj_inst, data))
         except:
             teat = 1
 
-    def handle_object_relations(self, parrent_object, data, label):
+    def handle_schema_edges(self, parrent_object, data, label):
         pass
 
     def build_from_json(self, data):

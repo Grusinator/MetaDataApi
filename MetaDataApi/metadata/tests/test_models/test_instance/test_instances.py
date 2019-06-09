@@ -4,7 +4,7 @@ import unittest
 import django
 from django.test import TransactionTestCase
 
-from MetaDataApi.metadata.models import Object
+from MetaDataApi.metadata.models import SchemaNode
 from MetaDataApi.metadata.tests.data import LoadTestData
 from MetaDataApi.metadata.tests.utils_for_testing.common_utils_for_testing import UtilsForTesting
 
@@ -21,11 +21,11 @@ class TestModelInstances(TransactionTestCase):
 
     @unittest.skip("needs repair")
     def test_get_related_list(self):
-        from MetaDataApi.metadata.models import ObjectInstance
+        from MetaDataApi.metadata.models import Node
         schema = LoadTestData.init_foaf()
-        obj = Object.objects.get(label="person", schema=schema)
+        obj = SchemaNode.objects.get(label="person", schema=schema)
 
-        obj_inst = ObjectInstance(base=obj)
+        obj_inst = Node(base=obj)
         res_inst = obj_inst.get_related_list()
 
         res = obj.get_related_list()
@@ -47,19 +47,19 @@ class TestModelInstances(TransactionTestCase):
         # Register your models here.
         from MetaDataApi.metadata.models import (
             # instances
-            FloatAttributeInstance,
-            StringAttributeInstance,
-            IntAttributeInstance,
-            BoolAttributeInstance,
-            DateTimeAttributeInstance)
+            FloatAttribute,
+            StringAttribute,
+            IntAttribute,
+            BoolAttribute,
+            DateTimeAttribute)
 
         LoadTestData.init_foaf()
         LoadTestData.init_strava_schema_from_file()
         LoadTestData.init_strava_data_from_file()
 
-        types = (FloatAttributeInstance, StringAttributeInstance,
-                 IntAttributeInstance, BoolAttributeInstance,
-                 DateTimeAttributeInstance)
+        types = (FloatAttribute, StringAttribute,
+                 IntAttribute, BoolAttribute,
+                 DateTimeAttribute)
 
         att_lists = [inst_type.objects.all() for inst_type in types]
 

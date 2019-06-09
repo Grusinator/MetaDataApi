@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator
 from inflection import underscore
 
-from MetaDataApi.metadata.models import Attribute, Object, ObjectRelation, ObjectInstance, StringAttributeInstance
+from MetaDataApi.metadata.models import SchemaAttribute, SchemaNode, SchemaEdge, Node, StringAttribute
 from MetaDataApi.metadata.services import BaseMetaDataService
 
 
@@ -34,9 +34,9 @@ class RelationalObjectsAnalyserService():
 
     def _add_object_label_to_dict_key(self, input_dict, item, key):
         conv = {
-            Attribute: "A",
-            Object: "O",
-            ObjectRelation: "R"
+            SchemaAttribute: "A",
+            SchemaNode: "O",
+            SchemaEdge: "R"
         }
 
         # modify input data to include the attribute
@@ -50,7 +50,7 @@ class RelationalObjectsAnalyserService():
 
     def relation_between_objects(self, from_obj, to_obj):
         def convert_to_base(obj):
-            if isinstance(obj, ObjectInstance):
+            if isinstance(obj, Node):
                 return obj.base
             else:
                 return obj
@@ -59,7 +59,7 @@ class RelationalObjectsAnalyserService():
         to_obj = convert_to_base(to_obj)
 
         try:
-            return ObjectRelation.objects.get(
+            return SchemaEdge.objects.get(
                 from_object=from_obj,
                 to_object=to_obj
             )
@@ -86,17 +86,17 @@ class RelationalObjectsAnalyserService():
 
     def iterate_find_related_obj(self, parrent_obj, find_obj,
                                  discovered_objects=[]):
-        if isinstance(parrent_obj, (ObjectInstance,
-                                    StringAttributeInstance)):
+        if isinstance(parrent_obj, (Node,
+                                    StringAttribute)):
             parrent_obj = parrent_obj.base
         # only relevant for first iteration, if the obj is an attribute
-        if isinstance(parrent_obj, Attribute):
+        if isinstance(parrent_obj, SchemaAttribute):
             parrent_obj = parrent_obj.object
 
         # dont look for allready searched objects
         connected_objects = filter(
             lambda x: x not in discovered_objects,
-            parrent_obj.from_relations.all())
+            parrent_obj.from_edge.all())
 
         # should maybe not be hardcoded
         for obj in connected_objects:
@@ -143,11 +143,11 @@ class RelationalObjectsAnalyserService():
         v1 = self.compare_labels(label, obj.label)
 
         # data_type is only used in case of attributes
-        if isinstance(obj, Attribute) and data_type:
+        if isinstance(obj, SchemaAttribute) and data_type:
             v2 = self.data_type_match(obj, data_type)
         # if it is an object we can look at the relations
         # and see if it matches related objects or attributes
-        elif isinstance(obj, Object) and None:
+        elif isinstance(obj, SchemaNode) and None:
             v2 = self.relations_match()
         else:
             v2 = 0

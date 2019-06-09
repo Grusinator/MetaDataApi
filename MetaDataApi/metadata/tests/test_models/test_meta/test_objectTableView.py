@@ -1,7 +1,7 @@
 import django
 from django.test import TransactionTestCase
 
-from MetaDataApi.metadata.models import Object
+from MetaDataApi.metadata.models import SchemaNode
 
 
 class TestObjectTableView(TransactionTestCase):
@@ -17,7 +17,7 @@ class TestObjectTableView(TransactionTestCase):
         from MetaDataApi.metadata.tests import LoadTestData
         LoadTestData.init_strava_schema_from_file()
         LoadTestData.init_strava_data_from_file()
-        obj = Object.objects.get(label="activities")
+        obj = SchemaNode.objects.get(label="activities")
         from MetaDataApi.metadata.models.meta.object_table_view import ObjectTableView
         self.table_view = ObjectTableView(obj, max_number_of_atts=9)
 

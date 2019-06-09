@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 
 from MetaDataApi.dataproviders.models import DataProvider
-from MetaDataApi.metadata.models import Schema, ObjectRelation, Object, Attribute
+from MetaDataApi.metadata.models import Schema, SchemaEdge, SchemaNode, SchemaAttribute
 from MetaDataApi.metadata.services import (
     JsonSchemaService, DataCleaningService, RdfInstanceService, RdfSchemaService, JsonAnalyser
 )
@@ -44,7 +44,7 @@ class LoadTestData:
     @classmethod
     def init_foaf_person(cls):
         schema = cls.init_foaf()
-        return Object.objects.get(label="person", schema=schema)
+        return SchemaNode.objects.get(label="person", schema=schema)
 
     @staticmethod
     def init_foaf():
@@ -74,8 +74,8 @@ class LoadTestData:
 
         endpoint_name = "activity"
         endpoint_url = "v3/activities"
-        from MetaDataApi.metadata.rdfs_models import RdfsDataProvider
-        RdfsDataProvider.create_endpoint_to_data_provider(
+
+        DataProvider.create_endpoint_to_data_provider(
             provider.data_provider_instance,
             endpoint_name,
             endpoint_url
@@ -92,15 +92,15 @@ class LoadTestData:
 
         # TODO fix error in obj rel load, this is a temp fix
         schema = Schema.objects.get(label="meta_data_api")
-        data_dump = Object.objects.get(schema=schema, label="endpoint_data_dump")
-        ObjectRelation(
+        data_dump = SchemaNode.objects.get(schema=schema, label="endpoint_data_dump")
+        SchemaEdge(
             schema=schema,
             label="has_generated",
-            from_object=Object.objects.get(schema=schema, label="rest_endpoint"),
+            from_object=SchemaNode.objects.get(schema=schema, label="rest_endpoint"),
             to_object=data_dump
         ).save()
 
-        att = Attribute.objects.get(label="data_dump_file", object=data_dump)
+        att = SchemaAttribute.objects.get(label="data_dump_file", object=data_dump)
         att.data_type = "file"
         att.save()
 
@@ -228,8 +228,8 @@ class LoadTestData:
         json_provider_obj = LoadTestData.load_dummy_provider_json()
         del json_provider_obj["client_id"]
         del json_provider_obj["client_secret"]
-        from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.data_provider import GrpDataProvider
-        dpo = GrpDataProvider(inst_pk=dp_profile.provider.data_provider_instance.pk, json_object=json_provider_obj)
+
+        dpo = DataProvider(inst_pk=dp_profile.provider.data_provider_instance.pk, json_object=json_provider_obj)
         dpo.validate()
 
         return dp_profile

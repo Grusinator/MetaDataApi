@@ -19,13 +19,13 @@ class TestMetadataBaseFunctionService(TransactionTestCase):
     def test_path_to_foaf_person(self):
         from MetaDataApi.metadata.services.services import BaseMetaDataService
         from MetaDataApi.metadata.models import (
-            Object, Attribute)
+            SchemaNode, SchemaAttribute)
 
         LoadTestData.init_foaf()
 
-        att = Attribute(object=Object.objects.get(label="image"),
-                        label="test_att",
-                        data_type="float")
+        att = SchemaAttribute(object=SchemaNode.objects.get(label="image"),
+                              label="test_att",
+                              data_type="float")
         att.save()
         service = BaseMetaDataService()
         foaf, to_foaf_p_list = service.path_to_object(
@@ -35,14 +35,14 @@ class TestMetadataBaseFunctionService(TransactionTestCase):
 
     @unittest.skip("needs repair")
     def test_get_connected_pair(self):
-        from MetaDataApi.metadata.models import Attribute
+        from MetaDataApi.metadata.models import SchemaAttribute
         from MetaDataApi.metadata.services import BaseMetaDataService
         LoadTestData.init_strava_schema_from_file()
         LoadTestData.init_strava_data_from_file()
 
-        att1 = Attribute.objects.get(
+        att1 = SchemaAttribute.objects.get(
             label="name", object__schema__label="strava")
-        att2 = Attribute.objects.get(
+        att2 = SchemaAttribute.objects.get(
             label="distance", object__schema__label="strava")
 
         data = BaseMetaDataService.get_connected_attribute_pairs(att1, att2)

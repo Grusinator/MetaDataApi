@@ -21,14 +21,14 @@ class TestRdfInstanceService(TransactionTestCase):
             RdfInstanceService)
 
         from MetaDataApi.metadata.models import (
-            Schema, Attribute, ObjectRelation
+            Schema, SchemaAttribute, SchemaEdge
         )
 
         from MetaDataApi.metadata.models import (
-            ObjectInstance,
-            ObjectRelationInstance,
+            Node,
+            Edge,
 
-            StringAttributeInstance)
+            StringAttribute)
 
         LoadTestData.init_foaf()
 
@@ -38,28 +38,28 @@ class TestRdfInstanceService(TransactionTestCase):
 
         schema = service.do_meta_item_exists(Schema(label=schema_label))
 
-        foaf_atts = Attribute.objects.filter(
+        foaf_atts = SchemaAttribute.objects.filter(
             object__schema=schema)
         s = list(filter(lambda x: x.label, foaf_atts))
 
         foaf_person = service.get_foaf_person()
-        foaf_name = Attribute.objects.get(label="first_name",
-                                          object__schema=schema)
+        foaf_name = SchemaAttribute.objects.get(label="first_name",
+                                                object__schema=schema)
 
-        foaf_knows = ObjectRelation.objects.get(label="knows",
-                                                schema=schema)
+        foaf_knows = SchemaEdge.objects.get(label="knows",
+                                            schema=schema)
 
-        b1 = ObjectInstance(base=foaf_person)
-        b2 = ObjectInstance(base=foaf_person)
+        b1 = Node(base=foaf_person)
+        b2 = Node(base=foaf_person)
         b1.save()
         b2.save()
 
-        name1 = StringAttributeInstance(base=foaf_name, object=b1, value="B1")
-        name2 = StringAttributeInstance(base=foaf_name, object=b2, value="B2")
+        name1 = StringAttribute(base=foaf_name, object=b1, value="B1")
+        name2 = StringAttribute(base=foaf_name, object=b2, value="B2")
         name1.save()
         name2.save()
 
-        rel1 = ObjectRelationInstance(
+        rel1 = Edge(
             base=foaf_knows, from_object=b1, to_object=b2)
 
         rel1.save()

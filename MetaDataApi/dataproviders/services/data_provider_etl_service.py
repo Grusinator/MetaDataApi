@@ -2,18 +2,17 @@ from datetime import datetime, timedelta
 # from jsonschema import validate
 from urllib import request
 
+from MetaDataApi.dataproviders.models import DataProvider
 from MetaDataApi.dataproviders.services.url_format_helper import UrlFormatHelper
 from MetaDataApi.metadata.models import (
     Schema)
-from MetaDataApi.metadata.rdfs_models import RdfsDataProvider
-from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.data_provider import GrpDataProvider
 from MetaDataApi.metadata.services.all_services.base_functions import BaseMetaDataService
 from MetaDataApi.metadata.utils.django_model_utils import DjangoModelUtils
 
 
 class DataProviderEtlService:
 
-    def __init__(self, dataprovider: GrpDataProvider):
+    def __init__(self, dataprovider: DataProvider):
         self.dataprovider = dataprovider
 
     def validate_endpoints(self):
@@ -54,9 +53,9 @@ class DataProviderEtlService:
         return html
 
     def save_data_to_file(self, endpoint_name: str, data: str):
-        endpoint = RdfsDataProvider.get_endpoint(
+        endpoint = DataProvider.get_endpoint(
             self.dataprovider.data_provider_instance,
             rest_endpoint_name=endpoint_name
         )
         file = DjangoModelUtils.convert_str_to_file(data, filetype=DjangoModelUtils.FileType.JSON)
-        RdfsDataProvider.create_data_dump(endpoint, file)
+        DataProvider.create_data_dump(endpoint, file)

@@ -6,14 +6,14 @@ from django.core.exceptions import (
 from django.db import transaction
 
 from MetaDataApi.metadata.models import (
-    ObjectInstance, ObjectRelationInstance,
-    StringAttributeInstance,
-    DateTimeAttributeInstance, BoolAttributeInstance,
-    FloatAttributeInstance, IntAttributeInstance
+    Node, Edge,
+    StringAttribute,
+    DateTimeAttribute, BoolAttribute,
+    FloatAttribute, IntAttribute
 )
 # from jsonschema import validate
 from MetaDataApi.metadata.models import (
-    Schema, Object, Attribute, ObjectRelation)
+    Schema, SchemaNode, SchemaAttribute, SchemaEdge)
 from MetaDataApi.metadata.utils.common_utils import StringUtils
 
 logger = logging.getLogger(__name__)
@@ -21,12 +21,12 @@ logger = logging.getLogger(__name__)
 
 class BaseMetaDataService:
     att_inst_to_type_map = {
-        #  StringAttributeInstance: str,
-        StringAttributeInstance: str,
-        DateTimeAttributeInstance: datetime,
-        FloatAttributeInstance: float,
-        IntAttributeInstance: int,
-        BoolAttributeInstance: bool
+        #  StringAttribute: str,
+        StringAttribute: str,
+        DateTimeAttribute: datetime,
+        FloatAttribute: float,
+        IntAttribute: int,
+        BoolAttribute: bool
     }
 
     def __init__(self):
@@ -42,12 +42,12 @@ class BaseMetaDataService:
         self.save_to_db = True
 
         self.att_types = tuple(typ if isinstance(typ, type) else type(typ)
-                               for typ in Attribute.data_type_map.keys())
+                               for typ in SchemaAttribute.data_type_map.keys())
 
         self.att_instances = tuple(self.att_inst_to_type_map.keys())
 
         self.instances = self.att_instances + \
-                         (ObjectInstance, ObjectRelationInstance)
+                         (Node, Edge)
 
     @staticmethod
     def inverse_dict(dicti, value):
@@ -82,9 +82,9 @@ class BaseMetaDataService:
         return len(data) == 0
 
         # def compare_rel(
-        #     x): return x.from_relations in item.from_relations.all()
+        #     x): return x.from_edge in item.from_edge.all()
 
-        # def func(x): return any(filter(compare_rel, x.from_relations.all()))
+        # def func(x): return any(filter(compare_rel, x.from_edge.all()))
         # any([func(x) for x in same_labels])
 
         # else:
@@ -188,7 +188,7 @@ class BaseMetaDataService:
             return None
 
     def is_objects_connected(self, obj_from, obj_to, objects):
-        relations = obj_from.from_relations.all()
+        relations = obj_from.from_edge.all()
 
         related_objects = list(map(lambda x: x.to_object.get(), relations))
 
@@ -205,11 +205,11 @@ class BaseMetaDataService:
     @staticmethod
     def get_foaf_person():
         schema = Schema.objects.get(label="friend_of_a_friend")
-        return Object.objects.get(label="person", schema=schema)
+        return SchemaNode.objects.get(label="person", schema=schema)
 
     @classmethod
     def att_to_att_inst(cls, attr):
-        data_type = cls.inverse_dict(Attribute.data_type_map, attr.data_type)
+        data_type = cls.inverse_dict(SchemaAttribute.data_type_map, attr.data_type)
 
         return cls.inverse_dict(cls.att_inst_to_type_map, data_type)
 
@@ -232,7 +232,7 @@ class BaseMetaDataService:
 
         returns = []
 
-        common_instances = ObjectInstance.objects.filter(base=common_obj)
+        common_instances = Node.objects.filter(base=common_obj)
         for common_instance in common_instances:
             value1 = cls.get_specific_child(
                 common_instance, att_1, path=att1_list)
@@ -263,11 +263,11 @@ class BaseMetaDataService:
     @staticmethod
     def build_search_args_from_list(path, obj_inst):
         search_args = {}
-        base_arg_name = "from_relations__from_object__"
+        base_arg_name = "from_edge__from_object__"
         arg_name = ""
         # loop though all but last
         for obj in path:
-            if isinstance(obj, Attribute):
+            if isinstance(obj, SchemaAttribute):
                 arg_name += "object__"
                 search_args["base__label"] = obj.label
             elif obj == obj_inst.base:
@@ -282,14 +282,14 @@ class BaseMetaDataService:
 
     @staticmethod
     def path_to_object(obj, root_obj, childrens=()):
-        if isinstance(obj, Attribute):
+        if isinstance(obj, SchemaAttribute):
             # add to path
             childrens.append(obj)
             obj = obj.object
         if obj == root_obj:
             return obj, childrens
         else:
-            parrent_rels = obj.from_relations.all()
+            parrent_rels = obj.from_edge.all()
             childrens.append(obj)
             for parrent_rel in parrent_rels:
                 parrent_obj = parrent_rel.from_object
@@ -307,20 +307,20 @@ class BaseMetaDataService:
     def build_search_args_for_meta_items(item, parrent_label):
         search_args = {"label": item.label}
 
-        if isinstance(item, Attribute):
+        if isinstance(item, SchemaAttribute):
             search_args["object__label"] = item.object.label
 
-        elif isinstance(item, Object):
+        elif isinstance(item, SchemaNode):
             search_args["schema"] = item.schema
             # adds the option to search for objects dependent
             # on from relations
             if parrent_label and parrent_label == "None":
-                search_args["from_relations"] = None
+                search_args["from_edge"] = None
             elif parrent_label:
-                search_args["from_relations__from_object__label"] \
+                search_args["from_edge__from_object__label"] \
                     = parrent_label
 
-        elif isinstance(item, ObjectRelation):
+        elif isinstance(item, SchemaEdge):
             search_args["from_object"] = item.from_object
             search_args["to_object"] = item.to_object
 

@@ -31,12 +31,12 @@ class test_buildDjangoSearchArgs(TransactionTestCase):
         args = builder.build_from_json(data)
 
         expected = {
-            'from_relations__from_object__label': 'object1',
-            'from_relations__from_object__from_relations__from_object__label__in':
+            'from_edge__from_object__label': 'object1',
+            'from_edge__from_object__from_edge__from_object__label__in':
                 ['Attribute1',
                  'Attribute2',
                  'object2'],
-            'from_relations__from_object__from_relations__from_object__from_relations__from_object__label__in':
+            'from_edge__from_object__from_edge__from_object__from_edge__from_object__label__in':
                 ['attribute3',
                  'attribute4']
         }

@@ -2,7 +2,7 @@ import json
 
 from django import template
 
-from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.data_provider import GrpDataProvider
+from MetaDataApi.dataproviders.models import DataProvider
 
 register = template.Library()
 
@@ -16,5 +16,5 @@ def load_json(value):
 
 
 @register.simple_tag
-def build_auth_url(data_provider: GrpDataProvider, user_id):
+def build_auth_url(data_provider: DataProvider, user_id):
     return data_provider.build_auth_url(user_id)

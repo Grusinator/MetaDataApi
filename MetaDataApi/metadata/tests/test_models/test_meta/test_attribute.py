@@ -31,24 +31,24 @@ class TestAttribute(TransactionTestCase):
     def test_all_instances(self):
         from MetaDataApi.metadata.tests import LoadTestData
         schema = LoadTestData.init_foaf()
-        from MetaDataApi.metadata.models import Object, Attribute
-        obj = Object(label="test", schema=schema)
+        from MetaDataApi.metadata.models import SchemaNode, SchemaAttribute
+        obj = SchemaNode(label="test", schema=schema)
         obj.save()
 
-        from MetaDataApi.metadata.models import BaseAttributeInstance, ObjectInstance
-        from MetaDataApi.metadata.models import FileAttributeInstance
-        from MetaDataApi.metadata.models import ImageAttributeInstance
-        for InstanceType in set(BaseAttributeInstance.get_all_instance_types()) - {FileAttributeInstance,
-                                                                                   ImageAttributeInstance}:
+        from MetaDataApi.metadata.models import BaseAttribute, Node
+        from MetaDataApi.metadata.models import FileAttribute
+        from MetaDataApi.metadata.models import ImageAttribute
+        for InstanceType in set(BaseAttribute.get_all_instance_types()) - {FileAttribute,
+                                                                           ImageAttribute}:
             data_type = InstanceType.get_data_type()
-            att = Attribute(
+            att = SchemaAttribute(
                 label="test_%s" % str(data_type),
                 data_type=data_type,
                 object=obj,
             )
             att.save()
 
-            obj_inst = ObjectInstance(base=obj)
+            obj_inst = Node(base=obj)
             obj_inst.save()
 
             value = data_type(2011, 4, 3) if data_type is datetime else data_type()
@@ -60,6 +60,6 @@ class TestAttribute(TransactionTestCase):
             )
             att_inst.save()
 
-            instances = BaseAttributeInstance.get_all_instances_from_base(att)
+            instances = BaseAttribute.get_all_instances_from_base(att)
 
             self.assertListEqual([att_inst], instances)

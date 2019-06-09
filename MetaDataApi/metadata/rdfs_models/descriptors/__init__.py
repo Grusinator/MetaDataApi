@@ -1,2 +1,0 @@
-from MetaDataApi.metadata.rdfs_models.descriptors.attributes import *
-from MetaDataApi.metadata.rdfs_models.descriptors.relation_descriptor import ObjectRelationDescriptor

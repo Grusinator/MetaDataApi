@@ -20,7 +20,7 @@ class IJsonIterator:
         raise NotImplementedError
 
     @abstractmethod
-    def handle_object_relations(self, parrent_object, data, label: str):
+    def handle_schema_edges(self, parrent_object, data, label: str):
         raise NotImplementedError
 
     def isAnAttribute(self, value):
@@ -47,8 +47,7 @@ class IJsonIterator:
         # the value of the dict is tested for being an attribute
         elif not isinstance(input_data, dict):
             if parrent_object is not None:
-                self.handle_attributes(parrent_object, input_data,
-                                       None)
+                self.handle_attributes(parrent_object, input_data, None)
             self.depth -= 1
             return
 
@@ -59,7 +58,7 @@ class IJsonIterator:
                 else:
                     obj = self.handle_objects(parrent_object, value, key)
 
-                    obj_rel = self.handle_object_relations(
+                    obj_rel = self.handle_schema_edges(
                         parrent_object, obj, None)
 
                     self.iterate_json_tree(

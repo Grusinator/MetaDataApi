@@ -1,22 +1,22 @@
 from MetaDataApi.metadata.models.instance import (
-    ObjectInstance,
-    ObjectRelationInstance,
-    BoolAttributeInstance,
-    FloatAttributeInstance,
-    DateTimeAttributeInstance,
-    ImageAttributeInstance,
-    FileAttributeInstance,
-    IntAttributeInstance,
-    StringAttributeInstance,
+    Node,
+    Edge,
+    BoolAttribute,
+    FloatAttribute,
+    DateTimeAttribute,
+    ImageAttribute,
+    FileAttribute,
+    IntAttribute,
+    StringAttribute,
     BaseInstance,
-    BaseAttributeInstance
+    BaseAttribute
 )
-from MetaDataApi.metadata.models.instance.old_instances import CategoryTypes, RawData
+
 from MetaDataApi.metadata.models.meta import (
-    Attribute,
+    SchemaAttribute,
     Schema,
-    Object,
-    ObjectRelation,
+    SchemaNode,
+    SchemaEdge,
     RDFDataDump,
     UnmappedObject
 )

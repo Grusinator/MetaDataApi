@@ -3,9 +3,9 @@ import logging
 from django.http import Http404
 from django.shortcuts import render
 
+from MetaDataApi.dataproviders.models import Endpoint
 from MetaDataApi.dataproviders.services.services import StoreDataFromProviderService
 from MetaDataApi.dataproviders.views import DataProviderView
-from MetaDataApi.metadata.rdfs_models.rdfs_data_provider import Endpoint
 from MetaDataApi.metadata.services.services import LoadSchemaAndDataFromDataDump
 
 logger = logging.getLogger(__name__)

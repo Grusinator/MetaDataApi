@@ -1,1 +1,3 @@
-from MetaDataApi.dataproviders.models.data_provider import DataProvider
+from MetaDataApi.dataproviders.models.DataDump import DataDump
+from MetaDataApi.dataproviders.models.DataProvider import DataProvider
+from MetaDataApi.dataproviders.models.Endpoint import Endpoint

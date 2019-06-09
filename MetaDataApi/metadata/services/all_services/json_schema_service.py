@@ -6,7 +6,7 @@ from urllib import request
 from django.db import transaction
 
 from MetaDataApi.metadata.models import (
-    Schema, Object, Attribute, ObjectRelation)
+    Schema, SchemaNode, SchemaAttribute, SchemaEdge)
 from MetaDataApi.metadata.services.all_services.base_functions import BaseMetaDataService
 from MetaDataApi.metadata.utils.common_utils import StringUtils
 from schemas.json.omh.schema_names import filtered_schema_names as schema_names
@@ -110,7 +110,7 @@ class JsonSchemaService(BaseMetaDataService):
     def _get_rel_names(self, objects, property_dict):
         returns = []
         for item, obj_rel_name in zip(objects, property_dict.keys()):
-            if isinstance(item, Object):
+            if isinstance(item, SchemaNode):
                 returns.append(obj_rel_name)
         return returns
 
@@ -136,7 +136,7 @@ class JsonSchemaService(BaseMetaDataService):
             # use root label if possible
             label = root_label or filename.replace(".json", "")
             new_object = self._try_create_meta_item(
-                Object(
+                SchemaNode(
                     label=label,
                     schema=self.schema,
                     description=description
@@ -149,7 +149,7 @@ class JsonSchemaService(BaseMetaDataService):
             # create the object relation
             if current_object is not None:
                 # None is root - so no relation
-                self._try_create_meta_item(ObjectRelation(
+                self._try_create_meta_item(SchemaEdge(
                     from_object=self.do_meta_item_exists(current_object),
                     to_object=self.do_meta_item_exists(new_object),
                     schema=self.schema,
@@ -231,7 +231,7 @@ class JsonSchemaService(BaseMetaDataService):
                     # if this dict contains "other classes"
 
                 attribute = self._try_create_meta_item(
-                    Attribute(
+                    SchemaAttribute(
                         label=root_label,
                         data_type=self.json_to_att_type(data_type),
                         description=description,
@@ -272,17 +272,17 @@ class JsonSchemaService(BaseMetaDataService):
         if dict_data.get("type") == "object":
             # fiugre out if this object only has one attribute and no relations
             with transaction.atomic():
-                atts = Attribute.objects.filter(object=current_object).count()
+                atts = SchemaAttribute.objects.filter(object=current_object).count()
 
             with transaction.atomic():
-                rels = ObjectRelation.objects.filter(
+                rels = SchemaEdge.objects.filter(
                     from_object=current_object).count()
 
             # simplify_disabled
             if atts == 1 and rels == 0 and None:
                 # simplify
                 with transaction.atomic():
-                    attribute = Attribute.objects.get(object=current_object)
+                    attribute = SchemaAttribute.objects.get(object=current_object)
 
                 # use parrent object as object instead
                 if parrent_object is None:
@@ -310,16 +310,16 @@ class JsonSchemaService(BaseMetaDataService):
     def json_to_att_type(self, type_name):
         try:
             dtype = self.json_type_map.get(type_name)
-            return Attribute.data_type_map[dtype]
+            return SchemaAttribute.data_type_map[dtype]
         except:
-            return Attribute.data_type_map.get(None)
+            return SchemaAttribute.data_type_map.get(None)
 
     def att_type_to_json_type(self, attr_type):
         def inverse_dict(dicti, value):
             return list(dicti.keys())[list(dicti.values()).index(value)]
 
         # inverse of data_type_map
-        dtype = inverse_dict(Attribute.data_type_map, attr_type)
+        dtype = inverse_dict(SchemaAttribute.data_type_map, attr_type)
 
         # default to string if none
         dtype = dtype or str

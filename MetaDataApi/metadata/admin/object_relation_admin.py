@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from MetaDataApi.metadata.models import ObjectRelation
+from MetaDataApi.metadata.models import SchemaEdge
 
 
 class ObjectRelationAdmin(admin.ModelAdmin):
@@ -9,4 +9,4 @@ class ObjectRelationAdmin(admin.ModelAdmin):
     actions = []
 
 
-admin.site.register(ObjectRelation, ObjectRelationAdmin)
+admin.site.register(SchemaEdge, ObjectRelationAdmin)

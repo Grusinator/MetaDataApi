@@ -1,4 +1,4 @@
-from MetaDataApi.metadata.models import StringAttributeInstance, ObjectInstance, Object, Schema
+from MetaDataApi.metadata.models import StringAttribute, Node, SchemaNode, Schema
 
 
 class InstanceMocks:
@@ -6,14 +6,14 @@ class InstanceMocks:
     @staticmethod
     def ObjectInstance1():
         schema = Schema.create_new_empty_schema("meta_data_api")
-        obj = Object(label="dummy", schema=schema)
-        return ObjectInstance(
+        obj = SchemaNode(label="dummy", schema=schema)
+        return Node(
             base=obj
         )
 
     @staticmethod
     def MockStringAttributeInstance():
-        return StringAttributeInstance(
+        return StringAttribute(
             value="somevalue",
             obj=InstanceMocks.ObjectInstance1()
         )

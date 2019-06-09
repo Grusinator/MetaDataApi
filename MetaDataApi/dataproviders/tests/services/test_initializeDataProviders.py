@@ -11,17 +11,13 @@ class TestInitializeDataProviders(TransactionTestCase):
         django.setup()
 
     def test_load_from_json(self):
-        from MetaDataApi.metadata.rdfs_models.initialize_rdf_models import InitializeRdfModels
-        InitializeRdfModels.create_all_schemas_from_descriptor()
-
         from MetaDataApi.dataproviders.models.initialize_data_providers import InitializeDataProviders
         InitializeDataProviders.load()
 
         from MetaDataApi.dataproviders.models import DataProvider
         dps = list(DataProvider.objects.all())
 
-        from MetaDataApi.metadata.rdfs_models.rdfs_data_provider.data_provider import GrpDataProvider
-        dpOs = [GrpDataProvider(dp.data_provider_instance.pk) for dp in dps]
+        dpOs = [DataProvider(dp.data_provider_instance.pk) for dp in dps]
 
         assert len(dpOs) == len(dps)
         assert len(dpOs) > 10

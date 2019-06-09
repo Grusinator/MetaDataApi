@@ -1,4 +1,4 @@
-from MetaDataApi.metadata.models import Schema, ObjectRelation, Object, BaseAttributeInstance
+from MetaDataApi.metadata.models import Schema, SchemaEdge, SchemaNode, BaseAttribute
 
 
 class TestingUtils:
@@ -6,11 +6,11 @@ class TestingUtils:
     @classmethod
     def get_all_items_from_schema(cls, schema_label):
         schema = Schema.exists_by_label(schema_label)
-        objects = list(schema.object_list.all())
+        objects = list(schema.schema_nodes.all())
         attributes = []
         [attributes.extend(obj.attributes.all()) for obj in objects]
-        object_relations = list(schema.object_relations.all())
-        return [schema] + objects + attributes + object_relations
+        schema_edges = list(schema.schema_edges.all())
+        return [schema] + objects + attributes + schema_edges
 
     @classmethod
     def get_all_item_labels_from_schema(cls, schema_label):
@@ -24,8 +24,8 @@ class TestingUtils:
         metas.remove(Schema.exists_by_label(schema_label))
         instances = []
         for meta in metas:
-            if isinstance(meta, (Object, ObjectRelation)):
+            if isinstance(meta, (SchemaNode, SchemaEdge)):
                 instances.extend(meta.instances.all())
             else:
-                instances.extend(BaseAttributeInstance.get_all_instances_from_base(meta))
+                instances.extend(BaseAttribute.get_all_instances_from_base(meta))
         return instances

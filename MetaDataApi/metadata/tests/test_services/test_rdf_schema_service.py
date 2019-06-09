@@ -29,7 +29,7 @@ class TestRdfSchemaService(TransactionTestCase):
 
     def test_upload_rdf(self):
         from MetaDataApi.metadata.services import RdfSchemaService
-        from MetaDataApi.metadata.models.meta import Schema, Object, Attribute
+        from MetaDataApi.metadata.models.meta import Schema, SchemaNode, SchemaAttribute
 
         url = "http://xmlns.com/foaf/0.1/"
 
@@ -39,10 +39,10 @@ class TestRdfSchemaService(TransactionTestCase):
 
         self.assertIsNotNone(
             Schema.objects.get(label="friend_of_a_friend"))
-        self.assertIsNotNone(Object.objects.filter(label="person").first())
-        self.assertIsNotNone(Object.objects.filter(label="project").first())
-        self.assertIsNotNone(Object.objects.filter(label="image").first())
-        self.assertIsNotNone(Attribute.objects.filter(
+        self.assertIsNotNone(SchemaNode.objects.filter(label="person").first())
+        self.assertIsNotNone(SchemaNode.objects.filter(label="project").first())
+        self.assertIsNotNone(SchemaNode.objects.filter(label="image").first())
+        self.assertIsNotNone(SchemaAttribute.objects.filter(
             label="first_name").first())
 
     def test_export_rdf(self):

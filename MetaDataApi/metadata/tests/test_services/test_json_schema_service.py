@@ -56,7 +56,7 @@ class TestJsonService(TransactionTestCase):
         from MetaDataApi.metadata.services import (
             JsonSchemaService)
         from MetaDataApi.metadata.models import (
-            Attribute)
+            SchemaAttribute)
 
         url = "https://raw.githubusercontent.com/Grusinator/MetaDataApi/" +\
             "master/schemas/json/omh/schemas/body-temperature-2.0.json"
@@ -65,7 +65,7 @@ class TestJsonService(TransactionTestCase):
 
         res = service.write_to_db(url, "open_m_health")
 
-        atts = filter(lambda x: isinstance(x, Attribute), res)
+        atts = filter(lambda x: isinstance(x, SchemaAttribute), res)
 
     def test_default_schemas(self):
         from MetaDataApi.metadata.services import (

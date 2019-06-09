@@ -32,9 +32,9 @@ class DbObjectCreation(BaseMetaDataService):
         if parrent_object is not None:
             label = label or parrent_object.label
 
-            att = Attribute(
+            att = SchemaAttribute(
                 label=label,
-                data_type=Attribute.data_type_map[data_type],
+                data_type=SchemaAttribute.data_type_map[data_type],
                 object=BaseMetaDataService.do_meta_item_exists(parrent_object)
             )
             try:
@@ -44,7 +44,7 @@ class DbObjectCreation(BaseMetaDataService):
 
     def try_create_object(self, parrent_object, data, label):
 
-        obj = Object(
+        obj = SchemaNode(
             label=label,
             schema=self.schema
         )
@@ -63,7 +63,7 @@ class DbObjectCreation(BaseMetaDataService):
             label = label or "%s__to__%s" % (
                 parrent_object.label, data.label)
 
-            obj_rel = ObjectRelation(
+            obj_rel = SchemaEdge(
                 label=label,
                 from_object=self.do_meta_item_exists(parrent_object),
                 to_object=self.do_meta_item_exists(data),
@@ -84,9 +84,9 @@ class DbObjectCreation(BaseMetaDataService):
         if parrent_object is not None:
             label = label or parrent_object.base.label
 
-            att = Attribute(
+            att = SchemaAttribute(
                 label=label,
-                data_type=Attribute.data_type_map[data_type],
+                data_type=SchemaAttribute.data_type_map[data_type],
                 object=self.do_meta_item_exists(parrent_object.base)
             )
 
@@ -114,7 +114,7 @@ class DbObjectCreation(BaseMetaDataService):
                 ))
 
     def try_create_object_instance(self, parrent_object, data, label):
-        obj = Object(
+        obj = SchemaNode(
             label=label,
             schema=self.schema
         )
@@ -124,7 +124,7 @@ class DbObjectCreation(BaseMetaDataService):
             obj, parrent_label=parrent_object.base.label)
 
         if obj:
-            obj_inst = ObjectInstance(
+            obj_inst = Node(
                 base=obj,
                 owner=self.owner
             )
@@ -149,7 +149,7 @@ class DbObjectCreation(BaseMetaDataService):
             label = label or "%s__to__%s" % (
                 parrent_object.base.label, data.base.label)
 
-            obj_rel = ObjectRelation(
+            obj_rel = SchemaEdge(
                 label=label,
                 from_object=self.do_meta_item_exists(parrent_object.base),
                 to_object=self.do_meta_item_exists(data.base),
@@ -158,7 +158,7 @@ class DbObjectCreation(BaseMetaDataService):
             obj_rel = self.do_meta_item_exists(obj_rel)
 
             if obj_rel is not None:
-                obj_rel_inst = ObjectRelationInstance(
+                obj_rel_inst = Edge(
                     base=obj_rel,
                     from_object=parrent_object,
                     to_object=data

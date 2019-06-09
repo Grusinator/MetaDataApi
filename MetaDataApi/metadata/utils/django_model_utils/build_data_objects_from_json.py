@@ -3,17 +3,17 @@ import logging
 from django.db import IntegrityError, transaction
 
 from MetaDataApi.metadata.models import (
-    ObjectInstance,
-    ObjectRelationInstance,
-    BaseAttributeInstance,
-    # FloatAttributeInstance,
-    # StringAttributeInstance,
-    # IntAttributeInstance,
-    # BoolAttributeInstance,
-    # ImageAttributeInstance
+    Node,
+    Edge,
+    BaseAttribute,
+    # FloatAttribute,
+    # StringAttribute,
+    # IntAttribute,
+    # BoolAttribute,
+    # ImageAttribute
 )
 from MetaDataApi.metadata.models.meta import (
-    Object, Attribute, ObjectRelation, )
+    SchemaNode, SchemaAttribute, SchemaEdge, )
 from MetaDataApi.metadata.utils.common_utils import DictUtils
 from MetaDataApi.metadata.utils.common_utils.data_type_utils import DataTypeUtils
 from MetaDataApi.metadata.utils.json_utils.json_iterator import IJsonIterator
@@ -56,7 +56,7 @@ class BuildDataObjectsFromJson(IJsonIterator):
             # obj.delete()
             del obj
 
-    def handle_attributes(self, parrent_object: ObjectInstance,
+    def handle_attributes(self, parrent_object: Node,
                           data, label: str):
         if parrent_object is None:
             return None
@@ -64,7 +64,7 @@ class BuildDataObjectsFromJson(IJsonIterator):
         # TODO handle list structures better fix for when list with values
         label = label or parrent_object.base.label
 
-        att = Attribute.exists_by_label(label, parrent_object.base.label)
+        att = SchemaAttribute.exists_by_label(label, parrent_object.base.label)
 
         # TODO handle if the data of an attribute is a dict
         if isinstance(data, dict):
@@ -76,9 +76,9 @@ class BuildDataObjectsFromJson(IJsonIterator):
         data_type = type(data_as_type)
 
         if att is None:
-            att = Attribute(
+            att = SchemaAttribute(
                 label=label,
-                data_type=Attribute.data_type_map[data_type],
+                data_type=SchemaAttribute.data_type_map[data_type],
                 object=parrent_object.base
             )
             if not self.save_obj(att):
@@ -86,7 +86,7 @@ class BuildDataObjectsFromJson(IJsonIterator):
 
         # get the corresponding attribute type class
         AttributeInstance = DictUtils.inverse_dict(
-            BaseAttributeInstance.att_inst_to_type_map,
+            BaseAttribute.att_inst_to_type_map,
             data_type
         )
 
@@ -107,32 +107,32 @@ class BuildDataObjectsFromJson(IJsonIterator):
 
             return self.save_obj(att_inst)
 
-    def handle_objects(self, parrent_object: ObjectInstance, data, label: str):
-        obj = Object.exists_by_label(label, self.schema.label)
+    def handle_objects(self, parrent_object: Node, data, label: str):
+        obj = SchemaNode.exists_by_label(label, self.schema.label)
 
         # it does not exists
         if obj is None:
-            obj = Object(
+            obj = SchemaNode(
                 label=label,
                 schema=self.schema
             )
             if not self.save_obj(obj):
                 return None
 
-        obj_inst = ObjectInstance.exists(label, data)
+        obj_inst = Node.exists(label, data)
 
         if obj_inst is not None:
             return obj_inst
         else:
             # Create instance
-            obj_inst = ObjectInstance(
+            obj_inst = Node(
                 base=obj,
                 owner=self.owner
             )
             return self.save_obj(obj_inst)
 
-    def handle_object_relations(self, parrent_object: ObjectInstance,
-                                to_object: ObjectInstance, label: str):
+    def handle_schema_edges(self, parrent_object: Node,
+                            to_object: Node, label: str):
         if parrent_object is None or to_object is None:
             return None
 
@@ -141,12 +141,12 @@ class BuildDataObjectsFromJson(IJsonIterator):
         label = label or "%s__to__%s" % (
             parrent_object.base.label, to_object.base.label)
 
-        obj_rel = ObjectRelation.exists_by_label(
+        obj_rel = SchemaEdge.exists_by_label(
             label, parrent_object.base.label,
             to_object.base.label, self.schema.label)
 
         if obj_rel is None:
-            obj_rel = ObjectRelation(
+            obj_rel = SchemaEdge(
                 label=label,
                 from_object=parrent_object.base,
                 to_object=to_object.base,
@@ -155,13 +155,13 @@ class BuildDataObjectsFromJson(IJsonIterator):
             if not self.save_obj(obj_rel):
                 return None
 
-        obj_rel_inst = ObjectRelationInstance.exists(
+        obj_rel_inst = Edge.exists(
             label, obj_rel.from_object, obj_rel.to_object)
 
         if obj_rel_inst is not None:
             return obj_rel_inst
         else:
-            obj_rel_inst = ObjectRelationInstance(
+            obj_rel_inst = Edge(
                 base=obj_rel,
                 from_object=parrent_object,
                 to_object=to_object,
