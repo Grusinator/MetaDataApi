@@ -4,7 +4,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 
-from MetaDataApi.dataproviders.models import DataProvider
+from MetaDataApi.dataproviders.models import DataProvider, Endpoint
 from MetaDataApi.metadata.models import Schema, SchemaEdge, SchemaNode, SchemaAttribute
 from MetaDataApi.metadata.services import (
     JsonSchemaService, DataCleaningService, RdfInstanceService, RdfSchemaService, JsonAnalyser
@@ -65,23 +65,17 @@ class LoadTestData:
 
         assert provider, "Remember to init DataProviders before loading provider profile"
 
-        dataproviderprofile = DataProviderProfile(
+        Endpoint.objects.create(
+            provider=provider,
+            endpoint_name="activity",
+            endpoint_url="v3/activities"
+        )
+
+        return DataProviderProfile.objects.create(
             provider=provider,
             access_token="174323610143cdcd159f7792c1c4ec5637a96e12",
             profile=Profile.objects.get(user=user)
         )
-        dataproviderprofile.save()
-
-        endpoint_name = "activity"
-        endpoint_url = "v3/activities"
-
-        DataProvider.create_endpoint_to_data_provider(
-            provider.data_provider_instance,
-            endpoint_name,
-            endpoint_url
-        )
-
-        return dataproviderprofile
 
     @staticmethod
     def init_meta_data_api():
