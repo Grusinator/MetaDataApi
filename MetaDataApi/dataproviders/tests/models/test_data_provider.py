@@ -31,8 +31,8 @@ class TestDataProvider(TransactionTestCase):
         )
         data_provider.save()
 
-        self.assertIsNotNone(data_provider.data_provider_instance)
-        self.assertIsNotNone(data_provider.data_provider_instance.pk)
+        self.assertIsNotNone(data_provider.data_provider_node)
+        self.assertIsNotNone(data_provider.data_provider_node.pk)
 
     @unittest.skip
     def test_endpoints_are_created_at_provider_creation(self):

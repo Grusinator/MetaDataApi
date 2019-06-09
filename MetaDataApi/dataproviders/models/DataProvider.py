@@ -25,7 +25,7 @@ class DataProvider(models.Model):
     scope = models.TextField()
 
     json_schema_file_url = models.TextField(null=True, blank=True)
-    data_provider_instance = models.ForeignKey(
+    data_provider_node = models.ForeignKey(
         "metadata.Node",
         on_delete=models.CASCADE,
         null=True, blank=True,

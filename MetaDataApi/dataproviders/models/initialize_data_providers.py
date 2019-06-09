@@ -41,15 +41,15 @@ class InitializeDataProviders:
             dp = DataProvider(**provider_data)
             dp.save()
             for endpoint in endpoints:
-                cls.try_create_endpoint(endpoint)
+                cls.try_create_endpoint(endpoint, dp)
             return dp
         else:
             return data_provider
 
     @classmethod
-    def try_create_endpoint(cls, endpoint_data):
+    def try_create_endpoint(cls, endpoint_data, data_provider):
         try:
-            ep = Endpoint.objects.create(**endpoint_data)
+            ep = Endpoint.objects.create(provider=data_provider, **endpoint_data)
         except Exception as e:
             logger.warning(f"endpoint was not created due to error: {e}")
 

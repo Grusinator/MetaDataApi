@@ -54,7 +54,7 @@ class DataProviderEtlService:
 
     def save_data_to_file(self, endpoint_name: str, data: str):
         endpoint = DataProvider.get_endpoint(
-            self.dataprovider.data_provider_instance,
+            self.dataprovider.data_provider_node,
             rest_endpoint_name=endpoint_name
         )
         file = DjangoModelUtils.convert_str_to_file(data, filetype=DjangoModelUtils.FileType.JSON)
