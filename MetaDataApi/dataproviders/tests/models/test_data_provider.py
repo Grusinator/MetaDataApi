@@ -1,3 +1,5 @@
+import unittest
+
 import django
 from django.test import TransactionTestCase
 
@@ -32,7 +34,9 @@ class TestDataProvider(TransactionTestCase):
         self.assertIsNotNone(data_provider.data_provider_instance)
         self.assertIsNotNone(data_provider.data_provider_instance.pk)
 
+    @unittest.skip
     def test_endpoints_are_created_at_provider_creation(self):
+
         schema_label = "meta_data_api"
 
         from MetaDataApi.metadata.utils.testing_utils import TestingUtils
@@ -48,6 +52,7 @@ class TestDataProvider(TransactionTestCase):
 
         self.assertSetEqual(meta_labels, expected_labels)
 
+    @unittest.skip
     def test_urls_are_created_correct_reggression(self):
         schema_label = "meta_data_api"
 

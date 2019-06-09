@@ -4,7 +4,7 @@ import logging
 import boto3
 from django.conf import settings
 
-from MetaDataApi.dataproviders.models import DataProvider
+from MetaDataApi.dataproviders.models import DataProvider, Endpoint
 from MetaDataApi.metadata.utils import JsonUtils
 
 logger = logging.getLogger(__name__)
@@ -30,18 +30,28 @@ class InitializeDataProviders:
         try:
             cls.create_if_does_not_exists(provider)
         except Exception as e:
-            logger.error("error durring loading of dataprovider %s" % provider["provider_name"])
+            logger.error(f'error durring loading of dataprovider {provider["provider_name"]} due to error {e}')
 
     @classmethod
     def create_if_does_not_exists(cls, provider_data: dict):
         provider_name = provider_data["provider_name"]
         data_provider = DataProvider.exists(provider_name)
         if data_provider is None:
+            endpoints = provider_data.pop("endpoints")
             dp = DataProvider(**provider_data)
             dp.save()
+            for endpoint in endpoints:
+                cls.try_create_endpoint(endpoint)
             return dp
         else:
             return data_provider
+
+    @classmethod
+    def try_create_endpoint(cls, endpoint_data):
+        try:
+            ep = Endpoint.objects.create(**endpoint_data)
+        except Exception as e:
+            logger.warning(f"endpoint was not created due to error: {e}")
 
     @classmethod
     def get_providers_from_aws(cls):
