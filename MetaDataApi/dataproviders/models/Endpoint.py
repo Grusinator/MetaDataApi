@@ -2,7 +2,7 @@ from enum import Enum
 
 from django.db import models
 
-from MetaDataApi.dataproviders.models import DataProvider
+from MetaDataApi.dataproviders.models.DataProvider import DataProvider
 
 
 class ApiTypes(Enum):

@@ -7,6 +7,6 @@ class DataprovidersConfig(AppConfig):
     def ready(self):
         try:
             from MetaDataApi.dataproviders.models.initialize_data_providers import InitializeDataProviders
-            InitializeDataProviders.load()
+            # InitializeDataProviders.load()
         except Exception:
             print("could not initialize data providers")

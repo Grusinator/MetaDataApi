@@ -14,16 +14,16 @@ class InitializeDataProviders:
     local_client_file = "data_providers.json"
 
     @classmethod
+    def load(cls):
+        providers = cls.read_data_providers_from_file()
+        [cls.try_create_provider(provider) for provider in providers]
+
+    @classmethod
     def read_data_providers_from_file(cls):
         try:
             return JsonUtils.read_json_file(cls.local_client_file)
         except FileNotFoundError as e:
             return cls.get_providers_from_aws()
-
-    @classmethod
-    def load(cls):
-        providers = cls.read_data_providers_from_file()
-        [cls.try_create_provider(provider) for provider in providers]
 
     @classmethod
     def try_create_provider(cls, provider: dict):
@@ -37,10 +37,11 @@ class InitializeDataProviders:
         provider_name = provider_data["provider_name"]
         data_provider = DataProvider.exists(provider_name)
         if data_provider is None:
-            dp = DataProvider(**provider_data).save()
+            dp = DataProvider(**provider_data)
+            dp.save()
             return dp
         else:
-            return DataProvider(**provider_data)
+            return data_provider
 
     @classmethod
     def get_providers_from_aws(cls):

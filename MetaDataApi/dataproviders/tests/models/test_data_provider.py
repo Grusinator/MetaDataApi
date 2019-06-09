@@ -1,5 +1,3 @@
-import json
-
 import django
 from django.test import TransactionTestCase
 
@@ -27,8 +25,7 @@ class TestDataProvider(TransactionTestCase):
             access_token_url="d",
             client_id="d",
             client_secret="d",
-            scope="d",
-            rest_endpoints_list=json.dumps([{"name": "dummy", "url": "test.com"}])
+            scope="d"
         )
         data_provider.save()
 

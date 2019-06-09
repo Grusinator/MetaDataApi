@@ -5,11 +5,11 @@ from graphene_django.types import DjangoObjectType
 from graphene_file_upload.scalars import Upload
 from graphql_jwt.decorators import login_required
 
-from MetaDataApi.metadata.models import Schema, SchemaAttribute, SchemaEdge
+from MetaDataApi.metadata.models import Schema, SchemaNode, SchemaAttribute, SchemaEdge
 from MetaDataApi.metadata.services import *
 
 
-class SchemaNode(DjangoObjectType):
+class SchemaGqlNode(DjangoObjectType):
     class Meta:
         model = Schema
         filter_fields = {
@@ -210,8 +210,8 @@ class AddRdfSchema(graphene.Mutation):
 
 # wrap all queries and mutations
 class Query(graphene.ObjectType):
-    schema = graphene.relay.Node.Field(SchemaNode)
-    all_schemas = DjangoFilterConnectionField(SchemaNode)
+    schema = graphene.relay.Node.Field(SchemaGqlNode)
+    all_schemas = DjangoFilterConnectionField(SchemaGqlNode)
 
     object = graphene.relay.Node.Field(ObjectNode)
     all_objects = DjangoFilterConnectionField(ObjectNode)
