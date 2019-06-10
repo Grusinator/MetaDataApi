@@ -1,22 +1,14 @@
-from enum import Enum
-
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.urls import reverse
 
+from MetaDataApi.dataproviders.models.ApiTypes import ApiTypes
 from MetaDataApi.metadata.models import Schema
-
-
-class ApiTypes(Enum):
-    OauthRest = "Oauth2-rest"
-    OauthGraphql = "Oauth2-graphql"
-    TokenRest = "Token-rest"
 
 
 class DataProvider(models.Model):
     provider_name = models.TextField(unique=True)
-    api_type = models.TextField(
-        choices=[(type.value, type.name) for type in ApiTypes])
+    api_type = models.TextField(choices=ApiTypes.choices())
     api_endpoint = models.TextField()
     data_provider_node = models.ForeignKey(
         "metadata.Node",

@@ -21,13 +21,15 @@ from django.urls import path, include
 from django.views.generic.base import RedirectView
 from graphene_django.views import GraphQLView
 
+from MetaDataApi.app.views import admin_view
 from MetaDataApi.dataproviders.views import DataProviderView, oauth2redirect_view
 from MetaDataApi.dataproviders.views.endpoint_detail_view import endpoint_detail_view
 from MetaDataApi.dataproviders.views.object_view import object_view
 from MetaDataApi.metadata.views.data_file_view import data_file_view, data_dump_view
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
+    url(r'admin/', admin.site.urls),
+    url(r'admin_i/', admin_view),
     path('accounts/', include('django.contrib.auth.urls')),
     path(
         'providers/',
