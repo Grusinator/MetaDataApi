@@ -3,32 +3,28 @@ import logging
 from django.http import Http404
 from django.shortcuts import render
 
-from MetaDataApi.dataproviders.models import Endpoint
+from MetaDataApi.dataproviders.models import DataProvider
 from MetaDataApi.dataproviders.services.services import StoreDataFromProviderService
-from MetaDataApi.dataproviders.views import DataProviderView
 from MetaDataApi.metadata.services.services import LoadSchemaAndDataFromDataDump
 
 logger = logging.getLogger(__name__)
 
 
 def endpoint_detail_view(request, provider_name, endpoint_name):
-    dataprovider = DataProviderView.get_data_provider(provider_name)
-    endpoint = Endpoint.get_endpoint_as_object(
-        dataprovider.data_provider_instance,
-        endpoint_name
-    )
+    data_provider = DataProvider.objects.get(provider_name=provider_name)
+    endpoint = data_provider.endpoints.get(endpoint_name=endpoint_name)
 
     handle_load_data_from_dump(request)
     handle_store_data(endpoint_name, provider_name, request)
 
-    data_dumps = endpoint.data_dumps
+    data_dumps = endpoint.data_dumps.all()
     data_dumps.sort(key=lambda x: x.date_downloaded, reverse=True)
 
     return render(
         request,
         'endpoint_detail.html',
         {
-            "dataprovider": dataprovider,
+            "data_provider": data_provider,
             "endpoint": endpoint,
             "data_dumps": data_dumps,
             "user_id": request.user.pk

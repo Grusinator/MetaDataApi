@@ -98,14 +98,14 @@ def validate_and_get_profile(request):
 
 def save_data_provider_profile(access_token, data_provider, profile):
     try:
-        tpp = DataProviderProfile.objects.get(
-            profile=profile, provider=data_provider.db_data_provider)
-        tpp.access_token = access_token
+        dpp = DataProviderProfile.objects.get(
+            profile=profile, provider=data_provider)
+        dpp.access_token = access_token
     except ObjectDoesNotExist:
-        tpp = DataProviderProfile(
-            provider=data_provider.db_data_provider,
+        dpp = DataProviderProfile(
+            provider=data_provider,
             access_token=access_token,
             profile=profile
         )
 
-    tpp.save()
+    dpp.save()

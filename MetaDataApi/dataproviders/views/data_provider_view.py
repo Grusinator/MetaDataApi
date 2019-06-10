@@ -1,8 +1,6 @@
 import logging
 
 from django.conf import settings
-from django.core.exceptions import ObjectDoesNotExist
-from django.http import Http404
 from django.shortcuts import redirect
 from django.shortcuts import render
 
@@ -30,25 +28,17 @@ class DataProviderView:
         if not request.user.is_authenticated:
             return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
 
-        dataprovider = DataProviderView.get_data_provider(provider_name)
-        endpoints = dataprovider.endpoints
+        data_provider = DataProvider.objects.get(provider_name=provider_name)
+        endpoints = data_provider.endpoints.all()
 
         return render(
             request,
             'dataprovider_detail.html',
             {
-                "dataprovider": dataprovider,
+                "data_provider": data_provider,
                 "endpoints": endpoints,
                 "user_id": request.user.pk
             }
         )
-
-    @staticmethod
-    def get_data_provider(provider_name):
-        try:
-            dataprovider = DataProvider.objects.get(provider_name=provider_name)
-            return DataProvider(dataprovider.data_provider_instance.pk)
-        except ObjectDoesNotExist:
-            raise Http404('provider does not exist')
 
 
