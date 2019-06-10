@@ -111,7 +111,7 @@ class CreateThirdPartyProfile(Mutation):
 
         third_party_profile = DataProviderProfile(
             profile=profile,
-            provider=provider,
+            data_provider=provider,
             access_token=access_token,
             profile_json_field=profile_json_field)
 

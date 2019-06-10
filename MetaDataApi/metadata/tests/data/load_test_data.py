@@ -66,13 +66,13 @@ class LoadTestData:
         assert provider, "Remember to init DataProviders before loading provider profile"
 
         Endpoint.objects.create(
-            provider=provider,
+            data_provider=provider,
             endpoint_name="activity",
             endpoint_url="v3/activities"
         )
 
         return DataProviderProfile.objects.create(
-            provider=provider,
+            data_provider=provider,
             access_token="174323610143cdcd159f7792c1c4ec5637a96e12",
             profile=Profile.objects.get(user=user)
         )

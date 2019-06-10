@@ -60,7 +60,7 @@ class InitializeDataProviders:
         data_provider = DataProvider.objects.create(**provider_data)
         OauthConfig.objects.create(data_provider=data_provider, **oauth_config)
         for endpoint in endpoints_data:
-            Endpoint.objects.create(provider=data_provider, **endpoint)
+            Endpoint.objects.create(data_provider=data_provider, **endpoint)
         return data_provider
 
     @classmethod

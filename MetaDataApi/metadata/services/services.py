@@ -136,7 +136,7 @@ class IdentifySchemaFromProviderService(Service):
 
         if endpoint == "all" or endpoint is None:
             endpoints = json.loads(
-                provider_service.dataprovider.rest_endpoints_list)
+                provider_service.data_provider.rest_endpoints_list)
         else:
             endpoints = [endpoint, ]
         n_objs = 0
@@ -179,7 +179,7 @@ class IdentifyDataFromProviderService(Service):
         # select which endpoints
         if endpoint == "all" or endpoint is None:
             endpoints = json.loads(
-                provider_service.dataprovider.rest_endpoints_list)
+                provider_service.data_provider.rest_endpoints_list)
         else:
             endpoints = [endpoint, ]
 

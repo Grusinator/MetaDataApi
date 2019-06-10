@@ -17,7 +17,7 @@ def endpoint_detail_view(request, provider_name, endpoint_name):
     handle_load_data_from_dump(request)
     handle_store_data(endpoint_name, provider_name, request)
 
-    data_dumps = endpoint.data_dumps.all()
+    data_dumps = list(endpoint.data_dumps.all())
     data_dumps.sort(key=lambda x: x.date_downloaded, reverse=True)
 
     return render(

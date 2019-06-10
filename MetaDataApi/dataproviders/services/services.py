@@ -14,7 +14,6 @@ class StoreDataFromProviderService(Service):
     endpoint_name = forms.CharField(required=False)
     user_pk = forms.IntegerField()
 
-
     def process(self):
         provider_name = self.cleaned_data['provider_name']
         endpoint_name = self.cleaned_data['endpoint_name']
@@ -28,7 +27,7 @@ class StoreDataFromProviderService(Service):
         # get the profile, with the access token matching the provider_name
         thirdpartyprofiles = user.profile.data_provider_profiles
         thirdpartyprofile = thirdpartyprofiles.get(
-            provider__provider_name=provider_name)
+            data_provider__provider_name=provider_name)
 
         data = service.read_data_from_endpoint(
             endpoint_name, thirdpartyprofile.access_token)

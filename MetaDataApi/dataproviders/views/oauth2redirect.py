@@ -97,7 +97,6 @@ def validate_and_get_profile(request):
     return profile
 
 
-
 def get_user_from_oauth_state(request):
     _, user_id = get_state(request)
     user = User.objects.get(pk=user_id)
