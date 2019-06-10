@@ -12,6 +12,11 @@ logger = logging.getLogger(__name__)
 class DjangoModelUtils:
 
     @staticmethod
+    def update(obj, data):
+        obj.__dict__.update(data)
+        obj.save()
+
+    @staticmethod
     def get_object_or_none(obj_type, **kwargs):
         try:
             return obj_type.objects.get(**kwargs)

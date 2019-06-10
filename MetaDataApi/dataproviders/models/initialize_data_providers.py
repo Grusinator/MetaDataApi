@@ -5,7 +5,10 @@ import boto3
 from django.conf import settings
 
 from MetaDataApi.dataproviders.models import DataProvider, Endpoint
+from MetaDataApi.dataproviders.models.OauthConfig import OauthConfig
 from MetaDataApi.metadata.utils import JsonUtils
+from MetaDataApi.metadata.utils.django_model_utils import DjangoModelUtils
+from MetaDataApi.metadata.utils.json_utils.json_utils import JsonType
 
 logger = logging.getLogger(__name__)
 
@@ -28,30 +31,44 @@ class InitializeDataProviders:
     @classmethod
     def try_create_provider(cls, provider: dict):
         try:
-            cls.create_if_does_not_exists(provider)
+            cls.create_or_update_data_provider(provider)
         except Exception as e:
             logger.error(f'error durring loading of dataprovider {provider["provider_name"]} due to error {e}')
 
     @classmethod
-    def create_if_does_not_exists(cls, provider_data: dict):
+    def create_or_update_data_provider(cls, provider_data: dict):
         provider_name = provider_data["provider_name"]
         data_provider = DataProvider.exists(provider_name)
-        if data_provider is None:
-            endpoints = provider_data.pop("endpoints")
-            dp = DataProvider(**provider_data)
-            dp.save()
-            for endpoint in endpoints:
-                cls.try_create_endpoint(endpoint, dp)
-            return dp
+        if data_provider:
+            return cls.update_data_provider(data_provider, provider_data)
         else:
-            return data_provider
+            return cls.create_data_provider(provider_data)
 
     @classmethod
-    def try_create_endpoint(cls, endpoint_data, data_provider):
-        try:
-            ep = Endpoint.objects.create(provider=data_provider, **endpoint_data)
-        except Exception as e:
-            logger.warning(f"endpoint was not created due to error: {e}")
+    def update_data_provider(cls, data_provider, provider_data):
+        endpoints_data, oauth_config = cls.split_into_data_objects(provider_data)
+        DjangoModelUtils.update(data_provider, provider_data)
+        DjangoModelUtils.update(data_provider.oauth_config, oauth_config)
+        # TODO This approach has some flaws, if an endpoint is deleted etc.
+        for endpoint, endpoint_data in zip(data_provider.endpoints.all(), endpoints_data):
+            DjangoModelUtils.update(endpoint, endpoint_data)
+        return data_provider
+
+    @classmethod
+    def create_data_provider(cls, provider_data: JsonType):
+        endpoints_data, oauth_config = cls.split_into_data_objects(provider_data)
+        data_provider = DataProvider.objects.create(**provider_data)
+        OauthConfig.objects.create(data_provider=data_provider, **oauth_config)
+        for endpoint in endpoints_data:
+            Endpoint.objects.create(provider=data_provider, **endpoint)
+        return data_provider
+
+    @classmethod
+    def split_into_data_objects(cls, provider_data):
+        endpoints_data = provider_data.pop("endpoints")
+        oauth_config = provider_data.pop("oauth_config")
+        oauth_config["scope"] = JsonUtils.dumps(oauth_config["scope"])
+        return endpoints_data, oauth_config
 
     @classmethod
     def get_providers_from_aws(cls):

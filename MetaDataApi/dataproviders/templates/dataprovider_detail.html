@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-{% load data_provider_tags %}
 
 {% block content %}
 <div>
@@ -14,7 +13,7 @@
         <th>
             <div>
                 <h2>
-                    <a href="{% build_auth_url dataprovider user_id %}">
+                    <a href={{ authorize_url }}>
                         Authorize {{dataprovider.provider_name}}
                     </a>
                 </h2>

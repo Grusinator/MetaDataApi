@@ -17,6 +17,10 @@ class JsonUtils:
     def validate(cls, text: str) -> JsonType:
         return json.loads(text, encoding=cls.encoding)
 
+    @classmethod
+    def loads(cls, text: str) -> JsonType:
+        return json.loads(text, encoding=cls.encoding)
+
     @staticmethod
     def clean(text: str) -> str:
         json_obj = json.loads(text)

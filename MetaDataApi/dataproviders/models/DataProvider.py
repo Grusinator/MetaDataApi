@@ -18,13 +18,6 @@ class DataProvider(models.Model):
     api_type = models.TextField(
         choices=[(type.value, type.name) for type in ApiTypes])
     api_endpoint = models.TextField()
-    authorize_url = models.TextField()
-    access_token_url = models.TextField()
-    client_id = models.TextField()
-    client_secret = models.TextField()
-    scope = models.TextField()
-
-    json_schema_file_url = models.TextField(null=True, blank=True)
     data_provider_node = models.ForeignKey(
         "metadata.Node",
         on_delete=models.CASCADE,

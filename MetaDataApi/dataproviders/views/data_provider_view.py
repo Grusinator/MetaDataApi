@@ -30,12 +30,12 @@ class DataProviderView:
 
         data_provider = DataProvider.objects.get(provider_name=provider_name)
         endpoints = data_provider.endpoints.all()
+        oauth_config = data_provider.oauth_config
 
-        return render(
-            request,
-            'dataprovider_detail.html',
+        return render(request, 'dataprovider_detail.html',
             {
                 "data_provider": data_provider,
+                "authorize_url": oauth_config.build_auth_url(request.user.pk),
                 "endpoints": endpoints,
                 "user_id": request.user.pk
             }

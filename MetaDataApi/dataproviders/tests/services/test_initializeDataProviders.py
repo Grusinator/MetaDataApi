@@ -15,7 +15,7 @@ class TestInitializeDataProviders(TransactionTestCase):
         InitializeDataProviders.load()
 
         from MetaDataApi.dataproviders.models import DataProvider
-        dps = list(DataProvider.objects.all())
+        dps = DataProvider.objects.all()
 
         from MetaDataApi.dataproviders.models import Endpoint
 

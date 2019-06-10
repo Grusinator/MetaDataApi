@@ -20,7 +20,7 @@ class TestDataProviderEtlService(TransactionTestCase):
         LoadTestData.create_dummy_provider(dp_profile)
 
         from MetaDataApi.dataproviders.services import DataProviderEtlService
-        service = DataProviderEtlService(dp_profile.provider)
+        service = DataProviderEtlService(dp_profile.data_provider)
 
         endpoint_name = "activity"
 

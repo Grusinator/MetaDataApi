@@ -24,7 +24,7 @@ class TestStoreDataFromProviderService(TransactionTestCase):
         LoadTestData.create_dummy_provider(dpp)
 
         data = StoreDataFromProviderService.execute({
-            "provider_name": dpp.provider.provider_name,
+            "provider_name": dpp.data_provider.provider_name,
             "endpoint_name": "activity",
             "user_pk": user.pk
         })

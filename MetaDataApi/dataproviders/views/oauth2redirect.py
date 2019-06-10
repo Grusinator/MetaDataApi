@@ -1,14 +1,15 @@
 import logging
 
 import requests
+from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 
+from MetaDataApi import settings
 from MetaDataApi.dataproviders.models import DataProvider
 from MetaDataApi.metadata.utils import JsonUtils
 from MetaDataApi.settings import OAUTH_REDIRECT_URI
 from MetaDataApi.users.models import DataProviderProfile
-from MetaDataApi.users.models import Profile
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +24,7 @@ def oauth2redirect_view(request):
     profile = validate_and_get_profile(request)
     data_provider = validate_and_get_provider(request)
 
-    access_token = request_acess_token(code, data_provider)
+    access_token = request_access_token(code, data_provider)
 
     save_data_provider_profile(access_token, data_provider, profile)
     return HttpResponse(
@@ -34,7 +35,7 @@ def oauth2redirect_view(request):
     )
 
 
-def request_acess_token(code, data_provider):
+def request_access_token(code, data_provider):
     data = {
         "grant_type": "authorization_code",
         "code": code,
@@ -85,15 +86,36 @@ def get_auth_code(request):
 
 
 def validate_and_get_profile(request):
-    _, user_id = get_state(request)
-    if not hasattr(request.user, "profile") or request.user.pk is None:
-        raise OauthRedirectRequestException("you are not logged in")
-    profile_on_user = request.user.profile
-    profile_by_id = Profile.objects.get(user__pk=user_id)
+    state_user = get_user_from_oauth_state(request)
+    profile = validate_user_has_profile(state_user)
+    session_user = get_user_from_session(request)
 
-    if profile_on_user.pk != profile_by_id.pk:
-        raise OauthRedirectRequestException("logged in profile do not match with the state")
-    return profile_on_user
+    text = "logged in user do not match with the user returned form oauth response"
+    if session_user != state_user and not settings.DEBUG:
+        raise OauthRedirectRequestException(text)
+    else:
+        logger.warning(text)
+    return profile
+
+
+def get_user_from_session(request):
+    if not hasattr(request.user, "profile"):
+        logger.warning("user do not have a profile")
+        if not User.objects.get(pk=request.user.pk):
+            raise OauthRedirectRequestException("you are not logged in")
+
+
+def get_user_from_oauth_state(request):
+    _, user_id = get_state(request)
+    user = User.objects.get(pk=user_id)
+    return user
+
+
+def validate_user_has_profile(user):
+    if hasattr(user, "profile"):
+        return user.profile
+    else:
+        logger.warning("user do not have a profile")
 
 
 def save_data_provider_profile(access_token, data_provider, profile):
