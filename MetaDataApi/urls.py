@@ -24,7 +24,7 @@ from graphene_django.views import GraphQLView
 from MetaDataApi.dataproviders.views import DataProviderView, oauth2redirect_view
 from MetaDataApi.dataproviders.views.endpoint_detail_view import endpoint_detail_view
 from MetaDataApi.dataproviders.views.object_view import object_view
-from MetaDataApi.metadata.views.data_file_view import data_file_view
+from MetaDataApi.metadata.views.data_file_view import data_file_view, data_dump_view
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -54,7 +54,11 @@ urlpatterns = [
         data_file_view,
         name='datafile'
     ),
-
+    path(
+        'data_dumps/<str:file_name>',
+        data_dump_view,
+        name='data_dump'
+    ),
 
     url(r'^oauth2redirect/$', oauth2redirect_view, name='oauth2redirect'),
     url(r'^graphql/', GraphQLView.as_view(graphiql=True)),

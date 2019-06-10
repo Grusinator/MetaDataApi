@@ -42,7 +42,7 @@
                     <p> {{ data_dump.date_downloaded }} </p>
                 </td>
                 <td>
-                    <form action="{{ data_dump.file.url }}" method="get">
+                    <form action="{{ data_dump.get_internal_view_url }}" method="get">
                         <input type="submit" value="File"/>
                     </form>
                 </td>
