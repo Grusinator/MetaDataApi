@@ -2,7 +2,8 @@ from datetime import datetime, timedelta
 # from jsonschema import validate
 from urllib import request
 
-from MetaDataApi.dataproviders.models import DataProvider, DataDump
+from MetaDataApi.dataproviders.models import DataProvider, DataDump, Endpoint
+from MetaDataApi.dataproviders.models.ApiTypes import ApiTypes
 from MetaDataApi.dataproviders.services.url_format_helper import UrlFormatHelper
 from MetaDataApi.metadata.models import (
     Schema)
@@ -25,32 +26,42 @@ class DataProviderEtlService:
         return schema or Schema.create_new_empty_schema(
             self.data_provider.data_provider_name)
 
-    def read_data_from_endpoint(self, endpoint_name: str, auth_token: str = None):
-        data_provider = self.data_provider
-        endpoint = data_provider.endpoints.get(endpoint_name=endpoint_name)
+    def read_data_from_endpoint(self, endpoint_name: str, access_token: str = None):
+        endpoint = self.data_provider.endpoints.get(endpoint_name=endpoint_name)
+        url = self.build_url(endpoint, access_token)
+        body = self.build_body(endpoint)
+        header = self.build_header(endpoint, access_token)
 
-        endpoint_url = UrlFormatHelper.build_args_for_url(
-            endpoint.endpoint_url,
-            StartDateTime=datetime.now() - timedelta(days=30),
-            EndDateTime=datetime.now(),
-            AuthToken=auth_token
-        )
-
-        url = UrlFormatHelper.join_urls(endpoint.data_provider.api_endpoint, endpoint_url)
-
-        data = self.request_from_endpoint(auth_token, url)
+        data = self.request_from_endpoint(url, body, header)
         return data
 
     @staticmethod
-    def request_from_endpoint(auth_token, url):
-        header = {"Authorization": "Bearer %s" % auth_token}
-        req = request.Request(url, None, header)
+    def request_from_endpoint(url, body, header):
+        req = request.Request(url, body, header)
         response = request.urlopen(req)
         html = response.read()
-
         return html
 
     def save_data_to_file(self, endpoint_name: str, data: str):
         endpoint = self.data_provider.endpoints.get(endpoint_name=endpoint_name)
         file = DjangoModelUtils.convert_str_to_file(data, filetype=DjangoModelUtils.FileType.JSON)
         DataDump.objects.create(endpoint=endpoint, file=file)
+
+    def build_header(self, endpoint: Endpoint, access_token: str):
+        header = endpoint.data_provider.http_config.build_header()
+        if endpoint.data_provider.api_type == ApiTypes.OAUTH_REST:
+            header["Authorization"] = "Bearer %s" % access_token
+        return header
+
+    def build_body(self, endpoint):
+        return None
+
+    def build_url(self, endpoint, access_token):
+        endpoint_url = UrlFormatHelper.build_args_for_url(
+            endpoint.endpoint_url,
+            StartDateTime=datetime.now() - timedelta(days=30),
+            EndDateTime=datetime.now(),
+            AuthToken=access_token
+        )
+
+        return UrlFormatHelper.join_urls(endpoint.data_provider.api_endpoint, endpoint_url)

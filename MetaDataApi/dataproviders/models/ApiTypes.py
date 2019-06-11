@@ -2,6 +2,6 @@ from MetaDataApi.metadata.utils.django_model_utils.DjangoModelEnum import Django
 
 
 class ApiTypes(DjangoModelEnum):
-    OauthRest = "Oauth2-rest"
-    OauthGraphql = "Oauth2-graphql"
-    TokenRest = "Token-rest"
+    OAUTH_REST = "OauthRest"
+    OAUTH_GRAPHQL = "OauthGraphql"
+    TOKEN_REST = "TokenRest"

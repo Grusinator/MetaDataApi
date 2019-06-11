@@ -1,6 +1,7 @@
 import django
 from django.test import TransactionTestCase
 
+from MetaDataApi.dataproviders.models.ApiTypes import ApiTypes
 from MetaDataApi.metadata.utils import JsonUtils
 
 
@@ -10,6 +11,36 @@ class TestDataProviderEtlService(TransactionTestCase):
     def setUpClass(cls):
         super(TestDataProviderEtlService, cls).setUpClass()
         django.setup()
+        from MetaDataApi.dataproviders.models.initialize_data_providers import InitializeDataProviders
+        InitializeDataProviders.load()
+
+    def test_headers_are_built_correctly(self):
+        from MetaDataApi.dataproviders.models import DataProvider
+        data_provider = DataProvider.objects.get(provider_name="tinder")
+
+        from MetaDataApi.metadata.tests import LoadTestData
+        user = LoadTestData.init_user()
+        profile = LoadTestData.init_profile(user)
+        from MetaDataApi.users.models import DataProviderProfile
+        dp_profile = DataProviderProfile.objects.create(
+            profile=profile,
+            data_provider=data_provider,
+            access_token="12345"
+        )
+
+        self.assertEqual(data_provider.api_type, ApiTypes.TOKEN_REST)
+
+        from MetaDataApi.dataproviders.services import DataProviderEtlService
+        service = DataProviderEtlService(dp_profile.data_provider)
+
+        endpoint_name = "profile"
+
+        data = service.read_data_from_endpoint(endpoint_name, dp_profile.access_token)
+
+        expected = ""
+        self.assertEqual(expected, data)
+
+
 
     def test_read_data_from_endpoint_correctly(self):
         from MetaDataApi.metadata.tests import LoadTestData

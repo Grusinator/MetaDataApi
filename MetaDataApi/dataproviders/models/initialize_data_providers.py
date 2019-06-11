@@ -65,9 +65,12 @@ class InitializeDataProviders:
 
     @classmethod
     def split_into_data_objects(cls, provider_data):
-        endpoints_data = provider_data.pop("endpoints")
-        oauth_config = provider_data.pop("oauth_config")
-        oauth_config["scope"] = JsonUtils.dumps(oauth_config["scope"])
+        # TODO fix this
+        remove_list = ["endpoints", "oauth_config", "http_config"]
+        extracted_data = dict()
+        extracted_data["endpoints"] = provider_data.pop("endpoints")
+        extracted_data["oauth_config"] = provider_data.pop("oauth_config")
+        extracted_data["oauth_config"]["scope"] = JsonUtils.dumps(extracted_data["oauth_config"]["scope"])
         return endpoints_data, oauth_config
 
     @classmethod

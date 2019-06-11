@@ -1,6 +1,7 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.urls import reverse
+from django_enumfield import enum
 
 from MetaDataApi.dataproviders.models.ApiTypes import ApiTypes
 from MetaDataApi.metadata.models import Schema
@@ -8,7 +9,7 @@ from MetaDataApi.metadata.models import Schema
 
 class DataProvider(models.Model):
     provider_name = models.TextField(unique=True)
-    api_type = models.TextField(choices=ApiTypes.choices())
+    api_type = enum.EnumField(ApiTypes, ApiTypes.OAUTH_REST)
     api_endpoint = models.TextField()
     data_provider_node = models.ForeignKey(
         "metadata.Node",

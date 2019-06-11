@@ -1,12 +1,16 @@
+
 from django.db import models
 from django.urls import reverse
+from django_enumfield import enum
 
 from MetaDataApi.dataproviders.models.DataProvider import DataProvider
+from MetaDataApi.dataproviders.models.RequestType import RequestType
 
 
 class Endpoint(models.Model):
     endpoint_name = models.TextField()
     endpoint_url = models.TextField()
+    request_type = enum.EnumField(RequestType, default=RequestType.GET)
     data_provider = models.ForeignKey(DataProvider, related_name="endpoints", on_delete=models.CASCADE)
 
     def __str__(self):
