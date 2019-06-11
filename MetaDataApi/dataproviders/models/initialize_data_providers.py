@@ -5,6 +5,7 @@ import boto3
 from django.conf import settings
 
 from MetaDataApi.dataproviders.models import DataProvider, Endpoint
+from MetaDataApi.dataproviders.models.HttpConfig import HttpConfig
 from MetaDataApi.dataproviders.models.OauthConfig import OauthConfig
 from MetaDataApi.metadata.utils import JsonUtils
 from MetaDataApi.metadata.utils.django_model_utils import DjangoModelUtils
@@ -46,32 +47,44 @@ class InitializeDataProviders:
 
     @classmethod
     def update_data_provider(cls, data_provider, provider_data):
-        endpoints_data, oauth_config = cls.split_into_data_objects(provider_data)
+        excess_data = cls.remove_data_from_provider(provider_data)
         DjangoModelUtils.update(data_provider, provider_data)
-        DjangoModelUtils.update(data_provider.oauth_config, oauth_config)
+        DjangoModelUtils.update(data_provider.oauth_config, excess_data.pop("oauth_config"))
+        DjangoModelUtils.update(data_provider.http_config, excess_data.pop("http_config"))
         # TODO This approach has some flaws, if an endpoint is deleted etc.
-        for endpoint, endpoint_data in zip(data_provider.endpoints.all(), endpoints_data):
+        for endpoint, endpoint_data in zip(data_provider.endpoints.all(), excess_data.pop("endpoints")):
             DjangoModelUtils.update(endpoint, endpoint_data)
         return data_provider
 
     @classmethod
     def create_data_provider(cls, provider_data: JsonType):
-        endpoints_data, oauth_config = cls.split_into_data_objects(provider_data)
+        excess_data = cls.remove_data_from_provider(provider_data)
         data_provider = DataProvider.objects.create(**provider_data)
-        OauthConfig.objects.create(data_provider=data_provider, **oauth_config)
-        for endpoint in endpoints_data:
-            Endpoint.objects.create(data_provider=data_provider, **endpoint)
+        cls.create_oauth_config(data_provider, excess_data.pop("oauth_config"))
+        cls.create_http_config(data_provider, excess_data.pop("http_config"))
+        cls.create_endpoints(data_provider, excess_data.pop("endpoints"))
         return data_provider
 
     @classmethod
-    def split_into_data_objects(cls, provider_data):
-        # TODO fix this
+    def create_endpoints(cls, data_provider, endpoints_data):
+        for endpoint in endpoints_data:
+            Endpoint.objects.create(data_provider=data_provider, **endpoint)
+
+    @classmethod
+    def create_oauth_config(cls, data_provider, oauth_data):
+        oauth_data["scope"] = JsonUtils.dumps(oauth_data["scope"])
+        OauthConfig.objects.create(data_provider=data_provider, **oauth_data)
+
+    @classmethod
+    def create_http_config(cls, data_provider, http_data):
+        HttpConfig.objects.create(data_provider=data_provider, **http_data)
+
+    @classmethod
+    def remove_data_from_provider(cls, provider_data):
         remove_list = ["endpoints", "oauth_config", "http_config"]
-        extracted_data = dict()
-        extracted_data["endpoints"] = provider_data.pop("endpoints")
-        extracted_data["oauth_config"] = provider_data.pop("oauth_config")
-        extracted_data["oauth_config"]["scope"] = JsonUtils.dumps(extracted_data["oauth_config"]["scope"])
-        return endpoints_data, oauth_config
+        return {key: provider_data.pop[key] for key in remove_list}
+
+
 
     @classmethod
     def get_providers_from_aws(cls):
