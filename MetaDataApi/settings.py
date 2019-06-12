@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'service_objects',
     'graphene_django',
+    'rest_framework',
     # 'oauth2_provider',
     'corsheaders',
     'storages',
@@ -180,7 +181,6 @@ except FileNotFoundError as e:
     logger.warning("api_keys.json was not found")
 except Exception as e:
     logger.warning("could not read api_keys.json")
-
 
 # TODO change to python decouple
 

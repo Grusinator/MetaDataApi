@@ -37,6 +37,7 @@ django-modeladmin-reorder = "*"
 # tensorflow = "==1.3.0"
 django-dynamic-model = "*"
 django-enumfield = "*"
+djangorestframework = "*"
 
 [dev-packages]
 pep8 = "*"
