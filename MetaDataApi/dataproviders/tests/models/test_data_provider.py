@@ -17,6 +17,7 @@ class TestDataProvider(TransactionTestCase):
         from MetaDataApi.dataproviders.models.initialize_data_providers import InitializeDataProviders
         InitializeDataProviders.load()
 
+    @unittest.skip("rdfs-related")
     def test_create_data_provider_instance(self):
         from MetaDataApi.dataproviders.models import DataProvider
 

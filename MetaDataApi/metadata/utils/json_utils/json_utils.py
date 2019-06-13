@@ -39,6 +39,10 @@ class JsonUtils:
         return cls.hash(cls.dumps(json_obj))
 
     @classmethod
+    def dump_and_load(cls, text):
+        return cls.loads(cls.dumps(text))
+
+    @classmethod
     def to_tuple_set_key_value(cls, json_obj: JsonType):
         if isinstance(json_obj, list):
             return [cls.dict_to_set_of_tuple(elm) for elm in json_obj]

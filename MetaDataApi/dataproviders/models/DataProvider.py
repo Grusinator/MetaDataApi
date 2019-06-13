@@ -1,15 +1,15 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.urls import reverse
-from django_enumfield import enum
 
 from MetaDataApi.dataproviders.models.ApiTypes import ApiTypes
+from MetaDataApi.dataproviders.models.SerializableModel import SerializableModel
 from MetaDataApi.metadata.models import Schema
 
 
-class DataProvider(models.Model):
+class DataProvider(models.Model, SerializableModel):
     provider_name = models.TextField(unique=True)
-    api_type = enum.EnumField(ApiTypes, ApiTypes.OAUTH_REST)
+    api_type = models.TextField(choices=ApiTypes.build_choices(), default=ApiTypes.OAUTH_REST.value)
     api_endpoint = models.TextField()
     data_provider_node = models.ForeignKey(
         "metadata.Node",
@@ -30,7 +30,8 @@ class DataProvider(models.Model):
 
     def save(self, *args, **kwargs):
         if not Schema.exists_by_label(str(self.provider_name)):
-            Schema.create_new_empty_schema(self.provider_name)
+            pass
+            # TODO add back in: Schema.create_new_empty_schema(self.provider_name)
 
         super(DataProvider, self).save(*args, **kwargs)
 
