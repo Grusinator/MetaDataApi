@@ -11,12 +11,20 @@ class SerializableModel:
 
     def build_properties(self) -> dict:
         properties = {"Meta": self.build_meta_class()}
-        for relation_name, relation_serializer in self.get_relations().items():
+        for relation_name, relation_serializer in self.get_relation_serializers().items():
             properties[relation_name] = relation_serializer
         return properties
 
-    def get_relations(self) -> dict:
-        pass
+    def get_relation_serializers(self) -> dict:
+        model_relation_names = self.get_all_model_relations_names()
+        return {name: self.build_serializer_from_property_name(name) for name in model_relation_names}
+
+    def build_serializer_from_property_name(self, name):
+        foreignkey_object = self.get_related_object_by_property_name(name)
+        return foreignkey_object.build_serializer()
+
+    def get_related_object_by_property_name(self, property_name):
+        return self._meta.get_field(property_name).rel.to
 
     def build_meta_class(self):
         return type(
