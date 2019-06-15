@@ -14,8 +14,8 @@ class TestSerializableModel(TestCase):
     def test_build_serializer(self):
         serializer = self.model.build_serializer()
         self.assertEqual(serializer.Meta.model, self.model)
-        expected_ignore = ['id', 'endpoints', 'http_config', 'oauth_config']
-        self.assertListEqual(expected_ignore, serializer.Meta.ignore)
+        expected_exclude = ['id', 'endpoints', 'http_config', 'oauth_config']
+        self.assertListEqual(expected_exclude, serializer.Meta.exclude)
 
         for name in ['endpoints', 'http_config', 'oauth_config']:
             subserializer = self.assert_sub_serializer(name, serializer)
@@ -28,14 +28,14 @@ class TestSerializableModel(TestCase):
         subserializer = getattr(serializer, name)
         from rest_framework.serializers import SerializerMetaclass
         self.assertIsInstance(subserializer, SerializerMetaclass)
-        self.assertIn('id', subserializer.Meta.ignore)
+        self.assertIn('id', subserializer.Meta.exclude)
         return subserializer
 
-    def test_build_serializer_ignore(self):
-        serializer = self.model.build_serializer(ignore=('oauth_config',))
+    def test_build_serializer_exclude(self):
+        serializer = self.model.build_serializer(exclude=('oauth_config',))
         self.assertEqual(serializer.Meta.model, self.model)
-        expected_ignore = ['id', 'endpoints', 'http_config', 'oauth_config']
-        self.assertListEqual(expected_ignore, serializer.Meta.ignore)
+        expected_exclude = ['id', 'endpoints', 'http_config', 'oauth_config']
+        self.assertListEqual(expected_exclude, serializer.Meta.exclude)
         self.assertFalse(hasattr(serializer, "oauth_config"))
         self.assertTrue(hasattr(serializer, "http_config"))
         self.assertTrue(hasattr(serializer, "endpoints"))
