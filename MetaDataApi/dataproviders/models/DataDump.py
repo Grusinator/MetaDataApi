@@ -2,10 +2,11 @@ from django.db import models
 from django.urls import reverse
 
 from MetaDataApi.dataproviders.models.Endpoint import Endpoint
+from MetaDataApi.dataproviders.models.SerializableModel import SerializableModel
 from MetaDataApi.metadata.custom_storages import PrivateMediaStorage
 
 
-class DataDump(models.Model):
+class DataDump(models.Model, SerializableModel):
     storage_path = "datafiles/"
     date_downloaded = models.DateField(auto_now=True)
     endpoint = models.ForeignKey(Endpoint, related_name="data_dumps", on_delete=models.CASCADE)

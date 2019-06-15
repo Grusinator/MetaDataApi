@@ -4,10 +4,11 @@ from django.db import models
 
 from MetaDataApi import settings
 from MetaDataApi.dataproviders.models import DataProvider
+from MetaDataApi.dataproviders.models.SerializableModel import SerializableModel
 from MetaDataApi.metadata.utils import JsonUtils
 
 
-class OauthConfig(models.Model):
+class OauthConfig(models.Model, SerializableModel):
     data_provider = models.OneToOneField(DataProvider, related_name="oauth_config", on_delete=models.CASCADE)
     authorize_url = models.TextField()
     access_token_url = models.TextField()

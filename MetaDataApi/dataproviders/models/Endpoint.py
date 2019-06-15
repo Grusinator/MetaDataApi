@@ -4,9 +4,10 @@ from django.urls import reverse
 
 from MetaDataApi.dataproviders.models.DataProvider import DataProvider
 from MetaDataApi.dataproviders.models.RequestType import RequestType
+from MetaDataApi.dataproviders.models.SerializableModel import SerializableModel
 
 
-class Endpoint(models.Model):
+class Endpoint(models.Model, SerializableModel):
     endpoint_name = models.TextField()
     endpoint_url = models.TextField()
     request_type = models.TextField(choices=RequestType.build_choices(), default=RequestType.GET.value)

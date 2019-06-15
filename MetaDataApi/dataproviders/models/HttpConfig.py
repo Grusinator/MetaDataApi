@@ -1,10 +1,11 @@
 from django.db import models
 
 from MetaDataApi.dataproviders.models import DataProvider
+from MetaDataApi.dataproviders.models.SerializableModel import SerializableModel
 from MetaDataApi.metadata.utils import JsonUtils
 
 
-class HttpConfig(models.Model):
+class HttpConfig(models.Model, SerializableModel):
     data_provider = models.OneToOneField(DataProvider, related_name="http_config", on_delete=models.CASCADE)
     header = models.TextField()
     url_encoded_params = models.TextField()
