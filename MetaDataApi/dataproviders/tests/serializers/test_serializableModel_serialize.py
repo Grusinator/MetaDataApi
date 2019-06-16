@@ -61,7 +61,7 @@ class TestSerializableModelSerialize(TransactionTestCase):
 
     def test_deserializing_provider_and_endpoints(self):
         data = {
-            'provider_name': 'dsfsd4', 'api_type': 'OauthGraphql', 'api_endpoint': '',
+            'provider_name': 'dsfsd4', 'api_type': 'OauthGraphql', 'api_endpoint': '56',
             # 'endpoints': [
             #     {'endpoint_name': 'test1', 'endpoint_url': 'testurl', 'request_type': 'GET'},
             #     {'endpoint_name': 'test2', 'endpoint_url': 'testurl', 'request_type': 'GET'}

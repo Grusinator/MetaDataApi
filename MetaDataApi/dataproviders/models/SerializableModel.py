@@ -30,7 +30,7 @@ class SerializableModel:
         Serializer = cls.build_serializer(depth, exclude)
         serializer = Serializer(data=data)
         if not serializer.is_valid():
-            raise Exception("could not deserialize")
+            raise Exception(f"could not deserialize, due to error: {serializer.default_errors}")
         return serializer.validated_data
         # return cls.objects.create(serializer.validated_data)
 
