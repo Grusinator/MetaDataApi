@@ -4,11 +4,11 @@ from django.test import TransactionTestCase
 from MetaDataApi.dataproviders.models.ApiTypes import ApiTypes
 
 
-class TestSerializableModelSerializer(TransactionTestCase):
+class TestSerializableModelSerialize(TransactionTestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(TestSerializableModelSerializer, cls).setUpClass()
+        super(TestSerializableModelSerialize, cls).setUpClass()
         django.setup()
         from MetaDataApi.dataproviders.models import DataProvider
         cls.model = DataProvider
@@ -19,15 +19,8 @@ class TestSerializableModelSerializer(TransactionTestCase):
         )
 
         data = data_provider.serialize(depth=0)
-        expected = {
-            'oauth_config': None,
-            'http_config': None,
-            'provider_name': 'dsfsd423',
-            'api_type': "OauthRest",
-            'api_endpoint': '',
-            'data_provider_node': None
-        }
-        self.assertEqual(expected, data)
+        expected = {'provider_name': 'dsfsd4', 'api_type': 'OauthRest', 'api_endpoint': ''}
+        self.assertDictEqual(expected, data)
 
     def test_serializing_provider_and_oauth(self):
         from MetaDataApi.dataproviders.models import OauthConfig
@@ -41,38 +34,55 @@ class TestSerializableModelSerializer(TransactionTestCase):
             authorize_url="test"
         )
         oauth.save()
-        data = data_provider.serialize()
+        data = data_provider.serialize(depth=1, exclude=("dataproviderprofile",))
 
-        expected = {'oauth_config': {'authorize_url': 'test', 'access_token_url': '', 'client_id': '',
-                                     'client_secret': '', 'scope': ''},
-                    'http_config': None,
-                    'provider_name': 'dsfsd4',
-                    'api_type': 'OauthRest',
-                    'api_endpoint': '',
-                    'data_provider_node': None}
+        expected = {
+            'provider_name': 'dsfsd4', 'api_type': 'OauthRest', 'api_endpoint': '', 'endpoints': [],
+            'http_config': None,
+            'oauth_config': {
+                'authorize_url': 'test', 'access_token_url': '', 'client_id': '',
+                'client_secret': '', 'scope': ''
+            },
+            'data_provider_node': None
+        }
         self.assertEqual(expected, data)
 
     def test_serializing_provider_and_endpoints(self):
         data_provider = self.create_data_provider_with_endpoints()
 
-        data = data_provider.serialize()
-        expected = {'oauth_config': None, 'http_config': None,
-                    'endpoints': [{'endpoint_name': 'test1', 'endpoint_url': 'testurl', 'request_type': 'GET'},
-                                  {'endpoint_name': 'test2', 'endpoint_url': 'testurl', 'request_type': 'GET'}],
-                    'provider_name': 'dsfsd4', 'api_type': 'OauthGraphql', 'api_endpoint': '',
-                    'data_provider_node': None}
+        data = data_provider.serialize(depth=1, exclude=("dataproviderprofile",))
+        expected = {'provider_name': 'dsfsd4', 'api_type': 'OauthGraphql', 'api_endpoint': '',
+                    'endpoints': [
+                        {'endpoint_name': 'test1', 'endpoint_url': 'testurl', 'request_type': 'GET'},
+                        {'endpoint_name': 'test2', 'endpoint_url': 'testurl', 'request_type': 'GET'}
+                    ],
+                    'http_config': None, 'oauth_config': None, 'data_provider_node': None}
         self.assertEqual(expected, data)
 
     def test_deserializing_provider_and_endpoints(self):
         data = {
-            'provider_name': 'dsfsd4',
-            'api_endpoint': 'ghfj'
+            'provider_name': 'dsfsd4', 'api_type': 'OauthGraphql', 'api_endpoint': '',
+            # 'endpoints': [
+            #     {'endpoint_name': 'test1', 'endpoint_url': 'testurl', 'request_type': 'GET'},
+            #     {'endpoint_name': 'test2', 'endpoint_url': 'testurl', 'request_type': 'GET'}
+            # ],
+            # 'http_config': None,
+            # 'oauth_config': None,
+            # 'data_provider_node': None
         }
 
-        from MetaDataApi.dataproviders.serializers.DataProviderSerializer import DataProviderSerializer
-        serializer = DataProviderSerializer(data=data)
-        self.assertTrue(serializer.is_valid())
-        self.assertEqual(data, serializer.validated_data)
+        from MetaDataApi.dataproviders.models import DataProvider
+        data_out = DataProvider.deserialize(
+            data, depth=0,
+            exclude=(
+                "dataproviderprofile",
+                "oauth_config",
+                "http_config",
+                "data_provider_node",
+            )
+        )
+
+        self.assertEqual(data, data_out)
 
     def create_data_provider_with_endpoints(self):
         data_provider = self.model.objects.create(

@@ -1,15 +1,24 @@
-from django.db.models import ForeignKey, OneToOneField
-from django.db.models.fields.related_descriptors import ReverseOneToOneDescriptor, ReverseManyToOneDescriptor
+import logging
+
+from django.db.models import TextField, IntegerField, FloatField, BooleanField, ForeignKey, OneToOneField, ManyToOneRel, \
+    OneToOneRel
 from rest_framework.serializers import ModelSerializer
 
 from MetaDataApi.metadata.utils import JsonUtils
 from MetaDataApi.metadata.utils.json_utils.json_utils import JsonType
 
+logger = logging.getLogger(__name__)
+
 
 class SerializableModel:
-    model_relations = (ForeignKey, OneToOneField,)
-    model_descriptors = (ReverseOneToOneDescriptor, ReverseManyToOneDescriptor)
+    many_to_one_relation_types = (ForeignKey, ManyToOneRel)
+    one_to_one_relation_types = (OneToOneField, OneToOneRel)
+    relation_types = many_to_one_relation_types + one_to_one_relation_types
+    attribute_types = (TextField, IntegerField, FloatField, BooleanField)
     DEPTH_INFINITE = 999999
+    MODEL = "model"
+    META = "Meta"
+    FIELDS = "fields"
 
     def serialize(self, depth: int = DEPTH_INFINITE, exclude: tuple = ()):
         Serializer = type(self).build_serializer(depth, exclude)
@@ -22,7 +31,8 @@ class SerializableModel:
         serializer = Serializer(data=data)
         if not serializer.is_valid():
             raise Exception("could not deserialize")
-        return cls.objects.create(serializer.validated_data)
+        return serializer.validated_data
+        # return cls.objects.create(serializer.validated_data)
 
     @classmethod
     def build_serializer(cls, depth: int = DEPTH_INFINITE, exclude: tuple = ()):
@@ -31,40 +41,56 @@ class SerializableModel:
 
     @classmethod
     def build_properties(cls, depth, exclude) -> dict:
-        properties = {"Meta": cls.build_meta_class()}
+        properties = {cls.META: cls.build_meta_class(exclude)}
         if depth:
             depth = cls.adjust_depth(depth)
-            properties.update(cls.get_relation_serializers(depth, exclude))
+            properties = cls.add_relations_to_properties(properties, depth, exclude)
         return properties
 
     @classmethod
-    def get_relation_serializers(cls, depth, exclude) -> dict:
-        model_relation_names = cls.get_all_model_relations_names()
-        model_relation_names = set(model_relation_names) - set(exclude)
-        return {name: cls.build_serializer_from_property_name(name, depth) for name in model_relation_names}
+    def build_relation_serializers(cls, relation_names, depth) -> dict:
+        return {name: cls.try_build_relation_serializer_instance(name, depth) for name in relation_names}
 
     @classmethod
-    def build_serializer_from_property_name(cls, name, depth):
-        foreignkey_object = cls.get_related_object_by_property_name(name)
-        return foreignkey_object.build_serializer(depth)
+    def try_build_relation_serializer_instance(cls, property_name, depth):
+        try:
+            foreignkey_object = cls.get_related_object_by_property_name(property_name)
+            Serializer = foreignkey_object.build_serializer(depth)
+            return Serializer(many=cls.is_related_object_many(property_name))
+        except Exception as e:
+            logger.warning(f"could not create related serializer object with name: {property_name}")
+
+
+    @classmethod
+    def is_related_object_many(cls, property_name):
+        return type(cls._meta.get_field(property_name)) in cls.many_to_one_relation_types
 
     @classmethod
     def get_related_object_by_property_name(cls, property_name):
         return cls._meta.get_field(property_name).related_model
 
     @classmethod
-    def build_meta_class(cls):
-        return type(
-            "Meta", (),
-            {
-                "model": cls,
-                "exclude": ["id"] + cls.get_all_model_relations_names()}
-        )
+    def build_meta_class(cls, exclude):
+        meta_properties = {
+            cls.MODEL: cls,
+            cls.FIELDS: cls.get_all_attribute_names(exclude)
+        }
+        return type(cls.META, (), meta_properties)
 
     @classmethod
-    def get_all_model_relations_names(cls) -> list:
+    def get_all_model_relations_names(cls, exclude: list = ()) -> list:
+        names = cls.get_all_field_names_of_type(cls.relation_types)
         # TODO remove this _set when this has been handled
-        return [k for k, v in cls.__dict__.items() if isinstance(v, cls.model_descriptors) and "_set" not in k]
+        return [name for name in names if ("_set" not in name) and (name not in exclude)]
+
+    @classmethod
+    def get_all_attribute_names(cls, exclude: list):
+        names = cls.get_all_field_names_of_type(cls.attribute_types)
+        return [name for name in names if name not in exclude]
+
+    @classmethod
+    def get_all_field_names_of_type(cls, types) -> list:
+        return [field.name for field in cls._meta.get_fields() if isinstance(field, types)]
 
     @classmethod
     def adjust_depth(cls, depth):
@@ -72,3 +98,10 @@ class SerializableModel:
             return depth
         else:
             return depth - 1 if depth > 0 else 0
+
+    @classmethod
+    def add_relations_to_properties(cls, properties, depth, exclude):
+        relation_names = cls.get_all_model_relations_names(exclude)
+        properties[cls.META].fields += relation_names
+        properties.update(cls.build_relation_serializers(relation_names, depth))
+        return properties
