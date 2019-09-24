@@ -2,10 +2,14 @@ import logging
 
 from django.db.models import TextField, IntegerField, FloatField, BooleanField, ForeignKey, OneToOneField, ManyToOneRel, \
     OneToOneRel
+# switch between djongo and postgres Jsonfields
+from djongo.models.json import JSONField
 from rest_framework.serializers import ModelSerializer
 
 from MetaDataApi.metadata.utils import JsonUtils
 from MetaDataApi.metadata.utils.json_utils.json_utils import JsonType
+
+# from django.contrib.postgres.fields import JSONField
 
 logger = logging.getLogger(__name__)
 
@@ -14,23 +18,24 @@ class SerializableModel:
     many_to_one_relation_types = (ForeignKey, ManyToOneRel)
     one_to_one_relation_types = (OneToOneField, OneToOneRel)
     relation_types = many_to_one_relation_types + one_to_one_relation_types
-    attribute_types = (TextField, IntegerField, FloatField, BooleanField)
+    attribute_types = (TextField, IntegerField, FloatField, BooleanField, JSONField)
     DEPTH_INFINITE = 999999
+    DEPTH_TEMP_FIX_D1 = 1
     MODEL = "model"
     META = "Meta"
     FIELDS = "fields"
 
-    def serialize(self, depth: int = DEPTH_INFINITE, exclude: tuple = ()):
+    def serialize(self, depth: int = DEPTH_TEMP_FIX_D1, exclude: tuple = ()):
         Serializer = type(self).build_serializer(depth, exclude)
         data = Serializer(self).data
         return JsonUtils.dump_and_load(data)
 
     @classmethod
-    def deserialize(cls, data: JsonType, depth: int = DEPTH_INFINITE, exclude: tuple = ()):
+    def deserialize(cls, data: JsonType, depth: int = DEPTH_TEMP_FIX_D1, exclude: tuple = ()):
         Serializer = cls.build_serializer(depth, exclude)
         serializer = Serializer(data=data)
         if not serializer.is_valid():
-            raise Exception(f"could not deserialize, due to error: {serializer.default_errors}")
+            raise Exception(f"could not deserialize, due to error: {serializer.errors}")
         return serializer.validated_data
         # return cls.objects.create(serializer.validated_data)
 

@@ -26,22 +26,30 @@ class TestSerializableModelSerialize(TransactionTestCase):
         from MetaDataApi.dataproviders.models import OauthConfig
 
         data_provider = self.model.objects.create(
-            provider_name="dsfsd4",
+            provider_name="dsfsd6",
         )
         data_provider.save()
         oauth = OauthConfig.objects.create(
             data_provider=data_provider,
-            authorize_url="test"
+            authorize_url="test",
+            access_token_url="test.dk",
+            client_id="123",
+            client_secret="test",
+            scope=['234', ]
+
         )
         oauth.save()
         data = data_provider.serialize(depth=1, exclude=("dataproviderprofile",))
 
         expected = {
-            'provider_name': 'dsfsd4', 'api_type': 'OauthRest', 'api_endpoint': '', 'endpoints': [],
+            'provider_name': 'dsfsd6', 'api_type': 'OauthRest', 'api_endpoint': '', 'endpoints': [],
             'http_config': None,
             'oauth_config': {
-                'authorize_url': 'test', 'access_token_url': '', 'client_id': '',
-                'client_secret': '', 'scope': ''
+                'authorize_url': 'test',
+                'access_token_url': 'test.dk',
+                'client_id': '123',
+                'client_secret': 'test',
+                'scope': "['234']",
             },
             'data_provider_node': None
         }
@@ -61,11 +69,11 @@ class TestSerializableModelSerialize(TransactionTestCase):
 
     def test_deserializing_provider_and_endpoints(self):
         data = {
-            'provider_name': 'dsfsd4', 'api_type': 'OauthGraphql', 'api_endpoint': '56',
-            # 'endpoints': [
-            #     {'endpoint_name': 'test1', 'endpoint_url': 'testurl', 'request_type': 'GET'},
-            #     {'endpoint_name': 'test2', 'endpoint_url': 'testurl', 'request_type': 'GET'}
-            # ],
+            'provider_name': 'dsfsd4', 'api_type': ApiTypes.OAUTH_GRAPHQL.name, 'api_endpoint': '56',
+            'endpoints': [
+                {'endpoint_name': 'test1', 'endpoint_url': 'testurl', 'request_type': 'GET'},
+                {'endpoint_name': 'test2', 'endpoint_url': 'testurl', 'request_type': 'GET'}
+            ],
             # 'http_config': None,
             # 'oauth_config': None,
             # 'data_provider_node': None
@@ -73,12 +81,53 @@ class TestSerializableModelSerialize(TransactionTestCase):
 
         from MetaDataApi.dataproviders.models import DataProvider
         data_out = DataProvider.deserialize(
-            data, depth=0,
+            data, depth=1,
             exclude=(
                 "dataproviderprofile",
                 "oauth_config",
                 "http_config",
                 "data_provider_node",
+            )
+        )
+
+        self.assertEqual(data, data_out)
+
+    def test_deserializing_configs(self):
+        data = {
+            'provider_name': 'dsfsd4', 'api_type': ApiTypes.OAUTH_GRAPHQL.name, 'api_endpoint': '56',
+            'endpoints': [
+                {'endpoint_name': 'test1', 'endpoint_url': 'testurl', 'request_type': 'GET'},
+                {'endpoint_name': 'test2', 'endpoint_url': 'testurl', 'request_type': 'GET'}
+            ],
+            "oauth_config": {
+                "authorize_url": "https://account.withings.com/oauth2_user/authorize2",
+                "access_token_url": "https://account.withings.com/oauth2/token",
+                "client_id": "123",
+                "client_secret": "12345",
+                "scope": [
+                    "user.activity"
+                ]
+            },
+            "http_config": {
+                "header": {
+                    "User-Agent": "Tinder/7.5.3 (iPhone; iOS 10.3.2; Scale/2.00)",
+                    "X-Auth-Token": "{AuthToken:}",
+                    "Content-Type": "application/json"
+                },
+                "url_encoded_params": [{"d": "a"}, {"c": "t"}, ]
+            }
+        }
+
+        from MetaDataApi.dataproviders.models import DataProvider
+        data_out = DataProvider.deserialize(
+            data, depth=1,
+            exclude=(
+                "dataproviderprofile",
+                # "oauth_config",
+                # "http_config",
+                "data_provider_node",
+                # "data_provider",
+                # "endpoints"
             )
         )
 

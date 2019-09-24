@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 import json
 import logging
 import os
+import sys
 
 import django_heroku
 
@@ -32,7 +33,7 @@ except:
 
 ENV = os.environ.get('ENV') or "LOCAL"
 
-DEBUG = ENV != "PROD"
+DEBUG = (ENV != "PROD") | (sys.gettrace() is None)  # gettrace() is none when not debugging
 
 ALLOWED_HOSTS = ["*"]
 
