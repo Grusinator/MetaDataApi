@@ -1,15 +1,13 @@
 import logging
 
+# switch between djongo and postgres Jsonfields
+from django.contrib.postgres.fields import JSONField
 from django.db.models import TextField, IntegerField, FloatField, BooleanField, ForeignKey, OneToOneField, ManyToOneRel, \
     OneToOneRel
-# switch between djongo and postgres Jsonfields
-from djongo.models.json import JSONField
 from rest_framework.serializers import ModelSerializer
 
 from MetaDataApi.metadata.utils import JsonUtils
 from MetaDataApi.metadata.utils.json_utils.json_utils import JsonType
-
-# from django.contrib.postgres.fields import JSONField
 
 logger = logging.getLogger(__name__)
 

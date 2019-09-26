@@ -115,23 +115,23 @@ WSGI_APPLICATION = 'MetaDataApi.wsgi.application'
 #     }
 # }
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'djongo',
-        'NAME': 'meta-data-api',
-    }
-}
-
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
+#         'ENGINE': 'djongo',
 #         'NAME': 'meta-data-api',
-#         'USER': 'django',
-#         'PASSWORD': 'dev1234',
-#         'HOST': 'localhost',
-#         'PORT': '5432',
 #     }
 # }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'meta-data-api',
+        'USER': 'django',
+        'PASSWORD': 'dev1234',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
+}
 
 GRAPHENE = {
     'SCHEMA': 'MetaDataApi.schema.schema',

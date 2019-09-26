@@ -1,16 +1,15 @@
 from urllib import parse
 
-from django.db import models
 # switch between djongo and postgres Jsonfields
-from djongo.models.json import JSONField
+# from djongo.models.json import JSONField
+from django.contrib.postgres.fields import JSONField
+from django.core.serializers.json import DjangoJSONEncoder
+from django.db import models
 
 from MetaDataApi import settings
 from MetaDataApi.dataproviders.models import DataProvider
 from MetaDataApi.dataproviders.models.SerializableModel import SerializableModel
 from MetaDataApi.metadata.utils import JsonUtils
-
-
-# from django.contrib.postgres.fields import JSONField
 
 
 class OauthConfig(models.Model, SerializableModel):
@@ -19,7 +18,7 @@ class OauthConfig(models.Model, SerializableModel):
     access_token_url = models.TextField()
     client_id = models.TextField()
     client_secret = models.TextField()
-    scope = JSONField()
+    scope = JSONField(encoder=DjangoJSONEncoder)
 
     def __str__(self):
         return f"OAuth2:{self.data_provider.name}"
@@ -48,5 +47,7 @@ class OauthConfig(models.Model, SerializableModel):
 
     def build_scopes_string(self):
         if self.scope:
-            scopes = JsonUtils.loads(str(self.scope))
-            return " ".join(scopes)
+            if isinstance(self.scope, list):
+                return " ".join(self.scope)
+            else:  # string
+                return " ".join(JsonUtils.loads(str(self.scope)))
