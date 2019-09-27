@@ -15,7 +15,9 @@ class TestSerializableModelSerialize(TransactionTestCase):
 
     def test_deserializing_provider_and_endpoints(self):
         data = {
-            'provider_name': 'dsfsd4', 'api_type': ApiTypes.OAUTH_GRAPHQL.name, 'api_endpoint': '56',
+            'provider_name': 'dsfsd4',
+            'api_type': ApiTypes.OAUTH_GRAPHQL.name,
+            'api_endpoint': '56',
             'endpoints': [
                 {'endpoint_name': 'test1', 'endpoint_url': 'testurl', 'request_type': 'GET'},
                 {'endpoint_name': 'test2', 'endpoint_url': 'testurl', 'request_type': 'GET'}
@@ -53,11 +55,15 @@ class TestSerializableModelSerialize(TransactionTestCase):
                 "scope": ["user.activity"]
             },
             "http_config": {
-                "header": '{"User-Agent": "Tinder/7.5.3 (iPhone; iOS 10.3.2; Scale/2.00)",'
-                          '"X-Auth-Token": "{AuthToken:}",'
-                          '"Content-Type": "application/json"'
-                          '},',
-                "url_encoded_params": '[{"d": "a"}, {"c": "t"}, ]'
+                "header": {
+                    "User-Agent": "Tinder/7.5.3 (iPhone; iOS 10.3.2; Scale/2.00)",
+                    "X-Auth-Token": "{AuthToken:}",
+                    "Content-Type": "application/json"
+                },
+                "url_encoded_params": {
+                    "d": "a",
+                    "c": "t"
+                },
             }
         }
 
@@ -70,7 +76,10 @@ class TestSerializableModelSerialize(TransactionTestCase):
                 # "http_config",
                 "data_provider_node",
                 # "data_provider",
-                # "endpoints"
+                # "endpoints",
+                "scope",
+                "header",
+                "url_encoded_params"
             )
         )
 

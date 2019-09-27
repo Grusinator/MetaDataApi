@@ -1,14 +1,13 @@
 import logging
 
-# switch between djongo and postgres Jsonfields
-from django.contrib.postgres.fields import JSONField
 from django.db.models import TextField, IntegerField, FloatField, BooleanField, ForeignKey, OneToOneField, ManyToOneRel, \
     OneToOneRel
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ModelSerializer, JSONField as JSONSerializerField
 
 from MetaDataApi.metadata.utils import JsonUtils
 from MetaDataApi.metadata.utils.json_utils.json_utils import JsonType
 
+from jsonfield import JSONField
 logger = logging.getLogger(__name__)
 
 
@@ -18,10 +17,14 @@ class SerializableModel:
     relation_types = many_to_one_relation_types + one_to_one_relation_types
     attribute_types = (TextField, IntegerField, FloatField, BooleanField, JSONField)
     DEPTH_INFINITE = 999999
-    DEPTH_TEMP_FIX_D1 = 1
+    DEPTH_TEMP_FIX_D1 = 2
     MODEL = "model"
     META = "Meta"
     FIELDS = "fields"
+
+    CUSTOM_FIELDS = {
+        JSONField: JSONSerializerField,
+    }
 
     def serialize(self, depth: int = DEPTH_TEMP_FIX_D1, exclude: tuple = ()):
         Serializer = type(self).build_serializer(depth, exclude)
@@ -45,6 +48,9 @@ class SerializableModel:
     @classmethod
     def build_properties(cls, depth, exclude) -> dict:
         properties = {cls.META: cls.build_meta_class(exclude)}
+        custom_field_properties = cls.build_custom_field_properties(exclude)
+        properties.update(custom_field_properties)
+        #[properties[cls.META].fields.remove(name) for name in custom_field_properties.keys()]
         if depth:
             depth = cls.adjust_depth(depth)
             properties = cls.add_relations_to_properties(properties, depth, exclude)
@@ -108,3 +114,11 @@ class SerializableModel:
         properties[cls.META].fields += relation_names
         properties.update(cls.build_relation_serializers(relation_names, depth))
         return properties
+
+    @classmethod
+    def build_custom_field_properties(cls, exclude=()):
+        custom_field_properties = {}
+        for ModelField, SerializerField in cls.CUSTOM_FIELDS.items():
+            names = cls.get_all_field_names_of_type(ModelField)
+            custom_field_properties.update({name: SerializerField for name in names if name not in exclude})
+        return custom_field_properties
