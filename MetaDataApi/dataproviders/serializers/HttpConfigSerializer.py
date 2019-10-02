@@ -1,11 +1,11 @@
-from rest_framework import serializers
+from rest_framework.serializers import ModelSerializer, JSONField
 
 from MetaDataApi.dataproviders.models.HttpConfig import HttpConfig
 
 
-class HttpConfigSerializer(serializers.ModelSerializer):
-    header = serializers.JSONField()
-    url_encoded_params = serializers.JSONField()
+class HttpConfigSerializer(ModelSerializer):
+    header = JSONField()
+    url_encoded_params = JSONField()
 
     class Meta:
         model = HttpConfig
@@ -15,11 +15,11 @@ class HttpConfigSerializer(serializers.ModelSerializer):
     def build_from_metaclass(cls):
         properties = {
             "Meta": cls.build_nested_meta_class(),
-            "header": serializers.JSONField(),
-            "url_encoded_params" : serializers.JSONField()
+            "header": JSONField(),
+            "url_encoded_params" : JSONField()
 
         }
-        return type("MetaHttpConfigSerializer", (serializers.ModelSerializer,), properties)
+        return type("MetaHttpConfigSerializer", (ModelSerializer,), properties)
 
     @classmethod
     def build_nested_meta_class(cls):
