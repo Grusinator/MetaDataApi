@@ -30,11 +30,21 @@ class InitializeDataProviders:
             return cls.get_providers_from_aws()
 
     @classmethod
-    def try_create_provider(cls, provider: dict):
+    def try_create_provider(cls, provider_data: dict):
         try:
-            cls.create_or_update_data_provider(provider)
+            cls.create_data_provider(provider_data)
         except Exception as e:
-            logger.error(f'error durring loading of dataprovider {provider["provider_name"]} due to error {e}')
+            logger.error(f'error durring loading of dataprovider {provider_data["provider_name"]} due to error {e}')
+
+    @classmethod
+    def create_data_provider(cls, provider_data):
+        validated_data = DataProvider.deserialize(provider_data)
+        provider_name = provider_data["provider_name"]
+        data_provider = DataProvider.exists(provider_name)
+        if data_provider:
+            data_provider.delete()
+        data_provider = DataProvider(**validated_data)
+        data_provider.save()
 
     @classmethod
     def create_or_update_data_provider(cls, provider_data: dict):
