@@ -26,19 +26,21 @@ class SerializableModel:
         JSONField: JSONSerializerField,
     }
 
-    def serialize(self, depth: int = DEPTH_TEMP_FIX_D1, exclude: tuple = ()):
-        Serializer = type(self).build_serializer(depth, exclude)
+    def serialize(self, max_depth: int = DEPTH_TEMP_FIX_D1, exclude: tuple = ()):
+        Serializer = type(self).build_serializer(max_depth, exclude)
         data = Serializer(self).data
         return JsonUtils.dump_and_load(data)
 
     @classmethod
-    def deserialize(cls, data: JsonType, depth: int = DEPTH_TEMP_FIX_D1, exclude: tuple = ()):
-        validated_data = cls.deserialize_to_validated_data(data, depth, exclude)
-        return cls.create_object_from_validated_data(validated_data)
+    def deserialize(cls, data: JsonType, max_depth: int = DEPTH_TEMP_FIX_D1, exclude: tuple = ()):
+        validated_data = cls.deserialize_to_validated_data(data, max_depth, exclude)
+        # cls.create_object_from_validated_data(validated_data)
+        return validated_data
+
 
     @classmethod
-    def deserialize_to_validated_data(cls, data, depth, exclude):
-        Serializer = cls.build_serializer(depth, exclude)
+    def deserialize_to_validated_data(cls, data, max_depth, exclude):
+        Serializer = cls.build_serializer(max_depth, exclude)
         serializer = Serializer(data=data)
         if not serializer.is_valid():
             raise Exception(f"could not deserialize, due to error: {serializer.errors}")
@@ -49,18 +51,18 @@ class SerializableModel:
         return cls(**validated_data)
 
     @classmethod
-    def build_serializer(cls, depth: int = DEPTH_INFINITE, exclude: tuple = ()):
-        properties = cls.build_properties(depth, exclude)
+    def build_serializer(cls, max_depth: int = DEPTH_INFINITE, exclude: tuple = ()):
+        properties = cls.build_properties(max_depth, exclude)
         return type(cls.__name__ + "Serializer", (ModelSerializer,), properties)
 
     @classmethod
-    def build_properties(cls, depth, exclude) -> dict:
+    def build_properties(cls, max_depth, exclude) -> dict:
         properties = {"Meta": cls.build_meta_class(exclude)}
         custom_field_properties = cls.build_custom_field_properties(exclude)
         properties.update(custom_field_properties)
-        if depth:
-            depth = cls.adjust_depth(depth)
-            properties = cls.add_relations_to_properties(properties, depth, exclude)
+        if max_depth:
+            max_depth = cls.adjust_depth(max_depth)
+            properties = cls.add_relations_to_properties(properties, max_depth, exclude)
         return properties
 
     @classmethod

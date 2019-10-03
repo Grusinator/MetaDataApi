@@ -40,21 +40,21 @@ class TestSerializableModel(TestCase):
         self.assertTrue(hasattr(serializer, "endpoints"))
 
     def test_build_serializer_depth_0(self):
-        serializer = self.model.build_serializer(depth=0)
+        serializer = self.model.build_serializer(max_depth=0)
         self.assertTrue(hasattr(serializer, "Meta"))
         self.assertFalse(hasattr(serializer, "oauth_config"))
         self.assertFalse(hasattr(serializer, "http_config"))
         self.assertFalse(hasattr(serializer, "endpoints"))
 
     def test_build_serializer_depth_1(self):
-        serializer = self.model.build_serializer(depth=1)
+        serializer = self.model.build_serializer(max_depth=1)
         for name in ['endpoints', 'http_config', 'oauth_config']:
             sub_serializer = self.assert_sub_serializer(name, serializer)
             if name is "endpoints":
                 self.assertFalse(hasattr(sub_serializer, "data_dumps"))
 
     def test_build_serializer_depth_2(self):
-        serializer = self.model.build_serializer(depth=2)
+        serializer = self.model.build_serializer(max_depth=2)
         for name in ['endpoints', 'http_config', 'oauth_config']:
             sub_serializer = self.assert_sub_serializer(name, serializer)
             if name is "endpoints":

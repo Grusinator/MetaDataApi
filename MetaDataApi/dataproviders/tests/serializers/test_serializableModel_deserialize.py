@@ -29,7 +29,7 @@ class TestSerializableModelSerialize(TransactionTestCase):
 
         from MetaDataApi.dataproviders.models import DataProvider
         data_out = DataProvider.deserialize(
-            data, depth=1,
+            data, max_depth=1,
             exclude=(
                 "dataproviderprofile",
                 "oauth_config",
@@ -69,7 +69,7 @@ class TestSerializableModelSerialize(TransactionTestCase):
 
         from MetaDataApi.dataproviders.models import DataProvider
         data_out = DataProvider.deserialize(
-            data, depth=1,
+            data, max_depth=1,
             exclude=(
                 "dataproviderprofile",
                 # "oauth_config",

@@ -18,7 +18,7 @@ class TestSerializableModelSerialize(TransactionTestCase):
             provider_name="dsfsd4"
         )
 
-        data = data_provider.serialize(depth=0)
+        data = data_provider.serialize(max_depth=0)
         expected = {'provider_name': 'dsfsd4', 'api_type': 'OauthRest', 'api_endpoint': ''}
         self.assertDictEqual(expected, data)
 
@@ -39,7 +39,7 @@ class TestSerializableModelSerialize(TransactionTestCase):
 
         )
         oauth.save()
-        data = data_provider.serialize(depth=1, exclude=("dataproviderprofile",))
+        data = data_provider.serialize(max_depth=1, exclude=("dataproviderprofile",))
 
         expected = {
             'provider_name': 'dsfsd6', 'api_type': 'OauthRest', 'api_endpoint': '', 'endpoints': [],
@@ -49,7 +49,7 @@ class TestSerializableModelSerialize(TransactionTestCase):
                 'access_token_url': 'test.dk',
                 'client_id': '123',
                 'client_secret': 'test',
-                'scope': "['234']",
+                'scope': ['234'],
             },
             'data_provider_node': None
         }
@@ -58,7 +58,7 @@ class TestSerializableModelSerialize(TransactionTestCase):
     def test_serializing_provider_and_endpoints(self):
         data_provider = self.create_data_provider_with_endpoints()
 
-        data = data_provider.serialize(depth=1, exclude=("dataproviderprofile",))
+        data = data_provider.serialize(max_depth=1, exclude=("dataproviderprofile",))
         expected = {'provider_name': 'dsfsd4', 'api_type': 'OauthGraphql', 'api_endpoint': '',
                     'endpoints': [
                         {'endpoint_name': 'test1', 'endpoint_url': 'testurl', 'request_type': 'GET'},

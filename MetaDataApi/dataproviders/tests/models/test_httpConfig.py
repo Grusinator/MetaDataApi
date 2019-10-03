@@ -39,8 +39,9 @@ class TestHttpConfig(TransactionTestCase):
         exp_obj = self.build_http_model_objects()
 
         from MetaDataApi.dataproviders.models import HttpConfig
-        obj = HttpConfig.deserialize(data=data, depth=1,
+        validated_data = HttpConfig.deserialize(data=data, max_depth=1,
                                      exclude=("dataproviderprofile", "data_provider", "data_provider_node"))
+        obj = HttpConfig.create_object_from_validated_data(validated_data)
         self.assertEqual(exp_obj.header, obj.header)
         self.assertEqual(exp_obj.url_encoded_params, obj.url_encoded_params)
 
@@ -87,7 +88,7 @@ class TestHttpConfig(TransactionTestCase):
         stat = HttpConfigSerializer
         from MetaDataApi.dataproviders.models import HttpConfig
         dyna = HttpConfig.build_serializer(
-            depth=2,
+            max_depth=2,
             exclude=("body_type", "body_content", "data_provider", "request_type")
         )
 
@@ -99,7 +100,7 @@ class TestHttpConfig(TransactionTestCase):
 
         stat = HttpConfigSerializer.build_properties()
         from MetaDataApi.dataproviders.models import HttpConfig
-        dyna = HttpConfig.build_properties(depth=0, exclude=("data_provider", 'body_type', 'body_content', 'request_type'))
+        dyna = HttpConfig.build_properties(max_depth=0, exclude=("data_provider", 'body_type', 'body_content', 'request_type'))
         self.assertEqual(type(stat), type(dyna))
         self.assertEqual(type(stat["header"]), type(dyna["header"]))
         self.assertEqual(type(stat["url_encoded_params"]), type(dyna["url_encoded_params"]))
