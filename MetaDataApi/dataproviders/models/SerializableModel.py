@@ -66,14 +66,14 @@ class SerializableModel:
         return properties
 
     @classmethod
-    def build_relation_serializers(cls, relation_names, depth) -> dict:
-        return {name: cls.try_build_relation_serializer_instance(name, depth) for name in relation_names}
+    def build_relation_serializers(cls, relation_names, filter) -> dict:
+        return {name: cls.try_build_relation_serializer_instance(name, filter) for name in relation_names}
 
     @classmethod
-    def try_build_relation_serializer_instance(cls, property_name, depth, exclude):
+    def try_build_relation_serializer_instance(cls, property_name, filter):
         try:
             foreignkey_object = cls.get_related_object_by_property_name(property_name)
-            Serializer = foreignkey_object.build_serializer(depth, exclude=exclude)
+            Serializer = foreignkey_object.build_serializer(filter)
             return Serializer(many=cls.is_related_object_many(property_name))
         except Exception as e:
             logger.warning(f"could not create related serializer object with name: {property_name}")
@@ -88,10 +88,10 @@ class SerializableModel:
         return cls._meta.get_field(property_name).related_model
 
     @classmethod
-    def build_meta_class(cls, exclude):
+    def build_meta_class(cls, filter):
         meta_properties = {
             cls.MODEL: cls,
-            cls.FIELDS: cls.get_all_attribute_names(exclude)
+            cls.FIELDS: cls.get_all_attribute_names(filter)
         }
         return type(cls.META, (), meta_properties)
 
@@ -99,12 +99,12 @@ class SerializableModel:
     def get_all_model_relations_names(cls, filter) -> list:
         names = cls.get_all_field_names_of_type(cls.relation_types)
         # TODO remove this _set when this has been handled
-        return [name for name in names if ("_set" not in name) and (name not in filter.exclude)]
+        return [name for name in names if ("_set" not in name) and (name not in filter.exclude_labels)]
 
     @classmethod
-    def get_all_attribute_names(cls, exclude: list):
+    def get_all_attribute_names(cls, filter):
         names = cls.get_all_field_names_of_type(cls.attribute_types)
-        return [name for name in names if name not in exclude]
+        return [name for name in names if name not in filter.exclude_labels]
 
     @classmethod
     def get_all_field_names_of_type(cls, types) -> list:
