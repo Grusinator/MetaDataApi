@@ -4,6 +4,7 @@ from django.db.models import TextField, IntegerField, FloatField, BooleanField, 
     OneToOneRel
 from rest_framework.serializers import ModelSerializer, JSONField as JSONSerializerField
 
+from MetaDataApi.dataproviders.models.SerializableModelFilter import SerializableModelFilter
 from MetaDataApi.metadata.utils import JsonUtils
 from MetaDataApi.metadata.utils.json_utils.json_utils import JsonType
 
@@ -16,8 +17,7 @@ class SerializableModel:
     one_to_one_relation_types = (OneToOneField, OneToOneRel)
     relation_types = many_to_one_relation_types + one_to_one_relation_types
     attribute_types = (TextField, IntegerField, FloatField, BooleanField, JSONField)
-    DEPTH_INFINITE = 999999
-    DEPTH_TEMP_FIX_D1 = 2
+
     MODEL = "model"
     META = "Meta"
     FIELDS = "fields"
@@ -26,21 +26,23 @@ class SerializableModel:
         JSONField: JSONSerializerField,
     }
 
-    def serialize(self, max_depth: int = DEPTH_TEMP_FIX_D1, exclude: tuple = ()):
-        Serializer = type(self).build_serializer(max_depth, exclude)
+    def serialize(self, max_depth: int = SerializableModelFilter.DEPTH_INFINITE, exclude: tuple = ()):
+        filter = SerializableModelFilter(max_depth,exclude_labels=exclude)
+        Serializer = type(self).build_serializer(filter)
         data = Serializer(self).data
         return JsonUtils.dump_and_load(data)
 
     @classmethod
-    def deserialize(cls, data: JsonType, max_depth: int = DEPTH_TEMP_FIX_D1, exclude: tuple = ()):
-        validated_data = cls.deserialize_to_validated_data(data, max_depth, exclude)
+    def deserialize(cls, data: JsonType, max_depth: int = SerializableModelFilter.DEPTH_INFINITE, exclude: tuple = ()):
+        filter = SerializableModelFilter(max_depth=max_depth, exclude_labels=exclude)
+        validated_data = cls.deserialize_to_validated_data(data, filter)
         # cls.create_object_from_validated_data(validated_data)
         return validated_data
 
 
     @classmethod
-    def deserialize_to_validated_data(cls, data, max_depth, exclude):
-        Serializer = cls.build_serializer(max_depth, exclude)
+    def deserialize_to_validated_data(cls, data, filter: SerializableModelFilter):
+        Serializer = cls.build_serializer(filter)
         serializer = Serializer(data=data)
         if not serializer.is_valid():
             raise Exception(f"could not deserialize, due to error: {serializer.errors}")
@@ -51,18 +53,16 @@ class SerializableModel:
         return cls(**validated_data)
 
     @classmethod
-    def build_serializer(cls, max_depth: int = DEPTH_INFINITE, exclude: tuple = ()):
-        properties = cls.build_properties(max_depth, exclude)
+    def build_serializer(cls, filter: SerializableModelFilter):
+        properties = cls.build_properties(filter)
         return type(cls.__name__ + "Serializer", (ModelSerializer,), properties)
 
     @classmethod
-    def build_properties(cls, max_depth, exclude) -> dict:
-        properties = {"Meta": cls.build_meta_class(exclude)}
-        custom_field_properties = cls.build_custom_field_properties(exclude)
+    def build_properties(cls, filter : SerializableModelFilter) -> dict:
+        properties = {cls.META: cls.build_meta_class(filter)}
+        custom_field_properties = cls.build_custom_field_properties(filter)
         properties.update(custom_field_properties)
-        if max_depth:
-            max_depth = cls.adjust_depth(max_depth)
-            properties = cls.add_relations_to_properties(properties, max_depth, exclude)
+        properties = cls.add_relations_to_properties(properties, filter)
         return properties
 
     @classmethod
@@ -96,10 +96,10 @@ class SerializableModel:
         return type(cls.META, (), meta_properties)
 
     @classmethod
-    def get_all_model_relations_names(cls, exclude: list = ()) -> list:
+    def get_all_model_relations_names(cls, filter) -> list:
         names = cls.get_all_field_names_of_type(cls.relation_types)
         # TODO remove this _set when this has been handled
-        return [name for name in names if ("_set" not in name) and (name not in exclude)]
+        return [name for name in names if ("_set" not in name) and (name not in filter.exclude)]
 
     @classmethod
     def get_all_attribute_names(cls, exclude: list):
@@ -111,23 +111,17 @@ class SerializableModel:
         return [field.name for field in cls._meta.get_fields() if isinstance(field, types)]
 
     @classmethod
-    def adjust_depth(cls, depth):
-        if depth == cls.DEPTH_INFINITE:
-            return depth
-        else:
-            return depth - 1 if depth > 0 else 0
+    def add_relations_to_properties(cls, properties, filter):
 
-    @classmethod
-    def add_relations_to_properties(cls, properties, depth, exclude):
-        relation_names = cls.get_all_model_relations_names(exclude)
+        relation_names = cls.get_all_model_relations_names(filter)
         properties[cls.META].fields += relation_names
-        properties.update(cls.build_relation_serializers(relation_names, depth, parrent_relation_name))
+        properties.update(cls.build_relation_serializers(relation_names, filter))
         return properties
 
     @classmethod
-    def build_custom_field_properties(cls, exclude=()):
+    def build_custom_field_properties(cls, filter):
         custom_field_properties = {}
         for ModelField, SerializerField in cls.CUSTOM_FIELDS.items():
             names = cls.get_all_field_names_of_type(ModelField)
-            custom_field_properties.update({name: SerializerField() for name in names if name not in exclude})
+            custom_field_properties.update({name: SerializerField() for name in names if name not in filter.exclude_labels})
         return custom_field_properties
