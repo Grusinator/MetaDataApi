@@ -16,6 +16,15 @@ logger = logging.getLogger(__name__)
 
 class InitializeDataProviders:
     local_client_file = "data_providers.json"
+    exclude = (
+                "dataproviderprofile",
+                "data_provider_node",
+                "data_dump",
+                "data_dumps",
+                "endpoints",
+                "oauth_config",
+                "http_config"
+            )
 
     @classmethod
     def load(cls):
@@ -32,19 +41,25 @@ class InitializeDataProviders:
     @classmethod
     def try_create_provider(cls, provider_data: dict):
         try:
-            cls.create_data_provider(provider_data)
+            cls.create_data_provider_v2(provider_data)
         except Exception as e:
             logger.error(f'error durring loading of dataprovider {provider_data["provider_name"]} due to error {e}')
 
     @classmethod
-    def create_data_provider(cls, provider_data):
-        validated_data = DataProvider.deserialize(provider_data)
+    def create_data_provider_v2(cls, provider_data):
+        validated_data = DataProvider.deserialize(
+            provider_data,
+            exclude=cls.exclude,
+            max_depth=4
+        )
         provider_name = provider_data["provider_name"]
         data_provider = DataProvider.exists(provider_name)
         if data_provider:
             data_provider.delete()
+            print("provider exists - deleted")
         data_provider = DataProvider(**validated_data)
         data_provider.save()
+        print(f"provider saved: {provider_name}")
 
     @classmethod
     def create_or_update_data_provider(cls, provider_data: dict):

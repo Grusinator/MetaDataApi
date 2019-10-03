@@ -70,10 +70,10 @@ class SerializableModel:
         return {name: cls.try_build_relation_serializer_instance(name, depth) for name in relation_names}
 
     @classmethod
-    def try_build_relation_serializer_instance(cls, property_name, depth):
+    def try_build_relation_serializer_instance(cls, property_name, depth, exclude):
         try:
             foreignkey_object = cls.get_related_object_by_property_name(property_name)
-            Serializer = foreignkey_object.build_serializer(depth)
+            Serializer = foreignkey_object.build_serializer(depth, exclude=exclude)
             return Serializer(many=cls.is_related_object_many(property_name))
         except Exception as e:
             logger.warning(f"could not create related serializer object with name: {property_name}")
@@ -121,7 +121,7 @@ class SerializableModel:
     def add_relations_to_properties(cls, properties, depth, exclude):
         relation_names = cls.get_all_model_relations_names(exclude)
         properties[cls.META].fields += relation_names
-        properties.update(cls.build_relation_serializers(relation_names, depth))
+        properties.update(cls.build_relation_serializers(relation_names, depth, parrent_relation_name))
         return properties
 
     @classmethod
