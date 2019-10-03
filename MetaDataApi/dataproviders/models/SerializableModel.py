@@ -33,12 +33,20 @@ class SerializableModel:
 
     @classmethod
     def deserialize(cls, data: JsonType, depth: int = DEPTH_TEMP_FIX_D1, exclude: tuple = ()):
+        validated_data = cls.deserialize_to_validated_data(data, depth, exclude)
+        return cls.create_object_from_validated_data(validated_data)
+
+    @classmethod
+    def deserialize_to_validated_data(cls, data, depth, exclude):
         Serializer = cls.build_serializer(depth, exclude)
         serializer = Serializer(data=data)
         if not serializer.is_valid():
             raise Exception(f"could not deserialize, due to error: {serializer.errors}")
         return serializer.validated_data
-        # return cls.objects.create(serializer.validated_data)
+
+    @classmethod
+    def create_object_from_validated_data(cls, validated_data):
+        return cls(**validated_data)
 
     @classmethod
     def build_serializer(cls, depth: int = DEPTH_INFINITE, exclude: tuple = ()):
@@ -47,10 +55,9 @@ class SerializableModel:
 
     @classmethod
     def build_properties(cls, depth, exclude) -> dict:
-        properties = {cls.META: cls.build_meta_class(exclude)}
+        properties = {"Meta": cls.build_meta_class(exclude)}
         custom_field_properties = cls.build_custom_field_properties(exclude)
         properties.update(custom_field_properties)
-        #[properties[cls.META].fields.remove(name) for name in custom_field_properties.keys()]
         if depth:
             depth = cls.adjust_depth(depth)
             properties = cls.add_relations_to_properties(properties, depth, exclude)
@@ -120,5 +127,5 @@ class SerializableModel:
         custom_field_properties = {}
         for ModelField, SerializerField in cls.CUSTOM_FIELDS.items():
             names = cls.get_all_field_names_of_type(ModelField)
-            custom_field_properties.update({name: SerializerField for name in names if name not in exclude})
+            custom_field_properties.update({name: SerializerField() for name in names if name not in exclude})
         return custom_field_properties

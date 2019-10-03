@@ -35,27 +35,14 @@ class TestHttpConfig(TransactionTestCase):
         self.assertEqual(expected, data)
 
     def test_http_dynamic_serializer_deserialize(self):
-        data = {
-            "http_config": {
-                "data_provider": {
-                    "provider_name": "test"
-                },
-                "header": {
-                    "User-Agent": "Tinder/7.5.3 (iPhone; iOS 10.3.2; Scale/2.00)",
-                    "X-Auth-Token": "{AuthToken:}",
-                    "Content-Type": "application/json"
-                },
-                "url_encoded_params": {
-                    "d": "a",
-                    "c": "t"
-                },
-            }
-        }
+        data = self.build_http_expected_json()
+        exp_obj = self.build_http_model_objects()
 
         from MetaDataApi.dataproviders.models import HttpConfig
-        obj = HttpConfig.deserialize(data=data, depth=2,
+        obj = HttpConfig.deserialize(data=data, depth=1,
                                      exclude=("dataproviderprofile", "data_provider", "data_provider_node"))
-        self.assertEqual(obj, None)
+        self.assertEqual(exp_obj.header, obj.header)
+        self.assertEqual(exp_obj.url_encoded_params, obj.url_encoded_params)
 
     def test_http_dynamic_serializer_serialize(self):
         expected = self.build_http_expected_json()
@@ -94,14 +81,6 @@ class TestHttpConfig(TransactionTestCase):
         data = HttpConfigSerializer.build_from_metaclass()(obj).data
         self.assertDictEqual(data, self.build_http_expected_json())
 
-    @unittest.skip
-    def test_create_some_class(self):
-        from MetaDataApi.dataproviders.serializers.HttpConfigSerializer import SomeClass
-        meta_some_class = SomeClass.build_some_class()
-        some_class = SomeClass
-
-        self.assertIsInstance(meta_some_class.Meta, object)
-
 
     def test_if_dynamic_serializer_class_is_equal_to_static(self):
         from MetaDataApi.dataproviders.serializers.HttpConfigSerializer import HttpConfigSerializer
@@ -112,9 +91,19 @@ class TestHttpConfig(TransactionTestCase):
             exclude=("body_type", "body_content", "data_provider", "request_type")
         )
 
-        #self.assertDictEqual(dict(stat.Meta.fields), dict(dyna.Meta.fields))
         self.assertEqual(stat.Meta.fields, dyna.Meta.fields)
         self.assertEqual(stat.Meta.model, dyna.Meta.model)
+
+    def test_meta_static_dynamic_properties_equal(self):
+        from MetaDataApi.dataproviders.serializers.HttpConfigSerializer import HttpConfigSerializer
+
+        stat = HttpConfigSerializer.build_properties()
+        from MetaDataApi.dataproviders.models import HttpConfig
+        dyna = HttpConfig.build_properties(depth=0, exclude=("data_provider", 'body_type', 'body_content', 'request_type'))
+        self.assertEqual(type(stat), type(dyna))
+        self.assertEqual(type(stat["header"]), type(dyna["header"]))
+        self.assertEqual(type(stat["url_encoded_params"]), type(dyna["url_encoded_params"]))
+        self.assertEqual(stat["Meta"].model, dyna["Meta"].model)
 
 
     def test_if_dynamic_serializer_class_is_equal_to_static_metaclass(self):
@@ -124,29 +113,7 @@ class TestHttpConfig(TransactionTestCase):
         from MetaDataApi.dataproviders.models import HttpConfig
         dyna = HttpConfig.build_serializer(exclude=("data_provider", 'body_type', 'body_content', 'request_type'))
 
-        # self.assertDictEqual(dict(stat.Meta.fields), dict(dyna.Meta.fields))
         self.assertEqual(stat.Meta.fields, dyna.Meta.fields)
-        self.assertDictEqual(stat.__dict__, dyna.__dict__)
-
-    def test_if_dynamic_serializer_instance_is_equal_to_static_deserialize(self):
-        data = self.build_http_expected_json()
-        from MetaDataApi.dataproviders.serializers.HttpConfigSerializer import HttpConfigSerializer
-        stat = HttpConfigSerializer(data)
-        from MetaDataApi.dataproviders.models import HttpConfig
-        dynaClass = HttpConfig.build_serializer(
-            depth=1,
-            exclude=("body_type", "body_content", "data_provider", "request_type")
-        )
-        dyna = dynaClass(data=data)
-
-        self.assertTrue(hasattr(dyna, "url_encoded_params"))
-        self.assertTrue(hasattr(dyna, "header"))
-        self.assertTrue(hasattr(stat, "url_encoded_params"))
-        self.assertTrue(hasattr(stat, "header"))
-
-        #self.assertDictEqual(dict(stat.Meta.fields), dict(dyna.Meta.fields))
-        self.assertDictEqual(dict(stat.Meta.fields), dict(dyna.Meta.fields))
-        self.assertDictEqual(dict(stat.Meta.fields), dict(dyna.Meta.fields))
 
 
     def build_http_model_objects(self):
