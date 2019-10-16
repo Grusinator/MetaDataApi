@@ -1,5 +1,3 @@
-import unittest
-
 import django
 from django.test import TransactionTestCase
 
@@ -40,7 +38,7 @@ class TestHttpConfig(TransactionTestCase):
 
         from MetaDataApi.dataproviders.models import HttpConfig
         validated_data = HttpConfig.deserialize(data=data, max_depth=1,
-                                     exclude=("dataproviderprofile", "data_provider", "data_provider_node"))
+                                                exclude=("dataproviderprofile", "data_provider", "data_provider_node"))
         obj = HttpConfig.create_object_from_validated_data(validated_data)
         self.assertEqual(exp_obj.header, obj.header)
         self.assertEqual(exp_obj.url_encoded_params, obj.url_encoded_params)
@@ -82,15 +80,11 @@ class TestHttpConfig(TransactionTestCase):
         data = HttpConfigSerializer.build_from_metaclass()(obj).data
         self.assertDictEqual(data, self.build_http_expected_json())
 
-
     def test_if_dynamic_serializer_class_is_equal_to_static(self):
         from MetaDataApi.dataproviders.serializers.HttpConfigSerializer import HttpConfigSerializer
         stat = HttpConfigSerializer
         from MetaDataApi.dataproviders.models import HttpConfig
-        dyna = HttpConfig.build_serializer(
-            max_depth=2,
-            exclude=("body_type", "body_content", "data_provider", "request_type")
-        )
+        dyna = HttpConfig.build_serializer(self.build_default_filter(max_depth=2))
 
         self.assertEqual(stat.Meta.fields, dyna.Meta.fields)
         self.assertEqual(stat.Meta.model, dyna.Meta.model)
@@ -100,22 +94,21 @@ class TestHttpConfig(TransactionTestCase):
 
         stat = HttpConfigSerializer.build_properties()
         from MetaDataApi.dataproviders.models import HttpConfig
-        dyna = HttpConfig.build_properties(max_depth=0, exclude=("data_provider", 'body_type', 'body_content', 'request_type'))
+        filter = self.build_default_filter()
+        dyna = HttpConfig.build_properties(filter)
         self.assertEqual(type(stat), type(dyna))
         self.assertEqual(type(stat["header"]), type(dyna["header"]))
         self.assertEqual(type(stat["url_encoded_params"]), type(dyna["url_encoded_params"]))
         self.assertEqual(stat["Meta"].model, dyna["Meta"].model)
-
 
     def test_if_dynamic_serializer_class_is_equal_to_static_metaclass(self):
         from MetaDataApi.dataproviders.serializers.HttpConfigSerializer import HttpConfigSerializer
 
         stat = HttpConfigSerializer.build_from_metaclass()
         from MetaDataApi.dataproviders.models import HttpConfig
-        dyna = HttpConfig.build_serializer(exclude=("data_provider", 'body_type', 'body_content', 'request_type'))
+        dyna = HttpConfig.build_serializer(self.build_default_filter())
 
         self.assertEqual(stat.Meta.fields, dyna.Meta.fields)
-
 
     def build_http_model_objects(self):
         from MetaDataApi.dataproviders.models import DataProvider
@@ -148,3 +141,17 @@ class TestHttpConfig(TransactionTestCase):
             },
         }
         return expected
+
+    @staticmethod
+    def build_default_filter(max_depth=0):
+        from MetaDataApi.dataproviders.models.SerializableModelFilter import SerializableModelFilter
+        filter = SerializableModelFilter(
+            max_depth=max_depth,
+            exclude_labels=(
+                "data_provider",
+                'body_type',
+                'body_content',
+                'request_type'
+            )
+        )
+        return filter

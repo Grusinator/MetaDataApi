@@ -18,7 +18,9 @@ class TestSerializableModelSerialize(TransactionTestCase):
             provider_name="dsfsd4"
         )
 
-        data = data_provider.serialize(max_depth=0)
+        # TODO use this test to fix serializable model filter
+
+        data = data_provider.serialize(max_depth=1)
         expected = {'provider_name': 'dsfsd4', 'api_type': 'OauthRest', 'api_endpoint': ''}
         self.assertDictEqual(expected, data)
 

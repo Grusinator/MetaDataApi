@@ -2,13 +2,13 @@ import logging
 
 from django.db.models import TextField, IntegerField, FloatField, BooleanField, ForeignKey, OneToOneField, ManyToOneRel, \
     OneToOneRel
+from jsonfield import JSONField
 from rest_framework.serializers import ModelSerializer, JSONField as JSONSerializerField
 
 from MetaDataApi.dataproviders.models.SerializableModelFilter import SerializableModelFilter
 from MetaDataApi.metadata.utils import JsonUtils
 from MetaDataApi.metadata.utils.json_utils.json_utils import JsonType
 
-from jsonfield import JSONField
 logger = logging.getLogger(__name__)
 
 
@@ -27,7 +27,7 @@ class SerializableModel:
     }
 
     def serialize(self, max_depth: int = SerializableModelFilter.DEPTH_INFINITE, exclude: tuple = ()):
-        filter = SerializableModelFilter(max_depth,exclude_labels=exclude)
+        filter = SerializableModelFilter(max_depth, exclude_labels=exclude)
         Serializer = type(self).build_serializer(filter)
         data = Serializer(self).data
         return JsonUtils.dump_and_load(data)
@@ -38,7 +38,6 @@ class SerializableModel:
         validated_data = cls.deserialize_to_validated_data(data, filter)
         # cls.create_object_from_validated_data(validated_data)
         return validated_data
-
 
     @classmethod
     def deserialize_to_validated_data(cls, data, filter: SerializableModelFilter):
@@ -58,7 +57,7 @@ class SerializableModel:
         return type(cls.__name__ + "Serializer", (ModelSerializer,), properties)
 
     @classmethod
-    def build_properties(cls, filter : SerializableModelFilter) -> dict:
+    def build_properties(cls, filter: SerializableModelFilter) -> dict:
         properties = {cls.META: cls.build_meta_class(filter)}
         custom_field_properties = cls.build_custom_field_properties(filter)
         properties.update(custom_field_properties)
@@ -77,7 +76,6 @@ class SerializableModel:
             return Serializer(many=cls.is_related_object_many(property_name))
         except Exception as e:
             logger.warning(f"could not create related serializer object with name: {property_name}")
-
 
     @classmethod
     def is_related_object_many(cls, property_name):
@@ -123,5 +121,6 @@ class SerializableModel:
         custom_field_properties = {}
         for ModelField, SerializerField in cls.CUSTOM_FIELDS.items():
             names = cls.get_all_field_names_of_type(ModelField)
-            custom_field_properties.update({name: SerializerField() for name in names if name not in filter.exclude_labels})
+            custom_field_properties.update(
+                {name: SerializerField() for name in names if name not in filter.exclude_labels})
         return custom_field_properties
