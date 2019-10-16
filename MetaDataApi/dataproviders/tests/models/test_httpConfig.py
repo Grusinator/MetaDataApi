@@ -48,7 +48,7 @@ class TestHttpConfig(TransactionTestCase):
 
         http = self.build_http_model_objects()
 
-        res = http.serialize(exclude=("body_type", "body_content", "data_provider", "request_type"))
+        res = http.serialize(exclude_labels=("body_type", "body_content", "data_provider", "request_type"))
         self.assertEqual(res, expected)
 
     def test_http_static_serializer_deserialize(self):
