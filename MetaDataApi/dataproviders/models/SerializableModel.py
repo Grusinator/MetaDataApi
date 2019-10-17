@@ -82,6 +82,8 @@ class SerializableModel:
         custom_field_properties = cls.build_custom_field_properties(filter)
         properties.update(custom_field_properties)
         properties = cls.add_relations_to_properties(properties, filter)
+
+        properties = cls.add_create_method_to_properties(properties)
         return properties
 
     @classmethod
@@ -149,3 +151,22 @@ class SerializableModel:
             names = filter.apply_property_filter(names)
             custom_field_properties.update({name: SerializerField() for name in names})
         return custom_field_properties
+
+    @classmethod
+    def add_create_method_to_properties(cls, properties):
+        def create(self, validated_data):
+            # some of this could be fetched from the serializer instance, fx save
+            properties = get_properties(validated_data)
+            relations = get_relations(validated_data)
+            relation_instances = {}
+            for relation in relations:
+                relation_object = relation.get_object()
+                instance = relation_object.objects.create(**validated_data)
+                name = get_name(relation)
+                relation_instances[name] = instance
+
+            base_instance = self.Meta.model.objects.create(**properties, **relation_instances)
+            return base_instance
+
+        properties["create"] = create
+        return properties
