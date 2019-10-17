@@ -9,7 +9,7 @@ class HttpConfigSerializer(ModelSerializer):
 
     class Meta:
         model = HttpConfig
-        fields = ["header", "url_encoded_params"]
+        fields = ["url_encoded_params", "header"]
 
     @classmethod
     def build_from_metaclass(cls):

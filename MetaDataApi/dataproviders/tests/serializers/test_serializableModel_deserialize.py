@@ -41,6 +41,33 @@ class TestSerializableModelSerialize(TransactionTestCase):
         self.assertEqual(data, data_out)
 
     def test_deserializing_configs(self):
+        # AssertionError: The `.create()` method does not support writable nested fields by default.
+        # Write an explicit `.create()` method for serializer `rest_framework.serializers.DataProviderSerializer`,
+        # or set `read_only=True` on nested serializer fields.
+
+        data = self.build_data()
+
+        from MetaDataApi.dataproviders.models import DataProvider
+        data_out = DataProvider.deserialize(
+            data, max_depth=1,
+            exclude=(
+                "dataproviderprofile",
+                # "oauth_config",
+                # "http_config",
+                "data_provider_node",
+                # "data_provider",
+                # "endpoints",
+                "scope",
+                "header",
+                "url_encoded_params"
+            )
+        )
+
+        dp = DataProvider(**data)
+        self.maxDiff = None
+        self.assertDictEqual(data, data_out)
+
+    def build_data(self):
         data = {
             'provider_name': 'dsfsd4', 'api_type': ApiTypes.OAUTH_GRAPHQL.name, 'api_endpoint': '56',
             'endpoints': [
@@ -66,21 +93,4 @@ class TestSerializableModelSerialize(TransactionTestCase):
                 },
             }
         }
-
-        from MetaDataApi.dataproviders.models import DataProvider
-        data_out = DataProvider.deserialize(
-            data, max_depth=1,
-            exclude=(
-                "dataproviderprofile",
-                # "oauth_config",
-                # "http_config",
-                "data_provider_node",
-                # "data_provider",
-                # "endpoints",
-                "scope",
-                "header",
-                "url_encoded_params"
-            )
-        )
-
-        self.assertEqual(data, data_out)
+        return data

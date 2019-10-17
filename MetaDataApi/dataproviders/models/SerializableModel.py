@@ -45,10 +45,28 @@ class SerializableModel:
         serializer = Serializer(data=data)
         if not serializer.is_valid():
             raise Exception(f"could not deserialize, due to error: {serializer.errors}")
+        serialized_object = serializer.save()
         return serializer.validated_data
 
     @classmethod
     def create_object_from_validated_data(cls, validated_data):
+        # AssertionError: The `.create()` method does not support writable nested fields by default.
+        # Write an explicit `.create()` method for serializer `rest_framework.serializers.DataProviderSerializer`,
+        # or set `read_only=True` on nested serializer fields.
+        # TODO: fix this by adding a create method in the generic serializer
+
+        # https://stackoverflow.com/questions/41394761/the-create-method-does-not-support-writable-nested-fields-by-default
+        #     def create(self, validated_data):
+        #         order = Order.objects.get(pk=validated_data.pop('event'))
+        #         instance = Equipment.objects.create(**validated_data)
+        #         Assignment.objects.create(Order=order, Equipment=instance)
+        #         return instance
+        #
+        #     def to_representation(self, instance):
+        #         representation = super(EquipmentSerializer, self).to_representation(instance)
+        #         representation['assigment'] = AssignmentSerializer(instance.assigment_set.all(), many=True).data
+        #         return representation
+
         return cls(**validated_data)
 
     @classmethod
@@ -128,6 +146,6 @@ class SerializableModel:
         custom_field_properties = {}
         for ModelField, SerializerField in cls.CUSTOM_FIELDS.items():
             names = cls.get_all_field_names_of_type(ModelField)
-            names = filter.apply_relation_filter(names)
+            names = filter.apply_property_filter(names)
             custom_field_properties.update({name: SerializerField() for name in names})
         return custom_field_properties
