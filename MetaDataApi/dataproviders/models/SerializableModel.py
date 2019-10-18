@@ -93,9 +93,9 @@ class SerializableModel:
     @classmethod
     def try_build_relation_serializer_instance(cls, relation_name, filter):
         filter.step_into(relation_name)
-        foreignkey_object = cls.get_related_object_by_property_name(relation_name)
+        related_object = cls.get_related_object_by_property_name(relation_name)
         try:
-            Serializer = foreignkey_object.build_serializer(filter)
+            Serializer = related_object.build_serializer(filter)
         except Exception as e:
             logger.warning(f"could not create related serializer object with name: {relation_name}")
         else:
@@ -153,20 +153,33 @@ class SerializableModel:
         return custom_field_properties
 
     @classmethod
+    def create(cls, validated_data):
+        relations = cls.get_relations_from_data(validated_data)
+        relation_instances = {}
+        for relation_name, relation_data in relations.items():
+            relation_object = cls.get_relation_object(relation_name)
+            instance = relation_object.objects.create(**validated_data)
+            relation_instances[relation_name] = instance
+
+        properties = cls.get_properties_from_data(validated_data)
+        base_instance = cls.Meta.model.objects.create(**properties, **relation_instances)
+        return base_instance
+
+    @classmethod
     def add_create_method_to_properties(cls, properties):
-        def create(self, validated_data):
-            # some of this could be fetched from the serializer instance, fx save
-            properties = get_properties(validated_data)
-            relations = get_relations(validated_data)
-            relation_instances = {}
-            for relation in relations:
-                relation_object = relation.get_object()
-                instance = relation_object.objects.create(**validated_data)
-                name = get_name(relation)
-                relation_instances[name] = instance
-
-            base_instance = self.Meta.model.objects.create(**properties, **relation_instances)
-            return base_instance
-
-        properties["create"] = create
+        properties["create"] = cls.create
         return properties
+
+    @classmethod
+    def get_properties_from_data(cls, data):
+        names = cls.get_all_field_names_of_type(cls.attribute_types)
+        return {name: val for name, val in data.items() if name in names}
+
+    @classmethod
+    def get_relations_from_data(cls, data) -> dict:
+        names = cls.get_all_field_names_of_type(cls.relation_types)
+        return {name: val for name, val in data.items() if name in names}
+
+    @classmethod
+    def get_relation_object(cls, relation_name):
+        return getattr(cls, relation_name)
