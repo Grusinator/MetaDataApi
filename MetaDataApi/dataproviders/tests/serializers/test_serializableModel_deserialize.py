@@ -56,7 +56,7 @@ class TestSerializableModelSerialize(TransactionTestCase):
                 # "http_config",
                 "data_provider_node",
                 # "data_provider",
-                # "endpoints",
+                "endpoints",
                 "scope",
                 "header",
                 "url_encoded_params"

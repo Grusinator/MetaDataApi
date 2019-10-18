@@ -2,6 +2,7 @@ import logging
 
 from django.db.models import TextField, IntegerField, FloatField, BooleanField, ForeignKey, OneToOneField, ManyToOneRel, \
     OneToOneRel
+from django.db.models.fields.related_descriptors import ReverseOneToOneDescriptor, ReverseManyToOneDescriptor
 from jsonfield import JSONField
 from rest_framework.serializers import ModelSerializer, JSONField as JSONSerializerField
 
@@ -160,8 +161,8 @@ class SerializableModel:
         relations = cls.get_relations_from_data(validated_data)
         for relation_name, relation_data in relations.items():
             relation_object = cls.get_relation_object(relation_name)
-            related_name = cls.get_related_name(relation_name)
-            parrent_info = {related_name: base_instance}
+            to_parrent_related_name = cls.get_related_name(relation_name)
+            parrent_info = {to_parrent_related_name: base_instance}
             if not cls.is_related_object_many(relation_name):
                 relation_data = [relation_data]
             for relation_data_element in relation_data:
@@ -185,9 +186,22 @@ class SerializableModel:
 
     @classmethod
     def get_relation_object(cls, relation_name):
-        # TODO fix this method and the one below
-        return getattr(cls, relation_name).related.field.object
+        return cls.get_related_field(relation_name).model
 
     @classmethod
     def get_related_name(cls, relation_name):
-        return getattr(cls, relation_name).related.field.name
+        return cls.get_related_field(relation_name).name
+
+    @classmethod
+    def get_related_field(cls, relation_name):
+        related_object = getattr(cls, relation_name)
+        # if isinstance(related_object, (OneToOneRel, ManyToOneRel)):
+        #     return related_object.related.field
+        # elif isinstance(related_object, (OneToOneField, ForeignKey)):
+        #     return related_object.field
+        if isinstance(related_object, (ReverseOneToOneDescriptor,)):
+            return related_object.related.field
+        elif isinstance(related_object, (ReverseManyToOneDescriptor,)):
+            return related_object.field
+        else:
+            raise AttributeError(f"unknown relation type: {type(related_object)}")
