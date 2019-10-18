@@ -154,15 +154,18 @@ class SerializableModel:
 
     @classmethod
     def create(cls, validated_data):
+        properties = cls.get_properties_from_data(validated_data)
+        base_instance = cls.objects.create(**properties)
+
         relations = cls.get_relations_from_data(validated_data)
-        relation_instances = {}
         for relation_name, relation_data in relations.items():
             relation_object = cls.get_relation_object(relation_name)
-            instance = relation_object.objects.create(**validated_data)
-            relation_instances[relation_name] = instance
-
-        properties = cls.get_properties_from_data(validated_data)
-        base_instance = cls.Meta.model.objects.create(**properties, **relation_instances)
+            related_name = cls.get_related_name(relation_name)
+            parrent_info = {related_name: base_instance}
+            if not cls.is_related_object_many(relation_name):
+                relation_data = [relation_data]
+            for relation_data_element in relation_data:
+                relation_object.objects.create(**relation_data_element, **parrent_info)
         return base_instance
 
     @classmethod
@@ -182,4 +185,9 @@ class SerializableModel:
 
     @classmethod
     def get_relation_object(cls, relation_name):
-        return getattr(cls, relation_name)
+        # TODO fix this method and the one below
+        return getattr(cls, relation_name).related.field.object
+
+    @classmethod
+    def get_related_name(cls, relation_name):
+        return getattr(cls, relation_name).related.field.name
