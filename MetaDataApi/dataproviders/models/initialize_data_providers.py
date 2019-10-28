@@ -48,7 +48,12 @@ class InitializeDataProviders:
 
     @classmethod
     def create_data_provider_v2(cls, provider_data):
-        validated_data = DataProvider.deserialize(
+        provider_name = provider_data["provider_name"]
+        data_provider = DataProvider.exists(provider_name)
+        if data_provider:
+            data_provider.delete()
+            logger.debug("provider exists - deleted")
+        data_provider = DataProvider.deserialize(
             provider_data,
             filter=SerializableModelFilter(
                 exclude_labels=cls.exclude,
@@ -56,14 +61,7 @@ class InitializeDataProviders:
                 start_object_name="data_provider"
             )
         )
-        provider_name = provider_data["provider_name"]
-        data_provider = DataProvider.exists(provider_name)
-        if data_provider:
-            data_provider.delete()
-            print("provider exists - deleted")
-        data_provider = DataProvider(**validated_data)
-        data_provider.save()
-        print(f"provider saved: {provider_name}")
+        logger.debug(f"provider saved: {provider_name}")
 
     @classmethod
     def create_or_update_data_provider(cls, provider_data: dict):

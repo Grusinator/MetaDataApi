@@ -64,8 +64,7 @@ class TestInitializeDataProviders(TransactionTestCase):
 
         from MetaDataApi.dataproviders.models import DataProvider
         strava = DataProvider.objects.get(provider_name="strava")
-        oauth = strava.oauth_config.get()
-        self.assertEqual(oauth.client_id, "28148")
+        self.assertEqual(strava.oauth_config.client_id, "28148")
 
     def build_strava_data_provider_json(self):
         return {

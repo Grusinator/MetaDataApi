@@ -40,8 +40,6 @@ class TestDataProviderEtlService(TransactionTestCase):
         expected = ""
         self.assertEqual(expected, data)
 
-
-
     def test_read_data_from_endpoint_correctly(self):
         from MetaDataApi.metadata.tests import LoadTestData
 
