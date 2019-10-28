@@ -7,6 +7,7 @@ from django.conf import settings
 from MetaDataApi.dataproviders.models import DataProvider, Endpoint
 from MetaDataApi.dataproviders.models.HttpConfig import HttpConfig
 from MetaDataApi.dataproviders.models.OauthConfig import OauthConfig
+from MetaDataApi.dataproviders.models.SerializableModelFilter import SerializableModelFilter
 from MetaDataApi.metadata.utils import JsonUtils
 from MetaDataApi.metadata.utils.django_model_utils import DjangoModelUtils
 from MetaDataApi.metadata.utils.json_utils.json_utils import JsonType
@@ -17,14 +18,14 @@ logger = logging.getLogger(__name__)
 class InitializeDataProviders:
     local_client_file = "data_providers.json"
     exclude = (
-                "dataproviderprofile",
-                "data_provider_node",
-                "data_dump",
-                "data_dumps",
-                "endpoints",
-                "oauth_config",
-                "http_config"
-            )
+        "dataproviderprofile",
+        "data_provider_node",
+        "data_dump",
+        "data_dumps",
+        "endpoints",
+        "oauth_config",
+        "http_config"
+    )
 
     @classmethod
     def load(cls):
@@ -49,8 +50,11 @@ class InitializeDataProviders:
     def create_data_provider_v2(cls, provider_data):
         validated_data = DataProvider.deserialize(
             provider_data,
-            exclude=cls.exclude,
-            max_depth=4
+            filter=SerializableModelFilter(
+                exclude_labels=cls.exclude,
+                max_depth=4,
+                start_object_name="data_provider"
+            )
         )
         provider_name = provider_data["provider_name"]
         data_provider = DataProvider.exists(provider_name)
@@ -108,8 +112,6 @@ class InitializeDataProviders:
     def remove_data_from_provider(cls, provider_data):
         remove_list = ["endpoints", "oauth_config", "http_config"]
         return {key: provider_data.pop[key] for key in remove_list}
-
-
 
     @classmethod
     def get_providers_from_aws(cls):

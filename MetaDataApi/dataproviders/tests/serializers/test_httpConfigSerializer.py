@@ -25,9 +25,15 @@ class TestHttpConfigSerializer(TransactionTestCase):
         exp_obj = self.build_http_model_objects()
 
         from MetaDataApi.dataproviders.models import HttpConfig
-        validated_data = HttpConfig.deserialize(data=data, max_depth=0,
-                                                exclude=("dataproviderprofile", "data_provider", "data_provider_node"))
-        obj = HttpConfig.create_object_from_validated_data(validated_data)
+        from MetaDataApi.dataproviders.models.SerializableModelFilter import SerializableModelFilter
+        obj = HttpConfig.deserialize(
+            data=data,
+            filter=SerializableModelFilter(
+                max_depth=0,
+                exclude_labels=("dataproviderprofile", "data_provider", "data_provider_node"),
+                start_object_name="data_provider"
+            )
+        )
         self.assertEqual(exp_obj.header, obj.header)
         self.assertEqual(exp_obj.url_encoded_params, obj.url_encoded_params)
 
@@ -36,7 +42,9 @@ class TestHttpConfigSerializer(TransactionTestCase):
 
         http = self.build_http_model_objects()
 
-        res = http.serialize(exclude_labels=("body_type", "body_content", "data_provider", "request_type"))
+        from MetaDataApi.dataproviders.models.SerializableModelFilter import SerializableModelFilter
+        res = http.serialize(filter=SerializableModelFilter(
+            exclude_labels=("body_type", "body_content", "data_provider", "request_type")))
         self.assertEqual(res, expected)
 
     def test_http_static_serializer_deserialize(self):

@@ -17,7 +17,8 @@ class TestSerializableModelSerialize(TransactionTestCase):
         data_provider = self.model.objects.create(
             provider_name="dsfsd4"
         )
-        data = data_provider.serialize(max_depth=0)
+        from MetaDataApi.dataproviders.models.SerializableModelFilter import SerializableModelFilter
+        data = data_provider.serialize(filter=SerializableModelFilter(max_depth=0))
         expected = {'provider_name': 'dsfsd4', 'api_type': 'OauthRest', 'api_endpoint': ''}
         self.assertDictEqual(expected, data)
 
@@ -38,7 +39,9 @@ class TestSerializableModelSerialize(TransactionTestCase):
 
         )
         oauth.save()
-        data = data_provider.serialize(max_depth=1, exclude_labels=("dataproviderprofile",))
+        from MetaDataApi.dataproviders.models.SerializableModelFilter import SerializableModelFilter
+        data = data_provider.serialize(
+            filter=SerializableModelFilter(max_depth=1, exclude_labels=("dataproviderprofile",)))
 
         expected = {
             'provider_name': 'dsfsd6', 'api_type': 'OauthRest', 'api_endpoint': '', 'endpoints': [],
@@ -57,7 +60,9 @@ class TestSerializableModelSerialize(TransactionTestCase):
     def test_serializing_provider_and_endpoints(self):
         data_provider = self.create_data_provider_with_endpoints()
 
-        data = data_provider.serialize(max_depth=1, exclude_labels=("dataproviderprofile",))
+        from MetaDataApi.dataproviders.models.SerializableModelFilter import SerializableModelFilter
+        data = data_provider.serialize(
+            filter=SerializableModelFilter(max_depth=1, exclude_labels=("dataproviderprofile",)))
         expected = {'provider_name': 'dsfsd4', 'api_type': 'OauthGraphql', 'api_endpoint': '',
                     'endpoints': [
                         {'endpoint_name': 'test1', 'endpoint_url': 'testurl', 'request_type': 'GET'},

@@ -1,12 +1,17 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
 class SerializableModelFilter:
     DEPTH_INFINITE = 999999
-    DEPTH_TEMP_FIX_D1 = 2
 
-    def __init__(self, max_depth, exclude_labels=()):
+    def __init__(self, max_depth=DEPTH_INFINITE, exclude_labels=(), start_object_name=None):
         self.current_depth = 0
         self.ancestors = []
         self.parrent_object_name = None
-        self.current_object_name = None
+        self.current_object_name = start_object_name
+        if self.current_object_name is None:
+            logger.warning("starting object has not been set which could lead to issues")
         self.max_depth = max_depth
         self.exclude_labels = exclude_labels
 
@@ -36,6 +41,7 @@ class SerializableModelFilter:
         return labels
 
     def step_into(self, object_name):
+        logger.debug(f"adding serializer {object_name}")
         self.ancestors.append(self.parrent_object_name)
         self.parrent_object_name = self.current_object_name
         self.current_object_name = object_name

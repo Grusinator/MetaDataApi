@@ -1,4 +1,9 @@
+import logging
+
 import django
+
+logging.basicConfig(level=logging.DEBUG)
+
 from django.test import TransactionTestCase
 
 from MetaDataApi.dataproviders.models.ApiTypes import ApiTypes
@@ -28,17 +33,27 @@ class TestSerializableModelSerialize(TransactionTestCase):
         }
 
         from MetaDataApi.dataproviders.models import DataProvider
-        data_out = DataProvider.deserialize(
-            data, max_depth=1,
-            exclude=(
-                "dataproviderprofile",
-                "oauth_config",
-                "http_config",
-                "data_provider_node",
+        from MetaDataApi.dataproviders.models.SerializableModelFilter import SerializableModelFilter
+        dp = DataProvider.deserialize(
+            data,
+            filter=SerializableModelFilter(
+                max_depth=3,
+                exclude_labels=(
+                    "dataproviderprofile",
+                    "oauth_config",
+                    "http_config",
+                    "data_provider_node",
+                    "data_dumps"
+                ),
+                start_object_name="data_provider"
             )
         )
 
-        self.assertEqual(data, data_out)
+        self.assertEqual(dp.provider_name, data["provider_name"])
+        self.assertEqual(dp.endpoints.count(), 2)
+        self.assertEqual(dp.api_type, data["api_type"])
+        self.assertEqual(dp.endpoints.first().endpoint_url, data["endpoints"][0]["endpoint_url"])
+
 
     def test_deserializing_configs(self):
         # AssertionError: The `.create()` method does not support writable nested fields by default.
@@ -48,24 +63,34 @@ class TestSerializableModelSerialize(TransactionTestCase):
         data = self.build_data()
 
         from MetaDataApi.dataproviders.models import DataProvider
-        data_out = DataProvider.deserialize(
-            data, max_depth=1,
-            exclude=(
-                "dataproviderprofile",
-                # "oauth_config",
-                # "http_config",
-                "data_provider_node",
-                # "data_provider",
-                "endpoints",
-                "scope",
-                "header",
-                "url_encoded_params"
+        from MetaDataApi.dataproviders.models.SerializableModelFilter import SerializableModelFilter
+        dp = DataProvider.deserialize(
+            data,
+            filter=SerializableModelFilter(
+                max_depth=3,
+                exclude_labels=(
+                    "dataproviderprofile",
+                    # "oauth_config",
+                    # "http_config",
+                    "data_provider_node",
+                    # "data_provider",
+                    # "endpoints",
+                    # "scope",
+                    # "header",
+                    # "url_encoded_params",
+                    "data_dumps"
+                ),
+                start_object_name="data_provider"
             )
         )
 
-        dp = DataProvider(**data)
-        self.maxDiff = None
-        self.assertDictEqual(data, data_out)
+        self.assertEqual(dp.oauth_config.client_id, data["oauth_config"]["client_id"])
+        self.assertEqual(dp.oauth_config.authorize_url, data["oauth_config"]["authorize_url"])
+
+        self.assertEqual(dp.oauth_config.scope, data["oauth_config"]["scope"])
+
+        # self.assertEqual(dp.http_config.url_encoded_params, data["http_config"]["url_encoded_params"])
+        # self.assertEqual(dp.http_config.header, data["http_config"]["header"])
 
     def build_data(self):
         data = {

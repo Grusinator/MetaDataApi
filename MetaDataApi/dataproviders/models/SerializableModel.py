@@ -27,48 +27,28 @@ class SerializableModel:
         JSONField: JSONSerializerField,
     }
 
-    def serialize(self, max_depth: int = SerializableModelFilter.DEPTH_INFINITE, exclude_labels: tuple = ()):
-        filter = SerializableModelFilter(max_depth, exclude_labels=exclude_labels)
+    def serialize(self, filter=SerializableModelFilter()):
+        if not filter.current_object_name:
+            # TODO ._meta.model_name is not be the correct property. fix.
+            logger.debug(f"using default model name as starting name: {self._meta.model_name}")
+            filter.current_object_name = self._meta.model_name
         Serializer = type(self).build_serializer(filter)
         data = Serializer(self).data
         return JsonUtils.dump_and_load(data)
 
     @classmethod
-    def deserialize(cls, data: JsonType, max_depth: int = SerializableModelFilter.DEPTH_INFINITE, exclude: tuple = ()):
-        filter = SerializableModelFilter(max_depth=max_depth, exclude_labels=exclude)
-        validated_data = cls.deserialize_to_validated_data(data, filter)
-        # cls.create_object_from_validated_data(validated_data)
-        return validated_data
+    def deserialize(cls, data: JsonType, filter=SerializableModelFilter()):
+        deserialized_object = cls.deserialize_to_objects(data, filter)
+        return deserialized_object
 
     @classmethod
-    def deserialize_to_validated_data(cls, data, filter: SerializableModelFilter):
+    def deserialize_to_objects(cls, data, filter: SerializableModelFilter):
         Serializer = cls.build_serializer(filter)
         serializer = Serializer(data=data)
         if not serializer.is_valid():
             raise Exception(f"could not deserialize, due to error: {serializer.errors}")
         serialized_object = serializer.save()
-        return serializer.validated_data
-
-    @classmethod
-    def create_object_from_validated_data(cls, validated_data):
-        # AssertionError: The `.create()` method does not support writable nested fields by default.
-        # Write an explicit `.create()` method for serializer `rest_framework.serializers.DataProviderSerializer`,
-        # or set `read_only=True` on nested serializer fields.
-        # TODO: fix this by adding a create method in the generic serializer
-
-        # https://stackoverflow.com/questions/41394761/the-create-method-does-not-support-writable-nested-fields-by-default
-        #     def create(self, validated_data):
-        #         order = Order.objects.get(pk=validated_data.pop('event'))
-        #         instance = Equipment.objects.create(**validated_data)
-        #         Assignment.objects.create(Order=order, Equipment=instance)
-        #         return instance
-        #
-        #     def to_representation(self, instance):
-        #         representation = super(EquipmentSerializer, self).to_representation(instance)
-        #         representation['assigment'] = AssignmentSerializer(instance.assigment_set.all(), many=True).data
-        #         return representation
-
-        return cls(**validated_data)
+        return serialized_object
 
     @classmethod
     def build_serializer(cls, filter: SerializableModelFilter):
@@ -123,9 +103,8 @@ class SerializableModel:
     @classmethod
     def get_all_model_relations_names(cls, filter: SerializableModelFilter) -> list:
         names = cls.get_all_field_names_of_type(cls.relation_types)
-        # TODO remove this _set when this has been handled
         names = filter.apply_relation_filter(names)
-        return [name for name in names if ("_set" not in name)]
+        return names
 
     @classmethod
     def get_all_attribute_names(cls, filter):
@@ -157,17 +136,25 @@ class SerializableModel:
     def create(cls, validated_data):
         properties = cls.get_properties_from_data(validated_data)
         base_instance = cls.objects.create(**properties)
+        cls.create_related_object(base_instance, validated_data)
+        return base_instance
 
+    @classmethod
+    def create_related_object(cls, base_instance, validated_data):
         relations = cls.get_relations_from_data(validated_data)
         for relation_name, relation_data in relations.items():
             relation_object = cls.get_relation_object(relation_name)
-            to_parrent_related_name = cls.get_related_name(relation_name)
-            parrent_info = {to_parrent_related_name: base_instance}
+            parrent_data = cls.create_parrent_data(base_instance, relation_name)
             if not cls.is_related_object_many(relation_name):
                 relation_data = [relation_data]
             for relation_data_element in relation_data:
-                relation_object.objects.create(**relation_data_element, **parrent_info)
-        return base_instance
+                relation_object.objects.create(**relation_data_element, **parrent_data)
+
+    @classmethod
+    def create_parrent_data(cls, base_instance, relation_name):
+        to_parrent_related_name = cls.get_related_name(relation_name)
+        parrent_info = {to_parrent_related_name: base_instance}
+        return parrent_info
 
     @classmethod
     def add_create_method_to_properties(cls, properties):
