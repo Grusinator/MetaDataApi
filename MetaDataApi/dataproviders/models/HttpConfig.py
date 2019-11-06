@@ -1,11 +1,11 @@
 from collections import OrderedDict
 
 from django.db import models
+from jsonfield import JSONField
 
 from MetaDataApi.dataproviders.models import DataProvider
 from MetaDataApi.dataproviders.models.SerializableModel import SerializableModel
 from MetaDataApi.metadata.utils import JsonUtils
-from jsonfield import JSONField
 
 
 class HttpConfig(models.Model, SerializableModel):
@@ -20,6 +20,9 @@ class HttpConfig(models.Model, SerializableModel):
 
     # http_config = models.ManyToOneRel("HttpConfig")
     # oauth_config = models.ManyToOneRel("OauthConfig")
+
+    def __str__(self):
+        return f"HTTP Config:{self.data_provider.provider_name}"
 
     def build_header(self):
         try:

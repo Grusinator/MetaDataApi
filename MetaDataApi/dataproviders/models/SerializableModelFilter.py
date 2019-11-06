@@ -14,12 +14,16 @@ class SerializableModelFilter:
             logger.warning("starting object has not been set which could lead to issues")
         self.max_depth = max_depth
         self.exclude_labels = exclude_labels
+        # this is all in order to be able to validate if related objects exists in data,
+        # if not they will be excluded
+        self.data = dict()
 
     def apply_relation_filter(self, labels: list) -> list:
         if self.is_max_depth_reached():
             return []
         labels = self.remove_parrent_object(labels)
         labels = self.remove_exclude_labels(labels)
+        labels = self.remove_if_not_exists_in_data(labels)
         return labels
 
     def apply_property_filter(self, labels: list) -> list:
@@ -64,3 +68,18 @@ class SerializableModelFilter:
             return depth
         else:
             return depth - 1 if depth > 0 else 0
+
+    def remove_if_not_exists_in_data(self, labels):
+        existing_object_names = self.get_existing_object_names()
+        labels = [label for label in labels if label in existing_object_names]
+        return labels
+
+    def get_existing_object_names(self):
+        loc = self.get_to_current_data_location()
+        return loc.keys()
+
+    def get_to_current_data_location(self):
+        current_loc = self.data
+        for ancestor in self.ancestors:
+            current_loc.get(ancestor)
+        return current_loc

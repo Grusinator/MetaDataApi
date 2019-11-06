@@ -29,6 +29,7 @@ class InitializeDataProviders:
 
     @classmethod
     def load(cls):
+        pass
         providers = cls.read_data_providers_from_file()
         [cls.try_create_provider(provider) for provider in providers]
 

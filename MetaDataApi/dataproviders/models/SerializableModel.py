@@ -44,12 +44,14 @@ class SerializableModel:
 
     @classmethod
     def deserialize_to_objects(cls, data, filter: SerializableModelFilter):
+        # This is not so nice, should maybe be refactored. It is in order to be able to only create the related
+        # objects serializers that actually should be serialized
+        filter.data = data
         Serializer = cls.build_serializer(filter)
         serializer = Serializer(data=data)
         if not serializer.is_valid():
             raise ValidationError(f"could not deserialize, due to error: {serializer.errors}")
         serialized_object = serializer.save()
-        # TODO validated data does not include sub objects. FIX!
         return serialized_object
 
     @classmethod

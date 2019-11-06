@@ -1,12 +1,12 @@
 from urllib import parse
 
 from django.db import models
+from jsonfield import JSONField
 
 from MetaDataApi import settings
 from MetaDataApi.dataproviders.models import DataProvider
 from MetaDataApi.dataproviders.models.SerializableModel import SerializableModel
 from MetaDataApi.metadata.utils import JsonUtils
-from jsonfield import JSONField
 
 
 class OauthConfig(models.Model, SerializableModel):
@@ -18,7 +18,7 @@ class OauthConfig(models.Model, SerializableModel):
     scope = JSONField()
 
     def __str__(self):
-        return f"OAuth2:{self.data_provider.name}"
+        return f"OAuth2:{self.data_provider.provider_name}"
 
     class Meta:
         app_label = 'dataproviders'

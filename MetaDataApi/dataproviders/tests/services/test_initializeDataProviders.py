@@ -56,7 +56,7 @@ class TestInitializeDataProviders(TransactionTestCase):
             "data_provider_node",
             "data_dump",
             "data_dumps",
-            "http_config"
+            # "http_config"
         )
 
         InitializeDataProviders.create_data_provider_v2(data)
