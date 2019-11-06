@@ -3,7 +3,7 @@ import unittest
 import django
 from django.test import TransactionTestCase
 
-from MetaDataApi.dataproviders.models.ApiTypes import ApiTypes
+from MetaDataApi.dataproviders.tests.mock_data.MockDataProvider import MockDataProvider
 from MetaDataApi.metadata.utils import JsonUtils
 
 
@@ -62,26 +62,7 @@ class TestDataProviderSerializer(TransactionTestCase):
         self.assertEqual(expected, data)
 
     def test_serializing_provider_and_endpoints(self):
-        from MetaDataApi.dataproviders.models import DataProvider
-
-        dp = DataProvider.objects.create(
-            provider_name="dsfsd4",
-            api_type=ApiTypes.OAUTH_GRAPHQL.value
-        )
-        dp.save()
-        from MetaDataApi.dataproviders.models import Endpoint
-        endpoint = Endpoint.objects.create(
-            data_provider=dp,
-            endpoint_name="test1",
-            endpoint_url="testurl"
-        )
-        endpoint.save()
-        endpoint2 = Endpoint.objects.create(
-            data_provider=dp,
-            endpoint_name="test2",
-            endpoint_url="testurl"
-        )
-        endpoint2.save()
+        dp = MockDataProvider.create_data_provider_with_endpoints()
 
         from MetaDataApi.dataproviders.serializers.DataProviderSerializer import DataProviderSerializer
         data = DataProviderSerializer(dp).data

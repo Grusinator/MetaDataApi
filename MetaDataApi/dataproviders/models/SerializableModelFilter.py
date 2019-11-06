@@ -18,16 +18,16 @@ class SerializableModelFilter:
         # if not they will be excluded
         self.data = dict()
 
+    def apply_property_filter(self, labels: list) -> list:
+        labels = self.remove_exclude_labels(labels)
+        return labels
+
     def apply_relation_filter(self, labels: list) -> list:
         if self.is_max_depth_reached():
             return []
         labels = self.remove_parrent_object(labels)
         labels = self.remove_exclude_labels(labels)
         labels = self.remove_if_not_exists_in_data(labels)
-        return labels
-
-    def apply_property_filter(self, labels: list) -> list:
-        labels = self.remove_exclude_labels(labels)
         return labels
 
     def is_max_depth_reached(self):
@@ -43,6 +43,30 @@ class SerializableModelFilter:
     def remove_exclude_labels(self, labels):
         labels = list(set(labels) - set(self.exclude_labels))
         return labels
+
+    def remove_if_not_exists_in_data(self, labels: list):
+        if not len(labels):
+            return []
+        existing_object_names = self.get_existing_object_names()
+        labels = [label for label in labels if label in existing_object_names]
+        return labels
+
+    def get_existing_object_names(self):
+        loc = self.get_to_current_data_location()
+        if isinstance(loc, list):
+            return list(loc[0].keys())
+        return list(loc.keys())
+
+    def get_to_current_data_location(self):
+        if self.current_depth == 0:
+            return self.data
+        elif self.current_depth == 1:
+            return self.data.get(self.current_object_name)
+        else:
+            current_loc = self.data
+            for ancestor in self.ancestors:
+                current_loc.get(ancestor)
+            return current_loc.get(self.parrent_object_name)
 
     def step_into(self, object_name):
         logger.debug(f"adding serializer {object_name}")
@@ -69,17 +93,4 @@ class SerializableModelFilter:
         else:
             return depth - 1 if depth > 0 else 0
 
-    def remove_if_not_exists_in_data(self, labels):
-        existing_object_names = self.get_existing_object_names()
-        labels = [label for label in labels if label in existing_object_names]
-        return labels
 
-    def get_existing_object_names(self):
-        loc = self.get_to_current_data_location()
-        return loc.keys()
-
-    def get_to_current_data_location(self):
-        current_loc = self.data
-        for ancestor in self.ancestors:
-            current_loc.get(ancestor)
-        return current_loc

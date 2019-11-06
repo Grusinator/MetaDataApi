@@ -1,7 +1,7 @@
 import django
 from django.test import TransactionTestCase
 
-from MetaDataApi.dataproviders.models.ApiTypes import ApiTypes
+from MetaDataApi.dataproviders.tests.mock_data.MockDataProvider import MockDataProvider
 
 
 class TestSerializableModelSerialize(TransactionTestCase):
@@ -58,7 +58,7 @@ class TestSerializableModelSerialize(TransactionTestCase):
         self.assertEqual(expected, data)
 
     def test_serializing_provider_and_endpoints(self):
-        data_provider = self.create_data_provider_with_endpoints()
+        data_provider = MockDataProvider.create_data_provider_with_endpoints()
 
         from MetaDataApi.dataproviders.models.SerializableModelFilter import SerializableModelFilter
         data = data_provider.serialize(
@@ -71,23 +71,23 @@ class TestSerializableModelSerialize(TransactionTestCase):
                     'http_config': None, 'oauth_config': None, 'data_provider_node': None}
         self.assertEqual(expected, data)
 
-    def create_data_provider_with_endpoints(self):
-        data_provider = self.model.objects.create(
-            provider_name="dsfsd4",
-            api_type=ApiTypes.OAUTH_GRAPHQL.value
+    def test_serialization_of_strava(self):
+        dp = MockDataProvider.build_strava_data_provider_objects()
+
+    def test_deserialization_of_strava(self):
+        from MetaDataApi.dataproviders.models.initialize_data_providers import InitializeDataProviders
+
+        data = MockDataProvider.build_strava_data_provider_json()
+
+        InitializeDataProviders.exclude = (
+            "dataproviderprofile",
+            "data_provider_node",
         )
-        data_provider.save()
-        from MetaDataApi.dataproviders.models import Endpoint
-        endpoint = Endpoint.objects.create(
-            data_provider=data_provider,
-            endpoint_name="test1",
-            endpoint_url="testurl"
-        )
-        endpoint.save()
-        endpoint2 = Endpoint.objects.create(
-            data_provider=data_provider,
-            endpoint_name="test2",
-            endpoint_url="testurl"
-        )
-        endpoint2.save()
-        return data_provider
+
+        InitializeDataProviders.create_data_provider_v2(data)
+
+        from MetaDataApi.dataproviders.models import DataProvider
+        strava_dp = DataProvider.objects.get(provider_name="strava")
+        self.assertEqual(strava_dp.oauth_config.client_id, "28148")
+        self.assertEqual(strava_dp.endpoints.get(endpoint_name="athlete").data_dumps.first().date_downloaded,
+                         "20102019")
