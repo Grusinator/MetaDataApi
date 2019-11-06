@@ -4,6 +4,7 @@ from django.db.models import TextField, IntegerField, FloatField, BooleanField, 
     OneToOneRel
 from django.db.models.fields.related_descriptors import ReverseOneToOneDescriptor, ReverseManyToOneDescriptor
 from jsonfield import JSONField
+from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import ModelSerializer, JSONField as JSONSerializerField
 
 from MetaDataApi.dataproviders.models.SerializableModelFilter import SerializableModelFilter
@@ -27,7 +28,7 @@ class SerializableModel:
         JSONField: JSONSerializerField,
     }
 
-    def serialize(self, filter=SerializableModelFilter()):
+    def serialize(self, filter: SerializableModelFilter):
         if not filter.current_object_name:
             # TODO ._meta.model_name is not be the correct property. fix.
             logger.debug(f"using default model name as starting name: {self._meta.model_name}")
@@ -37,7 +38,7 @@ class SerializableModel:
         return JsonUtils.dump_and_load(data)
 
     @classmethod
-    def deserialize(cls, data: JsonType, filter=SerializableModelFilter()):
+    def deserialize(cls, data: JsonType, filter: SerializableModelFilter):
         deserialized_object = cls.deserialize_to_objects(data, filter)
         return deserialized_object
 
@@ -46,8 +47,9 @@ class SerializableModel:
         Serializer = cls.build_serializer(filter)
         serializer = Serializer(data=data)
         if not serializer.is_valid():
-            raise Exception(f"could not deserialize, due to error: {serializer.errors}")
+            raise ValidationError(f"could not deserialize, due to error: {serializer.errors}")
         serialized_object = serializer.save()
+        # TODO validated data does not include sub objects. FIX!
         return serialized_object
 
     @classmethod
@@ -136,11 +138,11 @@ class SerializableModel:
     def create(cls, validated_data):
         properties = cls.get_properties_from_data(validated_data)
         base_instance = cls.objects.create(**properties)
-        cls.create_related_object(base_instance, validated_data)
+        cls.create_related_objects(base_instance, validated_data)
         return base_instance
 
     @classmethod
-    def create_related_object(cls, base_instance, validated_data):
+    def create_related_objects(cls, base_instance, validated_data):
         relations = cls.get_relations_from_data(validated_data)
         for relation_name, relation_data in relations.items():
             relation_object = cls.get_relation_object(relation_name)

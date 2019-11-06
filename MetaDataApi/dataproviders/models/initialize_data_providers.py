@@ -22,9 +22,9 @@ class InitializeDataProviders:
         "data_provider_node",
         "data_dump",
         "data_dumps",
-        "endpoints",
-        "oauth_config",
-        "http_config"
+        # "endpoints",
+        # "oauth_config",
+        # "http_config"
     )
 
     @classmethod

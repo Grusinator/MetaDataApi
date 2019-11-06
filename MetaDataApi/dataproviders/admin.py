@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from MetaDataApi.dataproviders.models import DataProvider, Endpoint, DataDump
+from MetaDataApi.dataproviders.models import DataProvider, Endpoint, DataDump, OauthConfig, HttpConfig
 
 
 class EndpointAdmin(admin.ModelAdmin):
@@ -20,4 +20,11 @@ class DataProviderAdmin(admin.ModelAdmin):
 
 admin.site.register(DataProvider, DataProviderAdmin)
 admin.site.register(Endpoint, EndpointAdmin)
-admin.site.register(DataDump)
+
+models = (
+    DataDump,
+    OauthConfig,
+    HttpConfig,
+)
+
+[admin.site.register(model) for model in models]

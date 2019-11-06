@@ -56,11 +56,10 @@ class TestInitializeDataProviders(TransactionTestCase):
             "data_provider_node",
             "data_dump",
             "data_dumps",
-            "endpoints",
             "http_config"
         )
 
-        InitializeDataProviders.try_create_provider(data)
+        InitializeDataProviders.create_data_provider_v2(data)
 
         from MetaDataApi.dataproviders.models import DataProvider
         strava = DataProvider.objects.get(provider_name="strava")
@@ -69,7 +68,7 @@ class TestInitializeDataProviders(TransactionTestCase):
     def build_strava_data_provider_json(self):
         return {
             "provider_name": "strava",
-            "api_type": "OAUTH_REST",
+            "api_type": "OauthRest",
             "api_endpoint": "https://www.strava.com/api/",
             "oauth_config": {
                 "authorize_url": "https://www.strava.com/oauth/authorize",
