@@ -87,18 +87,28 @@ class MockDataProvider:
             "endpoints": [
                 {
                     "endpoint_name": "activity",
-                    "endpoint_url": "v3/activities"
+                    "endpoint_url": "v3/activities",
+                    "data_dumps": [
+                        {
+                            "date_downloaded": "20102019",
+                        }
+                    ]
                 },
                 {
                     "endpoint_name": "zone",
-                    "endpoint_url": "v3/athlete/zones"
+                    "endpoint_url": "v3/athlete/zones",
+                    "data_dumps": [
+                        {
+                            "date_downloaded": "21102019",
+                        }
+                    ]
                 },
                 {
                     "endpoint_name": "athlete",
                     "endpoint_url": "v3/athlete",
                     "data_dumps": [
                         {
-                            "date_downloaded": "20102019",
+                            "date_downloaded": "22102019",
                         }
                     ]
                 }

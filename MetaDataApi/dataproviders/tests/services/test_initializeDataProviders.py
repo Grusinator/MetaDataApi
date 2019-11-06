@@ -1,6 +1,9 @@
 import django
 from django.test import TransactionTestCase
 
+from MetaDataApi.dataproviders.models.RequestType import RequestType
+from MetaDataApi.dataproviders.tests.mock_data.MockDataProvider import MockDataProvider
+
 
 class TestInitializeDataProviders(TransactionTestCase):
 
@@ -46,4 +49,20 @@ class TestInitializeDataProviders(TransactionTestCase):
         assert len(json) > 10
         assert json[0]["provider_name"] == "endomondo"
 
+    def test_create_strava_data_provider(self):
+        from MetaDataApi.dataproviders.models.initialize_data_providers import InitializeDataProviders
 
+        data = MockDataProvider.build_strava_data_provider_json()
+
+        InitializeDataProviders.exclude = (
+            "dataproviderprofile",
+            "data_provider_node",
+            "data_dumps"
+        )
+
+        InitializeDataProviders.create_data_provider_v2(data)
+
+        from MetaDataApi.dataproviders.models import DataProvider
+        strava_dp = DataProvider.objects.get(provider_name="strava")
+        self.assertEqual(strava_dp.oauth_config.client_id, "28148")
+        self.assertEqual(strava_dp.endpoints.get(endpoint_name="athlete").request_type, RequestType.GET.value)

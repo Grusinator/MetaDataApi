@@ -19,16 +19,9 @@ class TestSerializableModelSerialize(TransactionTestCase):
         cls.model = DataProvider
         cls.exclude_labels = (
             "dataproviderprofile",
-            # "oauth_config",
-            # "http_config",
             "data_provider_node",
-            # "data_provider",
-            # "endpoints",
-            # "scope",
-            # "header",
-            # "url_encoded_params",
-            "data_dumps"
         )
+        cls.data_provider_name = "data_provider"
 
     def test_deserializing_provider_and_endpoints(self):
         data = MockDataProvider.build_base_with_endpoints_data()
@@ -39,14 +32,11 @@ class TestSerializableModelSerialize(TransactionTestCase):
             data,
             filter=SerializableModelFilter(
                 max_depth=3,
-                exclude_labels=(
-                    "dataproviderprofile",
+                exclude_labels=self.exclude_labels + (
                     "oauth_config",
                     "http_config",
-                    "data_provider_node",
-                    "data_dumps",
                 ),
-                start_object_name="data_provider"
+                start_object_name=self.data_provider_name
             )
         )
 
@@ -65,7 +55,7 @@ class TestSerializableModelSerialize(TransactionTestCase):
             filter=SerializableModelFilter(
                 max_depth=3,
                 exclude_labels=self.exclude_labels,
-                start_object_name="data_provider"
+                start_object_name=self.data_provider_name
             )
         )
 
@@ -87,7 +77,7 @@ class TestSerializableModelSerialize(TransactionTestCase):
             filter=SerializableModelFilter(
                 max_depth=3,
                 exclude_labels=self.exclude_labels,
-                start_object_name="data_provider"
+                start_object_name=self.data_provider_name
             )
         )
 
@@ -96,7 +86,7 @@ class TestSerializableModelSerialize(TransactionTestCase):
         self.assertEqual(dp.http_config.header, data["http_config"]["header"])
 
     def test_deserializing_configs_oauth(self):
-        data = MockDataProvider.build_base_with_http_data()
+        data = MockDataProvider.build_base_with_oauth_data()
 
         from MetaDataApi.dataproviders.models import DataProvider
         from MetaDataApi.dataproviders.models.SerializableModelFilter import SerializableModelFilter
@@ -105,7 +95,7 @@ class TestSerializableModelSerialize(TransactionTestCase):
             filter=SerializableModelFilter(
                 max_depth=3,
                 exclude_labels=self.exclude_labels,
-                start_object_name="data_provider"
+                start_object_name=self.data_provider_name
             )
         )
 
@@ -113,3 +103,22 @@ class TestSerializableModelSerialize(TransactionTestCase):
         self.assertEqual(dp.oauth_config.client_id, data["oauth_config"]["client_id"])
         self.assertEqual(dp.oauth_config.authorize_url, data["oauth_config"]["authorize_url"])
 
+    def test_deserialize_strava(self):
+        from MetaDataApi.dataproviders.models.initialize_data_providers import InitializeDataProviders
+        data = MockDataProvider.build_strava_data_provider_json()
+        InitializeDataProviders.exclude = (
+            "dataproviderprofile",
+            "data_provider_node",
+        )
+        from MetaDataApi.dataproviders.models.SerializableModelFilter import SerializableModelFilter
+        filter = SerializableModelFilter(
+            max_depth=5,
+            exclude_labels=self.exclude_labels,
+            start_object_name=self.data_provider_name
+        )
+        from MetaDataApi.dataproviders.models import DataProvider
+        DataProvider.deserialize(data, filter)
+        strava_dp = DataProvider.objects.get(provider_name="strava")
+        self.assertEqual(strava_dp.oauth_config.client_id, "28148")
+        self.assertEqual(strava_dp.endpoints.get(endpoint_name="athlete").data_dumps.first().date_downloaded,
+                         "20102019")

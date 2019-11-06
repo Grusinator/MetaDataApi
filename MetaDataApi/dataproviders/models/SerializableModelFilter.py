@@ -54,7 +54,7 @@ class SerializableModelFilter:
     def get_existing_object_names(self):
         loc = self.get_to_current_data_location()
         if isinstance(loc, list):
-            return list(loc[0].keys())
+            return self.get_union_set_of_object_names_in_list(loc)
         return list(loc.keys())
 
     def get_to_current_data_location(self):
@@ -93,4 +93,8 @@ class SerializableModelFilter:
         else:
             return depth - 1 if depth > 0 else 0
 
-
+    def get_union_set_of_object_names_in_list(self, loc):
+        union_set = []
+        for obj in loc:
+            union_set += list(obj.keys())
+        return list(set(union_set))
