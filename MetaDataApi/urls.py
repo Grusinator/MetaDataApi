@@ -25,12 +25,14 @@ from MetaDataApi.app.views import admin_view
 from MetaDataApi.dataproviders.views import DataProviderView, oauth2redirect_view
 from MetaDataApi.dataproviders.views.endpoint_detail_view import endpoint_detail_view
 from MetaDataApi.dataproviders.views.object_view import object_view
+from MetaDataApi.dynamic_models import views as dynamic_model_views
 from MetaDataApi.metadata.views.data_file_view import data_file_view, data_dump_view
 
 urlpatterns = [
     url(r'admin/', admin.site.urls),
     url(r'admin_i/', admin_view),
     path('accounts/', include('django.contrib.auth.urls')),
+    path('dynamic_models/', dynamic_model_views.create_models_from_json_view, name='create_models'),
     path(
         'providers/',
         DataProviderView.data_provider_list,
