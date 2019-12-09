@@ -17,5 +17,4 @@ class Endpoint(models.Model, SerializableModel):
         return f"{self.data_provider} - {self.endpoint_name} - {self.endpoint_url}"
 
     def get_internal_view_url(self):
-        schema = self.data_provider.get_schema_for_provider()
-        return reverse('endpoint_detail', args=[str(schema.label), self.endpoint_name])
+        return reverse('endpoint_detail', args=[str(self.data_provider.provider_name), self.endpoint_name])

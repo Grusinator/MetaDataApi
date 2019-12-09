@@ -7,8 +7,6 @@
 
 
 <table>
-    <col width="30%">
-    <col width="70%">
     <tr>
         <th>
             <div>
@@ -24,27 +22,27 @@
             <div>
                 <h3>Endpoints</h3>
                 {% for endpoint in endpoints %}
-                <div>
-                    <a href="{{ endpoint.get_internal_view_url }}">
-                        {{ endpoint.endpoint_name }}
-                    </a>
-                </div>
+                    <div>
+                        <a href="{{ endpoint.get_internal_view_url }}">
+                            {{ endpoint.endpoint_name }}
+                        </a>
+                    </div>
                 {% endfor %}
             </div>
-            <div>
-                <h3>Objects</h3>
-                {% for object in data_provider.get_schema_for_provider.schema_nodes.all %}
-                <div>
-                    <a href="{{ object.get_internal_view_url }}">
-                        {{object.label }}
-                    </a>
-                </div>
-                {% endfor %}
-            </div>
+            {#            <div>#}
+            {#                <h3>Objects</h3>#}
+            {#                {% for object in data_provider.get_schema_for_provider.schema_nodes.all %}#}
+            {#                <div>#}
+            {#                    <a href="{{ object.get_internal_view_url }}">#}
+            {#                        {{object.label }}#}
+            {#                    </a>#}
+            {#                </div>#}
+            {#                {% endfor %}#}
+            {#            </div>#}
         </th>
 
         <td>
-            <iframe height="600" src="{{ data_provider.get_webvowl_url }}" width="100%"></iframe>
+            {#            <iframe height="600" src="{{ data_provider.get_webvowl_url }}" width="100%"></iframe>#}
         </td>
     </tr>
 </table>
