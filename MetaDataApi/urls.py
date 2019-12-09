@@ -22,48 +22,14 @@ from django.views.generic.base import RedirectView
 from graphene_django.views import GraphQLView
 
 from MetaDataApi.app.views import admin_view
-from MetaDataApi.dataproviders.views import DataProviderView, oauth2redirect_view
-from MetaDataApi.dataproviders.views.endpoint_detail_view import endpoint_detail_view
-from MetaDataApi.dataproviders.views.object_view import object_view
-from MetaDataApi.dynamic_models import views as dynamic_model_views
-from MetaDataApi.metadata.views.data_file_view import data_file_view, data_dump_view
+from MetaDataApi.dataproviders.views import oauth2redirect_view
 
 urlpatterns = [
     url(r'admin/', admin.site.urls),
     url(r'admin_i/', admin_view),
     path('accounts/', include('django.contrib.auth.urls')),
-    path('dynamic_models/', dynamic_model_views.create_models_from_json_view, name='create_models'),
-    path(
-        'providers/',
-        DataProviderView.data_provider_list,
-        name='providers'
-    ),
-    path(
-        'provider/<str:provider_name>',
-        DataProviderView.data_provider,
-        name='provider_detail'),
-    path(
-        'provider/<str:provider_name>/endpoint/<str:endpoint_name>',
-        endpoint_detail_view,
-        name='endpoint_detail'
-    ),
-    path(
-        'provider/<str:provider_name>/object/<str:object_label>',
-        object_view,
-        name='objects'
-    ),
-
-    path(
-        'datafiles/<str:file_name>',
-        data_file_view,
-        name='datafile'
-    ),
-    path(
-        'data_dumps/<str:file_name>',
-        data_dump_view,
-        name='data_dump'
-    ),
-
+    path('dynamic_models/', include('MetaDataApi.dynamic_models.urls')),
+    path("providers/", include('MetaDataApi.dataproviders.urls')),
     url(r'^oauth2redirect/$', oauth2redirect_view, name='oauth2redirect'),
     url(r'^graphql/', GraphQLView.as_view(graphiql=True)),
     url(r'^$', RedirectView.as_view(

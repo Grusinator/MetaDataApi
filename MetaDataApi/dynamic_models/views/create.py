@@ -1,6 +1,6 @@
 from django.shortcuts import render
 
-from .forms import CreateRequestForm
+from MetaDataApi.dynamic_models.forms import CreateRequestForm
 
 
 def create_models_from_json_view(request):
