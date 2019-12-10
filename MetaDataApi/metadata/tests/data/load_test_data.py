@@ -3,10 +3,10 @@ import os
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
+from generic_serializer import SerializableModelFilter
 
 from MetaDataApi.dataproviders.models import DataProvider, Endpoint
 from MetaDataApi.dataproviders.models import DataProviderProfile
-from MetaDataApi.dataproviders.models.SerializableModelFilter import SerializableModelFilter
 from MetaDataApi.metadata.models import Schema, SchemaEdge, SchemaNode, SchemaAttribute
 from MetaDataApi.metadata.services import (
     JsonSchemaService, DataCleaningService, RdfInstanceService, RdfSchemaService, JsonAnalyser

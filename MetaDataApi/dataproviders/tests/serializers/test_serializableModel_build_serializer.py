@@ -61,7 +61,7 @@ class TestSerializableModel(TestCase):
                 self.assertTrue(hasattr(sub_serializer, "data_dumps"))
 
     def build_default_test_filter(self, max_depth=0, exclude_labels=(), start_object_name="data_provider"):
-        from MetaDataApi.dataproviders.models.SerializableModelFilter import SerializableModelFilter
+        from generic_serializer import SerializableModelFilter
         default_exclude = ("data_provider_node", "dataproviderprofile")
         return SerializableModelFilter(
             max_depth=max_depth,

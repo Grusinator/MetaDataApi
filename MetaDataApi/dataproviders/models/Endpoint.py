@@ -1,10 +1,10 @@
 
 from django.db import models
 from django.urls import reverse
+from generic_serializer import SerializableModel
 
 from MetaDataApi.dataproviders.models.DataProvider import DataProvider
 from MetaDataApi.dataproviders.models.RequestType import RequestType
-from MetaDataApi.dataproviders.models.SerializableModel import SerializableModel
 
 
 class Endpoint(models.Model, SerializableModel):

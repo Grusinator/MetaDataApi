@@ -3,11 +3,11 @@ import logging
 
 import boto3
 from django.conf import settings
+from generic_serializer import SerializableModelFilter
 
 from MetaDataApi.dataproviders.models import DataProvider, Endpoint
 from MetaDataApi.dataproviders.models.HttpConfig import HttpConfig
 from MetaDataApi.dataproviders.models.OauthConfig import OauthConfig
-from MetaDataApi.dataproviders.models.SerializableModelFilter import SerializableModelFilter
 from MetaDataApi.metadata.utils import JsonUtils
 from MetaDataApi.metadata.utils.django_model_utils import DjangoModelUtils
 from MetaDataApi.metadata.utils.json_utils.json_utils import JsonType

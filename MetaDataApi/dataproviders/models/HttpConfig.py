@@ -1,10 +1,10 @@
 from collections import OrderedDict
 
 from django.db import models
+from generic_serializer import SerializableModel
 from jsonfield import JSONField
 
 from MetaDataApi.dataproviders.models import DataProvider
-from MetaDataApi.dataproviders.models.SerializableModel import SerializableModel
 from MetaDataApi.metadata.utils import JsonUtils
 
 

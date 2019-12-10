@@ -25,7 +25,7 @@ class TestHttpConfigSerializer(TransactionTestCase):
         exp_obj = self.build_http_model_objects()
 
         from MetaDataApi.dataproviders.models import HttpConfig
-        from MetaDataApi.dataproviders.models.SerializableModelFilter import SerializableModelFilter
+        from generic_serializer import SerializableModelFilter
         obj = HttpConfig.deserialize(
             data=data,
             filter=SerializableModelFilter(
@@ -42,7 +42,7 @@ class TestHttpConfigSerializer(TransactionTestCase):
 
         http = self.build_http_model_objects()
 
-        from MetaDataApi.dataproviders.models.SerializableModelFilter import SerializableModelFilter
+        from generic_serializer import SerializableModelFilter
         res = http.serialize(filter=SerializableModelFilter(
             exclude_labels=("body_type", "body_content", "data_provider", "request_type")))
         self.assertEqual(res, expected)
@@ -139,7 +139,7 @@ class TestHttpConfigSerializer(TransactionTestCase):
 
     @staticmethod
     def build_default_filter(max_depth=0):
-        from MetaDataApi.dataproviders.models.SerializableModelFilter import SerializableModelFilter
+        from generic_serializer import SerializableModelFilter
         filter = SerializableModelFilter(
             max_depth=max_depth,
             exclude_labels=(

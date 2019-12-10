@@ -1,9 +1,9 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.urls import reverse
+from generic_serializer import SerializableModel
 
 from MetaDataApi.dataproviders.models.ApiTypes import ApiTypes
-from MetaDataApi.dataproviders.models.SerializableModel import SerializableModel
 from MetaDataApi.metadata.models import Schema
 
 

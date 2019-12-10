@@ -38,6 +38,7 @@ resampy = "==0.2.0"
 "urllib3" = "*"
 requests = "*"
 django-json2model = {editable = true,uri = "git://github.com/grusinator/django-json2model"}
+django-generic-serializer = {path = "./../django-generic-serializer/dist/django_generic_serializer-0.0.1-py3-none-any.whl"}
 
 [dev-packages]
 pep8 = "*"
