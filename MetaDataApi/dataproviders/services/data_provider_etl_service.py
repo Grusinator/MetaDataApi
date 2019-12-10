@@ -1,6 +1,9 @@
+import logging
 from datetime import datetime, timedelta
 # from jsonschema import validate
 from urllib import request
+
+from django.core.exceptions import MultipleObjectsReturned
 
 from MetaDataApi.dataproviders.models import DataProvider, DataDump, Endpoint
 from MetaDataApi.dataproviders.models.ApiTypes import ApiTypes
@@ -10,6 +13,7 @@ from MetaDataApi.metadata.models import (
 from MetaDataApi.metadata.services.all_services.base_functions import BaseMetaDataService
 from MetaDataApi.metadata.utils.django_model_utils import DjangoModelUtils
 
+logger = logging.getLogger(__name__)
 
 class DataProviderEtlService:
 
@@ -27,7 +31,12 @@ class DataProviderEtlService:
             self.data_provider.data_provider_name)
 
     def read_data_from_endpoint(self, endpoint_name: str, access_token: str = None):
-        endpoint = self.data_provider.endpoints.get(endpoint_name=endpoint_name)
+        try:
+            endpoint = self.data_provider.endpoints.get(endpoint_name=endpoint_name)
+        except MultipleObjectsReturned as e:
+            logger.warning(e)
+            endpoint = self.data_provider.endpoints.filter(endpoint_name=endpoint_name).first()
+
         url = self.build_url(endpoint, access_token)
         body = self.build_body(endpoint)
         header = self.build_header(endpoint, access_token)

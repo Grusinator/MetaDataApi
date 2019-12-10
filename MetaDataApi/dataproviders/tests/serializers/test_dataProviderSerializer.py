@@ -30,7 +30,6 @@ class TestDataProviderSerializer(TransactionTestCase):
             'api_type': "OauthRest",
             'api_endpoint': '',
             'endpoints': [],
-            'data_provider_node': None
         }
         self.assertEqual(expected, data)
 
@@ -57,8 +56,8 @@ class TestDataProviderSerializer(TransactionTestCase):
                     'provider_name': 'dsfsd4',
                     'api_type': 'OauthRest',
                     'api_endpoint': '',
-                    'endpoints': [],
-                    'data_provider_node': None}
+                    'endpoints': []
+                    }
         self.assertEqual(expected, data)
 
     def test_serializing_provider_and_endpoints(self):
@@ -71,7 +70,7 @@ class TestDataProviderSerializer(TransactionTestCase):
                     'endpoints': [{'endpoint_name': 'test1', 'endpoint_url': 'testurl', 'request_type': 'GET'},
                                   {'endpoint_name': 'test2', 'endpoint_url': 'testurl', 'request_type': 'GET'}],
                     'provider_name': 'dsfsd4', 'api_type': 'OauthGraphql', 'api_endpoint': '',
-                    'data_provider_node': None}
+                    }
         self.assertEqual(expected, data)
 
     @unittest.skip("dataproviderserializer has errors but is not importaint since we have the generic serializer")

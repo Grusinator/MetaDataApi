@@ -5,12 +5,14 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 
 from MetaDataApi.dataproviders.models import DataProvider, Endpoint
+from MetaDataApi.dataproviders.models import DataProviderProfile
+from MetaDataApi.dataproviders.models.SerializableModelFilter import SerializableModelFilter
 from MetaDataApi.metadata.models import Schema, SchemaEdge, SchemaNode, SchemaAttribute
 from MetaDataApi.metadata.services import (
     JsonSchemaService, DataCleaningService, RdfInstanceService, RdfSchemaService, JsonAnalyser
 )
 from MetaDataApi.metadata.utils import JsonUtils
-from MetaDataApi.users.models import DataProviderProfile, Profile
+from MetaDataApi.users.models import Profile
 
 
 class LoadTestData:
@@ -196,8 +198,8 @@ class LoadTestData:
     @classmethod
     def load_dummy_provider_json(cls):
         return {
-            "provider_name": "strava1",
-            "api_type": "Oauth2-rest",
+            "provider_name": "strava3",
+            "api_type": "OauthRest",
             "api_endpoint": "https://www.strava.com/api/",
             "authorize_url": "https://www.strava.com/oauth/authorize",
             "access_token_url": "https://www.strava.com/oauth/token",
@@ -220,10 +222,8 @@ class LoadTestData:
     def create_dummy_provider(cls, dp_profile):
         # TODO this should be refactored
         json_provider_obj = LoadTestData.load_dummy_provider_json()
-        del json_provider_obj["client_id"]
-        del json_provider_obj["client_secret"]
-
-        dpo = DataProvider(inst_pk=dp_profile.provider.data_provider_instance.pk, json_object=json_provider_obj)
-        dpo.validate()
-
+        filter = SerializableModelFilter(start_object_name="data_provider")
+        dp = DataProvider.deserialize(json_provider_obj, filter)
+        dp.data_provider_profile = dp_profile
+        dp.save()
         return dp_profile

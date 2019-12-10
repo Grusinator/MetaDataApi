@@ -1,7 +1,8 @@
 from django.contrib import admin
 
 # Register your models here.
-from MetaDataApi.dataproviders.models import DataProvider, Endpoint, DataDump, OauthConfig, HttpConfig
+from MetaDataApi.dataproviders.models import DataProvider, Endpoint, DataDump, OauthConfig, HttpConfig, \
+    DataProviderProfile
 
 
 class EndpointAdmin(admin.ModelAdmin):
@@ -28,3 +29,14 @@ models = (
 )
 
 [admin.site.register(model) for model in models]
+
+
+class DataProviderProfileAdmin(admin.ModelAdmin):
+    # list_display = ['profile__user__username', 'provider__provider_name']
+    # ordering = ['profile']
+    actions = [
+        # identify_schema_and_data_from_all_endpoints,
+    ]
+
+
+admin.site.register(DataProviderProfile, DataProviderProfileAdmin)

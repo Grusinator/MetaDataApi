@@ -7,9 +7,9 @@ from django.http import HttpResponse
 
 from MetaDataApi import settings
 from MetaDataApi.dataproviders.models import DataProvider
+from MetaDataApi.dataproviders.models import DataProviderProfile
 from MetaDataApi.metadata.utils import JsonUtils
 from MetaDataApi.settings import OAUTH_REDIRECT_URI
-from MetaDataApi.users.models import DataProviderProfile
 
 logger = logging.getLogger(__name__)
 

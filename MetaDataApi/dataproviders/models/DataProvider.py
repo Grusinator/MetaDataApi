@@ -11,12 +11,6 @@ class DataProvider(models.Model, SerializableModel):
     provider_name = models.TextField(unique=True)
     api_type = models.TextField(choices=ApiTypes.build_choices(), default=ApiTypes.OAUTH_REST.value)
     api_endpoint = models.TextField()
-    data_provider_node = models.ForeignKey(
-        "metadata.Node",
-        on_delete=models.CASCADE,
-        null=True, blank=True,
-        related_name="db_data_provider"
-    )
 
     def get_internal_view_url(self):
         return reverse('provider_detail', args=[str(self.provider_name)])
