@@ -9,11 +9,11 @@ logging.basicConfig(level=logging.DEBUG)
 from django.test import TransactionTestCase
 
 
-class TestSerializableModelSerialize(TransactionTestCase):
+class TestSerializableModelDeserialize(TransactionTestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(TestSerializableModelSerialize, cls).setUpClass()
+        super(TestSerializableModelDeserialize, cls).setUpClass()
         django.setup()
         from MetaDataApi.dataproviders.models import DataProvider
         cls.model = DataProvider
@@ -108,7 +108,6 @@ class TestSerializableModelSerialize(TransactionTestCase):
         data = MockDataProvider.build_strava_data_provider_json()
         InitializeDataProviders.exclude = (
             "dataproviderprofile",
-            "data_provider_node",
         )
         from MetaDataApi.dataproviders.models.SerializableModelFilter import SerializableModelFilter
         filter = SerializableModelFilter(

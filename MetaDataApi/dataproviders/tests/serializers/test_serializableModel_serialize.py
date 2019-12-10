@@ -14,7 +14,6 @@ class TestSerializableModelSerialize(TransactionTestCase):
         cls.model = DataProvider
         cls.exclude_labels = (
             "dataproviderprofile",
-            "data_provider_node",
         )
         cls.data_provider_name = "data_provider"
 
@@ -46,7 +45,8 @@ class TestSerializableModelSerialize(TransactionTestCase):
         oauth.save()
         from MetaDataApi.dataproviders.models.SerializableModelFilter import SerializableModelFilter
         data = data_provider.serialize(
-            filter=SerializableModelFilter(max_depth=1, exclude_labels=self.exclude_labels))
+            filter=SerializableModelFilter(max_depth=1,
+                                           exclude_labels=self.exclude_labels + ("endpoints", "http_config")))
 
         expected = {
             'provider_name': 'dsfsd6',
@@ -69,7 +69,8 @@ class TestSerializableModelSerialize(TransactionTestCase):
 
         from MetaDataApi.dataproviders.models.SerializableModelFilter import SerializableModelFilter
         data = data_provider.serialize(
-            filter=SerializableModelFilter(max_depth=1, exclude_labels=("dataproviderprofile",)))
+            filter=SerializableModelFilter(max_depth=1, exclude_labels=("dataproviderprofile",),
+                                           start_object_name="data_provider"))
         expected = {
             'provider_name': 'dsfsd4',
             'api_type': 'OauthGraphql',

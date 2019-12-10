@@ -19,7 +19,6 @@ class InitializeDataProviders:
     local_client_file = "data_providers.json"
     exclude = (
         "dataproviderprofile",
-        "data_provider_node",
         "data_dump",
         "data_dumps",
         # "endpoints",
