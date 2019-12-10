@@ -18,9 +18,6 @@ class HttpConfig(models.Model, SerializableModel):
     body_content = models.TextField(null=True, blank=True)
     request_type = models.TextField(null=True, blank=True)
 
-    # http_config = models.ManyToOneRel("HttpConfig")
-    # oauth_config = models.ManyToOneRel("OauthConfig")
-
     def __str__(self):
         return f"HTTP Config:{self.data_provider.provider_name}"
 

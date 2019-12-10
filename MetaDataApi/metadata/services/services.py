@@ -9,7 +9,6 @@ from graphql import GraphQLError
 from service_objects.services import Service
 
 from MetaDataApi.dataproviders.models import DataDump
-from MetaDataApi.dataproviders.services.data_provider_etl_service import DataProviderEtlService
 from MetaDataApi.metadata.models import *
 from MetaDataApi.metadata.utils import JsonUtils
 from MetaDataApi.metadata.utils.common_utils import StringUtils
@@ -115,94 +114,94 @@ class IdentifyDataFromFileService(Service):
         return objects
 
 
-class IdentifySchemaFromProviderService(Service):
-    provider_name = forms.CharField()
-    endpoint = forms.CharField()
-    user_pk = forms.IntegerField()
+# class IdentifySchemaFromProviderService(Service):
+#     provider_name = forms.CharField()
+#     endpoint = forms.CharField()
+#     user_pk = forms.IntegerField()
+#
+#     def process(self):
+#         provider_name = self.cleaned_data['provider_name']
+#         endpoint = self.cleaned_data['endpoint']
+#         user_pk = self.cleaned_data['user_pk']
+#         user = User.objects.get(pk=user_pk)
+#
+#         identify = JsonAnalyser()
+#         provider_service = FetchDataFromProvider(provider_name)
+#
+#         provider_profile = user.profile.get_data_provider_profile(
+#             provider_name)
+#
+#         schema = provider_service.get_related_schema()
+#
+#         if endpoint == "all" or endpoint is None:
+#             endpoints = json.loads(
+#                 provider_service.data_provider.rest_endpoints_list)
+#         else:
+#             endpoints = [endpoint, ]
+#         n_objs = 0
+#         for endpoint in endpoints:
+#             data = provider_service._fetch_data_from_endpoint(
+#                 endpoint, provider_profile.access_token)
+#
+#             json_data = JsonUtils.validate(data)
+#
+#             parrent_label = BaseMetaDataService.rest_endpoint_to_label(
+#                 endpoint)
+#
+#             objects = identify.identify_from_json_data(
+#                 json_data, schema, user, parrent_label)
+#             n_objs += len(objects)
+#
+#         return n_objs
 
-    def process(self):
-        provider_name = self.cleaned_data['provider_name']
-        endpoint = self.cleaned_data['endpoint']
-        user_pk = self.cleaned_data['user_pk']
-        user = User.objects.get(pk=user_pk)
 
-        identify = JsonAnalyser()
-        provider_service = DataProviderEtlService(provider_name)
-
-        provider_profile = user.profile.get_data_provider_profile(
-            provider_name)
-
-        schema = provider_service.get_related_schema()
-
-        if endpoint == "all" or endpoint is None:
-            endpoints = json.loads(
-                provider_service.data_provider.rest_endpoints_list)
-        else:
-            endpoints = [endpoint, ]
-        n_objs = 0
-        for endpoint in endpoints:
-            data = provider_service.read_data_from_endpoint(
-                endpoint, provider_profile.access_token)
-
-            json_data = JsonUtils.validate(data)
-
-            parrent_label = BaseMetaDataService.rest_endpoint_to_label(
-                endpoint)
-
-            objects = identify.identify_from_json_data(
-                json_data, schema, user, parrent_label)
-            n_objs += len(objects)
-
-        return n_objs
-
-
-class IdentifyDataFromProviderService(Service):
-    provider_name = forms.CharField()
-    endpoint = forms.CharField()
-    user_pk = forms.IntegerField()
-
-    def process(self):
-        provider_name = self.cleaned_data['provider_name']
-        endpoint = self.cleaned_data['endpoint']
-        user_pk = self.cleaned_data['user_pk']
-        user = User.objects.get(pk=user_pk)
-
-        identify = JsonAnalyser()
-        provider_service = DataProviderEtlService(provider_name)
-        rdf_service = RdfInstanceService()
-
-        provider_profile = user.profile.get_data_provider_profile(
-            provider_name)
-
-        schema = rdf_service.do_meta_item_exists(Schema(label=provider_name))
-
-        # select which endpoints
-        if endpoint == "all" or endpoint is None:
-            endpoints = json.loads(
-                provider_service.data_provider.rest_endpoints_list)
-        else:
-            endpoints = [endpoint, ]
-
-        # identify objects for each endpoint
-        schema_nodes = []
-        for endpoint in endpoints:
-            data = provider_service.read_data_from_endpoint(
-                endpoint, provider_profile.access_token)
-
-            json_data = JsonUtils.validate(data)
-
-            parrent_label = BaseMetaDataService.rest_endpoint_to_label(
-                endpoint)
-
-            objects = identify.identify_from_json_data(
-                json_data, schema, parrent_label)
-            schema_nodes.extend(objects)
-
-        # generate rdf file from data
-        rdf_file = rdf_service.export_instances_to_rdf_file(
-            schema, objects)
-
-        return rdf_file, schema_nodes
+# class IdentifyDataFromProviderService(Service):
+#     provider_name = forms.CharField()
+#     endpoint = forms.CharField()
+#     user_pk = forms.IntegerField()
+#
+#     def process(self):
+#         provider_name = self.cleaned_data['provider_name']
+#         endpoint = self.cleaned_data['endpoint']
+#         user_pk = self.cleaned_data['user_pk']
+#         user = User.objects.get(pk=user_pk)
+#
+#         identify = JsonAnalyser()
+#         provider_service = FetchDataFromProvider(provider_name)
+#         rdf_service = RdfInstanceService()
+#
+#         provider_profile = user.profile.get_data_provider_profile(
+#             provider_name)
+#
+#         schema = rdf_service.do_meta_item_exists(Schema(label=provider_name))
+#
+#         # select which endpoints
+#         if endpoint == "all" or endpoint is None:
+#             endpoints = json.loads(
+#                 provider_service.data_provider.rest_endpoints_list)
+#         else:
+#             endpoints = [endpoint, ]
+#
+#         # identify objects for each endpoint
+#         schema_nodes = []
+#         for endpoint in endpoints:
+#             data = provider_service._fetch_data_from_endpoint(
+#                 endpoint, provider_profile.access_token)
+#
+#             json_data = JsonUtils.validate(data)
+#
+#             parrent_label = BaseMetaDataService.rest_endpoint_to_label(
+#                 endpoint)
+#
+#             objects = identify.identify_from_json_data(
+#                 json_data, schema, parrent_label)
+#             schema_nodes.extend(objects)
+#
+#         # generate rdf file from data
+#         rdf_file = rdf_service.export_instances_to_rdf_file(
+#             schema, objects)
+#
+#         return rdf_file, schema_nodes
 
 
 class LoadSchemaAndDataFromDataDump(Service):

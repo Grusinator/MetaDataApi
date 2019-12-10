@@ -43,12 +43,12 @@ class TestDataProviderEtlService(TransactionTestCase):
         dp_profile = LoadTestData.init_strava_data_provider_profile()
         LoadTestData.create_dummy_provider(dp_profile)
 
-        from MetaDataApi.dataproviders.services import DataProviderEtlService
-        service = DataProviderEtlService(dp_profile.data_provider)
+        from MetaDataApi.dataproviders.services import FetchDataFromProvider
+        service = FetchDataFromProvider(dp_profile.data_provider)
 
         endpoint_name = "activity"
 
-        data = service.read_data_from_endpoint(endpoint_name, dp_profile.access_token)
+        data = service._fetch_data_from_endpoint(endpoint_name, dp_profile.access_token)
 
         json_data = JsonUtils.validate(data)
 

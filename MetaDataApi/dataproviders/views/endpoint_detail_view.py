@@ -4,7 +4,7 @@ from django.http import Http404
 from django.shortcuts import render
 
 from MetaDataApi.dataproviders.models import DataProvider
-from MetaDataApi.dataproviders.services.services import StoreDataFromProviderService
+from MetaDataApi.dataproviders.services.fetch_data_from_provider import fetch_data_from_endpoint
 
 logger = logging.getLogger(__name__)
 
@@ -29,14 +29,11 @@ def endpoint_detail_view(request, provider_name, endpoint_name):
         }
     )
 
+
 def handle_store_data(endpoint_name, provider_name, request):
     if request.GET.get('store_data', False):
         try:
-            StoreDataFromProviderService.execute({
-                "provider_name": provider_name,
-                "endpoint_name": endpoint_name,
-                "user_pk": request.user.pk
-            })
+            fetch_data_from_endpoint(provider_name, endpoint_name, request.user.pk)
         except Exception as e:
             error_msg = 'data error: %s' % e
             logger.error(error_msg)

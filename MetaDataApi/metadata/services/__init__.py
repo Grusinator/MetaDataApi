@@ -2,6 +2,6 @@ from MetaDataApi.metadata.services.all_services.data_cleaning_service import Dat
 from .all_services import *
 from .services import (DeleteSchemaService, BaseMetaDataService, AddRdfSchemaService, AddJsonSchemaService,
                        RdfSchemaService, JsonSchemaService, DataCleaningService, ExportSchemaService,
-                       GetTemporalFloatPairsService, IdentifyDataFromFileService, IdentifyDataFromProviderService,
-                       IdentifySchemaFromFileService, IdentifySchemaFromProviderService,
+                       GetTemporalFloatPairsService, IdentifyDataFromFileService,
+                       IdentifySchemaFromFileService,
                        LoadSchemaAndDataFromDataDump)
