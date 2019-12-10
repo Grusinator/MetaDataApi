@@ -37,8 +37,8 @@ scipy = "*"
 resampy = "==0.2.0"
 "urllib3" = "*"
 requests = "*"
-django-json2model = {editable = true,uri = "git://github.com/grusinator/django-json2model#egg=django-json2model"}
-django-generic-serializer = {editable = true,uri = "git://github.com/grusinator/django-generic-serializer#egg=django-generic-serializer"}
+django-json2model = {editable = true,uri = "git://github.com/grusinator/django-json2model#egg=json2model"}
+django-generic-serializer = {editable = true,uri = "git://github.com/grusinator/django-generic-serializer#egg=generic_serializer"}
 
 [dev-packages]
 pep8 = "*"
