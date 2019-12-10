@@ -55,7 +55,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'service_objects',
     'graphene_django',
     'rest_framework',
     # 'oauth2_provider',

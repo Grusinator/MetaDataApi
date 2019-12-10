@@ -1,0 +1,56 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+Django = "<=2.1.0"
+django-filter = "*"
+django-cors-headers = "*"
+django-dynamic-model = "*"
+django-enumfield = "*"
+djangorestframework = "*"
+django-modeladmin-reorder = "*"
+django-oauth-toolkit = "*"
+djongo = "*"
+graphene = "*"
+graphene-django = "*"
+graphql-core = "*"
+django-graphql-jwt = "*"
+django-heroku = "*"
+django-storages = "*"
+gunicorn = "*"
+rdflib = "*"
+html5lib = "*"
+jsonschema = "*"
+inflection = "*"
+gensim = "*"
+# python-dateutil = "*"
+"boto3" = "*"
+graphene-file-upload = "*"
+Pillow = "*"
+SpeechRecognition = "*"
+google-api-python-client = "==1.5.3"
+numpy = "*"
+scipy = "*"
+resampy = "==0.2.0"
+"urllib3" = "*"
+requests = "*"
+django-json2model = {editable = true,git = "git://github.com/grusinator/django-json2model"}
+django-generic-serializer = {editable = true,git = "git://github.com/grusinator/django-generic-serializer"}
+
+[dev-packages]
+pep8 = "*"
+autopep8 = "*"
+pylint = "*"
+pytest = "*"
+pytest-django = "*"
+gql = "*"
+jupyter = "*"
+ipykernel = "*"
+moto = "*"
+coverage = "*"
+codacy-coverage = "*"
+
+[requires]
+python_version = "3.7"
