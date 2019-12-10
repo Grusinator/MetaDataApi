@@ -3,18 +3,27 @@
 {% block content %}
 
 
-<div>
-    <h2>Data Providers</h2>
-</div>
+    <div>
+        <h2>Data Providers</h2>
+    </div>
 
-{% for dp in dataproviders %}
-<div>
-    <h3>
-        <a href={{ dp.get_internal_view_url }}>
-            {{dp.provider_name}}
-        </a>
-    </h3>
-</div>
-{% endfor %}
+    <div>
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="">
+            <button type="submit">load providers</button>
+        </form>
+    </div>
+    {% for dp in dataproviders %}
+
+
+        <div>
+            <h3>
+                <a href={{ dp.get_internal_view_url }}>
+                    {{ dp.provider_name }}
+                </a>
+            </h3>
+        </div>
+    {% endfor %}
 
 {% endblock %}

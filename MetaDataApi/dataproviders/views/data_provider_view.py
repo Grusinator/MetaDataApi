@@ -5,6 +5,7 @@ from django.shortcuts import redirect
 from django.shortcuts import render
 
 from MetaDataApi.dataproviders.models import DataProvider
+from MetaDataApi.dataproviders.models.initialize_data_providers import InitializeDataProviders
 
 logger = logging.getLogger(__name__)
 
@@ -14,14 +15,17 @@ class DataProviderView:
     def data_provider_list(request):
         if not request.user.is_authenticated:
             return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
+        if request.method == "POST":
+            InitializeDataProviders.load()
+            return redirect('providers')
+        else:
+            data_providers = DataProvider.objects.all()
 
-        data_providers = DataProvider.objects.all()
-
-        return render(request, 'dataproviders.html',
-                      {
-                          "dataproviders": data_providers,
-                          "user_id": request.user.pk
-                      })
+            return render(request, 'dataproviders.html',
+                          {
+                              "dataproviders": data_providers,
+                              "user_id": request.user.pk,
+                          })
 
     @staticmethod
     def data_provider(request, provider_name):
