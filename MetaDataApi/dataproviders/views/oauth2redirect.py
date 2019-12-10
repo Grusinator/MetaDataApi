@@ -112,14 +112,10 @@ def validate_user_has_profile(user):
 
 def save_data_provider_profile(access_token, data_provider, profile):
     try:
-        dpp = DataProviderProfile.objects.get(
-            profile=profile, data_provider=data_provider)
-        dpp.access_token = access_token
+        dpp = DataProviderProfile.objects.get(profile=profile, data_provider=data_provider)
     except ObjectDoesNotExist:
-        dpp = DataProviderProfile(
-            data_provider=data_provider,
-            access_token=access_token,
-            profile=profile
-        )
-
-    dpp.save()
+        dpp = DataProviderProfile(data_provider=data_provider, access_token=access_token, profile=profile)
+    else:
+        dpp.access_token = access_token
+    finally:
+        dpp.save()

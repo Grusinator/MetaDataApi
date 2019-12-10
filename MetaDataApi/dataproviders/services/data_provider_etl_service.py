@@ -5,7 +5,7 @@ from urllib import request
 
 from django.core.exceptions import MultipleObjectsReturned
 
-from MetaDataApi.dataproviders.models import DataProvider, DataDump, Endpoint
+from MetaDataApi.dataproviders.models import DataProvider, DataDump, Endpoint, HttpConfig
 from MetaDataApi.dataproviders.models.ApiTypes import ApiTypes
 from MetaDataApi.dataproviders.services.url_format_helper import UrlFormatHelper
 from MetaDataApi.metadata.models import (
@@ -57,9 +57,15 @@ class DataProviderEtlService:
         DataDump.objects.create(endpoint=endpoint, file=file)
 
     def build_header(self, endpoint: Endpoint, access_token: str):
-        header = endpoint.data_provider.http_config.build_header()
-        if endpoint.data_provider.api_type == ApiTypes.OAUTH_REST:
+        header = {}
+        try:
+            header += endpoint.data_provider.http_config.build_header()
+        except HttpConfig.DoesNotExist:
+            logger.warning("dataprovider has no http config, so header will be default")
+
+        if endpoint.data_provider.api_type == ApiTypes.OAUTH_REST.value:
             header["Authorization"] = "Bearer %s" % access_token
+
         return header
 
     def build_body(self, endpoint):
