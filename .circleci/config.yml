@@ -33,6 +33,7 @@ jobs:
             - "/usr/local/lib/python3.7/site-packages"
       - run:
           command: |
+            pipenv run python manage.py migrate
             pipenv run python manage.py test
             coverage xml -i
             python-codacy-coverage -r coverage.xml
