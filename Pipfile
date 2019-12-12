@@ -14,7 +14,7 @@ django-modeladmin-reorder = "*"
 django-oauth-toolkit = "*"
 django-mutant = "*"
 django-polymodels = ">=1.5.1"
-jsonfield
+jsonfield = "*"
 djongo = "*"
 graphene = "*"
 graphene-django = "*"
