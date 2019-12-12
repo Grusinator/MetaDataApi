@@ -86,3 +86,9 @@ __pycache__/
 local_settings.py
 
 db.sqlite3
+api_keys.json
+data_providers.json
+coverage.xml
+.idea/
+.vscode
+
