@@ -31,7 +31,6 @@ def _fetch_data_from_endpoint(endpoint: Endpoint, access_token: str = None):
     url = _build_url(endpoint, access_token)
     body = _build_body(endpoint)
     header = _build_header(endpoint, access_token)
-
     data = _request_from_endpoint(url, body, header)
     return data
 

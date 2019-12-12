@@ -1,0 +1,1 @@
+pipenv run celery -A MetaDataApi beat --loglevel = info -P eventlet
