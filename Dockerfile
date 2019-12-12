@@ -6,6 +6,8 @@ FROM python:3.7
 # to the terminal with out buffering it first
 ENV PYTHONUNBUFFERED 1
 
+ENV PYTHONDONTWRITEBYTECODE 1
+
 # create root directory for our project in the container
 RUN mkdir /meta_data_api
 
