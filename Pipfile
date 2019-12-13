@@ -4,8 +4,9 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-Django = "<=2.1.0"
+Django = "<2.1.0,>=2.0.0"
 django-filter = "*"
+django-timezone-field = "==3.0.0"
 django-cors-headers = "*"
 django-dynamic-model = "*"
 django-enumfield = "*"
@@ -31,8 +32,6 @@ inflection = "*"
 # python-dateutil = "*"
 "boto3" = "*"
 graphene-file-upload = "*"
-SpeechRecognition = "*"
-google-api-python-client = "==1.5.3"
 "urllib3" = "*"
 requests = "*"
 django-json2model = {editable = true,git = "git://github.com/grusinator/django-json2model"}

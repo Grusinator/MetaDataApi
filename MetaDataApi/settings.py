@@ -33,7 +33,8 @@ except:
 
 ENV = os.environ.get('ENV') or "LOCAL"
 
-DEBUG = (ENV != "PROD") | (sys.gettrace() is None)  # gettrace() is none when not debugging
+# gettrace() is none when not debugging
+DEBUG = (ENV != "PROD") | (sys.gettrace() is None)
 
 ALLOWED_HOSTS = ["*"]
 
@@ -222,7 +223,8 @@ CELERY_CACHE_BACKEND = 'django-cache'
 # SOCIAL AUTH
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = api_keys.get("SOCIAL_AUTH_GOOGLE_OAUTH2_KEY")
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = api_keys.get("SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET")
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = api_keys.get(
+    "SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET")
 LOGIN_URL = '/auth/login/google-oauth2/'
 
 LOGIN_REDIRECT_URL = '/'

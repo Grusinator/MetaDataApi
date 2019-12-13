@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from PIL import Image
+# from PIL import Image
 from django.core.files import File
 from django.db import models
 from django.urls import reverse
@@ -52,8 +52,9 @@ class FloatAttribute(BaseAttribute):
 
 
 class ImageAttribute(BaseAttribute):
-    data_type = SchemaAttribute.DataType.Image
-    value = models.ImageField(upload_to="images", storage=PrivateMediaStorage())
+    data_type = None  # SchemaAttribute.DataType.Image
+    value = models.ImageField(
+        upload_to="images", storage=PrivateMediaStorage())
 
     class Meta(BaseAttribute.Meta):
         default_related_name = '%(model_name)s'
@@ -62,7 +63,8 @@ class ImageAttribute(BaseAttribute):
 class FileAttribute(BaseAttribute):
     data_type = SchemaAttribute.DataType.File
     storage_path = "datafiles/"
-    value = models.FileField(upload_to=storage_path, storage=PrivateMediaStorage())
+    value = models.FileField(upload_to=storage_path,
+                             storage=PrivateMediaStorage())
 
     def __str__(self):
         return "Ai:%s.%s:%s" % (self.base.object.label, self.base.label,
@@ -86,5 +88,5 @@ BaseAttribute.att_inst_to_type_map = {
     IntAttribute: int,
     BoolAttribute: bool,
     FileAttribute: File,
-    ImageAttribute: Image
+    # ImageAttribute: Image
 }
