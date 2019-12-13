@@ -17,22 +17,14 @@ class UrlFormatHelper:
 
     @classmethod
     def build_args_for_url(cls, endpoint_url: str, **inserted_arguments) -> str:
-        for key in inserted_arguments.keys():
-            cls.validate(key)
-
+        [cls.validate(key) for key in inserted_arguments.keys()]
         output_endpoint = endpoint_url
-
         url_arg_defs = cls.find_all_url_arg_definitions(endpoint_url)
         for url_arg_name, dataformat in url_arg_defs.items():
             cls.validate(url_arg_name)
-
             value = inserted_arguments[url_arg_name]
             url_arg_value = cls.convert(value, dataformat)
-            output_endpoint = output_endpoint.replace(
-                cls.build_url_arg_def(dataformat, url_arg_name),
-                url_arg_value
-            )
-
+            output_endpoint = output_endpoint.replace(cls.build_url_arg_def(dataformat, url_arg_name), url_arg_value)
         return output_endpoint
 
     @classmethod

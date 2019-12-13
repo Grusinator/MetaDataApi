@@ -19,7 +19,7 @@ def fetch_data_from_provider_endpoint(provider_name, endpoint_name, user_pk):
     return fetch_service.fetch_data_from_provider_endpoint(provider_name, endpoint_name, user_pk)
 
 
-@celery.shared_task()
+@celery.shared_task
 def fetch_all(user_pk):
     for provider in DataProvider.objects.all():
         for endpoint in provider.endpoints:

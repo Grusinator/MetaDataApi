@@ -11,7 +11,7 @@
         <form method="POST">
             {% csrf_token %}
             <input type="hidden" name="next" value="">
-            <button type="submit">load providers</button>
+            <button type="submit">reload providers</button>
         </form>
     </div>
     {% for dp in dataproviders %}

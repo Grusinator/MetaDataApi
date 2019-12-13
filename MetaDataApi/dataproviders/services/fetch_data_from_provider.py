@@ -75,11 +75,10 @@ def _build_body(endpoint):
 
 
 def _build_url(endpoint, access_token):
-    endpoint_url = UrlFormatHelper.build_args_for_url(
-        endpoint.endpoint_url,
-        StartDateTime=datetime.now() - timedelta(days=30),
-        EndDateTime=datetime.now(),
-        AuthToken=access_token
-    )
-
+    kwargs = {
+        "StartDateTime": datetime.now() - timedelta(days=30),
+        "EndDateTime": datetime.now(),
+        "AuthToken": access_token
+    }
+    endpoint_url = UrlFormatHelper.build_args_for_url(endpoint.endpoint_url, **kwargs)
     return UrlFormatHelper.join_urls(endpoint.data_provider.api_endpoint, endpoint_url)
