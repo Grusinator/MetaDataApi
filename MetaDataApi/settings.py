@@ -62,6 +62,8 @@ INSTALLED_APPS = [
     'storages',
     'admin_reorder',
     'graphene_file_upload',
+    'django_celery_results',
+    'django_celery_beat',
 ]
 
 # apps to run json2model
@@ -162,13 +164,13 @@ GRAPHENE = {
 }
 
 # CELERY
-CELERY_BROKER_URL = 'amqp://guest:guest@localhost'
-
+CELERY_BROKER_URL = 'pyamqp://django:dev1234@localhost:5672/meta_data_api'
 #: Only add pickle to this list if your broker is secured
 #: from unwanted access (see userguide/security.html)
 CELERY_ACCEPT_CONTENT = ['json']
-CELERY_RESULT_BACKEND = 'db+sqlite:///results.sqlite'
+CELERY_RESULT_BACKEND = 'django-db'
 CELERY_TASK_SERIALIZER = 'json'
+CELERY_CACHE_BACKEND = 'django-cache'
 
 settings_dir = os.path.dirname(__file__)
 PROJECT_ROOT = os.path.abspath(os.path.dirname(settings_dir))
@@ -306,7 +308,13 @@ ADMIN_REORDER = (
     {'app': 'dynamic_models', 'label': 'dynamic models'},
     {'app': 'mutant', 'label': 'model definitions'},
     {'app': 'related', 'label': 'model definition relations'},
-    {'app': 'numeric', 'label': 'model definition fields'},
+    {
+        'app': 'numeric', 'label': 'model definition fields',
+        # 'models': ("numeric.FloatingPointNumberFieldDefinition",)
+    },
+    {'app': 'django_celery_results'},
+    {'app': 'django_celery_beat'},
+    "sites"
 )
 
 # Activate Django-Heroku.

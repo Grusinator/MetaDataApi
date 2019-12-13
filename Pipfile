@@ -33,11 +33,12 @@ inflection = "*"
 graphene-file-upload = "*"
 SpeechRecognition = "*"
 google-api-python-client = "==1.5.3"
-resampy = "==0.2.0"
 "urllib3" = "*"
 requests = "*"
 django-json2model = {editable = true,git = "git://github.com/grusinator/django-json2model"}
 django-generic-serializer = {editable = true,git = "git://github.com/grusinator/django-generic-serializer"}
+django-celery-results = "*"
+django-celery-beat = "*"
 
 [dev-packages]
 pep8 = "*"
