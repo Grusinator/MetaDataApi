@@ -43,6 +43,7 @@ CORS_ORIGIN_WHITELIST = ()
 
 AUTHENTICATION_BACKENDS = [
     'graphql_jwt.backends.JSONWebTokenBackend',
+    'social_core.backends.google.GoogleOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 ]
 
@@ -64,6 +65,7 @@ INSTALLED_APPS = [
     'graphene_file_upload',
     'django_celery_results',
     'django_celery_beat',
+    'social_django',
 ]
 
 # apps to run json2model
@@ -163,15 +165,6 @@ GRAPHENE = {
     )
 }
 
-# CELERY
-CELERY_BROKER_URL = 'pyamqp://django:dev1234@localhost:5672/meta_data_api'
-#: Only add pickle to this list if your broker is secured
-#: from unwanted access (see userguide/security.html)
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_RESULT_BACKEND = 'django-db'
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_CACHE_BACKEND = 'django-cache'
-
 settings_dir = os.path.dirname(__file__)
 PROJECT_ROOT = os.path.abspath(os.path.dirname(settings_dir))
 ML_models_dir = os.path.join(
@@ -215,6 +208,25 @@ except Exception as e:
     logger.warning("could not read api_keys.json")
 
 # TODO change to python decouple
+
+
+# CELERY
+CELERY_BROKER_URL = 'pyamqp://django:dev1234@localhost:5672/meta_data_api'
+#: Only add pickle to this list if your broker is secured
+#: from unwanted access (see userguide/security.html)
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_CACHE_BACKEND = 'django-cache'
+
+# SOCIAL AUTH
+SOCIAL_AUTH_URL_NAMESPACE = 'social'
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = api_keys.get("SOCIAL_AUTH_GOOGLE_OAUTH2_KEY")
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = api_keys.get("SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET")
+LOGIN_URL = '/auth/login/google-oauth2/'
+
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
 
 OAUTH_REDIRECT_URI = "oauth2redirect"
 

@@ -15,8 +15,18 @@
     <a href="/providers/">Providers</a>
     <a href="/graphql/">Graphql</a>
     <a href="/dynamic_models/">dynamic models</a>
-    <p> {{ request.user.username }} </p>
 </div>
+<div>
+    {% if user.is_authenticated %}
+        <p>Logged as {{ user.username }}</p>
+        <a class="btn btn-primary" href="{% url 'logout' %}">Logout</a>
+    {% else %}
+        <a class="btn btn-primary" href="{% url 'social:begin' 'google-oauth2' %}">
+            Login
+        </a>
+    {% endif %}
+</div>
+
 
 <div>
     <h1>Meta Data</h1>

@@ -39,6 +39,7 @@ django-json2model = {editable = true,git = "git://github.com/grusinator/django-j
 django-generic-serializer = {editable = true,git = "git://github.com/grusinator/django-generic-serializer"}
 django-celery-results = "*"
 django-celery-beat = "*"
+social-auth-app-django = "*"
 
 [dev-packages]
 pep8 = "*"
