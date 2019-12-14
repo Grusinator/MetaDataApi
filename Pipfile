@@ -1,60 +1,21 @@
 [[source]]
+name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
-name = "pypi"
-
-[packages]
-Django = "<2.1.0,>=2.0.0"
-django-filter = "*"
-django-timezone-field = "==3.0.0"
-django-cors-headers = "*"
-django-dynamic-model = "*"
-django-enumfield = "*"
-djangorestframework = "*"
-django-modeladmin-reorder = "*"
-django-oauth-toolkit = "*"
-django-mutant = "*"
-django-polymodels = ">=1.5.1"
-Pillow = "*"
-jsonfield = "*"
-djongo = "*"
-graphene = "*"
-graphene-django = "*"
-graphql-core = "*"
-django-graphql-jwt = "*"
-django-heroku = "*"
-django-storages = "*"
-gunicorn = "*"
-rdflib = "*"
-html5lib = "*"
-celery = "*"
-jsonschema = "*"
-inflection = "*"
-# python-dateutil = "*"
-"boto3" = "*"
-graphene-file-upload = "*"
-"urllib3" = "*"
-requests = "*"
-# django-json2model = {editable = true,git = "git://github.com/grusinator/django-json2model"}
-# django-generic-serializer = {editable = true,git = "git://github.com/grusinator/django-generic-serializer"}
-django-celery-results = "*"
-django-celery-beat = "*"
-social-auth-app-django = "*"
 
 [dev-packages]
-pep8 = "*"
-autopep8 = "*"
-pylint = "*"
-pytest = "*"
-pytest-django = "*"
-gql = "*"
-jupyter = "*"
-ipykernel = "*"
-moto = "*"
-coverage = "*"
-codacy-coverage = "*"
-flower = "*"
-eventlet = "*"
+
+[packages]
+Django ="<3.0.0,>2.2.0"
+djangorestframework = "*"
+jsonfield = "*"
+requests = "*"
+"boto3" = "*"
+psycopg2 = "*"
+pillow = "*"
+inflection = "*"
+django-storages = "*"
+django-generic-serializer = {editable = true,git = "git://github.com/grusinator/django-generic-serializer"}
 
 [requires]
 python_version = "3.7"

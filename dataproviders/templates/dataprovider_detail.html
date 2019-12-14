@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div>
+        <h2>{{ data_provider.provider_name }}</h2>
+    </div>
+
+
+    <table>
+        <tr>
+            <th>
+                <div>
+                    <h2>
+                        <a href={{ authorize_url }}>
+                            Oauth Authorize {{ data_provider.provider_name }}
+                        </a>
+                    </h2>
+                </div>
+                <a href="{{ data_provider.get_webvowl_url }}">
+                    View Schema {{ dataprovider.provider_name }}
+                </a>
+                <div>
+                    <h3>Endpoints</h3>
+                    {% for endpoint in endpoints %}
+                        <div>
+                            <a href="{{ endpoint.get_internal_view_url }}">
+                                {{ endpoint.endpoint_name }}
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+            </th>
+        </tr>
+    </table>
+
+
+{% endblock %}
