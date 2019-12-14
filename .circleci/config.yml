@@ -12,7 +12,7 @@ jobs:
           POSTGRES_USER: root
           POSTGRES_DB: circle_test
           #POSTGRES_USER: django
-          #POSTGRES_PASSWORD: dev1234
+          POSTGRES_PASSWORD: dev1234
           #POSTGRES_DB: meta-data-api
           TZ: "Etc/UTC" #"Europe/Copenhagen"
     steps:

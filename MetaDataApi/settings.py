@@ -105,6 +105,17 @@ DATABASES = {
         'PORT': '5432',
     }
 }
+if False:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'meta-data-api',
+            'USER': 'django',
+            'PASSWORD': 'dev1234',
+            'HOST': 'localhost',
+            'PORT': '5432',
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
