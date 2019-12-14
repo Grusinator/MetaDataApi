@@ -15,7 +15,10 @@ psycopg2 = "*"
 pillow = "*"
 inflection = "*"
 django-storages = "*"
-django-generic-serializer = {editable = true,git = "git://github.com/grusinator/django-generic-serializer"}
+# django-generic-serializer = {editable = true,git = "git://github.com/grusinator/django-generic-serializer"}
+celery = "*"
+django-celery-results = "*"
+django-celery-beat = "*"
 
 [requires]
 python_version = "3.7"

@@ -49,8 +49,8 @@ INSTALLED_APPS = [
     # 'storages',
     # 'admin_reorder',
     # 'graphene_file_upload',
-    # 'django_celery_results',
-    # 'django_celery_beat',
+    'django_celery_results',
+    'django_celery_beat',
     # 'social_django',
 ]
 
@@ -107,42 +107,35 @@ DATABASES = {
 }
 
 # Password validation
-# https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
-
+# https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
+dj_pass_val = 'django.contrib.auth.password_validation.'
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': f'{dj_pass_val}UserAttributeSimilarityValidator', },
+    {'NAME': f'{dj_pass_val}MinimumLengthValidator', },
+    {'NAME': f'{dj_pass_val}CommonPasswordValidator', },
+    {'NAME': f'{dj_pass_val}NumericPasswordValidator', },
 ]
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.2/howto/static-files/
-
+# https://docs.djangoproject.com/en/2.1/howto/static-files/
+ENV_PATH = os.path.abspath(os.path.dirname(__file__))
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(ENV_PATH, 'app/static/')
+MEDIA_ROOT = os.path.join(ENV_PATH, 'media/')
+MEDIA_URL = '/media/'
 
 from .settings_specific.aws_settings import *
+from .settings_specific.celery_settings import *
+from .settings_specific.admin_reorder_settings import ADMIN_REORDER
 
 OAUTH_REDIRECT_URI = "oauth2redirect"
 
@@ -153,4 +146,3 @@ oauth_mapper = {
 }
 
 OAUTH_REDIRECT_URI = oauth_mapper[ENV] + OAUTH_REDIRECT_URI
-
