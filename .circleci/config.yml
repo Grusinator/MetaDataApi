@@ -9,9 +9,11 @@ jobs:
           DATABASE_URL: postgresql://root@localhost/circle_test?sslmode=diable
       - image: circleci/postgres:9.6.2
         environment:
-          POSTGRES_USER: django
-          POSTGRES_PASSWORD: dev1234
-          POSTGRES_DB: meta-data-api
+          POSTGRES_USER: root
+          POSTGRES_DB: circle_test
+          #POSTGRES_USER: django
+          #POSTGRES_PASSWORD: dev1234
+          #POSTGRES_DB: meta-data-api
           TZ: "Etc/UTC" #"Europe/Copenhagen"
     steps:
       - checkout

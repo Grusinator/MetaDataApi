@@ -98,9 +98,9 @@ WSGI_APPLICATION = 'MetaDataApi.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'meta-data-api',
-        'USER': 'django',
-        'PASSWORD': 'dev1234',
+        'NAME': 'circle_test',
+        'USER': 'root',
+        # 'PASSWORD': 'dev1234',
         'HOST': 'localhost',
         'PORT': '5432',
     }
