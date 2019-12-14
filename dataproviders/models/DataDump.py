@@ -16,4 +16,4 @@ class DataDump(models.Model, SerializableModel):
         return f"{self.date_downloaded} - {self.endpoint} - {self.file}"
 
     def get_internal_view_url(self):
-        return reverse('data_dump', args=[str(self.file).split("/")[1]])
+        return reverse('data_dump_detail', args=[str(self.file).split("/")[1]])
