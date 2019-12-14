@@ -1,23 +1,19 @@
-import MetaDataApi.metadata.schema
-import MetaDataApi.users.schema
-import MetaDataApi.datapoints.schema
-import MetaDataApi.dataproviders.schema
-
-
 import graphene
 import graphql_jwt
-
-
 from graphene_django.debug import DjangoDebug
+
+# import MetaDataApi.datapoints.schema
+import MetaDataApi.dataproviders.schema
+import MetaDataApi.metadata.schema
+import MetaDataApi.users.schema
 
 
 class Query(
-        MetaDataApi.users.schema.Query,
-        MetaDataApi.metadata.schema.schema.Query,
-        # MetaDataApi.datapoints.schema.Query,
-        MetaDataApi.dataproviders.schema.Query,
-        graphene.ObjectType):
-
+    MetaDataApi.users.schema.Query,
+    MetaDataApi.metadata.schema.schema.Query,
+    # MetaDataApi.datapoints.schema.Query,
+    MetaDataApi.dataproviders.schema.Query,
+    graphene.ObjectType):
     debug = graphene.Field(DjangoDebug, name='__debug')
 
 

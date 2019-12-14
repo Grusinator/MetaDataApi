@@ -1,8 +1,8 @@
 from datetime import datetime
 from enum import Enum
 
+from PIL import Image
 from django.core.files import File
-from django.core.files import images
 from django.db import models
 
 from MetaDataApi.metadata.models.meta.BaseMeta import BaseMeta
@@ -18,7 +18,7 @@ class SchemaAttribute(BaseMeta):
         Boolean = "Boolean"
         String = "String"
         File = "File"
-        # Image = "Image"
+        Image = "Image"
         Undefined = "Undefined"
 
         def __str__(self):
@@ -31,7 +31,7 @@ class SchemaAttribute(BaseMeta):
         bool: DataType.Boolean.value,
         str: DataType.String.value,
         File: DataType.File.value,
-        # Image: DataType.Image.value,
+        Image: DataType.Image.value,
         type(None): DataType.Undefined.value
     }
     data_type_choises = [(x, x) for x in data_type_map.values()]

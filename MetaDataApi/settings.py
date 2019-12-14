@@ -69,18 +69,18 @@ INSTALLED_APPS = [
     'social_django',
 ]
 
-# apps to run json2model
-INSTALLED_APPS += (
-    'mutant',
-    'mutant.contrib.boolean',
-    'mutant.contrib.temporal',
-    'mutant.contrib.file',
-    'mutant.contrib.numeric',
-    'mutant.contrib.text',
-    'mutant.contrib.web',
-    'mutant.contrib.related',
-    'json2model'
-)
+# # apps to run json2model
+# INSTALLED_APPS += (
+#     'mutant',
+#     'mutant.contrib.boolean',
+#     'mutant.contrib.temporal',
+#     'mutant.contrib.file',
+#     'mutant.contrib.numeric',
+#     'mutant.contrib.text',
+#     'mutant.contrib.web',
+#     'mutant.contrib.related',
+#     'json2model'
+# )
 
 APP_LABEL_DYNAMIC_MODELS = "dynamic_models"
 

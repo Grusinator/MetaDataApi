@@ -15,6 +15,7 @@ django-modeladmin-reorder = "*"
 django-oauth-toolkit = "*"
 django-mutant = "*"
 django-polymodels = ">=1.5.1"
+Pillow = "*"
 jsonfield = "*"
 djongo = "*"
 graphene = "*"
@@ -34,8 +35,8 @@ inflection = "*"
 graphene-file-upload = "*"
 "urllib3" = "*"
 requests = "*"
-django-json2model = {editable = true,git = "git://github.com/grusinator/django-json2model"}
-django-generic-serializer = {editable = true,git = "git://github.com/grusinator/django-generic-serializer"}
+# django-json2model = {editable = true,git = "git://github.com/grusinator/django-json2model"}
+# django-generic-serializer = {editable = true,git = "git://github.com/grusinator/django-generic-serializer"}
 django-celery-results = "*"
 django-celery-beat = "*"
 social-auth-app-django = "*"

@@ -52,7 +52,7 @@ class FloatAttribute(BaseAttribute):
 
 
 class ImageAttribute(BaseAttribute):
-    data_type = None  # SchemaAttribute.DataType.Image
+    data_type = SchemaAttribute.DataType.Image
     value = models.ImageField(
         upload_to="images", storage=PrivateMediaStorage())
 
