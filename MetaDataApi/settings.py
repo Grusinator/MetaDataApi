@@ -54,12 +54,28 @@ INSTALLED_APPS = [
     # 'social_django',
 ]
 
+# apps to run json2model
+INSTALLED_APPS += (
+    'mutant',
+    'mutant.contrib.text',
+    'mutant.contrib.boolean',
+    'mutant.contrib.temporal',
+    'mutant.contrib.file',
+    'mutant.contrib.numeric',
+    'mutant.contrib.related',
+    # # 'mutant.contrib.web',
+
+    'json2model'
+)
+
+APP_LABEL_DYNAMIC_MODELS = "dynamic_models"
+
 INSTALLED_APPS += (
     'users',
     'app',
-    # 'MetaDataApi.metadata',
+    # 'metadata',
     'dataproviders',
-    # 'MetaDataApi.dynamic_models',
+    'dynamic_models',
 )
 
 MIDDLEWARE = [
@@ -95,27 +111,27 @@ WSGI_APPLICATION = 'MetaDataApi.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'circle_test',
+#         'USER': 'root',
+#         # 'PASSWORD': 'dev1234',
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#     }
+# }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'circle_test',
-        'USER': 'root',
-        # 'PASSWORD': 'dev1234',
+        'NAME': 'meta-data-api',
+        'USER': 'django',
+        'PASSWORD': 'dev1234',
         'HOST': 'localhost',
         'PORT': '5432',
     }
 }
-if True:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'meta-data-api',
-            'USER': 'django',
-            'PASSWORD': 'dev1234',
-            'HOST': 'localhost',
-            'PORT': '5432',
-        }
-    }
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
@@ -140,9 +156,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 ENV_PATH = os.path.abspath(os.path.dirname(__file__))
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(ENV_PATH, 'app/static/')
-MEDIA_ROOT = os.path.join(ENV_PATH, 'media/')
 MEDIA_URL = '/media/'
+# STATIC_ROOT = os.path.join(ENV_PATH, "app/static/")
+# MEDIA_ROOT = os.path.join(ENV_PATH, "media/")
 
 from .settings_specific.aws_settings import *
 from .settings_specific.celery_settings import *
