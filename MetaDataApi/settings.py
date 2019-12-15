@@ -171,7 +171,8 @@ OAUTH_REDIRECT_URI = "oauth2redirect"
 oauth_mapper = {
     "PROD": "https://meta-data-api.herokuapp.com/",
     "DEV": "https://meta-data-api-dev.herokuapp.com/",
-    "LOCAL": "http://localhost:8000/"
+    "LOCAL": "http://localhost:8000/",
+    "TEST": "http://localhost:8000/"
 }
 
 OAUTH_REDIRECT_URI = oauth_mapper[ENV] + OAUTH_REDIRECT_URI
