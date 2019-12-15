@@ -8,12 +8,16 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 # Set work directory
-WORKDIR /code
+WORKDIR /MetaDataApi/
 
 # Install dependencies
 RUN pip install pipenv
-COPY Pipfile Pipfile.lock /code/
-RUN pipenv install --system
 
 # Copy project
-COPY . /code/
+COPY . /MetaDataApi/
+
+RUN pipenv install --system --deploy --dev
+
+
+
+
