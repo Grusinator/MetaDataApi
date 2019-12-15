@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "0addcc4218dd8a55083c3ec1e45f6cec413b18a18691f540c2e65d248385353d"
+            "sha256": "5d7e7116dcaddfc512a6bb6311d78041e1e5f4f71106555d05ff0370719f4add"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -97,6 +97,36 @@
             ],
             "path": "./lib/django_generic_serializer-0.0.2-py3-none-any.whl",
             "version": "==0.0.2"
+        },
+        "django-json2model": {
+            "hashes": [
+                "sha256:fe88136e097c2db3ca0fc60e5d6e6738ece8b9b0573600f7d945d2ea54f1be13"
+            ],
+            "path": "./lib/django_json2model-0.1.6-py3-none-any.whl",
+            "version": "==0.1.6"
+        },
+        "django-mutant": {
+            "hashes": [
+                "sha256:c49baac0a80bfd12de90c750fb087e8a4b38cc59661f2abd27fc711009c7d026",
+                "sha256:cc2c9df893f0811e9116e47d5b524846c0caa3dbc03acf770a106ce2d413e847"
+            ],
+            "index": "pypi",
+            "version": "==0.2.1"
+        },
+        "django-picklefield": {
+            "hashes": [
+                "sha256:9052f2dcf4882c683ce87b4356f29b4d014c0dad645b6906baf9f09571f52bc8",
+                "sha256:f1733a8db1b6046c0d7d738e785f9875aa3c198215de11993463a9339aa4ea24"
+            ],
+            "version": "==2.0"
+        },
+        "django-polymodels": {
+            "hashes": [
+                "sha256:3f8fc8d03891c7e630173c9b128b3812139518a24fc827ca10bab62f75e689e8",
+                "sha256:48af7adb0d65a91cf0f941a2fb1c0d63555045594c51a8263391d1d4858cbd11"
+            ],
+            "index": "pypi",
+            "version": "==1.5.1"
         },
         "django-storages": {
             "hashes": [
