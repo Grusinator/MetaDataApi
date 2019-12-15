@@ -64,7 +64,7 @@ INSTALLED_APPS += (
     'mutant.contrib.numeric',
     'mutant.contrib.related',
     # # 'mutant.contrib.web',
-    # 'json2model'
+    'json2model'
 )
 
 APP_LABEL_DYNAMIC_MODELS = "dynamic_models"
@@ -124,7 +124,7 @@ CIRCLECI_TEST_DATABASE = {
 DEFAULT_DATABASE = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'meta-data-api',
+        'NAME': 'meta_data_api',
         'USER': 'django',
         'PASSWORD': 'dev1234',
         'HOST': 'localhost',

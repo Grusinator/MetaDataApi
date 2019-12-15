@@ -1,3 +1,5 @@
+del "lib\*.whl"
+
 cd ..\django-generic-serializer
 del "dist\*.whl"
 python setup.py bdist_wheel

@@ -1,1 +1,4 @@
-psql  -h localhost -p 5432 -U django -d  "meta_data_api"  -f "delete_and_create_database.ps1"
+$env:PGPASSWORD = "dev1234"
+psql -h localhost -p 5432 -U django -d  "meta_data_api"  -f .\scripts\delete_and_create_database.sql
+
+pipenv run python manage.py migrate

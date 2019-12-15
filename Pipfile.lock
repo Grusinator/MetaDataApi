@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "5d7e7116dcaddfc512a6bb6311d78041e1e5f4f71106555d05ff0370719f4add"
+            "sha256": "53ea9654c26232f9bc71db3f64933fcf914f16fa886f39126fc9850e7b3025d4"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -93,17 +93,17 @@
         },
         "django-generic-serializer": {
             "hashes": [
-                "sha256:0fbc00dc6ff052c6e06eae1a24c1b4b4acfff0dc75b50754c3a05d9ad37f2352"
+                "sha256:510497d938c887a00e46ea41b0a43e239daf0f80f05699f24cd0a51da9887585"
             ],
             "path": "./lib/django_generic_serializer-0.0.2-py3-none-any.whl",
             "version": "==0.0.2"
         },
         "django-json2model": {
             "hashes": [
-                "sha256:fe88136e097c2db3ca0fc60e5d6e6738ece8b9b0573600f7d945d2ea54f1be13"
+                "sha256:0a2d6c29d81cb6f4e1bc2108bd5a7b79b00409e727e5554042ef28a79853a353"
             ],
-            "path": "./lib/django_json2model-0.1.6-py3-none-any.whl",
-            "version": "==0.1.6"
+            "path": "./lib/django_json2model-0.1.7-py3-none-any.whl",
+            "version": "==0.1.7"
         },
         "django-mutant": {
             "hashes": [
