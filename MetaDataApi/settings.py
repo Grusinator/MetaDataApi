@@ -111,18 +111,18 @@ WSGI_APPLICATION = 'MetaDataApi.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'circle_test',
-#         'USER': 'root',
-#         # 'PASSWORD': 'dev1234',
-#         'HOST': 'localhost',
-#         'PORT': '5432',
-#     }
-# }
 
-DATABASES = {
+CIRCLECI_TEST_DATABASE = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'circle_test',
+        'USER': 'root',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
+}
+
+DEFAULT_DATABASE = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'meta-data-api',
@@ -132,6 +132,8 @@ DATABASES = {
         'PORT': '5432',
     }
 }
+
+DATABASES = CIRCLECI_TEST_DATABASE if ENV == "TEST" else DEFAULT_DATABASE
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
