@@ -20,12 +20,10 @@ class OauthRedirectRequestException(Exception):
 def oauth2redirect_view(request):
     code = get_auth_code(request)
     scope = get_scope(request)
-    profile = validate_and_get_profile(request)
+    user = validate_and_get_user(request)
     data_provider = validate_and_get_provider(request)
-
     access_token = request_access_token(code, data_provider)
-
-    save_data_provider_profile(access_token, data_provider, profile)
+    save_data_provider_user(access_token, data_provider, user)
     return HttpResponse(
         """successfully connected your profile with %s
         <a href= "%s"> back <a> """
@@ -83,17 +81,9 @@ def get_auth_code(request):
     return code
 
 
-def validate_and_get_profile(request):
+def validate_and_get_user(request):
     state_user = get_user_from_oauth_state(request)
-    profile = validate_user_has_profile(state_user)
-    session_user = request.user
-
-    text = "logged in user do not match with the user returned form oauth response"
-    if session_user != state_user and not settings.DEBUG:
-        raise OauthRedirectRequestException(text)
-    else:
-        logger.warning(text)
-    return profile
+    return state_user
 
 
 def get_user_from_oauth_state(request):
@@ -109,12 +99,6 @@ def validate_user_has_profile(user):
         raise OauthRedirectRequestException("user do not have a profile")
 
 
-def save_data_provider_profile(access_token, data_provider, profile):
-    try:
-        dpp = DataProviderUser.objects.get(profile=profile, data_provider=data_provider)
-    except ObjectDoesNotExist:
-        dpp = DataProviderUser(data_provider=data_provider, access_token=access_token, profile=profile)
-    else:
-        dpp.access_token = access_token
-    finally:
-        dpp.save()
+def save_data_provider_user(access_token, data_provider, user):
+    dpp = DataProviderUser.objects.get_or_create(user=user, data_provider=data_provider, access_token=access_token)
+    return dpp
