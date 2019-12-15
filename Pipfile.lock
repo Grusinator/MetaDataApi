@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "23239f23b29f3a77e86dbf40180256159fad5b8ce5be94b1a14b13fba3db80de"
+            "sha256": "ae706aec3147145302a3f1e767a70f2f0c23c2c69708ef8e5c54be0e77393320"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -90,6 +90,13 @@
             ],
             "index": "pypi",
             "version": "==1.1.2"
+        },
+        "django-generic-serializer": {
+            "hashes": [
+                "sha256:0fbc00dc6ff052c6e06eae1a24c1b4b4acfff0dc75b50754c3a05d9ad37f2352"
+            ],
+            "path": "./lib/django_generic_serializer-0.0.2-py3-none-any.whl",
+            "version": "==0.0.2"
         },
         "django-storages": {
             "hashes": [

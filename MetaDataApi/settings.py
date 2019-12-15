@@ -105,7 +105,7 @@ DATABASES = {
         'PORT': '5432',
     }
 }
-if False:
+if True:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
