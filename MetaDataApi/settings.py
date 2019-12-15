@@ -64,8 +64,7 @@ INSTALLED_APPS += (
     'mutant.contrib.numeric',
     'mutant.contrib.related',
     # # 'mutant.contrib.web',
-
-    'json2model'
+    # 'json2model'
 )
 
 APP_LABEL_DYNAMIC_MODELS = "dynamic_models"
