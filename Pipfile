@@ -6,7 +6,8 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-Django ="<3.0.0,>2.2.0"
+# Django ="<3.0.0,>2.2.0"
+Django ="<2.2.0,>2.0.0"
 djangorestframework = "*"
 jsonfield = "*"
 requests = "*"
@@ -18,6 +19,7 @@ django-storages = "*"
 celery = "*"
 django-celery-results = "*"
 django-celery-beat = "*"
+django-timezone-field = "==3.0.0" # v4.0 requires django >2.2
 django-generic-serializer = {path = "./lib/django_generic_serializer-0.0.2-py3-none-any.whl"}
 
 [requires]
