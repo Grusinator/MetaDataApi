@@ -15,6 +15,7 @@ Pillow = "*"
 inflection = "*"
 django-storages = "*"
 celery = "*"
+crontab = "*"
 django-celery-results = "*"
 django-celery-beat = "*"
 django-timezone-field = "==3.0.0" # v4.0 requires django >2.2
