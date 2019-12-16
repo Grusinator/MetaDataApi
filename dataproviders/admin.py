@@ -31,7 +31,7 @@ models = (
 [admin.site.register(model) for model in models]
 
 
-class DataProviderProfileAdmin(admin.ModelAdmin):
+class DataProviderUserAdmin(admin.ModelAdmin):
     # list_display = ['profile__user__username', 'provider__provider_name']
     # ordering = ['profile']
     actions = [
@@ -39,4 +39,4 @@ class DataProviderProfileAdmin(admin.ModelAdmin):
     ]
 
 
-admin.site.register(DataProviderUser, DataProviderProfileAdmin)
+admin.site.register(DataProviderUser, DataProviderUserAdmin)

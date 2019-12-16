@@ -3,7 +3,7 @@ ADMIN_REORDER = (
      "models": (
          "auth.User",
          "users.Profile",
-         "users.DataProviderProfile",
+         "users.DataProviderUser",
          "auth.Group"
      )
      },

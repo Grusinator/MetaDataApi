@@ -67,7 +67,7 @@ class TestSerializableModel(TestCase):
 
     def build_default_test_filter(self, max_depth=0, exclude_labels=(), start_object_name="data_provider"):
         from generic_serializer import SerializableModelFilter
-        default_exclude = ("data_provider_node", "dataproviderprofile")
+        default_exclude = ("data_provider_node", "dataprovideruser")
         return SerializableModelFilter(
             max_depth=max_depth,
             exclude_labels=exclude_labels + default_exclude,

@@ -1,4 +1,4 @@
-from MetaDataApi.utils.django_model_utils.DjangoModelEnum import DjangoModelEnum
+from MetaDataApi.utils.django_model_utils.django_model_enum import DjangoModelEnum
 
 
 class ApiTypes(DjangoModelEnum):

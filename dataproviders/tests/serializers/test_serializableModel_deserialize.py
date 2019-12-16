@@ -19,7 +19,7 @@ class TestSerializableModelDeserialize(TransactionTestCase):
         from dataproviders.models import DataProvider
         cls.model = DataProvider
         cls.exclude_labels = (
-            "dataproviderprofile",
+            "dataprovideruser",
             "data_provider_node",
         )
         cls.data_provider_name = "data_provider"
@@ -109,7 +109,7 @@ class TestSerializableModelDeserialize(TransactionTestCase):
         from dataproviders.models.initialize_data_providers import InitializeDataProviders
         data = MockDataProvider.build_strava_data_provider_json()
         InitializeDataProviders.exclude = (
-            "dataproviderprofile",
+            "dataprovideruser",
         )
         from generic_serializer import SerializableModelFilter
         filter = SerializableModelFilter(

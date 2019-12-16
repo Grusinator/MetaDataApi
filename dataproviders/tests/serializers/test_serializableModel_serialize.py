@@ -15,7 +15,7 @@ class TestSerializableModelSerialize(TransactionTestCase):
         from dataproviders.models import DataProvider
         cls.model = DataProvider
         cls.exclude_labels = (
-            "dataproviderprofile",
+            "dataprovideruser",
         )
         cls.data_provider_name = "data_provider"
 
@@ -73,7 +73,7 @@ class TestSerializableModelSerialize(TransactionTestCase):
 
         from generic_serializer import SerializableModelFilter
         data = data_provider.serialize(
-            filter=SerializableModelFilter(max_depth=1, exclude_labels=("dataproviderprofile",),
+            filter=SerializableModelFilter(max_depth=1, exclude_labels=("dataprovideruser",),
                                            start_object_name="data_provider"))
         expected = {
             'provider_name': 'dsfsd4',

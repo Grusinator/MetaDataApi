@@ -33,7 +33,7 @@ class TestHttpConfigSerializer(TransactionTestCase):
             data=data,
             filter=SerializableModelFilter(
                 max_depth=0,
-                exclude_labels=("dataproviderprofile", "data_provider", "data_provider_node"),
+                exclude_labels=("dataprovideruser", "data_provider", "data_provider_node"),
                 start_object_name="data_provider"
             )
         )

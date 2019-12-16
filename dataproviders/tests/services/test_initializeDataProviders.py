@@ -47,7 +47,7 @@ class TestInitializeDataProviders(TransactionTestCase):
 
         json = InitializeDataProviders.get_providers_from_aws()
         assert len(json) > 10
-        assert json[0]["provider_name"] == "endomondo"
+        assert json[1]["provider_name"] == "endomondo"
 
     def test_create_strava_data_provider(self):
         from dataproviders.models.initialize_data_providers import InitializeDataProviders
@@ -55,7 +55,7 @@ class TestInitializeDataProviders(TransactionTestCase):
         data = MockDataProvider.build_strava_data_provider_json()
 
         InitializeDataProviders.exclude = (
-            "dataproviderprofile",
+            "dataprovideruser",
             "data_provider_node",
             "data_dumps"
         )

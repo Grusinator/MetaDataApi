@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 class InitializeDataProviders:
     local_client_file = "data_providers.json"
     exclude = (
-        "dataproviderprofile",
+        "dataprovideruser",
         "data_dump",
         "data_dumps",
         # "endpoints",

@@ -19,8 +19,8 @@ django-celery-results = "*"
 django-celery-beat = "*"
 django-timezone-field = "==3.0.0" # v4.0 requires django >2.2
 django-generic-serializer = {path = "./lib/django_generic_serializer-0.0.2-py3-none-any.whl"}
-django-mutant = "*"
-django-polymodels = "*"
+django-mutant = {path = "./lib/django-mutant-0.3a5.tar.gz"}
+django-polymodels = ">=1.5.1"
 django-json2model = {path = "./lib/django_json2model-0.1.7-py3-none-any.whl"}
 
 [dev-packages]

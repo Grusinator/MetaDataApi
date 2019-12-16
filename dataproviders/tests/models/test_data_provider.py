@@ -56,7 +56,7 @@
 #     def test_urls_are_created_correct_reggression(self):
 #         schema_label = "meta_data_api"
 #
-#         from metadata.utils.testing_utils import TestingUtils
+#         from MetaDataApi.utils.testing_utils import TestingUtils
 #         instances = TestingUtils.get_all_object_instances_from_schema(schema_label)
 #
 #         endpoint_obj_inst = []

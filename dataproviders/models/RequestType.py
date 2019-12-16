@@ -1,4 +1,4 @@
-from MetaDataApi.utils.django_model_utils.DjangoModelEnum import DjangoModelEnum
+from MetaDataApi.utils import DjangoModelEnum
 
 
 class RequestType(DjangoModelEnum):

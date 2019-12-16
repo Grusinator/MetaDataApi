@@ -72,7 +72,7 @@ APP_LABEL_DYNAMIC_MODELS = "dynamic_models"
 INSTALLED_APPS += (
     'users',
     'app',
-    # 'metadata',
+    'metadata',
     'dataproviders',
     'dynamic_models',
 )
