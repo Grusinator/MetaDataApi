@@ -186,4 +186,5 @@ oauth_mapper = {
 OAUTH_REDIRECT_URI = oauth_mapper[ENV] + OAUTH_REDIRECT_URI
 
 # Activate Django-Heroku.
-django_heroku.settings(locals())
+if ENV != "TEST":
+    django_heroku.settings(locals())
