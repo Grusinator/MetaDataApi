@@ -8,6 +8,7 @@ verify_ssl = true
 Django ="<2.2.0,>2.0.0"
 djangorestframework = "*"
 jsonfield = "*"
+django-heroku = "*"
 requests = "*"
 "boto3" = "*"
 psycopg2 = "*"

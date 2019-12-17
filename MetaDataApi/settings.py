@@ -11,9 +11,10 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import sys
+
+import django_heroku
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -175,3 +176,6 @@ oauth_mapper = {
 }
 
 OAUTH_REDIRECT_URI = oauth_mapper[ENV] + OAUTH_REDIRECT_URI
+
+# Activate Django-Heroku.
+django_heroku.settings(locals())
