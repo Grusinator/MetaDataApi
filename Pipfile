@@ -4,17 +4,20 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [packages]
-# Django ="<3.0.0,>2.2.0"
-Django ="<2.2.0,>2.0.0"
+Django ="<2.2.0,>=2.1.15"
+psycopg2 = "*"
 djangorestframework = "*"
 jsonfield = "*"
+Pillow = "*"
 django-heroku = "*"
 requests = "*"
 "boto3" = "*"
-psycopg2 = "*"
-Pillow = "*"
-inflection = "*"
 django-storages = "*"
+inflection = "*"
+graphene = "*"
+graphene-django = "*"
+graphql-core = "*"
+django-graphql-jwt = "*"
 celery = "*"
 django-celery-results = "*"
 django-celery-beat = "*"
@@ -23,6 +26,7 @@ django-generic-serializer = {path = "./lib/django_generic_serializer-0.0.2-py3-n
 django-mutant = {path = "./lib/django-mutant-0.3a5.tar.gz"}
 django-polymodels = ">=1.5.1"
 django-json2model = {path = "./lib/django_json2model-0.1.7-py3-none-any.whl"}
+rdflib = "*"
 
 [dev-packages]
 eventlet = "*"

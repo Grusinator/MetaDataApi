@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 'graphene_django',
+    'graphene_django',
     # 'rest_framework',
     # 'oauth2_provider',
     # 'corsheaders',
@@ -144,6 +144,14 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': f'{dj_pass_val}CommonPasswordValidator', },
     {'NAME': f'{dj_pass_val}NumericPasswordValidator', },
 ]
+
+GRAPHENE = {
+    'SCHEMA': 'MetaDataApi.schema.schema',
+    'MIDDLEWARE': (
+        'graphql_jwt.middleware.JSONWebTokenMiddleware',
+        'graphene_django.debug.DjangoDebugMiddleware',
+    )
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
