@@ -38,7 +38,7 @@ jobs:
           command: |
             pipenv run python manage.py migrate
             pipenv run python manage.py test
-      #            coverage xml -i
+      #            coverage xml -icoverage run --source='.' manage.py test
       #            python-codacy-coverage -r coverage.xml
       - store_test_results:
           path: test-results
