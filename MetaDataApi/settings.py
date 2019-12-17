@@ -128,7 +128,7 @@ DEFAULT_DATABASE = {
         'NAME': 'meta_data_api',
         'USER': 'django',
         'PASSWORD': 'dev1234',
-        'HOST': 'localhost',
+        'HOST': 'db',  # 'localhost',
         'PORT': '5432',
     }
 }
