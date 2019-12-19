@@ -27,7 +27,7 @@ urlpatterns = [
     path('users/', include('users.urls')),
     path('dynamic_models/', include('dynamic_models.urls')),
     path("providers/", include('dataproviders.urls')),
-    url(r'^oauth2redirect/$', oauth2redirect_view, name='oauth2redirect'),
+    url(r'^oauth2redirect', oauth2redirect_view, name='oauth2redirect'),
     url(r'^graphql/', GraphQLView.as_view(graphiql=True)),
     url('', home_view, name="home")
     # url(r'^$', RedirectView.as_view(url='accounts/login?next=/providers/', permanent=False), name='login'),
