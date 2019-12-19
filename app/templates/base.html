@@ -9,9 +9,14 @@
 </head>
 
 <body>
+
+<div>
+    <h1>Meta Data</h1>
+</div>
+
+
 <div class="topnav">
     <a class="active" href="/admin_i/">Admin</a>
-    <a href="/accounts/login/">Login</a>
     <a href="/providers/">Providers</a>
     <a href="/graphql/">Graphql</a>
     <a href="/dynamic_models/">dynamic models</a>
@@ -24,12 +29,9 @@
         {#        <a class="btn btn-primary" href="{% url 'social:begin' 'google-oauth2' %}">#}
         {#            Login#}
         {#        </a>#}
+        <a href="/users/login/">Login</a>
+        <a href="/users/signup/">Sign up</a>
     {% endif %}
-</div>
-
-
-<div>
-    <h1>Meta Data</h1>
 </div>
 
 {% block content %}

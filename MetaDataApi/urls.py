@@ -16,23 +16,20 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from django.urls import path, include
-from django.views.generic.base import RedirectView
 from graphene_django.views import GraphQLView
 
-from app.views import admin_view
+from app.views import admin_view, home_view
 from dataproviders.views import oauth2redirect_view
 
 urlpatterns = [
     url(r'admin/', admin.site.urls),
     url(r'admin_i/', admin_view),
-    path('accounts/', include('django.contrib.auth.urls')),
+    path('users/', include('users.urls')),
     path('dynamic_models/', include('dynamic_models.urls')),
     path("providers/", include('dataproviders.urls')),
     url(r'^oauth2redirect/$', oauth2redirect_view, name='oauth2redirect'),
     url(r'^graphql/', GraphQLView.as_view(graphiql=True)),
-    url(r'^$', RedirectView.as_view(url='accounts/login?next=/providers/', permanent=False), name='login'),
-    # path('', include('social_django.urls', namespace='social')),
-    # path('logout/', logout, name='logout'),
-
+    url('', home_view, name="home")
+    # url(r'^$', RedirectView.as_view(url='accounts/login?next=/providers/', permanent=False), name='login'),
 ]
 # urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

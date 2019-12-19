@@ -122,13 +122,24 @@ CIRCLECI_TEST_DATABASE = {
     }
 }
 
-DEFAULT_DATABASE = {
+DOCKER_DATABASE = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'meta_data_api',
         'USER': 'django',
         'PASSWORD': 'dev1234',
         'HOST': 'db',  # 'localhost',
+        'PORT': '5432',
+    }
+}
+
+DEFAULT_DATABASE = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'meta_data_api',
+        'USER': 'django',
+        'PASSWORD': 'dev1234',
+        'HOST': 'localhost',
         'PORT': '5432',
     }
 }
