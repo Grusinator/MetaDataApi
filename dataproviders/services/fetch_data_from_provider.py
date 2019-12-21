@@ -22,7 +22,7 @@ def fetch_data_from_provider_endpoint(provider_name, endpoint_name, user_pk):
     third_party_profile = third_party_profiles.get(data_provider__provider_name=provider_name)
     data = _fetch_data_from_endpoint(endpoint, third_party_profile.access_token)
     data = JsonUtils.clean(data)
-    _save_data_to_file(endpoint, data)
+    _save_data_to_file(endpoint, user, data)
     return data
 
 
@@ -51,9 +51,9 @@ def _request_from_endpoint(url, body, header):
     return html
 
 
-def _save_data_to_file(endpoint: Endpoint, data: str):
+def _save_data_to_file(endpoint: Endpoint, user: User, data: str):
     file = DjangoModelUtils.convert_str_to_file(data, filetype=DjangoModelUtils.FileType.JSON)
-    return DataDump.objects.create(endpoint=endpoint, file=file)
+    return DataDump.objects.create(endpoint=endpoint, file=file, user=user)
 
 
 def _build_header(endpoint: Endpoint, access_token: str):

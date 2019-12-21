@@ -12,7 +12,7 @@ from dynamic_models import services
 def files_view(request):
     handle_build_model(request)
     handle_load_data(request)
-    data_dumps = DataDump.objects.all()
+    data_dumps = DataDump.objects.filter(user=request.user)
     return render(request, 'file_list_view.html', {"data_dumps": data_dumps})
 
 
