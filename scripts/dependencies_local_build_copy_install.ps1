@@ -12,3 +12,5 @@ cp dist\django_json2model-*.whl ..\MetaDataApi\lib\
 
 cd ..\MetaDataApi
 
+#pipenv install ".\lib\django_json2model-*.whl"
+#pipenv install ".\lib\django_generic_serializer-*.whl"

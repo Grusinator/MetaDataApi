@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     # 'oauth2_provider',
     # 'corsheaders',
     # 'storages',
-    # 'admin_reorder',
+    'admin_reorder',
     # 'graphene_file_upload',
     'django_celery_results',
     'django_celery_beat',
@@ -86,6 +86,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'admin_reorder.middleware.ModelAdminReorder',
 ]
 
 ROOT_URLCONF = 'MetaDataApi.urls'
@@ -155,6 +156,8 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': f'{dj_pass_val}CommonPasswordValidator', },
     {'NAME': f'{dj_pass_val}NumericPasswordValidator', },
 ]
+
+SILENCED_SYSTEM_CHECKS = ["fields.E303"]
 
 GRAPHENE = {
     'SCHEMA': 'MetaDataApi.schema.schema',
