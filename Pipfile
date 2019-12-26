@@ -31,6 +31,7 @@ django-json2model = {path = "./lib/django_json2model-0.1.9-py3-none-any.whl"}
 rdflib = "*"
 redis = "*"
 django-modeladmin-reorder = "*"
+django-celery-model = "*"
 
 [dev-packages]
 eventlet = "*"

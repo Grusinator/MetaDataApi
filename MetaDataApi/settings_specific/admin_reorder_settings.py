@@ -39,4 +39,5 @@ ADMIN_REORDER = (
          'metadata.FileAttribute',
      )
      },
+    "sites",
 )

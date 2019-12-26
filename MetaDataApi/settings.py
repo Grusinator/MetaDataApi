@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     # 'graphene_file_upload',
     'django_celery_results',
     'django_celery_beat',
+    'djcelery_model',
     # 'social_django',
 ]
 

@@ -2,17 +2,10 @@
 from __future__ import absolute_import, unicode_literals
 
 import celery
-from celery.schedules import crontab
+from django.contrib.auth.models import User
 
 import dataproviders.services.fetch_data_from_provider as fetch_service
-from MetaDataApi.celery import app
-from dataproviders.models import DataProvider
-from users.models import Profile
-
-
-@celery.shared_task
-def add(x, y):
-    return x + y
+from dataproviders.models import DataProviderUser
 
 
 @celery.shared_task
@@ -21,21 +14,18 @@ def fetch_data_from_provider_endpoint(provider_name, endpoint_name, user_pk):
 
 
 @celery.shared_task
-def fetch_all(user_pk):
-    for provider in DataProvider.objects.all():
-        for endpoint in provider.endpoints:
-            fetch_data_from_provider_endpoint.delay(provider.provider_name, endpoint.endpoint_name, user_pk)
+def fetch_all_data_from_data_provider_user(user_pk):
+    data_provider_users = DataProviderUser.objects.filter(user_pk=user_pk)
+    for data_provider_user in data_provider_users:
+        for endpoint in data_provider_user.data_provider.endpoints:
+            fetch_data_from_provider_endpoint.delay(
+                data_provider_user.data_provider.provider_name,
+                endpoint.endpoint_name,
+                user_pk
+            )
 
 
 @celery.shared_task
-def test_django_model():
-    return Profile.objects.all().first()
-
-
-app.conf.beat_schedule = {
-    "nighly-data-update": {
-        "task": "tasks.fetch_all",
-        "schedule": crontab(hour=4, minute=0),
-        'args': {"user_pk": 1}
-    }
-}
+def fetch_all_data_from_providers():
+    for user in User.objects.all():
+        fetch_all_data_from_data_provider_user.delay(user.pk)

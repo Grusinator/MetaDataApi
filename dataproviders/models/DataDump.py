@@ -1,13 +1,14 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
+from djcelery_model.models import TaskMixin
 from generic_serializer import SerializableModel
 
 from MetaDataApi.custom_storages import PrivateMediaStorage
 from dataproviders.models.Endpoint import Endpoint
 
 
-class DataDump(models.Model, SerializableModel):
+class DataDump(TaskMixin, SerializableModel, models.Model):
     storage_path = "datafiles/"
     date_downloaded = models.DateField(auto_now=True)
     endpoint = models.ForeignKey(Endpoint, related_name="data_dumps", on_delete=models.CASCADE)
