@@ -13,10 +13,13 @@ services:
       - 5432:5432
   redis:
     image: "redis:alpine"
+    ports:
+      - "6379:6379"
   web:
     container_name: metadataapi_django
     build: .
     command: bash -c "python3 /code/manage.py migrate --noinput && python3 /code/manage.py runserver 0.0.0.0:8000"
+    #    command: echo "django web has been disabled"
     volumes:
       - .:/code
     ports:
@@ -34,7 +37,7 @@ services:
       - redis
   celery-beat:
     build: .
-    command: celery -A MetaDataApi beat -l info
+    command: celery -A MetaDataApi beat -l DEBUG --scheduler django_celery_beat.schedulers:DatabaseScheduler
     volumes:
       - .:/code
     depends_on:

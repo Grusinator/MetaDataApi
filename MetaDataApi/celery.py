@@ -5,8 +5,8 @@ import os
 # TODO this django.setup() might not be nice, acording to:
 #  https://stackoverflow.com/questions/39676684/django-apps-arent-loaded-yet-celery-tasks
 from celery import Celery
+
 # set the default Django settings module for the 'celery' program.
-from celery.schedules import crontab
 
 # django.setup()
 
@@ -26,13 +26,13 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
 
 
-@app.on_after_configure.connect
-def setup_periodic_tasks(sender, **kwargs):
-    sender.add_periodic_task(10.0, test.s('hello'), name='add every 10')
-
-    midnight = crontab(minute=0, hour=0)
-    every_minute = crontab()
-    # sender.add_periodic_task(every_minute, fetch_all_data_from_providers, name='start fetching data from providers')
+# @app.on_after_configure.connect
+# def setup_periodic_tasks(sender, **kwargs):
+#     sender.add_periodic_task(15.0, test.s('hello'), name='add every 10')
+#
+#     midnight = crontab(minute=0, hour=0)
+#     every_minute = crontab()
+#     # sender.add_periodic_task(every_minute, fetch_all_data_from_providers, name='start fetching data from providers')
 
 
 @app.task
@@ -47,7 +47,12 @@ def debug_task(self):
 
 app.conf.beat_schedule = {
     'add-every-30-seconds': {
-        'task': 'dataproviders.tasks.fetch_all_data_from_providers',
+        'task': 'MetaDataApi.celery.test',
         'schedule': 30.0,
+        'args': ("We don’t need any",),
     },
+    'start fetching data from providers': {
+        'task': 'dataproviders.tasks.fetch_all_data_from_providers',
+        'schedule': 60.0,
+    }
 }

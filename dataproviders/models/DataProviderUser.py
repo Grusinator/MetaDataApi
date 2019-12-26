@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from djcelery_model.models import TaskMixin
 
-from dataproviders.tasks import fetch_data_from_provider_endpoint
+# from dataproviders.tasks import fetch_data_from_provider_endpoint
 
 
 class DataProviderUser(TaskMixin, models.Model):
@@ -29,5 +29,6 @@ class DataProviderUser(TaskMixin, models.Model):
             endpoints = self.data_provider.endpoints.all()
             for endpoint in endpoints:
                 # TODO make sure that the task is not created many times
-                self.apply_async(fetch_data_from_provider_endpoint, self.data_provider.provider_name,
-                                 endpoint.endpoint_name, self.user.pk)
+                # self.apply_async(fetch_data_from_provider_endpoint, self.data_provider.provider_name,
+                #                  endpoint.endpoint_name, self.user.pk)
+                pass

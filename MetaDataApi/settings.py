@@ -27,7 +27,8 @@ try:
 except:
     SECRET_KEY = 'ymcvw8ej))e=9jo89315q_r$imri(u0-ae!utev&ck4rs6cz+d'
 
-ENV = os.environ.get('ENV') or "LOCAL"
+ENV = os.environ.get('ENV', default="LOCAL")
+DOCKER = bool(os.environ.get('DOCKER', default=False))
 
 # gettrace() is none when not debugging
 DEBUG = (ENV != "PROD") | (sys.gettrace() is None)
@@ -124,16 +125,6 @@ CIRCLECI_TEST_DATABASE = {
     }
 }
 
-DOCKER_DATABASE = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'meta_data_api',
-        'USER': 'django',
-        'PASSWORD': 'dev1234',
-        'HOST': 'db',  # 'localhost',
-        'PORT': '5432',
-    }
-}
 
 DEFAULT_DATABASE = {
     'default': {
@@ -141,12 +132,14 @@ DEFAULT_DATABASE = {
         'NAME': 'meta_data_api',
         'USER': 'django',
         'PASSWORD': 'dev1234',
-        'HOST': 'localhost',
+        'HOST': 'db' if DOCKER else 'localhost',
         'PORT': '5432',
     }
 }
 
 DATABASES = CIRCLECI_TEST_DATABASE if ENV == "TEST" else DEFAULT_DATABASE
+
+print(f"starting env with settings DOCKER: {DOCKER}, ENV: {ENV}, DEBUG: {DEBUG}")
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
