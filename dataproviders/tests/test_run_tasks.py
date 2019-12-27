@@ -1,12 +1,12 @@
-import unittest
+from unittest.mock import Mock
 
 import django
 from django.contrib.auth.models import User
 from django.test import TransactionTestCase
 
+import dataproviders.tasks as tasks
 from dataproviders.models import DataProvider, DataProviderUser
 from dataproviders.models.initialize_data_providers import InitializeDataProviders
-from dataproviders.tasks import fetch_all_data_from_providers
 
 
 class TestRunTasks(TransactionTestCase):
@@ -15,20 +15,12 @@ class TestRunTasks(TransactionTestCase):
     def setUpClass(cls):
         super().setUpClass()
         django.setup()
-
         InitializeDataProviders.load()
+        tasks.fetch_data_from_endpoint = Mock()
 
-    def test_some(self):
-        fetch_all_data_from_providers()
-
-    @unittest.skip("cant test celery tasks")
-    def test_other(self):
-        user = User.objects.create(
-            username="test1"
-        )
+    def test_fetch_data_for_each_user(self):
+        user = User.objects.create(username="test1")
         dp = DataProvider.objects.get(provider_name="strava")
-        DataProviderUser.objects.create(
-            data_provider=dp,
-            user=user,
-        )
-        # fetch_all_data_from_data_provider_user(user.pk)
+        DataProviderUser.objects.create(data_provider=dp, user=user)
+        tasks.fetch_data_for_each_user()
+        tasks.fetch_data_from_endpoint.delay.assert_called()

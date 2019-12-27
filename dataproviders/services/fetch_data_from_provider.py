@@ -13,7 +13,7 @@ from dataproviders.services.url_format_helper import UrlFormatHelper
 logger = logging.getLogger(__name__)
 
 
-def fetch_data_from_provider_endpoint(provider_name, endpoint_name, user_pk):
+def fetch_data_from_endpoint(provider_name, endpoint_name, user_pk):
     data_provider = DataProvider.objects.get(provider_name=provider_name)
     user = User.objects.get(pk=user_pk)
     endpoint = _get_endpoint(data_provider, endpoint_name)

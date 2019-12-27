@@ -88,8 +88,8 @@ def IdentifySchemaFromProviderService(provider_name, endpoint, user_pk):
         endpoints = [endpoint, ]
     n_objs = 0
     for endpoint in endpoints:
-        data = fetch_data_from_provider.fetch_data_from_provider_endpoint(endpoint, provider_profile.access_token,
-                                                                          user_pk)
+        data = fetch_data_from_provider.fetch_data_from_endpoint(endpoint, provider_profile.access_token,
+                                                                 user_pk)
         json_data = JsonUtils.validate(data)
         parrent_label = BaseMetaDataService.rest_endpoint_to_label(endpoint)
         objects = identify.identify_from_json_data(json_data, schema, user, parrent_label)
@@ -120,8 +120,8 @@ def IdentifyDataFromProviderService(provider_name, endpoint, user_pk):
     # identify objects for each endpoint
     schema_nodes = []
     for endpoint in endpoints:
-        data = fetch_data_from_provider.fetch_data_from_provider_endpoint(endpoint, provider_profile.access_token,
-                                                                          user_pk)
+        data = fetch_data_from_provider.fetch_data_from_endpoint(endpoint, provider_profile.access_token,
+                                                                 user_pk)
         json_data = JsonUtils.validate(data)
 
         parrent_label = BaseMetaDataService.rest_endpoint_to_label(

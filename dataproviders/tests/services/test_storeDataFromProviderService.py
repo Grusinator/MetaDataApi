@@ -27,7 +27,7 @@ class TestStoreDataFromProviderService(TransactionTestCase):
         dpp = LoadTestData.init_strava_data_provider_profile()
         LoadTestData.create_dummy_provider(dpp)
 
-        data = fetch_data_from_provider.fetch_data_from_provider_endpoint(
+        data = fetch_data_from_provider.fetch_data_from_endpoint(
             provider_name=dpp.data_provider.provider_name,
             endpoint_name="activity",
             user_pk=user.pk

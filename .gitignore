@@ -89,3 +89,5 @@ data_providers.json
 .idea/
 .vscode
 
+celerybeat.pid
+
