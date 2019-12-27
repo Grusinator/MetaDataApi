@@ -21,9 +21,9 @@ class JsonUtils:
     def loads(cls, text: str) -> JsonType:
         return json.loads(text, encoding=cls.encoding)
 
-    @staticmethod
-    def clean(text: str) -> str:
-        json_obj = json.loads(text)
+    @classmethod
+    def clean(cls, text: str) -> str:
+        json_obj = json.loads(text, encoding=cls.encoding)
         return json.dumps(json_obj, indent=4)
 
     @staticmethod

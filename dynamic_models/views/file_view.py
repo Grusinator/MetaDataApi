@@ -21,7 +21,7 @@ def handle_build_model(request):
     if dump_pk:
         data_dump = DataDump.objects.get(pk=dump_pk)
         try:
-            services.try_build_model_from_data_dump(data_dump)
+            services._try_build_model_from_data_dump(data_dump)
         except Exception as e:
             error_msg = 'data error: %s' % e
             logger.error(error_msg)
@@ -33,7 +33,7 @@ def handle_load_data(request):
     if dump_pk:
         data_dump = DataDump.objects.get(pk=dump_pk)
         try:
-            services.try_load_data_from_data_dump(data_dump)
+            services._try_load_data_from_data_dump(data_dump)
         except Exception as e:
             error_msg = 'data error: %s' % e
             logger.error(error_msg)

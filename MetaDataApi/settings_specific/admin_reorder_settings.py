@@ -7,6 +7,8 @@ ADMIN_REORDER = (
             "auth.Group"
         )
     },
+    {'app': 'django_celery_results', 'label': "Celery results"},
+    {'app': 'django_celery_beat', 'label': "Celery Cron jobs", },
     {'app': 'dataproviders', 'label': 'dataproviders'},
     {'app': 'dynamic_models', 'label': 'dynamic models'},
     {'app': 'mutant', 'label': 'dynamic model definitions', },
@@ -16,28 +18,28 @@ ADMIN_REORDER = (
     {'app': 'temporal', 'label': 'dynamic model definition fields temporal', },
     {'app': 'file', 'label': 'dynamic model definition fields file', },
     {'app': 'text', 'label': 'dynamic model definition fields text', },
-    {'app': 'django_celery_results', 'label': "Celery results"},
-    {'app': 'django_celery_beat', 'label': "Celery Cron jobs", },
-    {'app': 'metadata', 'label': 'node models',
-     'models': (
-         'metadata.Schema',
-         'metadata.SchemaNode',
-         'metadata.SchemaEdge',
-         'metadata.SchemaAttribute',
-     )
-     },
-    {'app': 'metadata', 'label': 'node instances',
-     'models': (
-         'metadata.Node',
-         'metadata.Edge',
-         'metadata.StringAttribute',
-         'metadata.DateTimeAttribute',
-         'metadata.IntAttribute',
-         'metadata.BoolAttribute',
-         'metadata.FloatAttribute',
-         'metadata.ImageAttribute',
-         'metadata.FileAttribute',
-     )
-     },
+    {
+        'app': 'metadata', 'label': 'node models',
+        'models': (
+            'metadata.Schema',
+            'metadata.SchemaNode',
+            'metadata.SchemaEdge',
+            'metadata.SchemaAttribute',
+        )
+    },
+    {
+        'app': 'metadata', 'label': 'node instances',
+        'models': (
+            'metadata.Node',
+            'metadata.Edge',
+            'metadata.StringAttribute',
+            'metadata.DateTimeAttribute',
+            'metadata.IntAttribute',
+            'metadata.BoolAttribute',
+            'metadata.FloatAttribute',
+            'metadata.ImageAttribute',
+            'metadata.FileAttribute',
+        )
+    },
     "sites",
 )

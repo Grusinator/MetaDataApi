@@ -1,11 +1,11 @@
 from django.shortcuts import render
 
-from dynamic_models.tasks import load_data_from_provider_dumps
+from dynamic_models.tasks import build_models_from_provider_dumps
 
 
 def dynamic_models_view(request):
     if request.method == "POST":
-        load_data_from_provider_dumps.delay()
+        build_models_from_provider_dumps.delay()
     else:
         pass
     return render(request, 'dynamic_models.html')
