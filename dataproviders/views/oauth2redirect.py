@@ -100,5 +100,6 @@ def validate_user_has_profile(user):
 
 
 def save_data_provider_user(access_token, data_provider, user):
-    dpp = DataProviderUser.objects.get_or_create(user=user, data_provider=data_provider, access_token=access_token)
+    dpp = DataProviderUser.objects.update_or_create(user=user, data_provider=data_provider,
+                                                    defaults={'access_token': access_token})
     return dpp
