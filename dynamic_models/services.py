@@ -8,8 +8,8 @@ from dataproviders.models import DataDump
 logger = logging.getLogger(__name__)
 
 
-def build_models_from_provider_dumps(**filter):
-    data_dumps = DataDump.objects.filter(**filter)
+def build_models_from_provider_dumps(**dump_filter):
+    data_dumps = DataDump.objects.filter(**dump_filter)
     for data_dump in data_dumps:
         _try_build_model_from_data_dump(data_dump)
 
@@ -28,8 +28,8 @@ def _try_build_model_from_data_dump(data_dump):
         logger.warning(e)
 
 
-def load_data_from_provider_dumps(**filter):
-    data_dumps = DataDump.objects.filter(**filter)
+def load_data_from_provider_dumps(**dump_filter):
+    data_dumps = DataDump.objects.filter(**dump_filter)
     for data_dump in data_dumps:
         _try_load_data_from_data_dump(data_dump)
 

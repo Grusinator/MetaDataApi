@@ -7,6 +7,8 @@ from generic_serializer import SerializableModel
 from MetaDataApi.custom_storages import PrivateMediaStorage
 from dataproviders.models.Endpoint import Endpoint
 
+data_dump_save_methods = []
+
 
 class DataDump(TaskMixin, SerializableModel, models.Model):
     storage_path = "datafiles/"
@@ -20,3 +22,11 @@ class DataDump(TaskMixin, SerializableModel, models.Model):
 
     def get_internal_view_url(self):
         return reverse('data_dump_detail', args=[str(self.file).split("/")[1]])
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.execute_on_save_methods()
+
+    def execute_on_save_methods(self):
+        for method in data_dump_save_methods:
+            method(self)

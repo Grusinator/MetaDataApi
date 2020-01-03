@@ -125,7 +125,6 @@ CIRCLECI_TEST_DATABASE = {
     }
 }
 
-
 DEFAULT_DATABASE = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
