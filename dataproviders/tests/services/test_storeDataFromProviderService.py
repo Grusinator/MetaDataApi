@@ -18,7 +18,7 @@ class TestStoreDataFromProviderService(TransactionTestCase):
     def test_store_data_from_provider_service(self):
         from dataproviders.services import fetch_data_from_provider
 
-        from dataproviders.models.initialize_data_providers import InitializeDataProviders
+        from dataproviders.services.initialize_data_providers import InitializeDataProviders
         from metadata.tests import LoadTestData
 
         user = LoadTestData.init_user()

@@ -6,7 +6,7 @@ from django.test import TransactionTestCase
 
 import dataproviders.tasks as tasks
 from dataproviders.models import DataProvider, DataProviderUser
-from dataproviders.models.initialize_data_providers import InitializeDataProviders
+from dataproviders.services.initialize_data_providers import InitializeDataProviders
 
 
 class TestRunTasks(TransactionTestCase):

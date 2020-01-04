@@ -13,5 +13,5 @@ class test_ouraOauthAuthorizeFlow(TransactionTestCase):
 
     @unittest.skip
     def test_read_data_from_endpoint_correctly(self):
-        from dataproviders.models.initialize_data_providers import InitializeDataProviders
+        from dataproviders.services.initialize_data_providers import InitializeDataProviders
         InitializeDataProviders.load()
