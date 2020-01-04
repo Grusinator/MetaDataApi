@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 class InitializeDataProviders:
-    local_client_file = "data_providers.json"
+    data_providers_filename = "data_providers.json"
     exclude = (
         "dataprovideruser",
         "data_dump",
@@ -33,7 +33,7 @@ class InitializeDataProviders:
     @classmethod
     def read_data_providers_from_file(cls):
         try:
-            return JsonUtils.read_json_file(cls.local_client_file)
+            return JsonUtils.read_json_file(cls.data_providers_filename)
         except FileNotFoundError as e:
             return cls.get_providers_from_aws()
 
@@ -111,8 +111,8 @@ class InitializeDataProviders:
 
     @classmethod
     def get_providers_from_aws(cls):
-        path = "media/private/"
-        file_name = path + "data_providers.json"
+        path = settings.PRIVATE_MEDIA_LOCATION
+        file_name = path + cls.data_providers_filename
         return cls.read_file_from_aws(file_name)
 
     @classmethod

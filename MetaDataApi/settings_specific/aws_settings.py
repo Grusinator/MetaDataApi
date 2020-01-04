@@ -7,10 +7,8 @@ AWS_STORAGE_BUCKET_NAME = os.environ.get(
 
 AWS_S3_REGION_NAME = 'eu-central-1'  # e.g. us-east-2
 
-AWS_ACCESS_KEY_ID = os.environ.get(
-    'AWS_ACCESS_KEY_ID') or api_keys.get("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = os.environ.get(
-    'AWS_SECRET_ACCESS_KEY') or api_keys.get("AWS_SECRET_ACCESS_KEY")
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID') or api_keys.get("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY') or api_keys.get("AWS_SECRET_ACCESS_KEY")
 
 # avoid warning about public bucket
 AWS_DEFAULT_ACL = 'public-read'
