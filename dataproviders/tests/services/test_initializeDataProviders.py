@@ -14,7 +14,7 @@ class TestInitializeDataProviders(TransactionTestCase):
         django.setup()
 
     def test_load_from_json(self):
-        from dataproviders.models.initialize_data_providers import InitializeDataProviders
+        from dataproviders.services.initialize_data_providers import InitializeDataProviders
         InitializeDataProviders.load()
 
         from dataproviders.models import DataProvider
@@ -43,14 +43,14 @@ class TestInitializeDataProviders(TransactionTestCase):
         self.assertListEqual(expected_endpoint_names, endpoint_names)
 
     def test_get_providers_from_aws(self):
-        from dataproviders.models.initialize_data_providers import InitializeDataProviders
+        from dataproviders.services.initialize_data_providers import InitializeDataProviders
 
         json = InitializeDataProviders.get_providers_from_aws()
         assert len(json) > 10
         assert json[1]["provider_name"] == "endomondo"
 
     def test_create_strava_data_provider(self):
-        from dataproviders.models.initialize_data_providers import InitializeDataProviders
+        from dataproviders.services.initialize_data_providers import InitializeDataProviders
 
         data = MockDataProvider.build_strava_data_provider_json()
 

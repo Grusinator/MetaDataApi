@@ -36,6 +36,9 @@ class InitializeDataProviders:
             return JsonUtils.read_json_file(cls.local_client_file)
         except FileNotFoundError as e:
             return cls.get_providers_from_aws()
+        except Exception as e:
+            logger.error(f"another error than fileNotFound has occured: {e.__class__} - {e.__name__} - Msg: {e}")
+            return cls.get_providers_from_aws()
 
     @classmethod
     def try_create_provider(cls, provider_data: dict):

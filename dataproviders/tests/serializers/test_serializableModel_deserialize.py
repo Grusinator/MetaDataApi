@@ -106,7 +106,7 @@ class TestSerializableModelDeserialize(TransactionTestCase):
 
     @unittest.skip("fails because validated data on data dumps are not correct, needs fixing.")
     def test_deserialize_strava(self):
-        from dataproviders.models.initialize_data_providers import InitializeDataProviders
+        from dataproviders.services.initialize_data_providers import InitializeDataProviders
         data = MockDataProvider.build_strava_data_provider_json()
         InitializeDataProviders.exclude = (
             "dataprovideruser",

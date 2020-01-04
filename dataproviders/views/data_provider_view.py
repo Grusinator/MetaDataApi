@@ -5,7 +5,7 @@ from django.shortcuts import redirect
 from django.shortcuts import render
 
 from dataproviders.models import DataProvider
-from dataproviders.models.initialize_data_providers import InitializeDataProviders
+from dataproviders.services.initialize_data_providers import InitializeDataProviders
 
 logger = logging.getLogger(__name__)
 
