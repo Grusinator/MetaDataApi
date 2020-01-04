@@ -6,6 +6,7 @@ from generic_serializer import SerializableModel
 
 from MetaDataApi.custom_storages import PrivateMediaStorage
 from dataproviders.models.Endpoint import Endpoint
+from dynamic_models.services import build_models_from_data_dump
 
 data_dump_save_methods = []
 
@@ -25,7 +26,8 @@ class DataDump(TaskMixin, SerializableModel, models.Model):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-        self.execute_on_save_methods()
+        build_models_from_data_dump(self.pk)
+        # self.execute_on_save_methods()
 
     def execute_on_save_methods(self):
         for method in data_dump_save_methods:

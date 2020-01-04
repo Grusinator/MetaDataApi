@@ -4,7 +4,7 @@ import celery
 from celery import chain
 
 import dynamic_models.services as data_loader_service
-from dataproviders.models.DataDump import data_dump_save_methods, DataDump
+from dataproviders.models.data_dump import data_dump_save_methods, DataDump
 
 logger = logging.getLogger(__name__)
 
