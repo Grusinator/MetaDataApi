@@ -70,7 +70,7 @@ INSTALLED_APPS += (
     'json2model'
 )
 
-APP_LABEL_DYNAMIC_MODELS = "dynamic_models"
+# APP_LABEL_DYNAMIC_MODELS = "dynamic_models"
 
 INSTALLED_APPS += (
     'users',

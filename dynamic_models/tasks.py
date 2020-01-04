@@ -40,5 +40,6 @@ def build_models(data_dump: DataDump):
 
 
 # add the task to be executed when dumps are saved, maybe not the best solution.
-data_dump_save_methods.append(build_models)
-data_dump_save_methods.append(build_models_and_load_data_chained)
+data_dump_save_methods.append(lambda data_dump: build_models_from_data_dump(data_dump.pk))
+# data_dump_save_methods.append(build_models)
+# data_dump_save_methods.append(build_models_and_load_data_chained)

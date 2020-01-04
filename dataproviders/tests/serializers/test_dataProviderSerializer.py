@@ -4,7 +4,7 @@ import django
 from django.test import TransactionTestCase
 
 from MetaDataApi.utils import JsonUtils
-from dataproviders.tests.mock_data.MockDataProvider import MockDataProvider
+from dataproviders.tests.mock_objects.mock_data_provider import MockDataProvider
 
 
 class TestDataProviderSerializer(TransactionTestCase):
