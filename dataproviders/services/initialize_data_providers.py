@@ -1,5 +1,6 @@
 import io
 import logging
+import os
 
 import boto3
 from django.conf import settings
@@ -114,8 +115,7 @@ class InitializeDataProviders:
 
     @classmethod
     def get_providers_from_aws(cls):
-        path = settings.PRIVATE_MEDIA_LOCATION
-        file_name = path + cls.data_providers_filename
+        file_name = os.path.join(settings.PRIVATE_MEDIA_LOCATION, cls.data_providers_filename).replace("\\", "/")
         return cls.read_file_from_aws(file_name)
 
     @classmethod

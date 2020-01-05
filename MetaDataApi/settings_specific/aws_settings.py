@@ -1,14 +1,11 @@
-import os
+from MetaDataApi.utils.api_keys import get_setting_from_env_var_or_json_file
 
-from MetaDataApi.utils.api_keys import api_keys
-
-AWS_STORAGE_BUCKET_NAME = os.environ.get(
-    'AWS_STORAGE_BUCKET_NAME') or api_keys.get("AWS_STORAGE_BUCKET_NAME")
+AWS_STORAGE_BUCKET_NAME = get_setting_from_env_var_or_json_file("AWS_STORAGE_BUCKET_NAME")
 
 AWS_S3_REGION_NAME = 'eu-central-1'  # e.g. us-east-2
 
-AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID') or api_keys.get("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY') or api_keys.get("AWS_SECRET_ACCESS_KEY")
+AWS_ACCESS_KEY_ID = get_setting_from_env_var_or_json_file("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = get_setting_from_env_var_or_json_file("AWS_SECRET_ACCESS_KEY")
 
 # avoid warning about public bucket
 AWS_DEFAULT_ACL = 'public-read'
