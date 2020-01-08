@@ -27,7 +27,7 @@ djangorestframework = "*"
 jsonfield = "*"
 django-mutant = {path = "./lib/django-mutant-0.3a5.tar.gz"}
 django-polymodels = ">=1.5.1"
-django-json2model = {path = "./lib/django_json2model-0.1.9-py3-none-any.whl"}
+django-json2model = {path = "./lib/django_json2model-0.2.1-py3-none-any.whl"}
 rdflib = "*"
 redis = "*"
 django-modeladmin-reorder = "*"

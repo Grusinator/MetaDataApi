@@ -18,7 +18,7 @@ class TestRunTasks(TransactionTestCase):
         django.setup()
         InitializeDataProviders.load()
 
-    def test_fetch_data_for_each_user(self):
+    def test_build_data_from_dump(self):
         user = User.objects.create(username="test1")
         dp = DataProvider.objects.get(provider_name="strava")
         DataProviderUser.objects.create(data_provider=dp, user=user)

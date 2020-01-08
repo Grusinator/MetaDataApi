@@ -16,6 +16,10 @@ import sys
 
 import django_heroku
 
+from .settings_specific.admin_reorder_settings import ADMIN_REORDER
+from .settings_specific.aws_settings import *
+from .settings_specific.celery_settings import *
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Quick-start development settings - unsuitable for production
@@ -70,7 +74,7 @@ INSTALLED_APPS += (
     'json2model'
 )
 
-# APP_LABEL_DYNAMIC_MODELS = "dynamic_models"
+APP_LABEL_DYNAMIC_MODELS = "dynamic_models"
 
 INSTALLED_APPS += (
     'users',
@@ -176,10 +180,6 @@ STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 # STATIC_ROOT = os.path.join(ENV_PATH, "app/static/")
 # MEDIA_ROOT = os.path.join(ENV_PATH, "media/")
-
-from .settings_specific.aws_settings import *
-from .settings_specific.celery_settings import *
-from .settings_specific.admin_reorder_settings import ADMIN_REORDER
 
 OAUTH_REDIRECT_URI = "oauth2redirect"
 
