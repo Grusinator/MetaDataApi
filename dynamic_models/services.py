@@ -1,7 +1,7 @@
 import json
 import logging
 
-from json2model.services import dynamic_model
+from json2model.services.dynamic_model import DynamicDataInstances, DynamicModelBuilder
 
 from dataproviders.models import DataDump
 
@@ -22,8 +22,9 @@ def build_models_from_data_dump(data_dump_pk: int):
 def _try_build_model_from_data_dump(data_dump):
     data = json.loads(data_dump.file.read())
     root_name = data_dump.endpoint.endpoint_name
+    modelbuilder = DynamicModelBuilder()
     try:
-        dynamic_model.create_objects_from_json(root_name, data)
+        modelbuilder.create_models_from_data(root_name, data)
     except Exception as e:
         logger.warning(e)
 
@@ -42,7 +43,8 @@ def load_data_from_data_dump(data_dump_pk: int):
 def _try_load_data_from_data_dump(data_dump):
     data = json.loads(data_dump.file.read())
     root_name = data_dump.endpoint.endpoint_name
+    data_builder = DynamicDataInstances()
     try:
-        dynamic_model.create_instances_from_json(root_name, data)
+        data_builder.create_instances_from_data(root_name, data)
     except Exception as e:
         logger.warning(e)

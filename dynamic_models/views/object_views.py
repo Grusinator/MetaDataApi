@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.views import generic
-from json2model.services.dynamic_model import get_dynamic_model
+from json2model.services.dynamic_model.dynamic_model_utils import get_dynamic_model
 
 
 def build_object_list_view(request, provider_name, object_label):
