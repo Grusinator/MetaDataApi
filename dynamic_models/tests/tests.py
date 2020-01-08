@@ -2,6 +2,7 @@
 import django
 from django.contrib.auth.models import User
 from django.test import TransactionTestCase
+from json2model.services.dynamic_model.dynamic_model_utils import get_dynamic_model
 
 from MetaDataApi.utils import DjangoModelUtils, JsonUtils
 from dataproviders.models import DataDump, DataProviderUser, DataProvider, Endpoint
@@ -28,3 +29,5 @@ class TestRunTasks(TransactionTestCase):
         file = DjangoModelUtils.convert_str_to_file(data_str, filetype=DjangoModelUtils.FileType.JSON)
         data_dump = DataDump.objects.create(endpoint=endpoint, file=file, user=user)
         build_models_from_data_dump(data_dump.pk)
+        model = get_dynamic_model("activity")
+        self.assertIsNotNone(model)
