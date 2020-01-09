@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 
 import dataproviders.services.fetch_data_from_provider as fetch_service
 from dataproviders.models import DataProviderUser
+from dataproviders.services import oauth
 
 
 @celery.shared_task
@@ -36,3 +37,16 @@ def fetch_data_from_provider_related_to_user(data_provider_user_pk):
 @celery.shared_task
 def fetch_data_from_endpoint(provider_name, endpoint_name, user_pk):
     return fetch_service.fetch_data_from_endpoint(provider_name, endpoint_name, user_pk)
+
+
+@celery.shared_task
+def refresh_access_token(provider_name, user_pk):
+    data_provider_user = DataProviderUser.objects.get(user_id=user_pk, data_provider__provider_name=provider_name)
+    oauth.refresh_access_token(data_provider_user)
+
+
+def schedule_refresh_access_token(data_provider_user: DataProviderUser):
+    if data_provider_user.expires_in:
+        refresh_access_token.apply_async(data_provider_user.id, datacountdown=data_provider_user.expires_in - 600)
+
+# data_provider_user_save_methods.append(schedule_refresh_access_token)
