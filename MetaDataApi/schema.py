@@ -6,6 +6,7 @@ from graphene_django.debug import DjangoDebug
 # import dataproviders.schema
 import metadata.schema
 import users.schema
+from dynamic_models.schema import create_query
 
 
 class Query(
@@ -13,6 +14,7 @@ class Query(
     metadata.schema.schema.Query,
     # datapoints.schema.Query,
     # dataproviders.schema.Query,
+    create_query(),
     graphene.ObjectType):
     debug = graphene.Field(DjangoDebug, name='__debug')
 
