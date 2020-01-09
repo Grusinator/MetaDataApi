@@ -29,12 +29,16 @@ def handle_oath_redirect(request):
 def refresh_access_token(data_provider_user: DataProviderUser):
     data = build_refresh_access_token_data(data_provider_user)
     url = data_provider_user.data_provider.oauth_config.access_token_url
+    response_content = request_refresh_token(data, url)
+    update_or_create_data_provider_user(response_content, data_provider_user.data_provider, data_provider_user.user)
+
+
+def request_refresh_token(data, url):
     r = requests.post(url, data=data, allow_redirects=True)
     if not r.ok:
         raise OauthRedirectRequestException("the token request did not return with ok. Reason: %s" % r.reason)
     response_content = JsonUtils.validate(r.content)
-    access_token = response_content.get("access_token")
-    update_or_create_data_provider_user(response_content, data_provider_user.data_provider, data_provider_user.user)
+    return response_content
 
 
 def build_refresh_access_token_data(data_provider_user: DataProviderUser):
