@@ -1,4 +1,5 @@
 # Create your tests here.
+
 import django
 from django.test import TransactionTestCase
 from mutant.models import ModelDefinition

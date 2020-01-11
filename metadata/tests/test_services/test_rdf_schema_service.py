@@ -1,11 +1,13 @@
 import unittest
 
 import django
+from django.conf import settings
 from django.test import TransactionTestCase
 
 from metadata.tests.data import LoadTestData
-# TODO: Configure your database in settings.py and sync before running tests.
 from metadata.tests.utils_for_testing.common_utils_for_testing import UtilsForTesting
+
+TAGS = set("rdf")
 
 
 class TestRdfSchemaService(TransactionTestCase):
@@ -17,6 +19,7 @@ class TestRdfSchemaService(TransactionTestCase):
         super(TestRdfSchemaService, cls).setUpClass()
         django.setup()
 
+    @unittest.skipIf(set(settings.TEST_SETTINGS_EXCLUDE) & TAGS, f"skipping: {settings.TEST_SETTINGS_EXCLUDE}")
     def test_create_default_graphs(self):
         from metadata.services import RdfSchemaService
         from metadata.models import Schema
@@ -29,6 +32,7 @@ class TestRdfSchemaService(TransactionTestCase):
 
         self.assertNotEqual(schemas_count, 0)
 
+    @unittest.skipIf(set(settings.TEST_SETTINGS_EXCLUDE) & TAGS, f"skipping: {settings.TEST_SETTINGS_EXCLUDE}")
     def test_upload_rdf(self):
         from metadata.services import RdfSchemaService
         from metadata.models.meta import Schema, SchemaNode, SchemaAttribute
@@ -47,6 +51,7 @@ class TestRdfSchemaService(TransactionTestCase):
         self.assertIsNotNone(SchemaAttribute.objects.filter(
             label="first_name").first())
 
+    @unittest.skipIf(set(settings.TEST_SETTINGS_EXCLUDE) & TAGS, f"skipping: {settings.TEST_SETTINGS_EXCLUDE}")
     @unittest.skip("check later after merging dynamic model aproach")
     def test_export_rdf(self):
         from metadata.services import RdfSchemaService
@@ -80,6 +85,7 @@ class TestRdfSchemaService(TransactionTestCase):
 
         self.assertListEqual(labels, labels_compare)
 
+    @unittest.skipIf(set(settings.TEST_SETTINGS_EXCLUDE) & TAGS, f"skipping: {settings.TEST_SETTINGS_EXCLUDE}")
     @unittest.skip("check later after merging dynamic model aproach")
     def test_circle(self):
         from metadata.services import RdfSchemaService

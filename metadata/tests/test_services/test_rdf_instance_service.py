@@ -1,14 +1,14 @@
 import unittest
 
 import django
+from django.conf import settings
 from django.test import TransactionTestCase
 
 from metadata.tests.data import LoadTestData
 
-
 # TODO: Configure your database in settings.py and sync before running tests.
 
-
+TAGS = set("rdf")
 class TestRdfInstanceService(TransactionTestCase):
     """Tests for the application views."""
 
@@ -18,6 +18,7 @@ class TestRdfInstanceService(TransactionTestCase):
         super(TestRdfInstanceService, cls).setUpClass()
         django.setup()
 
+    @unittest.skipIf(set(settings.TEST_SETTINGS_EXCLUDE) & TAGS, f"skipping: {settings.TEST_SETTINGS_EXCLUDE}")
     @unittest.skip("check later after merging dynamic model aproach")
     def test_(self):
         from metadata.services import (

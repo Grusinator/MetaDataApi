@@ -1,10 +1,12 @@
+import unittest
+
 import django
+from django.conf import settings
 from django.test import TransactionTestCase
 
 from metadata.tests.data import LoadTestData
 
-
-# TODO: Configure your database in settings.py and sync before running tests.
+TAGS = set("rdf")
 
 
 class TestJsonService(TransactionTestCase):
@@ -20,6 +22,7 @@ class TestJsonService(TransactionTestCase):
 
         LoadTestData.init_open_m_health_sample()
 
+    @unittest.skipIf(set(settings.TEST_SETTINGS_EXCLUDE) & TAGS, f"skipping: {settings.TEST_SETTINGS_EXCLUDE}")
     def test_upwrite_to_db(self):
         from metadata.services import (
             JsonSchemaService)

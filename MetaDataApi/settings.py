@@ -27,6 +27,7 @@ try:
 except:
     SECRET_KEY = 'ymcvw8ej))e=9jo89315q_r$imri(u0-ae!utev&ck4rs6cz+d'
 
+TESTING = sys.argv[1:2] == ['test']
 ENV = os.environ.get('ENV', default="LOCAL")
 DOCKER = bool(os.environ.get('DOCKER', default=False))
 
@@ -194,6 +195,8 @@ oauth_mapper = {
 
 OAUTH_REDIRECT_URI = oauth_mapper[ENV] + OAUTH_REDIRECT_URI
 
+TEST_SETTINGS_EXCLUDE = ("rdf",)
+
 # Activate Django-Heroku.
-if ENV != "TEST":
+if (ENV != "TEST") and not TESTING:
     django_heroku.settings(locals())

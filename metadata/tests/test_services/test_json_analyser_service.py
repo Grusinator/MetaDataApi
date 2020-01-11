@@ -3,11 +3,13 @@ import unittest
 from urllib import request
 
 import django
+from django.conf import settings
 from django.test import TransactionTestCase
 
 from metadata.tests.data import LoadTestData
 from metadata.tests.utils_for_testing.common_utils_for_testing import UtilsForTesting
 
+TAGS = set("rdf")
 
 class TestSchemaIdentificationService(TransactionTestCase):
 
@@ -16,6 +18,7 @@ class TestSchemaIdentificationService(TransactionTestCase):
         super(TestSchemaIdentificationService, cls).setUpClass()
         django.setup()
 
+    @unittest.skipIf(set(settings.TEST_SETTINGS_EXCLUDE) & TAGS, f"skipping: {settings.TEST_SETTINGS_EXCLUDE}")
     @unittest.skip("check later after merging dynamic model aproach")
     def test_identify_json_data_sample(self):
         from metadata.services import (
@@ -54,6 +57,7 @@ class TestSchemaIdentificationService(TransactionTestCase):
 
         self.assertEqual(labels, expected)
 
+    @unittest.skipIf(set(settings.TEST_SETTINGS_EXCLUDE) & TAGS, f"skipping: {settings.TEST_SETTINGS_EXCLUDE}")
     def test_identify_from_json_data_strava_test(self):
         from metadata.services import (
             JsonAnalyser)
