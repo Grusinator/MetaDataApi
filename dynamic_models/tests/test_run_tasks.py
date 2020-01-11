@@ -1,6 +1,8 @@
 # Create your tests here.
+import unittest
 
 import django
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.test import TransactionTestCase
 from json2model.services.dynamic_model.dynamic_model_utils import get_dynamic_model
@@ -11,6 +13,8 @@ from dataproviders.services import InitializeDataProviders
 from dataproviders.tests.mock_objects.mock_data_dump import data_dump_json_strava_activity
 from dynamic_models.tasks import build_models_from_data_dump
 
+TAGS = set("slow")
+
 
 class TestRunTasks(TransactionTestCase):
 
@@ -20,6 +24,7 @@ class TestRunTasks(TransactionTestCase):
         django.setup()
         InitializeDataProviders.load()
 
+    @unittest.skipIf(set(settings.TEST_SETTINGS_EXCLUDE) & TAGS, f"skipping: {settings.TEST_SETTINGS_EXCLUDE}")
     def test_build_data_from_dump(self):
         user = User.objects.create(username="test1")
         dp = DataProvider.objects.get(provider_name="strava")

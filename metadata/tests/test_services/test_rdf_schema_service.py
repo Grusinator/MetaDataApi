@@ -4,8 +4,8 @@ import django
 from django.conf import settings
 from django.test import TransactionTestCase
 
+from MetaDataApi.tests.utils_for_testing.common_utils_for_testing import UtilsForTesting
 from metadata.tests.data import LoadTestData
-from metadata.tests.utils_for_testing.common_utils_for_testing import UtilsForTesting
 
 TAGS = set("rdf")
 

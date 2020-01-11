@@ -4,9 +4,9 @@ import unittest
 import django
 from django.test import TransactionTestCase
 
+from MetaDataApi.tests.utils_for_testing.common_utils_for_testing import UtilsForTesting
 from metadata.models import SchemaNode
 from metadata.tests.data import LoadTestData
-from metadata.tests.utils_for_testing.common_utils_for_testing import UtilsForTesting
 
 logging.disable(logging.CRITICAL)
 
@@ -88,7 +88,7 @@ class TestModelInstances(TransactionTestCase):
     @unittest.skip("needs repair")
     def test_object_exists(self):
         # Register your models here.
-        from metadata.tests.utils_for_testing.find_object_json_children import FindObjectJsonChildren
+        from MetaDataApi.tests.utils_for_testing.find_object_json_children import FindObjectJsonChildren
 
         LoadTestData.init_foaf()
         LoadTestData.init_strava_schema_from_file()
