@@ -186,14 +186,16 @@ from .settings_specific.celery_settings import *
 
 OAUTH_REDIRECT_URI = "oauth2redirect"
 
-oauth_mapper = {
-    "PROD": "https://meta-data-api.herokuapp.com/",
-    "DEV": "https://meta-data-api-dev.herokuapp.com/",
+url_mapper = {
+    # "PROD": "https://meta-data-api.herokuapp.com/",
+    # "DEV": "https://meta-data-api-dev.herokuapp.com/",
+    "PROD": "http://metadataapi.wsh-home.dk/",
+    "DEV": "http://metadataapi.wsh-home.dk/",
     "LOCAL": "http://localhost:8000/",
     "TEST": "http://localhost:8000/"
 }
 
-OAUTH_REDIRECT_URI = oauth_mapper[ENV] + OAUTH_REDIRECT_URI
+OAUTH_REDIRECT_URI = url_mapper[ENV] + OAUTH_REDIRECT_URI
 
 TEST_SETTINGS_EXCLUDE = ("rdf",)
 

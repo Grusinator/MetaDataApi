@@ -18,10 +18,16 @@ services:
   web:
     container_name: metadataapi_django
     build: .
+    # runserver
     command: bash -c "python3 /code/manage.py migrate --noinput && python3 /code/manage.py runserver 0.0.0.0:8000"
+    # testing
+    #command: bash -c "python3 /code/manage.py migrate --noinput && python3 /code/manage.py test"
+
     #    command: echo "django web has been disabled"
     volumes:
       - .:/code
+    environment:
+      - ENV=PROD
     ports:
       - "8000:8000"
     depends_on:
