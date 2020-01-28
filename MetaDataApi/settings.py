@@ -189,8 +189,8 @@ OAUTH_REDIRECT_URI = "oauth2redirect"
 url_mapper = {
     # "PROD": "https://meta-data-api.herokuapp.com/",
     # "DEV": "https://meta-data-api-dev.herokuapp.com/",
-    "PROD": "http://metadataapi.wsh-home.dk/",
-    "DEV": "http://metadataapi.wsh-home.dk/",
+    "PROD": "http://metadataapi.wsh-home.dk:8000/",
+    "DEV": "http://metadataapi.wsh-home.dk:8000/",
     "LOCAL": "http://localhost:8000/",
     "TEST": "http://localhost:8000/"
 }
