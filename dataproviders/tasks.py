@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 
 import dataproviders.services.fetch_data_from_provider as fetch_service
 from dataproviders.models import DataProviderUser
+from dataproviders.models.DataProviderUser import data_provider_user_save_methods
 from dataproviders.services import oauth
 
 
@@ -49,4 +50,5 @@ def schedule_refresh_access_token(data_provider_user: DataProviderUser):
     if data_provider_user.expires_in:
         refresh_access_token.apply_async(data_provider_user.id, datacountdown=data_provider_user.expires_in - 600)
 
-# data_provider_user_save_methods.append(schedule_refresh_access_token)
+
+data_provider_user_save_methods.append(schedule_refresh_access_token)
