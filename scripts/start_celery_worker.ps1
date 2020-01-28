@@ -1,1 +1,1 @@
-pipenv run celery -A MetaDataApi worker --l info -P eventlet
+pipenv run celery -A MetaDataApi -l INFO worker -P eventlet
