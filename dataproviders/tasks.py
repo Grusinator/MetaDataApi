@@ -48,7 +48,10 @@ def refresh_access_token(provider_name, user_pk):
 
 def schedule_refresh_access_token(data_provider_user: DataProviderUser):
     if data_provider_user.expires_in:
-        refresh_access_token.apply_async(data_provider_user.id, datacountdown=data_provider_user.expires_in - 600)
+        signature = refresh_access_token.s(data_provider_user.data_provider.provider_name, data_provider_user.pk)
+        buffer = 60
+        min_time = 5
+        signature.apply_async(countdown=float(max(data_provider_user.expires_in - buffer, min_time)))
 
 
 data_provider_user_save_methods.append(schedule_refresh_access_token)

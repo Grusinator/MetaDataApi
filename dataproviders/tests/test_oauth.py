@@ -30,6 +30,8 @@ class TestOauth(TransactionTestCase):
     def test_refresh_token(self):
         return_value = {"access_token": "test2", "refresh_token": "refresh_token", "expires_in": 300}
         oauth.request_refresh_token = MagicMock(return_value=return_value)
+        # We dont want to create a celery task, just test the method.
+        DataProviderUser.execute_on_save_methods = MagicMock()
         user = User.objects.create(username="test1")
         dp = DataProvider.objects.get(provider_name="strava")
         DataProviderUser.objects.create(data_provider=dp, user=user, access_token="test1",
