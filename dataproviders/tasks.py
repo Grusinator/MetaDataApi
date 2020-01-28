@@ -54,4 +54,5 @@ def schedule_refresh_access_token(data_provider_user: DataProviderUser):
         signature.apply_async(countdown=float(max(data_provider_user.expires_in - buffer, min_time)))
 
 
-data_provider_user_save_methods.append(schedule_refresh_access_token)
+def connect_tasks():
+    data_provider_user_save_methods.append(schedule_refresh_access_token)
