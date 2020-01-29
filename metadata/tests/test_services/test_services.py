@@ -1,9 +1,9 @@
 import os
 
 import django
+from django.conf import settings
 from django.test import TransactionTestCase
 
-from MetaDataApi import settings
 from metadata.tests.data import LoadTestData
 
 
