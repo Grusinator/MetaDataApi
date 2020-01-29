@@ -4,6 +4,7 @@ import celery
 from celery import chain
 
 import dynamic_models.services as data_loader_service
+from dataproviders.admin import DataDumpAdmin
 from dataproviders.models.data_dump import data_dump_save_methods, DataDump
 
 logger = logging.getLogger(__name__)
@@ -44,5 +45,4 @@ def connect_tasks():
     # data_dump_save_methods.append(lambda data_dump: build_models_from_data_dump(data_dump.pk))
     # data_dump_save_methods.append(build_models)
     data_dump_save_methods.append(build_models_and_load_data_chained)
-    # TODO this does not work since tasks are loaded as the last thing after app is ready.
-    # add_actions_to_datadump_admin.append(build_models_and_load_data_chained)
+    DataDumpAdmin.add_action_from_single_arg_method(build_models_and_load_data_chained)
