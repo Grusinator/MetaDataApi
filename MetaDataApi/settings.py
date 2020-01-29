@@ -13,8 +13,11 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import sys
+from enum import Enum
 
 import django_heroku
+
+from .env import Env
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -28,11 +31,11 @@ except:
     SECRET_KEY = 'ymcvw8ej))e=9jo89315q_r$imri(u0-ae!utev&ck4rs6cz+d'
 
 TESTING = sys.argv[1:2] == ['test']
-ENV = os.environ.get('ENV', default="LOCAL")
+ENV = Env[os.environ.get('ENV', default=Env.LOCAL.value)]
 DOCKER = bool(os.environ.get('DOCKER', default=False))
 
 # gettrace() is none when not debugging
-DEBUG = (ENV != "PROD") | (sys.gettrace() is None)
+DEBUG = (ENV != Env.PROD) | (sys.gettrace() is None)
 
 ALLOWED_HOSTS = []
 
@@ -139,9 +142,9 @@ DEFAULT_DATABASE = {
     }
 }
 
-DATABASES = CIRCLECI_TEST_DATABASE if ENV == "TEST" else DEFAULT_DATABASE
+DATABASES = CIRCLECI_TEST_DATABASE if ENV == Env.TEST else DEFAULT_DATABASE
 
-print(f"starting env with settings DOCKER: {DOCKER}, ENV: {ENV}, DEBUG: {DEBUG}")
+print(f"starting env with settings DOCKER: {DOCKER}, ENV: {ENV.name}, DEBUG: {DEBUG}")
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
@@ -184,21 +187,10 @@ from .settings_specific.admin_reorder_settings import ADMIN_REORDER
 from .settings_specific.aws_settings import *
 from .settings_specific.celery_settings import *
 
-OAUTH_REDIRECT_URI = "oauth2redirect"
-
-url_mapper = {
-    # "PROD": "https://meta-data-api.herokuapp.com/",
-    # "DEV": "https://meta-data-api-dev.herokuapp.com/",
-    "PROD": "http://metadataapi.wsh-home.dk:8000/",
-    "DEV": "http://metadataapi.wsh-home.dk:8000/",
-    "LOCAL": "http://localhost:8000/",
-    "TEST": "http://localhost:8000/"
-}
-
-OAUTH_REDIRECT_URI = url_mapper[ENV] + OAUTH_REDIRECT_URI
+OAUTH_REDIRECT_URI = ENV.get_url() + "oauth2redirect"
 
 TEST_SETTINGS_EXCLUDE = ("rdf",)
 
 # Activate Django-Heroku.
-if (ENV != "TEST") and not TESTING:
+if (ENV != Env.TEST) and not TESTING:
     django_heroku.settings(locals())
