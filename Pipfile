@@ -39,6 +39,8 @@ coverage = "*"
 codacy-coverage = "*"
 flower = "*"
 django-coverage-plugin = "*"
+autopep8 = "*"
+rope = "*"
 
 [requires]
 python_version = "3.7"

@@ -39,7 +39,7 @@ class DataDumpAdmin(admin.ModelAdmin):
     # ordering = ['profile']
     actions = []
 
-add_actions_to_datadump_admin(DataDumpAdmin, add_actions_to_datadump_admin)
+add_methods_to_admin_class(DataDumpAdmin, add_actions_to_datadump_admin)
 
 admin.site.register(DataDump, DataDumpAdmin)
 
