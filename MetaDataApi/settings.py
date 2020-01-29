@@ -53,7 +53,7 @@ INSTALLED_APPS = [
     # 'oauth2_provider',
     # 'corsheaders',
     # 'storages',
-    'admin_reorder',
+    # 'admin_reorder',
     # 'graphene_file_upload',
     'django_celery_results',
     'django_celery_beat',
@@ -76,7 +76,7 @@ INSTALLED_APPS += (
 # Error
 # object: activity, could not be created due to error: duplicate key value violates unique constraint "django_content_type_app_label_model_76bd3d3b_uniq"
 # DETAIL:  Key (app_label, model)=(dynamic_models, activity) already exists.
-# APP_LABEL_DYNAMIC_MODELS = "dynamic_models"
+APP_LABEL_DYNAMIC_MODELS = "dynamic_models"
 
 INSTALLED_APPS += (
     'users',
@@ -94,7 +94,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'admin_reorder.middleware.ModelAdminReorder',
+    #'admin_reorder.middleware.ModelAdminReorder',
 ]
 
 ROOT_URLCONF = 'MetaDataApi.urls'

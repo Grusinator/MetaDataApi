@@ -1,3 +1,4 @@
+# ADMIN_REORDER = ('sites',)
 ADMIN_REORDER = (
     {
         'app': 'users', 'label': 'users',
@@ -42,5 +43,4 @@ ADMIN_REORDER = (
             'metadata.FileAttribute',
         )
     },
-    "sites",
 )
