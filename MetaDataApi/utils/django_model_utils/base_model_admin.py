@@ -4,10 +4,9 @@ from django.conf import settings
 from django.contrib import admin
 from django.contrib.admin.sites import NotRegistered
 from django.urls import clear_url_caches
-from djongo.admin import ModelAdmin
 
 
-class BaseModelAdmin(ModelAdmin):
+class BaseModelAdmin(admin.ModelAdmin):
     actions = []
     model = None
 
