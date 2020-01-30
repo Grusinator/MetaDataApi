@@ -1,17 +1,13 @@
 import graphene
 from django.db.models import Model
 from graphene_django import DjangoObjectType
+from graphene_django.filter import DjangoFilterConnectionField
 from mutant.models import ModelDefinition
-
-
-def build_dummy_property():
-    pass
 
 
 def create_query():
     types = create_types_for_all_dynamic_models()
     query_properties = build_query_properties(types)
-    query_properties["dummy"] = build_dummy_property()
     return type('Query', (graphene.ObjectType,), query_properties)
 
 
@@ -33,4 +29,8 @@ def create_graphene_type(model: Model):
 
 
 def build_query_properties(graphene_types):
-    return {graphene_type.__name__: graphene.relay.Node.Field(graphene_type) for graphene_type in graphene_types}
+    properties = {}
+    for graphene_type in graphene_types:
+        properties[graphene_type.__name__] = graphene.relay.Node.Field(graphene_type)
+        properties[f"all_{graphene_type.__name__}"] = DjangoFilterConnectionField(graphene_type)
+    return properties

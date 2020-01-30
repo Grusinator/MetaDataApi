@@ -32,6 +32,7 @@ django-modeladmin-reorder = "*"
 django-celery-model = "*"
 django-json2model = {path = "./lib/django_json2model-0.2.3-py3-none-any.whl"}
 django-generic-serializer = {path = "./lib/django_generic_serializer-0.0.2-py3-none-any.whl"}
+pyopenssl = "==19.1.0" #issue with eventlet, for celery on windows
 
 [dev-packages]
 eventlet = "*"
