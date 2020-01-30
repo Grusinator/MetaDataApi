@@ -1,16 +1,20 @@
-del "lib\*.whl"
+Remove-Item "lib\*.whl"
 
-cd ..\django-generic-serializer
-del "dist\*.whl"
+Set-Location ..\django-generic-serializer
+Remove-Item "dist\*.whl"
 python setup.py bdist_wheel
-cp dist\django_generic_serializer-*.whl ..\MetaDataApi\lib\
+Copy-Item  dist\django_generic_serializer-*.whl ..\MetaDataApi\lib\
 
-cd ..\django-json2model
-del "dist\*.whl"
+Set-Location ..\django-json2model
+Remove-Item "dist\*.whl"
 python setup.py bdist_wheel
-cp dist\django_json2model-*.whl ..\MetaDataApi\lib\
+Copy-Item dist\django_json2model-*.whl ..\MetaDataApi\lib\
 
-cd ..\MetaDataApi
+Set-Location ..\MetaDataApi
 
-# pipenv install ".\lib\django_json2model-*.whl"
-# pipenv install ".\lib\django_generic_serializer-*.whl"
+$django_generic_serializer_filename = Get-ChildItem -Path .\lib\ -Name -Include django_generic_serializer*
+$django_json2model_filename = Get-ChildItem -Path .\lib\ -Name -Include django_json2model*
+
+pipenv uninstall django_generic_serializer django_json2model
+
+pipenv install .\lib\$django_json2model_filename .\lib\$django_generic_serializer_filename

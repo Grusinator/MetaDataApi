@@ -22,7 +22,6 @@ celery = "*"
 django-celery-results = "*"
 django-celery-beat = "*"
 django-timezone-field = "==3.0.0" # v4.0 requires django >2.2
-django-generic-serializer = {path = "./lib/django_generic_serializer-0.0.2-py3-none-any.whl"}
 djangorestframework = "*"
 jsonfield = "*"
 django-mutant = {path = "./lib/django-mutant-0.3a5.tar.gz"}
@@ -31,7 +30,8 @@ rdflib = "*"
 redis = "*"
 django-modeladmin-reorder = "*"
 django-celery-model = "*"
-django-json2model = {path = "./lib/django_json2model-0.2.1-py3-none-any.whl"}
+django-json2model = {path = "./lib/django_json2model-0.2.2-py3-none-any.whl"}
+django-generic-serializer = {path = "./lib/django_generic_serializer-0.0.2-py3-none-any.whl"}
 
 [dev-packages]
 eventlet = "*"
