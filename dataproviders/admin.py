@@ -2,6 +2,7 @@ from django.contrib import admin
 
 # Register your models here.
 from MetaDataApi.utils.django_model_utils.base_model_admin import BaseModelAdmin
+from dataproviders import tasks
 from dataproviders.models import DataProvider, Endpoint, DataDump, OauthConfig, HttpConfig, \
     DataProviderUser
 from dataproviders.services import oauth
@@ -19,6 +20,13 @@ class EndpointAdmin(BaseModelAdmin):
     # list_display = ['profile', 'provider.provider_name']
     ordering = ['endpoint_name']
     model = Endpoint
+
+    def fetch_datadump_from_endpoint(self, request, queryset):
+        for endpoint in queryset:
+            tasks.fetch_data_from_endpoint.delay(endpoint.data_provider.provider_name, endpoint.endpoint_name,
+                                                 request.user.pk)
+
+    actions = ["fetch_datadump_from_endpoint"]
 
 
 class DataProviderAdmin(admin.ModelAdmin):
