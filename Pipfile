@@ -30,7 +30,7 @@ rdflib = "*"
 redis = "*"
 django-modeladmin-reorder = "*"
 django-celery-model = "*"
-django-json2model = {path = "./lib/django_json2model-0.2.2-py3-none-any.whl"}
+django-json2model = {path = "./lib/django_json2model-0.2.3-py3-none-any.whl"}
 django-generic-serializer = {path = "./lib/django_generic_serializer-0.0.2-py3-none-any.whl"}
 
 [dev-packages]

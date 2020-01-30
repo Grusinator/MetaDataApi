@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "9ef5d22927d38d09a12ba8ea58ff15f28c59c7b1634262ba6151885f190fc823"
+            "sha256": "60511447ae920706632e2fe749d997dfb12697d604b8ee093c64bfada82e1949"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -123,7 +123,7 @@
         },
         "django-generic-serializer": {
             "hashes": [
-                "sha256:adfdf41bbe433b7bfdf0bd40c6ff579973a8ae8c08ab7cba5b5b84a686f5c5e5"
+                "sha256:16e3253b4c32564b7d491b34f0eae0e71304f37e708bf9da8f9ca3986914f409"
             ],
             "path": "./lib/django_generic_serializer-0.0.2-py3-none-any.whl",
             "version": "==0.0.2"
@@ -146,10 +146,10 @@
         },
         "django-json2model": {
             "hashes": [
-                "sha256:fbeb0a2bd1e67fe1f2be5ba4f27437a87c02ef077fb939b707e92cb6c0474744"
+                "sha256:6b1045a615191042f0fa1651897e4f78ba968cfd0f9c76d10ad006306916c1ba"
             ],
-            "path": "./lib/django_json2model-0.2.2-py3-none-any.whl",
-            "version": "==0.2.2"
+            "path": "./lib/django_json2model-0.2.3-py3-none-any.whl",
+            "version": "==0.2.3"
         },
         "django-modeladmin-reorder": {
             "hashes": [
