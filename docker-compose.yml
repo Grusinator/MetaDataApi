@@ -36,6 +36,7 @@ services:
   celery:
     build: .
     command: celery -A MetaDataApi worker -l info
+    restart: on-failure
     volumes:
       - .:/code
     depends_on:
@@ -44,6 +45,7 @@ services:
   celery-beat:
     build: .
     command: celery -A MetaDataApi beat -l DEBUG --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    restart: on-failure
     volumes:
       - .:/code
     depends_on:
