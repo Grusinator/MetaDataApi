@@ -156,7 +156,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': f'{dj_pass_val}NumericPasswordValidator', },
 ]
 
-SILENCED_SYSTEM_CHECKS = ["fields.E303"]
+SILENCED_SYSTEM_CHECKS = ["fields.E303"] #, "fields.E002"]
 
 GRAPHENE = {
     'SCHEMA': 'MetaDataApi.schema.schema',

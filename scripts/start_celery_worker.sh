@@ -1,1 +1,1 @@
-pipenv run celery -A MetaDataApi worker --loglevel=info
+pipenv run celery -A MetaDataApi worker -l INFO

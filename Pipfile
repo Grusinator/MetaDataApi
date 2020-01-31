@@ -27,7 +27,7 @@ jsonfield = "*"
 django-mutant = {path = "./lib/django-mutant-0.3a5.tar.gz"}
 django-polymodels = ">=1.5.1"
 rdflib = "*"
-redis = "*"
+redis = "==3.3.11"
 django-modeladmin-reorder = "*"
 django-celery-model = "*"
 django-json2model = {path = "./lib/django_json2model-0.2.4-py3-none-any.whl"}

@@ -17,7 +17,7 @@ RUN pip install pipenv
 # Copy project
 COPY . /code/
 
-RUN pipenv install --system --deploy --dev --ignore-pipfile --ignore-hashes
+RUN pipenv install --system --deploy --dev --ignore-pipfile && pip install graphene-django
 
 
 
