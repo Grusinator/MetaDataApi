@@ -30,12 +30,12 @@ rdflib = "*"
 redis = "*"
 django-modeladmin-reorder = "*"
 django-celery-model = "*"
-pyopenssl = "==19.1.0" #issue with eventlet, for celery on windows
 django-json2model = {path = "./lib/django_json2model-0.2.4-py3-none-any.whl"}
 django-generic-serializer = {path = "./lib/django_generic_serializer-0.0.2-py3-none-any.whl"}
 
 [dev-packages]
 eventlet = "*"
+pyopenssl = "==19.1.0" #issue with eventlet, for celery on windows
 coverage = "*"
 codacy-coverage = "*"
 flower = "*"
