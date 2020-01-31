@@ -17,7 +17,8 @@ RUN pip install pipenv
 # Copy project
 COPY . /code/
 
-RUN pipenv install --system --deploy --dev
+RUN pipenv install --system --deploy --dev --ignore-pipfile --ignore-hashes
+
 
 
 
