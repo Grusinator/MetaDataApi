@@ -18,6 +18,7 @@ services:
     volumes:
       - .:/code
     environment:
+      - DEBUG
       - ENV
     ports:
       - "80:80"

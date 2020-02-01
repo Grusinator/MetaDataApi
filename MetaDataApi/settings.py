@@ -33,13 +33,13 @@ except:
 TESTING = sys.argv[1:2] == ['test']
 ENV = Env[os.environ.get('ENV', default=Env.LOCAL.value)]
 DOCKER = bool(os.environ.get('DOCKER', default=False))
-
+DEBUG = bool(os.environ.get('DEBUG', False))
 
 def is_debugging():
     # gettrace() is none when not debugging
     return (sys.gettrace() is not None)
 
-DEBUG = (ENV != Env.PROD) or is_debugging()
+DEBUG = DEBUG or (ENV != Env.PROD) or is_debugging()
 
 ALLOWED_HOSTS = []
 
