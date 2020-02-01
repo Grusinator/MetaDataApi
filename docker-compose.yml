@@ -19,7 +19,7 @@ services:
     container_name: metadataapi_django
     build: .
     # runserver
-    command: bash -c "python3 /code/manage.py migrate --noinput && python3 /code/manage.py runserver 0.0.0.0:80"
+    command: bash -c "python3 /code/manage.py migrate --noinput && python3 /code/manage.py runserver 0.0.0.0:8000"
     # testing
     #command: bash -c "python3 /code/manage.py migrate --noinput && python3 /code/manage.py test"
 
@@ -27,9 +27,9 @@ services:
     volumes:
       - .:/code
     environment:
-      - ENV=PROD
+      - ENV
     ports:
-      - "80:80"
+      - "8000:8000"
     depends_on:
       - db
       - redis
@@ -37,6 +37,8 @@ services:
     build: .
     command: celery -A MetaDataApi worker -l info
     restart: on-failure
+    environment:
+      - ENV
     volumes:
       - .:/code
     depends_on:
@@ -46,6 +48,8 @@ services:
     build: .
     command: celery -A MetaDataApi beat -l DEBUG --scheduler django_celery_beat.schedulers:DatabaseScheduler
     restart: on-failure
+    environment:
+      - ENV
     volumes:
       - .:/code
     depends_on:
