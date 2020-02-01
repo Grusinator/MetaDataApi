@@ -34,8 +34,12 @@ TESTING = sys.argv[1:2] == ['test']
 ENV = Env[os.environ.get('ENV', default=Env.LOCAL.value)]
 DOCKER = bool(os.environ.get('DOCKER', default=False))
 
-# gettrace() is none when not debugging
-DEBUG = (ENV != Env.PROD) | (sys.gettrace() is None)
+
+def is_debugging():
+    # gettrace() is none when not debugging
+    return (sys.gettrace() is not None)
+
+DEBUG = (ENV != Env.PROD) or is_debugging()
 
 ALLOWED_HOSTS = []
 

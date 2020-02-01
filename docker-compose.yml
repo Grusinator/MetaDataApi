@@ -46,7 +46,7 @@ services:
       - redis
   celery-beat:
     build: .
-    command: celery -A MetaDataApi beat -l DEBUG --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    command: celery -A MetaDataApi beat -l INFO --pidfile= --scheduler django_celery_beat.schedulers:DatabaseScheduler
     restart: on-failure
     environment:
       - ENV
