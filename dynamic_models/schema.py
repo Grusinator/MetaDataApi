@@ -2,6 +2,7 @@ import graphene
 from django.db.models import Model, TextField, IntegerField, FloatField, BooleanField
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
+from graphql import GraphQLError
 from graphql_jwt.decorators import login_required
 from mutant.models import ModelDefinition
 
@@ -71,7 +72,8 @@ def create_django_filter_connection_field_properties(graphene_type):
     def resolver(self, info, **kwargs):
         user_pk = info.context.user.pk
         if not hasattr(model, "user_pk"):
-            raise
+            raise GraphQLError(
+                "the object that you are trying to access is not tied to a user. try rebuilding the model")
         return model.objects.filter(user_pk=user_pk, **kwargs)
 
     properties = {
