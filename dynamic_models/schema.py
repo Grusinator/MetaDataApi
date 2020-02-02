@@ -48,6 +48,12 @@ def build_query_properties(graphene_types):
     return properties
 
 
+def assert_model_has_user_ref(model):
+    if not hasattr(model, "user_pk"):
+        raise GraphQLError(
+            "the object that you are trying to access is not tied to a user. try rebuilding the model")
+
+
 def create_list_properties(graphene_type):
     model = graphene_type._meta.model
     name = f"all_{graphene_type.__name__}s"
@@ -55,6 +61,7 @@ def create_list_properties(graphene_type):
     @login_required
     def resolver(self, info, **kwargs):
         user_pk = info.context.user.pk
+        assert_model_has_user_ref(model)
         return model.objects.filter(user_pk=user_pk)
 
     properties = {
@@ -71,9 +78,7 @@ def create_django_filter_connection_field_properties(graphene_type):
     @login_required
     def resolver(self, info, **kwargs):
         user_pk = info.context.user.pk
-        if not hasattr(model, "user_pk"):
-            raise GraphQLError(
-                "the object that you are trying to access is not tied to a user. try rebuilding the model")
+        assert_model_has_user_ref(model)
         return model.objects.filter(user_pk=user_pk, **kwargs)
 
     properties = {
@@ -90,6 +95,7 @@ def create_field_properties(graphene_type):
     @login_required
     def resolver(self, info, **kwargs):
         user_pk = info.context.user.pk
+        assert_model_has_user_ref(model)
         return model.objects.filter(user_pk=user_pk).first()
 
     properties = {
