@@ -70,6 +70,7 @@ class TestJsonService(TransactionTestCase):
 
         atts = filter(lambda x: isinstance(x, SchemaAttribute), res)
 
+    @unittest.skip
     def test_default_schemas(self):
         from metadata.services import (
             JsonSchemaService)

@@ -2,6 +2,7 @@ import graphene
 from django.db.models import Model, TextField, IntegerField, FloatField, BooleanField
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
+from graphql_jwt.decorators import login_required
 from mutant.models import ModelDefinition
 
 filter_attribute_types = (TextField, IntegerField, FloatField, BooleanField)
@@ -49,9 +50,15 @@ def build_query_properties(graphene_types):
 def create_list_properties(graphene_type):
     model = graphene_type._meta.model
     name = f"all_{graphene_type.__name__}s"
+
+    @login_required
+    def resolver(self, info, **kwargs):
+        user_pk = info.context.user.pk
+        return model.objects.filter(user_pk=user_pk)
+
     properties = {
         name: graphene.List(graphene_type),
-        f"resolve_{name}": lambda self, info: model.objects.all()
+        f"resolve_{name}": resolver
     }
     return properties
 
@@ -59,9 +66,15 @@ def create_list_properties(graphene_type):
 def create_django_filter_connection_field_properties(graphene_type):
     model = graphene_type._meta.model
     name = f"filter_{graphene_type.__name__}s"
+
+    @login_required
+    def resolver(self, info, **kwargs):
+        user_pk = info.context.user.pk
+        return model.objects.filter(user_pk=user_pk, **kwargs)
+
     properties = {
         name: DjangoFilterConnectionField(graphene_type),
-        f"resolve_{name}": lambda self, info, **kwargs: model.objects.filter(**kwargs)
+        f"resolve_{name}": resolver
     }
     return properties
 
@@ -69,8 +82,14 @@ def create_django_filter_connection_field_properties(graphene_type):
 def create_field_properties(graphene_type):
     model = graphene_type._meta.model
     name = graphene_type.__name__
+
+    @login_required
+    def resolver(self, info, **kwargs):
+        user_pk = info.context.user.pk
+        return model.objects.filter(user_pk=user_pk).first()
+
     properties = {
         name: graphene.relay.Node.Field(graphene_type),
-        f"resolve_{name}": lambda self, info: model.objects.first()
+        f"resolve_{name}": resolver
     }
     return properties
