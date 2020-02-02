@@ -37,7 +37,6 @@ django-generic-serializer = {path = "./lib/django_generic_serializer-0.0.2-py3-n
 eventlet = "==0.25.1"        #issue with eventlet, for celery on windows wrap_socket() got an unexpected keyword argument '_context'
 greenlet = "==0.4.15"
 pyopenssl = "==19.1.0"
-
 coverage = "*"
 codacy-coverage = "*"
 flower = "*"

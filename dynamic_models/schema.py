@@ -9,7 +9,7 @@ filter_attribute_types = (TextField, IntegerField, FloatField, BooleanField)
 attribute_types = filter_attribute_types
 
 
-def create_query():
+def build_dynamic_model_query():
     types = create_types_for_all_dynamic_models()
     query_properties = build_query_properties(types)
     return type('Query', (graphene.ObjectType,), query_properties)
@@ -70,6 +70,8 @@ def create_django_filter_connection_field_properties(graphene_type):
     @login_required
     def resolver(self, info, **kwargs):
         user_pk = info.context.user.pk
+        if not hasattr(model, "user_pk"):
+            raise
         return model.objects.filter(user_pk=user_pk, **kwargs)
 
     properties = {

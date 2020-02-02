@@ -8,7 +8,7 @@ from django.test import TransactionTestCase
 from mutant.models import ModelDefinition
 
 from dynamic_models import schema
-from dynamic_models.schema import create_query
+from dynamic_models.schema import build_dynamic_model_query
 
 
 class TestGrapheneSchema(TransactionTestCase):
@@ -20,7 +20,7 @@ class TestGrapheneSchema(TransactionTestCase):
         cls.create_dummy_model_def()
 
     def test_create_query(self):
-        query = create_query()
+        query = build_dynamic_model_query()
         schema = graphene.Schema(query=query, mutation=None)
 
     @unittest.skip
