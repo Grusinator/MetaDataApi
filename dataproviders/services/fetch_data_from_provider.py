@@ -47,6 +47,7 @@ def _get_endpoint(data_provider, endpoint_name):
 def _request_from_endpoint(url, body, header):
     req = request.Request(url, body, header)
     response = request.urlopen(req)
+    response.raise_for_status()
     html = response.read()
     return html
 
