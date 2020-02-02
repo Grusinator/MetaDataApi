@@ -43,7 +43,7 @@ def load_data_from_data_dump(data_dump_pk: int):
 def _try_load_data_from_data_dump(data_dump):
     data = json.loads(data_dump.file.read())
     root_name = data_dump.endpoint.endpoint_name
-    data_builder = DynamicDataInstances()
+    data_builder = DynamicDataInstances(user_pk=data_dump.user.pk)
     try:
         data_builder.create_instances_from_data(root_name, data)
     except Exception as e:
