@@ -42,7 +42,7 @@ def build_query_properties(graphene_types):
     properties = {}
     for graphene_type in graphene_types:
         properties.update(create_field_properties(graphene_type))
-        properties.update(create_django_filter_connection_field_properties(graphene_type))
+        # properties.update(create_django_filter_connection_field_properties(graphene_type))
         properties.update(create_list_properties(graphene_type))
     return properties
 
