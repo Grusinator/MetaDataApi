@@ -81,6 +81,7 @@ INSTALLED_APPS += (
 # object: activity, could not be created due to error: duplicate key value violates unique constraint "django_content_type_app_label_model_76bd3d3b_uniq"
 # DETAIL:  Key (app_label, model)=(dynamic_models, activity) already exists.
 # APP_LABEL_DYNAMIC_MODELS = "dynamic_models"
+RELATE_TO_USER = True
 
 INSTALLED_APPS += (
     'users',
