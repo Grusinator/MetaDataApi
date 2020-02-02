@@ -4,7 +4,7 @@ import django
 from django.test import TransactionTestCase
 from mutant.models import ModelDefinition
 
-from dynamic_models.schema import create_query
+from dynamic_models.schema import build_dynamic_model_query
 
 
 class TestDynamicGraphql(TransactionTestCase):
@@ -19,6 +19,6 @@ class TestDynamicGraphql(TransactionTestCase):
             app_label="dynamic_models", object_name="test"
         )
         all_models = ModelDefinition.objects.all()
-        Query = create_query()
+        Query = build_dynamic_model_query()
         # self.assertEqual(type(Query), graphene.ObjectType)
         self.assertIsNotNone(Query)
