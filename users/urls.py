@@ -1,3 +1,4 @@
+from django.conf.urls import url
 from django.contrib.auth import logout
 from django.urls import path, include
 
@@ -7,5 +8,5 @@ urlpatterns = [
     path('', include('django.contrib.auth.urls')),
     path('signup/', signup_view, name='signup'),
     # path('', include('social_django.urls', namespace='social')),
-    path('logout/', logout, name='logout'),
+    url('logout/', logout, {'next_page': '/'}, name='logout'),
 ]

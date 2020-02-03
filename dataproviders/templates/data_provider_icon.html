@@ -1,0 +1,7 @@
+{% extends "dataproviders.html" %}
+{% block providericon %}
+<a href={{dp.get_internal_view_url}}>
+    <!--                <img src="images/pic01.jpg" alt="" />-->
+    {{ dp.provider_name }}
+</a>
+{% endblock %}

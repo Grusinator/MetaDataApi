@@ -1,41 +1,85 @@
-<!doctype html>
+<!DOCTYPE HTML>
 {% load static %}
+<!--
+	Landed by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
 <html>
 <head>
-    <title>Meta Data Api</title>
-    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
-    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css" rel="stylesheet">
-    <link href="../static/style/base.css" rel="stylesheet">
+    <title>Elements - Landed by HTML5 UP</title>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1, user-scalable=no" name="viewport"/>
+    <link href="../static/assets/css/main.css" rel="stylesheet"/>
+    <noscript>
+        <link href="assets/css/noscript.css" rel="stylesheet"/>
+    </noscript>
 </head>
 
-<body>
+<body class="is-preload">
+<div id="page-wrapper">
 
-<div>
-    <h1>Meta Data</h1>
+    <!-- Header -->
+    <header id="header">
+        <h1 id="logo"><a href="/">Meta Data Api</a></h1>
+        <nav id="nav">
+            <ul>
+                {% if user.is_superuser %}
+                <li><a class="active" href="/admin_i/">Admin</a></li>
+                {% endif %}
+                <li><a href="/providers/">Providers</a></li>
+                <li><a href="/graphql/">Graphql</a></li>
+                <li><a href="/dynamic_models/">dynamic models</a></li>
+                {% if user.is_authenticated %}
+                <li><p>Logged as {{ user.username }}</p></li>
+                <li><a class="button primary" href="{% url 'logout' %}">Logout</a></li>
+                {% else %}
+                <li><a class="button primary" href="/users/signup/">Sign Up</a></li>
+                <li><a class="button primary" href="/users/login/">Login</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main -->
+    <div class="wrapper style1" id="main">
+        <div class="container">
+            <div class="content">
+                {% block content %}
+                replace me
+                {% endblock content %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer id="footer">
+        <ul class="icons">
+            <li><a class="icon brands alt fa-twitter" href="#"><span class="label">Twitter</span></a></li>
+            <li><a class="icon brands alt fa-facebook-f" href="#"><span class="label">Facebook</span></a></li>
+            <li><a class="icon brands alt fa-linkedin-in" href="#"><span class="label">LinkedIn</span></a></li>
+            <li><a class="icon brands alt fa-instagram" href="#"><span class="label">Instagram</span></a></li>
+            <li><a class="icon brands alt fa-github" href="#"><span class="label">GitHub</span></a></li>
+            <li><a class="icon solid alt fa-envelope" href="#"><span class="label">Email</span></a></li>
+        </ul>
+        <ul class="copyright">
+            <li>&copy; Untitled. All rights reserved.</li>
+            <li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+        </ul>
+    </footer>
+
 </div>
 
+<!-- Scripts -->
+<script src="../static/assets/js/jquery.min.js"></script>
+<script src="../static/assets/js/jquery.scrolly.min.js"></script>
+<script src="../static/assets/js/jquery.dropotron.min.js"></script>
+<script src="../static/assets/js/jquery.scrollex.min.js"></script>
+<script src="../static/assets/js/browser.min.js"></script>
+<script src="../static/assets/js/breakpoints.min.js"></script>
+<script src="../static/assets/js/util.js"></script>
+<script src="../static/assets/js/main.js"></script>
 
-<div class="topnav">
-    <a class="active" href="/admin_i/">Admin</a>
-    <a href="/providers/">Providers</a>
-    <a href="/graphql/">Graphql</a>
-    <a href="/dynamic_models/">dynamic models</a>
-</div>
-<div>
-    {% if user.is_authenticated %}
-        <p>Logged as {{ user.username }}</p>
-        <a class="btn btn-primary" href="{% url 'logout' %}">Logout</a>
-    {% else %}
-        {#        <a class="btn btn-primary" href="{% url 'social:begin' 'google-oauth2' %}">#}
-        {#            Login#}
-        {#        </a>#}
-        <a href="/users/login/">Login</a>
-        <a href="/users/signup/">Sign up</a>
-    {% endif %}
-</div>
-
-{% block content %}
-    replace me
-{% endblock content %}
 </body>
+
 </html>
