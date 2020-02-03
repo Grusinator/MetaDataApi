@@ -13,7 +13,6 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import sys
-from enum import Enum
 
 import django_heroku
 
@@ -35,9 +34,11 @@ ENV = Env[os.environ.get('ENV', default=Env.LOCAL.value)]
 DOCKER = bool(os.environ.get('DOCKER', default=False))
 DEBUG = bool(os.environ.get('DEBUG', False))
 
+
 def is_debugging():
     # gettrace() is none when not debugging
     return (sys.gettrace() is not None)
+
 
 DEBUG = DEBUG or (ENV != Env.PROD) or is_debugging()
 
@@ -136,6 +137,8 @@ CIRCLECI_TEST_DATABASE = {
     }
 }
 
+APPEND_SLASH = True
+
 DEFAULT_DATABASE = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -161,7 +164,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': f'{dj_pass_val}NumericPasswordValidator', },
 ]
 
-SILENCED_SYSTEM_CHECKS = ["fields.E303"] #, "fields.E002"]
+SILENCED_SYSTEM_CHECKS = ["fields.E303"]  # , "fields.E002"]
 
 GRAPHENE = {
     'SCHEMA': 'MetaDataApi.schema.schema',
@@ -189,7 +192,13 @@ MEDIA_URL = '/media/'
 # MEDIA_ROOT = os.path.join(ENV_PATH, "media/")
 
 from .settings_specific.admin_reorder_settings import ADMIN_REORDER
+
+ADMIN_REORDER
+
 from .settings_specific.aws_settings import *
+
+AWS_S3_CUSTOM_DOMAIN
+
 from .settings_specific.celery_settings import *
 
 OAUTH_REDIRECT_URI = ENV.get_url() + "oauth2redirect"
