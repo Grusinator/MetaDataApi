@@ -188,17 +188,16 @@ USE_TZ = True
 ENV_PATH = os.path.abspath(os.path.dirname(__file__))
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+    '/app/static/',
+]
 # STATIC_ROOT = os.path.join(ENV_PATH, "app/static/")
 # MEDIA_ROOT = os.path.join(ENV_PATH, "media/")
 
 from .settings_specific.admin_reorder_settings import ADMIN_REORDER
-
-ADMIN_REORDER
-
 from .settings_specific.aws_settings import *
-
-AWS_S3_CUSTOM_DOMAIN
-
 from .settings_specific.celery_settings import *
 
 OAUTH_REDIRECT_URI = ENV.get_url() + "oauth2redirect"
