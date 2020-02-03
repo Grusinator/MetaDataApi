@@ -1,37 +1,25 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div>
+    <header class="major">
         <h2>{{ data_provider.provider_name }}</h2>
-    </div>
+    </header>
+    <section>
+        <div>
+            <a class="button primary" href={{ authorize_url }}>
+                Oauth Authorize {{ data_provider.provider_name }}
+            </a>
 
-
-    <table>
-        <tr>
-            <th>
-                <div>
-                    <h2>
-                        <a href={{ authorize_url }}>
-                            Oauth Authorize {{ data_provider.provider_name }}
+            {% if data_provider_user %}
+                <h3>Endpoints</h3>
+                {% for endpoint in endpoints %}
+                    <div>
+                        <a href="{{ endpoint.get_internal_view_url }}">
+                            {{ endpoint.endpoint_name }}
                         </a>
-                    </h2>
-                </div>
-                <a href="{{ data_provider.get_webvowl_url }}">
-                    View Schema {{ dataprovider.provider_name }}
-                </a>
-                <div>
-                    <h3>Endpoints</h3>
-                    {% for endpoint in endpoints %}
-                        <div>
-                            <a href="{{ endpoint.get_internal_view_url }}">
-                                {{ endpoint.endpoint_name }}
-                            </a>
-                        </div>
-                    {% endfor %}
-                </div>
-            </th>
-        </tr>
-    </table>
-
-
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </section>
 {% endblock %}
