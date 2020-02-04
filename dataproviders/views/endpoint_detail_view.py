@@ -1,5 +1,6 @@
 import logging
 
+from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.shortcuts import render
 
@@ -9,6 +10,7 @@ from dataproviders.services.fetch_data_from_provider import fetch_data_from_endp
 logger = logging.getLogger(__name__)
 
 
+@login_required
 def endpoint_detail_view(request, provider_name, endpoint_name):
     data_provider = DataProvider.objects.get(provider_name=provider_name)
     endpoint = data_provider.endpoints.get(endpoint_name=endpoint_name)

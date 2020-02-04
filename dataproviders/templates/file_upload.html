@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Upload file to {{ provider_name }}</h2>
+    <p>
+        The file uploaded can be either, a zip file containing folders with .csv or .json files.
+    </p>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="button primary" type="submit">Upload</button>
+    </form>
+
+    <p><a href="{% url 'home' %}">Return to home</a></p>
+{% endblock %}

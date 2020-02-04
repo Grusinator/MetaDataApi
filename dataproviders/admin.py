@@ -4,12 +4,13 @@ from django.contrib import admin
 from MetaDataApi.utils.django_model_utils.base_model_admin import BaseModelAdmin
 from dataproviders import tasks
 from dataproviders.models import DataProvider, Endpoint, DataDump, OauthConfig, HttpConfig, \
-    DataProviderUser
+    DataProviderUser, FileUpload
 from dataproviders.services import oauth
 
 models = (
     OauthConfig,
     HttpConfig,
+    FileUpload,
 )
 
 [admin.site.register(model) for model in models]
