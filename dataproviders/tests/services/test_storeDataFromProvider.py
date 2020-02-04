@@ -7,10 +7,10 @@ from MetaDataApi.utils import JsonUtils
 from dataproviders.models import DataFetch
 
 
-class TestStoreDataFromProviderService(TransactionTestCase):
+class TestStoreDataFromProvider(TransactionTestCase):
     @classmethod
     def setUpClass(cls):
-        super(TestStoreDataFromProviderService, cls).setUpClass()
+        super(TestStoreDataFromProvider, cls).setUpClass()
         django.setup()
 
     @unittest.skip(

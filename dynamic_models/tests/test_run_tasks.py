@@ -7,7 +7,8 @@ from django.contrib.auth.models import User
 from django.test import TransactionTestCase
 from json2model.services.dynamic_model.dynamic_model_utils import get_dynamic_model
 
-from MetaDataApi.utils import DjangoModelUtils, JsonUtils
+from MetaDataApi.utils import JsonUtils
+from MetaDataApi.utils.django_model_utils import django_file_utils
 from dataproviders.models import DataFetch, DataProviderUser, DataProvider, Endpoint
 from dataproviders.services import InitializeDataProviders
 from dataproviders.tests.mock_objects.mock_data_dump import data_dump_json_strava_activity
@@ -32,7 +33,7 @@ class TestRunTasks(TransactionTestCase):
         endpoint = Endpoint.objects.get(data_provider=dp, endpoint_name="activity")
         data = data_dump_json_strava_activity()
         data_str = JsonUtils.dumps(data)
-        file = DjangoModelUtils.convert_str_to_file(data_str, filetype=DjangoModelUtils.FileType.JSON)
+        file = django_file_utils.convert_str_to_file(data_str, filetype=django_file_utils.FileType.JSON)
         data_dump = DataFetch.objects.create(endpoint=endpoint, file=file, user=user)
         build_models_from_data_dump(data_dump.pk)
         model = get_dynamic_model("activity")

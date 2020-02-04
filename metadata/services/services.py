@@ -9,7 +9,6 @@ from graphql import GraphQLError
 
 from MetaDataApi.utils import JsonUtils
 from MetaDataApi.utils.common_utils import StringUtils
-from MetaDataApi.utils.django_model_utils import DjangoModelUtils
 from dataproviders.models import DataFetch, DataProvider
 from dataproviders.services import fetch_data_from_provider
 from metadata.models import *
@@ -143,7 +142,7 @@ def LoadSchemaAndDataFromDataDump(data_dump_pk, user_pk):
     identify = JsonAnalyser()
     data_dump = DataFetch(data_dump_pk)
     parrent_label = data_dump.endpoint.endpoint_name
-    data_as_str = DjangoModelUtils.convert_file_to_str(data_dump.file.file)
+    data_as_str = django_file_utils.convert_file_to_str(data_dump.file.file)
     data_as_json = JsonUtils.validate(data_as_str)
     schema = data_dump.endpoint.data_provider.schema
     objects = identify.identify_from_json_data(data_as_json, schema, user, parrent_label)
