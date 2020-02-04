@@ -38,7 +38,10 @@ def is_debugging():
 DEBUG = DEBUG or (ENV != Env.PROD) or is_debugging()
 DEBUG_PROPAGATE_EXCEPTIONS = True
 
-ALLOWED_HOSTS = ["grusinator.com", "localhost", "127.0.0.1"]
+ALLOWED_HOSTS = ["metadataapi.grusinator.com"]
+
+if ENV != Env.PROD:
+    ALLOWED_HOSTS += ("localhost", "127.0.0.1")
 
 # Application definition
 
