@@ -8,7 +8,7 @@ from django.test import TransactionTestCase
 from json2model.services.dynamic_model.dynamic_model_utils import get_dynamic_model
 
 from MetaDataApi.utils import DjangoModelUtils, JsonUtils
-from dataproviders.models import DataDump, DataProviderUser, DataProvider, Endpoint
+from dataproviders.models import DataFetch, DataProviderUser, DataProvider, Endpoint
 from dataproviders.services import InitializeDataProviders
 from dataproviders.tests.mock_objects.mock_data_dump import data_dump_json_strava_activity
 from dynamic_models.tasks import build_models_from_data_dump
@@ -33,7 +33,7 @@ class TestRunTasks(TransactionTestCase):
         data = data_dump_json_strava_activity()
         data_str = JsonUtils.dumps(data)
         file = DjangoModelUtils.convert_str_to_file(data_str, filetype=DjangoModelUtils.FileType.JSON)
-        data_dump = DataDump.objects.create(endpoint=endpoint, file=file, user=user)
+        data_dump = DataFetch.objects.create(endpoint=endpoint, file=file, user=user)
         build_models_from_data_dump(data_dump.pk)
         model = get_dynamic_model("activity")
         self.assertIsNotNone(model)

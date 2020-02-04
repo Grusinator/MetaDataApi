@@ -4,7 +4,7 @@ import django
 from django.test import TransactionTestCase
 
 from MetaDataApi.utils import JsonUtils
-from dataproviders.models import DataDump
+from dataproviders.models import DataFetch
 
 
 class TestStoreDataFromProviderService(TransactionTestCase):
@@ -35,7 +35,7 @@ class TestStoreDataFromProviderService(TransactionTestCase):
 
         data = JsonUtils.validate(data)
 
-        data_dump = DataDump.objects.get()
+        data_dump = DataFetch.objects.get()
 
         file_as_str = data_dump.read_as_str()
         file = JsonUtils.validate(file_as_str)

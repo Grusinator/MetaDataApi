@@ -10,7 +10,7 @@ from graphql import GraphQLError
 from MetaDataApi.utils import JsonUtils
 from MetaDataApi.utils.common_utils import StringUtils
 from MetaDataApi.utils.django_model_utils import DjangoModelUtils
-from dataproviders.models import DataDump, DataProvider
+from dataproviders.models import DataFetch, DataProvider
 from dataproviders.services import fetch_data_from_provider
 from metadata.models import *
 from .all_services import *
@@ -141,7 +141,7 @@ def IdentifyDataFromProviderService(provider_name, endpoint, user_pk):
 def LoadSchemaAndDataFromDataDump(data_dump_pk, user_pk):
     user = User.objects.get(pk=user_pk)
     identify = JsonAnalyser()
-    data_dump = DataDump(data_dump_pk)
+    data_dump = DataFetch(data_dump_pk)
     parrent_label = data_dump.endpoint.endpoint_name
     data_as_str = DjangoModelUtils.convert_file_to_str(data_dump.file.file)
     data_as_json = JsonUtils.validate(data_as_str)
@@ -149,7 +149,7 @@ def LoadSchemaAndDataFromDataDump(data_dump_pk, user_pk):
     objects = identify.identify_from_json_data(data_as_json, schema, user, parrent_label)
     service = RdfSchemaService()
     service.export_schema_from_db(schema)
-    DataDump(data_dump_pk).loaded = True
+    DataFetch(data_dump_pk).loaded = True
     return objects
 
 

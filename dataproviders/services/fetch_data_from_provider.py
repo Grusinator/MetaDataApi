@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import MultipleObjectsReturned
 
 from MetaDataApi.utils import JsonUtils, DjangoModelUtils
-from dataproviders.models import DataProvider, DataDump, Endpoint, HttpConfig
+from dataproviders.models import DataProvider, DataFetch, Endpoint, HttpConfig
 from dataproviders.models.ApiTypes import ApiTypes
 from dataproviders.services.url_format_helper import UrlFormatHelper
 
@@ -53,7 +53,7 @@ def _request_from_endpoint(url, body, header):
 
 def _save_data_to_file(endpoint: Endpoint, user: User, data: str):
     file = DjangoModelUtils.convert_str_to_file(data, filetype=DjangoModelUtils.FileType.JSON)
-    return DataDump.objects.create(endpoint=endpoint, file=file, user=user)
+    return DataFetch.objects.create(endpoint=endpoint, file=file, user=user)
 
 
 def _build_header(endpoint: Endpoint, access_token: str):
