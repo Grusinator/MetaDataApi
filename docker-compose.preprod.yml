@@ -19,7 +19,6 @@ services:
       - .:/code
     environment:
       - ENV=PROD
-      - DEBUG=1
     ports:
       - "8000:8000"
     depends_on:

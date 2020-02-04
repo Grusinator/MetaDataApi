@@ -24,11 +24,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-try:
-    SECRET_KEY = os.environ['SECRET_KEY']
-except:
-    SECRET_KEY = 'ymcvw8ej))e=9jo89315q_r$imri(u0-ae!utev&ck4rs6cz+d'
 
+SECRET_KEY = os.environ.get('SECRET_KEY', 'ymcvw8ej))e=9jo89315q_r$imri(u0-ae!utev&ck4rs6cz+d')
 TESTING = sys.argv[1:2] == ['test']
 ENV = Env[os.environ.get('ENV', default=Env.LOCAL.value)]
 DOCKER = bool(os.environ.get('DOCKER', default=False))
@@ -42,7 +39,7 @@ def is_debugging():
 
 DEBUG = DEBUG or (ENV != Env.PROD) or is_debugging()
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["grusinator.com", "localhost"]
 
 # Application definition
 
@@ -189,12 +186,10 @@ ENV_PATH = os.path.abspath(os.path.dirname(__file__))
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 
-
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'app/static/'),
 ]
-print(STATICFILES_DIRS)
-# STATIC_ROOT = os.path.join(ENV_PATH, "app/static/")
+STATIC_ROOT = os.path.join(ENV_PATH, "app/static/")
 # MEDIA_ROOT = os.path.join(ENV_PATH, "media/")
 
 from .settings_specific.admin_reorder_settings import ADMIN_REORDER

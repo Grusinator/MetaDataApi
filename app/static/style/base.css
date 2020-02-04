@@ -1,10 +1,3 @@
-h1 {
-    color: #C25100;
-}
-
-body {
-    margin: 0;
-}
 
 iframe {
     display: block;
@@ -15,30 +8,30 @@ iframe {
 }
 
 
-#table {
-    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-    border-collapse: collapse;
-    width: 100%;
-}
+/*#table {*/
+/*    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;*/
+/*    border-collapse: collapse;*/
+/*    width: 100%;*/
+/*}*/
 
-#table td, #table th {
-    border: 1px solid #ddd;
-    padding: 8px;
-}
+/*#table td, #table th {*/
+/*    border: 1px solid #ddd;*/
+/*    padding: 8px;*/
+/*}*/
 
-#table tr:nth-child(even) {
-    background-color: #f2f2f2;
-}
+/*#table tr:nth-child(even) {*/
+/*    background-color: #f2f2f2;*/
+/*}*/
 
-#table tr:hover {
-    background-color: #ddd;
-}
+/*#table tr:hover {*/
+/*    background-color: #ddd;*/
+/*}*/
 
-#table th {
-    padding-top: 12px;
-    padding-bottom: 12px;
-    text-align: left;
-    background-color: #4CAF50;
-    color: white;
-}
+/*#table th {*/
+/*    padding-top: 12px;*/
+/*    padding-bottom: 12px;*/
+/*    text-align: left;*/
+/*    background-color: #4CAF50;*/
+/*    color: white;*/
+/*}*/
 
