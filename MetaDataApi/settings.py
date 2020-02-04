@@ -11,13 +11,11 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import sys
-
-import django_heroku
 
 from .env import Env
 
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Quick-start development settings - unsuitable for production
@@ -38,8 +36,9 @@ def is_debugging():
 
 
 DEBUG = DEBUG or (ENV != Env.PROD) or is_debugging()
+DEBUG_PROPAGATE_EXCEPTIONS = True
 
-ALLOWED_HOSTS = ["grusinator.com", "localhost"]
+ALLOWED_HOSTS = ["grusinator.com", "localhost", "127.0.0.1"]
 
 # Application definition
 
@@ -189,7 +188,7 @@ MEDIA_URL = '/media/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'app/static/'),
 ]
-STATIC_ROOT = os.path.join(ENV_PATH, "app/static/")
+# STATIC_ROOT = os.path.join(ENV_PATH, "app/static/")
 # MEDIA_ROOT = os.path.join(ENV_PATH, "media/")
 
 from .settings_specific.admin_reorder_settings import ADMIN_REORDER
@@ -201,5 +200,5 @@ OAUTH_REDIRECT_URI = ENV.get_url() + "oauth2redirect"
 TEST_SETTINGS_EXCLUDE = ("rdf",)
 
 # Activate Django-Heroku.
-if (ENV != Env.TEST) and not TESTING:
-    django_heroku.settings(locals())
+# if (ENV != Env.TEST) and not TESTING:
+#     django_heroku.settings(locals())
