@@ -16,23 +16,30 @@ class TestTransformFilesToData(TransactionTestCase):
     def test_transform_json_file(self):
         json_file = self.build_json_file()
         result = transform_data_file(json_file)
-        expected = {
-
-        }
+        result = JsonUtils.validate(result)
+        expected = {'quiz': {'sport': {'q1': {'question': 'Which one is correct team name in NBA?',
+                                              'options': ['New York Bulls', 'Los Angeles Kings',
+                                                          'Golden State Warriros', 'Huston Rocket'],
+                                              'answer': 'Huston Rocket'}}, 'maths': {
+            'q1': {'question': '5 + 7 = ?', 'options': ['10', '11', '12', '13'], 'answer': '12'},
+            'q2': {'question': '12 - 8 = ?', 'options': ['1', '2', '3', '4'], 'answer': '4'}}}}
         self.assertEqual(result, expected)
 
     def test_transform_csv_file(self):
-        file = django_file_utils.convert_str_to_file(self.dummy_csv_string(), filetype=FileType.JSON)
+        file = django_file_utils.convert_str_to_file(self.dummy_csv_string(), filetype=FileType.CSV)
         result = transform_data_file(file)
-        expected = {
-
-        }
+        result = JsonUtils.validate(result)
+        expected = [{'Name': '                 "Alex"', '     "Sex"': '       "M"', ' "Age"': '   41',
+                     ' "Height (in)"': '       74', ' "Weight (lbs)" ': '      170 '},
+                    {'Name': '                 "Bert"', '     "Sex"': '       "M"', ' "Age"': '   42',
+                     ' "Height (in)"': '       68', ' "Weight (lbs)" ': '      166'}]
         self.assertEqual(result, expected)
 
     def test_transform_zip_with_csv(self):
         csv_file = self.build_csv_file()
-        file = django_file_utils.create_zip_file([csv_file, ])
+        file = django_file_utils.create_django_zip_file({"csv1.csv": csv_file})
         result = transform_data_file(file)
+        result = JsonUtils.validate(result)
         expected = {
 
         }
@@ -42,18 +49,19 @@ class TestTransformFilesToData(TransactionTestCase):
         return django_file_utils.convert_str_to_file(self.dummy_csv_string(), filetype=FileType.CSV)
 
     def test_transform_zip_with_json(self):
-        json_file = self.build_json_file()
-        file = django_file_utils.create_zip_file([json_file, ])
+        json_file = self.dummy_json_string()
+        file = django_file_utils.create_django_zip_file({"json1.json": json_file})
         result = transform_data_file(file)
+        result = JsonUtils.validate(result)
         expected = {
 
         }
         self.assertEqual(result, expected)
 
     def test_transform_zip_with_json_and_csv(self):
-        csv_file = self.build_csv_file()
-        json_file = self.build_json_file()
-        file = django_file_utils.create_zip_file([json_file, csv_file])
+        csv_file = self.dummy_csv_string()
+        json_file = self.dummy_json_string()
+        file = django_file_utils.create_django_zip_file({"json1.json": json_file, "csv1.csv": csv_file})
         result = transform_data_file(file)
         expected = {
 
