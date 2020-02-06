@@ -35,9 +35,9 @@ class TestStoreDataFromProvider(TransactionTestCase):
 
         data = JsonUtils.validate(data)
 
-        data_dump = DataFetch.objects.get()
+        data_fetch = DataFetch.objects.get()
 
-        file_as_str = data_dump.read_as_str()
+        file_as_str = data_fetch.read_as_str()
         file = JsonUtils.validate(file_as_str)
 
         self.assertEqual(data, file)

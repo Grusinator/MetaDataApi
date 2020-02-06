@@ -3,13 +3,13 @@ from django.contrib import admin
 from MetaDataApi.utils.django_model_utils.base_model_admin import BaseModelAdmin
 from dataproviders import tasks
 from dataproviders.models import DataProvider, Endpoint, DataFetch, OauthConfig, HttpConfig, \
-    DataProviderUser, FileUpload
+    DataProviderUser, DataFileUpload
+from dataproviders.models.DataFile import DataFile
 from dataproviders.services import oauth
 
 models = (
     OauthConfig,
     HttpConfig,
-    FileUpload,
 )
 
 [admin.site.register(model) for model in models]
@@ -40,6 +40,16 @@ admin.site.register(DataProvider, DataProviderAdmin)
 @admin.register(DataFetch)
 class DataFetchAdmin(BaseModelAdmin):
     model = DataFetch
+
+
+@admin.register(DataFile)
+class DataFileAdmin(BaseModelAdmin):
+    model = DataFile
+
+
+@admin.register(DataFileUpload)
+class DataFileUploadAdmin(BaseModelAdmin):
+    model = DataFileUpload
 
 
 @admin.register(DataProviderUser)

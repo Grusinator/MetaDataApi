@@ -1,32 +1,30 @@
-from django.conf import settings
-from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
-from djcelery_model.models import TaskMixin
-from generic_serializer import SerializableModel
+from jsonfield.fields import JSONField
 
-from MetaDataApi.custom_storages import PrivateMediaStorage
+from dataproviders.models.DataFileSourceBase import DataFileSourceBase
 from dataproviders.models.Endpoint import Endpoint
 
-data_dump_save_methods = []
+data_fetch_on_save_methods = []
 
 
-class DataFetch(TaskMixin, SerializableModel, models.Model):
-    date_downloaded = models.DateField(auto_now=True)
-    endpoint = models.ForeignKey(Endpoint, related_name="data_dumps", on_delete=models.CASCADE)
-    file = models.FileField(upload_to=settings.DATAFILE_STORAGE_PATH, storage=PrivateMediaStorage())
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+class DataFetch(DataFileSourceBase):
+    endpoint = models.ForeignKey(Endpoint, related_name="data_fetches", on_delete=models.CASCADE)
+    parameters = JSONField(null=True, blank=True)
+
+    class Meta(DataFileSourceBase.Meta):
+        default_related_name = '%(model_name)s'
 
     def __str__(self):
-        return f"{self.date_downloaded} - {self.endpoint} - {self.file}"
+        return f"{self.date_created} - {self.endpoint} - {self.data_file_from_source}"
 
     def get_internal_view_url(self):
-        return reverse('data_dump_detail', args=[str(self.file).split("/")[1]])
+        return reverse('data_fetch_detail', args=[str(self.data_file_from_source).split("/")[1]])
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         self.execute_on_save_methods()
 
     def execute_on_save_methods(self):
-        for method in data_dump_save_methods:
+        for method in data_fetch_on_save_methods:
             method(self)

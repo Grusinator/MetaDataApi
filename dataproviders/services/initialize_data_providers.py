@@ -18,8 +18,8 @@ class InitializeDataProviders:
     data_providers_filename = "data_providers.json"
     exclude = (
         "dataprovideruser",
-        "data_dump",
-        "data_dumps",
+        "data_fetch",
+        "data_fetches",
         # "endpoints",
         # "oauth_config",
         # "http_config"

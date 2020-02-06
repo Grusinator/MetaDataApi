@@ -57,7 +57,7 @@ class TestInitializeDataProviders(TransactionTestCase):
         InitializeDataProviders.exclude = (
             "dataprovideruser",
             "data_provider_node",
-            "data_dumps"
+            "data_fetches"
         )
 
         InitializeDataProviders.create_data_provider_v2(data)

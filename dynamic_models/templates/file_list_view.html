@@ -2,7 +2,7 @@
 
 {% block content %}
     <h1>object List</h1>
-    {% if data_dumps %}
+    {% if data_fetches %}
         <table id="table" style="width:100%">
             <tr>
                 <td>id</td>
@@ -13,34 +13,34 @@
                 <td>build model</td>
                 <td>load data</td>
             </tr>
-            {% for data_dump in data_dumps %}
+            {% for data_fetch in data_fetches %}
                 <tr>
                     <td>
-                        <p> {{ data_dump.pk }} </p>
+                        <p> {{ data_fetch.pk }} </p>
                     </td>
                     <th>
-                        <p> {{ data_dump.file }} </p>
+                        <p> {{ data_fetch.file }} </p>
                     </th>
                     <td>
-                        <p> {{ data_dump.date_downloaded }} </p>
+                        <p> {{ data_fetch.date_downloaded }} </p>
                     </td>
                     <td>
-                        <form action="{{ data_dump.get_internal_view_url }}" method="get">
+                        <form action="{{ data_fetch.get_internal_view_url }}" method="get">
                             <input type="submit" value="file"/>
                         </form>
                     </td>
                     <td>
-                        <p> {{ data_dump.loaded }} </p>
+                        <p> {{ data_fetch.loaded }} </p>
                     </td>
                     <td>
                         <form method="post"> {% csrf_token %}
-                            <input name="build_model" type="hidden" value="{{ data_dump.pk }}"/>
+                            <input name="build_model" type="hidden" value="{{ data_fetch.pk }}"/>
                             <input type="submit" value="Build models"/>
                         </form>
                     </td>
                     <td>
                         <form method="post"> {% csrf_token %}
-                            <input name="load_data" type="hidden" value="{{ data_dump.pk }}"/>
+                            <input name="load_data" type="hidden" value="{{ data_fetch.pk }}"/>
                             <input type="submit" value="Load data"/>
                         </form>
                     </td>

@@ -1,4 +1,4 @@
-def data_dump_json_strava_activity():
+def data_fetch_json_strava_activity():
     return [
         {
             "resource_state": 2,

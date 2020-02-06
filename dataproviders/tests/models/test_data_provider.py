@@ -43,8 +43,8 @@
 #         meta_labels = set(TestingUtils.get_all_item_labels_from_schema(schema_label))
 #
 #         expected_labels = {
-#             'meta_data_api', 'data_provider', 'endpoint_data_dump', 'api_type',
-#             'data_provider_name', 'data_dump_file', 'date_downloaded', 'file_origin_url',
+#             'meta_data_api', 'data_provider', 'endpoint_data_fetch', 'api_type',
+#             'data_provider_name', 'data_fetch_file', 'date_downloaded', 'file_origin_url',
 #             'endpoint_name', 'endpoint_url', 'has_generated', 'loaded',
 #             'scope', 'provider_has_endpoint', 'endpoint', 'access_token_url',
 #             'authorize_url', "api_endpoint"

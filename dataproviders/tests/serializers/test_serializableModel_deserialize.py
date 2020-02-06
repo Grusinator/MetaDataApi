@@ -121,5 +121,5 @@ class TestSerializableModelDeserialize(TransactionTestCase):
         DataProvider.deserialize(data, filter)
         strava_dp = DataProvider.objects.get(provider_name="strava")
         self.assertEqual(strava_dp.oauth_config.client_id, "28148")
-        self.assertEqual(strava_dp.endpoints.get(endpoint_name="athlete").data_dumps.first().date_downloaded,
+        self.assertEqual(strava_dp.endpoints.get(endpoint_name="athlete").data_fetches.first().date_downloaded,
                          "20102019")

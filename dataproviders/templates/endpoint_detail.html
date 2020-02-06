@@ -27,28 +27,28 @@
             <td>loaded</td>
             <td>load file</td>
         </tr>
-        {% for data_dump in data_dumps %}
+        {% for data_fetch in data_fetches %}
             <tr>
                 <td>
-                    <p> {{ data_dump.pk }} </p>
+                    <p> {{ data_fetch.pk }} </p>
                 </td>
                 <th>
-                    <p> {{ data_dump.file }} </p>
+                    <p> {{ data_fetch.file }} </p>
                 </th>
                 <td>
-                    <p> {{ data_dump.date_downloaded }} </p>
+                    <p> {{ data_fetch.date_downloaded }} </p>
                 </td>
                 <td>
-                    <form action="{{ data_dump.get_internal_view_url }}" method="get">
+                    <form action="{{ data_fetch.get_internal_view_url }}" method="get">
                         <input type="submit" value="file"/>
                     </form>
                 </td>
                 <td>
-                    <p> {{ data_dump.loaded }} </p>
+                    <p> {{ data_fetch.loaded }} </p>
                 </td>
                 <td>
                     <form method="get">
-                        <input name="load_file" type="hidden" value="{{ data_dump.pk }}"/>
+                        <input name="load_file" type="hidden" value="{{ data_fetch.pk }}"/>
                         <input type="submit" value="Load file"/>
                     </form>
                 </td>
