@@ -1,7 +1,7 @@
 from django.db import models
 
-from dataproviders.models import DataProvider
 from dataproviders.models.DataFileSourceBase import DataFileSourceBase
+from dataproviders.models.DataProvider import DataProvider
 
 data_file_upload_on_save_methods = []
 

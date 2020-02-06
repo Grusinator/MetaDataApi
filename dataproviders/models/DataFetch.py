@@ -9,11 +9,12 @@ data_fetch_on_save_methods = []
 
 
 class DataFetch(DataFileSourceBase):
-    endpoint = models.ForeignKey(Endpoint, related_name="data_fetches", on_delete=models.CASCADE)
+    endpoint = models.ForeignKey(Endpoint, on_delete=models.CASCADE)
     parameters = JSONField(null=True, blank=True)
 
     class Meta(DataFileSourceBase.Meta):
         default_related_name = '%(model_name)s'
+        verbose_name_plural = "data_fetches"
 
     def __str__(self):
         return f"{self.date_created} - {self.endpoint} - {self.data_file_from_source}"
