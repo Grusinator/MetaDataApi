@@ -54,7 +54,7 @@ def _request_from_endpoint(url, body, header):
 
 def _save_data_to_file(endpoint: Endpoint, user: User, data: str):
     data_file = django_file_utils.convert_str_to_file(data, filetype=django_file_utils.FileType.JSON)
-    return DataFetch.objects.create(endpoint=endpoint, fetched_data_file=data_file, user=user)
+    return DataFetch.objects.create(endpoint=endpoint, data_file_from_source=data_file, user=user)
 
 
 def _build_header(endpoint: Endpoint, access_token: str):
