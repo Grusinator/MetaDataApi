@@ -18,7 +18,7 @@ def endpoint_detail_view(request, provider_name, endpoint_name):
     handle_store_data(endpoint_name, provider_name, request)
 
     data_fetches = list(endpoint.data_fetches.all())
-    data_fetches.sort(key=lambda x: x.date_downloaded, reverse=True)
+    data_fetches.sort(key=lambda x: x.date_created, reverse=True)
 
     return render(
         request,
