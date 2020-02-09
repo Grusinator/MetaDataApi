@@ -3,7 +3,7 @@ import uuid
 from enum import Enum
 from zipfile import ZipFile
 
-from django.core.files.base import ContentFile
+from django.core.files.base import ContentFile, File
 
 from MetaDataApi.utils.django_model_utils.in_memory_zip_file import InMemoryZip
 
@@ -15,8 +15,17 @@ class FileType(Enum):
     ZIP = ".zip"
 
 
+file_encoding = "utf-8"
+
+
 def convert_file_to_str(file: ContentFile) -> str:
-    return file.read().decode("utf-8")
+    return file.read().decode(file_encoding)
+
+
+def create_django_file_from_local(file_path: str) -> File:
+    local_file = open(file_path, "rb")
+    file_name = get_default_file_name() + get_file_type(file_path).value
+    return File(local_file, name=file_name)
 
 
 def convert_binary_to_file(binary: bin, filename: str = None, filetype: FileType = FileType.TXT) -> ContentFile:
@@ -39,6 +48,7 @@ def create_django_zip_file(files: dict):
 
 def unzip_django_zipfile(content_file: ContentFile):
     data_file_structure = {}
+    content_file = File(content_file)  # The zipfile reader cant handle ContentFiles
     with ZipFile(content_file.file, 'r') as zf:
         for in_zip_file_name in zf.namelist():
             binary = zf.read(in_zip_file_name)

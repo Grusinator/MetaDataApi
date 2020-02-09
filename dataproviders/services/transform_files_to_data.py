@@ -2,7 +2,6 @@ import csv
 import io
 import logging
 import os
-from typing import Union
 
 from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
@@ -13,13 +12,9 @@ from MetaDataApi.utils.django_model_utils.django_file_utils import FileType, get
     convert_file_to_str
 from dataproviders.models import DataFileUpload, DataFetch
 from dataproviders.models.DataFile import DataFile
+from dataproviders.models.DataFileSourceBase import DataFileSourceBase
 
 logger = logging.getLogger(__name__)
-
-
-def infer_object_name_from_path(in_zip_file_name):
-    filedir = os.path.splitext(in_zip_file_name)[0]
-    return filedir
 
 
 def handle_zipfile(file: ContentFile):
@@ -32,6 +27,11 @@ def handle_zipfile(file: ContentFile):
         object_name = infer_object_name_from_path(in_zip_file_name)
         data.update({object_name: file_data})
     return data
+
+
+def infer_object_name_from_path(in_zip_file_name):
+    filedir = os.path.splitext(in_zip_file_name)[0]
+    return filedir
 
 
 def handle_json(file: ContentFile) -> JsonType:
@@ -72,18 +72,18 @@ def build_label_info_for_data_fetch(data_file_source: DataFetch):
     return {"root_label": data_file_source.endpoint.endpoint_name}
 
 
+def create_data_file(data: JsonType, user: User, data_file_source: DataFileSourceBase, label_info=None):
+    data_file = django_file_utils.convert_str_to_file(JsonUtils.dumps(data))
+    label_info = label_info or build_label_info(data_file_source)
+    data_file_object = DataFile.objects.create(data_file=data_file, user=user, label_info=label_info)
+    update_source_object(data_file_object, data_file_source)
+
+
 def build_label_info(data_file_source):
     if isinstance(data_file_source, DataFetch):
         return build_label_info_for_data_fetch(data_file_source)
     elif isinstance(data_file_source, DataFileUpload):
         return build_label_info_for_data_file_upload(data_file_source)
-
-
-def create_data_file(data: JsonType, user: User, data_file_source: Union[DataFileUpload, DataFetch], label_info=None):
-    data_file = django_file_utils.convert_str_to_file(JsonUtils.dumps(data))
-    label_info = label_info or build_label_info(data_file_source)
-    data_file_object = DataFile.objects.create(data_file=data_file, user=user, label_info=label_info)
-    update_source_object(data_file_object, data_file_source)
 
 
 def update_source_object(data_file_object, data_file_source):

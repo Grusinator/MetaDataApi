@@ -9,7 +9,7 @@ from MetaDataApi.tests.utils_for_testing.utils_for_testing import get_method_pat
 from MetaDataApi.utils import JsonUtils
 from MetaDataApi.utils.django_model_utils import django_file_utils
 from MetaDataApi.utils.django_model_utils.django_file_utils import FileType
-from dataproviders.models import DataFetch
+from dataproviders.models import DataFetch, DataFileUpload
 from dataproviders.services.transform_files_to_data import clean_data_from_data_file
 from dynamic_models import tasks
 
@@ -72,6 +72,29 @@ class TestTransformFilesToData(TransactionTestCase):
         with patch(get_method_path(tasks.clean_data_from_source) + ".delay") as mock_method:
             baker.make(DataFetch.__name__, make_m2m=True, has_been_refined=has_been_refined)
         self.assertEqual(mock_method.call_count, int(not has_been_refined))
+
+    def test_transform_on_real_files(self):
+        local_file_path = 'dataproviders/tests/services/test_files/journey-test1.zip'
+        data_file = django_file_utils.create_django_file_from_local(local_file_path)
+        # provider = baker.make(DataProvider.__name__, make_m2m=True)
+        # user = baker.make(User.__name__)
+        # dfu = DataFileUpload(data_provider=provider, user=user)
+        # dfu.data_file_from_source.save("journey-test1.zip", data_file, save=True)
+        dfu = baker.make(DataFileUpload.__name__, make_m2m=True, data_file_from_source=data_file,
+                         has_been_refined=False)
+        dfu.refresh_from_db()
+        self.assertIsNotNone(dfu.refined_data_file)
+        file_data = dfu.refined_data_file.data_file.read()
+        file_content = JsonUtils.loads(file_data.decode())
+        expected = {'text': '<p dir="auto">Rimelig driven.</p>', 'date_modified': 1579414106050,
+                    'date_journal': 1579414071717, 'id': '1579414071512-3fd9d6575f3b10ea',
+                    'preview_text': '<p dir="auto">Rimelig driven.</p>',
+                    'address': 'Lagesminde Allé 1A, 2660 Brøndby Strand, Denmark', 'music_artist': '',
+                    'music_title': '', 'lat': 55.6175898, 'lon': 12.4346179, 'mood': 1, 'label': '', 'folder': '',
+                    'sentiment': 1.25, 'timezone': 'Europe/Copenhagen', 'favourite': False, 'type': 'html',
+                    'weather': {'id': 0, 'degree_c': 1.9, 'description': 'Scattered clouds', 'icon': '02n',
+                                'place': 'Brøndbyvester'}, 'photos': [], 'tags': []}
+        self.assertEqual(next(iter(file_content.values())), expected)
 
     def build_json_file(self):
         return django_file_utils.convert_str_to_file(self.dummy_json_string(), filetype=FileType.JSON)
