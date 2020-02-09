@@ -22,10 +22,6 @@ class DataFetch(DataFileSourceBase):
     def get_internal_view_url(self):
         return reverse('data_fetch_detail', args=[str(self.data_file_from_source).split("/")[1]])
 
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        self.execute_on_save_methods()
-
     def execute_on_save_methods(self):
         for method in data_fetch_on_save_methods:
             method(self)

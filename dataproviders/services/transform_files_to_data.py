@@ -83,6 +83,10 @@ def create_data_file(data: JsonType, user: User, data_file_source: Union[DataFil
     data_file = django_file_utils.convert_str_to_file(JsonUtils.dumps(data))
     label_info = label_info or build_label_info(data_file_source)
     data_file_object = DataFile.objects.create(data_file=data_file, user=user, label_info=label_info)
-    data_file_source.refined_data_file = data_file_object
+    update_source_object(data_file_object, data_file_source)
 
+
+def update_source_object(data_file_object, data_file_source):
+    data_file_source.refined_data_file = data_file_object
+    data_file_source.has_been_refined = True
     data_file_source.save()

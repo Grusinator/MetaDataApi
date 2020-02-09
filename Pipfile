@@ -43,6 +43,8 @@ flower = "*"
 django-coverage-plugin = "*"
 autopep8 = "*"
 rope = "*"
+model-bakery = "*"
+parameterized = "*"
 
 [requires]
 python_version = "3.7"

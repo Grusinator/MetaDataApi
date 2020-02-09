@@ -12,10 +12,6 @@ class DataFileUpload(DataFileSourceBase):
     class Meta(DataFileSourceBase.Meta):
         default_related_name = '%(model_name)s'
 
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        self.execute_on_save_methods()
-
     def execute_on_save_methods(self):
         for method in data_file_upload_on_save_methods:
             method(self)

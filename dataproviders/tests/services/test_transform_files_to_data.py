@@ -1,10 +1,17 @@
+from unittest.mock import patch
+
 import django
 from django.test import TransactionTestCase
+from model_bakery import baker
+from parameterized import parameterized
 
+from MetaDataApi.tests.utils_for_testing.utils_for_testing import get_method_path
 from MetaDataApi.utils import JsonUtils
 from MetaDataApi.utils.django_model_utils import django_file_utils
 from MetaDataApi.utils.django_model_utils.django_file_utils import FileType
+from dataproviders.models import DataFetch
 from dataproviders.services.transform_files_to_data import clean_data_from_data_file
+from dynamic_models import tasks
 
 
 class TestTransformFilesToData(TransactionTestCase):
@@ -56,6 +63,15 @@ class TestTransformFilesToData(TransactionTestCase):
         result = clean_data_from_data_file(file)
         expected = {'json1': self.dummy_json_data_structure(), 'csv1': self.dummy_csv_data_structure()}
         self.assertEqual(result, expected)
+
+    @parameterized.expand([
+        ["true", True],
+        ["false", False],
+    ])
+    def test_execute_on_save_methods_when_has_been_refined(self, name, has_been_refined):
+        with patch(get_method_path(tasks.clean_data_from_source) + ".delay") as mock_method:
+            baker.make(DataFetch.__name__, make_m2m=True, has_been_refined=has_been_refined)
+        self.assertEqual(mock_method.call_count, int(not has_been_refined))
 
     def build_json_file(self):
         return django_file_utils.convert_str_to_file(self.dummy_json_string(), filetype=FileType.JSON)

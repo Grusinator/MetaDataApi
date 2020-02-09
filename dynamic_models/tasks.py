@@ -1,5 +1,4 @@
 import logging
-from typing import Union
 
 import celery
 from celery import chain
@@ -8,6 +7,7 @@ import dynamic_models.services as data_loader_service
 from dataproviders.admin import DataFetchAdmin, DataFileAdmin, DataFileUploadAdmin
 from dataproviders.models.DataFetch import data_fetch_on_save_methods, DataFetch
 from dataproviders.models.DataFile import data_file_on_save_methods
+from dataproviders.models.DataFileSourceBase import DataFileSourceBase
 from dataproviders.models.DataFileUpload import data_file_upload_on_save_methods, DataFileUpload
 from dataproviders.services import transform_files_to_data
 
@@ -49,9 +49,10 @@ def clean_data_from_source(data_file_upload_pk, is_from_file_upload: bool):
     transform_files_to_data.create_data_file(data, data_file_source.user, data_file_source)
 
 
-def run_task_clean_data_from_source_file(data_object: Union[DataFileUpload, DataFetch]):
-    is_from_file_upload = isinstance(data_object, DataFileUpload)
-    clean_data_from_source.delay(data_object.pk, is_from_file_upload)
+def run_task_clean_data_from_source_file(data_object: DataFileSourceBase):
+    if not data_object.has_been_refined:
+        is_from_file_upload = isinstance(data_object, DataFileUpload)
+        clean_data_from_source.delay(data_object.pk, is_from_file_upload)
 
 
 def connect_tasks():

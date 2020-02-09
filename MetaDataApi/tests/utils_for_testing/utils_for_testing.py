@@ -4,6 +4,10 @@ from datetime import datetime, timedelta
 from metadata.models import BaseInstance
 
 
+def get_method_path(method):
+    return f"{method.__module__}.{method.__name__}"
+
+
 class UtilsForTesting:
 
     @staticmethod
