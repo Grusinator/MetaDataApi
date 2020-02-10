@@ -2,7 +2,6 @@ import csv
 import io
 import logging
 import os
-import re
 
 from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
@@ -14,6 +13,7 @@ from MetaDataApi.utils.django_model_utils.django_file_utils import FileType, get
 from dataproviders.models import DataFileUpload, DataFetch
 from dataproviders.models.DataFile import DataFile
 from dataproviders.models.DataFileSourceBase import DataFileSourceBase
+from dataproviders.services.json_key_string_replace import json_key_string_replace
 
 logger = logging.getLogger(__name__)
 
@@ -57,39 +57,8 @@ DATA_FROM_FILETYPE_METHOD_SELECTOR = {
     FileType.ZIP: handle_zipfile,
 }
 
-
-def iterate_list_and_transform(list_structure, transform_method):
-    return [transform_nested_data_structure_keys(elm, transform_method) for elm in list_structure]
-
-
-def iterate_dict_and_transform(dict_structure, transform_method):
-    for key, value in dict_structure.copy().items():
-        new_key = transform_method(key)
-        dict_structure[key] = transform_nested_data_structure_keys(value, transform_method)
-        if new_key != key:
-            dict_structure[new_key] = dict_structure.pop(key)
-    return dict_structure
-
-
-def transform_nested_data_structure_keys(data, transform_method):
-    method_mapper = {dict: iterate_dict_and_transform, list: iterate_list_and_transform}
-    method = method_mapper.get(type(data))
-    return method(data, transform_method) if method else data
-
-
-def clean_invalid_key_chars(data):
-    def transform_method(key):
-        re_pattern = "[^\w\*]"
-        key = re.sub(re_pattern, "X", key)
-        return key
-
-    return transform_nested_data_structure_keys(data, transform_method)
-    # transformer = JsonKeyTransformer(transform_method)
-    # return transformer.transform(data)
-
-
 def clean_data(data):
-    return clean_invalid_key_chars(data)
+    return json_key_string_replace.clean_invalid_key_chars(data)
 
 
 def clean_data_from_data_file(file: ContentFile) -> JsonType:

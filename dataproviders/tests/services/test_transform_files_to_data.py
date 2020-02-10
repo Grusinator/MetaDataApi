@@ -11,7 +11,8 @@ from MetaDataApi.utils.django_model_utils import django_file_utils
 from MetaDataApi.utils.django_model_utils.django_file_utils import FileType
 from dataproviders import tasks
 from dataproviders.models import DataFetch, DataFileUpload
-from dataproviders.services.transform_files_to_data import clean_data_from_data_file, clean_invalid_key_chars
+from dataproviders.services.json_key_string_replace.json_key_string_replace import clean_invalid_key_chars
+from dataproviders.services.transform_files_to_data import clean_data_from_data_file
 
 
 class TestTransformFilesToData(TransactionTestCase):
@@ -36,14 +37,20 @@ class TestTransformFilesToData(TransactionTestCase):
         file = django_file_utils.convert_str_to_file(self.dummy_csv_string(), filetype=FileType.CSV)
         result = clean_data_from_data_file(file)
         result = JsonUtils.validate(result)
-        expected = self.dummy_csv_data_structure()
+        expected = [{'Name': '                 "Alex"', '_XSexX': '       "M"', '_XAgeX': '   41',
+                     '_XHeight_XinXX': '       74', '_XWeight_XlbsXX_': '      170 '},
+                    {'Name': '                 "Bert"', '_XSexX': '       "M"', '_XAgeX': '   42',
+                     '_XHeight_XinXX': '       68', '_XWeight_XlbsXX_': '      166'}]
         self.assertEqual(result, expected)
 
     def test_transform_zip_with_csv(self):
         csv_file = self.dummy_csv_string()
         file = django_file_utils.create_django_zip_file({"csv1.csv": csv_file})
         result = clean_data_from_data_file(file)
-        expected = {'csv1': self.dummy_csv_data_structure()}
+        expected = {'csv1': [{'Name': '                 "Alex"', '_XSexX': '       "M"', '_XAgeX': '   41',
+                              '_XHeight_XinXX': '       74', '_XWeight_XlbsXX_': '      170 '},
+                             {'Name': '                 "Bert"', '_XSexX': '       "M"', '_XAgeX': '   42',
+                              '_XHeight_XinXX': '       68', '_XWeight_XlbsXX_': '      166'}]}
         self.assertEqual(result, expected)
 
     def build_csv_file(self):
@@ -61,7 +68,16 @@ class TestTransformFilesToData(TransactionTestCase):
         json_file = self.dummy_json_string()
         file = django_file_utils.create_django_zip_file({"json1.json": json_file, "csv1.csv": csv_file})
         result = clean_data_from_data_file(file)
-        expected = {'json1': self.dummy_json_data_structure(), 'csv1': self.dummy_csv_data_structure()}
+        expected = {'json1': {'quiz': {'sport': {'q1': {'question': 'Which one is correct team name in NBA?',
+                                                        'options': ['New York Bulls', 'Los Angeles Kings',
+                                                                    'Golden State Warriros', 'Huston Rocket'],
+                                                        'answer': 'Huston Rocket'}}, 'maths': {
+            'q1': {'question': '5 + 7 = ?', 'options': ['10', '11', '12', '13'], 'answer': '12'},
+            'q2': {'question': '12 - 8 = ?', 'options': ['1', '2', '3', '4'], 'answer': '4'}}}}, 'csv1': [
+            {'Name': '                 "Alex"', '_XSexX': '       "M"', '_XAgeX': '   41',
+             '_XHeight_XinXX': '       74', '_XWeight_XlbsXX_': '      170 '},
+            {'Name': '                 "Bert"', '_XSexX': '       "M"', '_XAgeX': '   42',
+             '_XHeight_XinXX': '       68', '_XWeight_XlbsXX_': '      166'}]}
         self.assertEqual(result, expected)
 
     @parameterized.expand([
