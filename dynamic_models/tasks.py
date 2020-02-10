@@ -4,12 +4,7 @@ import celery
 from celery import chain
 
 import dynamic_models.services as data_loader_service
-from dataproviders.admin import DataFetchAdmin, DataFileAdmin, DataFileUploadAdmin
-from dataproviders.models.DataFetch import data_fetch_on_save_methods, DataFetch
-from dataproviders.models.DataFile import data_file_on_save_methods
-from dataproviders.models.DataFileSourceBase import DataFileSourceBase
-from dataproviders.models.DataFileUpload import data_file_upload_on_save_methods, DataFileUpload
-from dataproviders.services import transform_files_to_data
+from dataproviders.models.DataFetch import DataFetch
 
 logger = logging.getLogger(__name__)
 
@@ -41,26 +36,4 @@ def run_task_build_models_and_load_data_chained(data_fetch: DataFetch):
     return chain(build_signature, load_signature).apply_async()
 
 
-@celery.shared_task
-def clean_data_from_source(data_file_upload_pk, is_from_file_upload: bool):
-    DataObjectClass = DataFileUpload if is_from_file_upload else DataFetch
-    data_file_source = DataObjectClass.objects.get(pk=data_file_upload_pk)
-    data = transform_files_to_data.clean_data_from_data_file(data_file_source.data_file_from_source.file)
-    transform_files_to_data.create_data_file(data, data_file_source.user, data_file_source)
 
-
-def run_task_clean_data_from_source_file(data_object: DataFileSourceBase):
-    if not data_object.has_been_refined:
-        is_from_file_upload = isinstance(data_object, DataFileUpload)
-        clean_data_from_source.delay(data_object.pk, is_from_file_upload)
-
-
-def connect_tasks():
-    data_file_on_save_methods.append(run_task_build_models_and_load_data_chained)
-    DataFileAdmin.add_action_from_single_arg_method(run_task_build_models_and_load_data_chained)
-
-    data_file_upload_on_save_methods.append(run_task_clean_data_from_source_file)
-    DataFileUploadAdmin.add_action_from_single_arg_method(run_task_clean_data_from_source_file)
-
-    data_fetch_on_save_methods.append(run_task_clean_data_from_source_file)
-    DataFetchAdmin.add_action_from_single_arg_method(run_task_clean_data_from_source_file)

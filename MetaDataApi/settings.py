@@ -24,7 +24,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 
 SECRET_KEY = os.environ.get('SECRET_KEY', 'ymcvw8ej))e=9jo89315q_r$imri(u0-ae!utev&ck4rs6cz+d')
-TESTING = sys.argv[1:2] == ['test']
+TESTING = sys.argv[1:2] == ['test'] or True
 ENV = Env[os.environ.get('ENV', default=Env.LOCAL.value)]
 DOCKER = bool(os.environ.get('DOCKER', default=False))
 DEBUG = bool(os.environ.get('DEBUG', False))
@@ -36,7 +36,7 @@ def is_debugging():
 
 
 DEBUG = DEBUG or (ENV != Env.PROD) or is_debugging()
-DEBUG_PROPAGATE_EXCEPTIONS = True
+DEBUG_PROPAGATE_EXCEPTIONS = not DEBUG
 
 ALLOWED_HOSTS = ["metadataapi.grusinator.com", "metadataapi.wsh-home.dk"]
 

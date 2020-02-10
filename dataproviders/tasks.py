@@ -5,9 +5,9 @@ import celery
 from django.contrib.auth.models import User
 
 import dataproviders.services.fetch_data_from_provider as fetch_service
-from dataproviders.models import DataProviderUser
-from dataproviders.models.DataProviderUser import data_provider_user_save_methods
-from dataproviders.services import oauth
+from dataproviders.models import DataProviderUser, DataFileUpload, DataFetch
+from dataproviders.models.DataFileSourceBase import DataFileSourceBase
+from dataproviders.services import oauth, transform_files_to_data
 
 
 @celery.shared_task
@@ -46,7 +46,7 @@ def refresh_access_token(provider_name, user_pk):
     oauth.refresh_access_token(data_provider_user)
 
 
-def schedule_refresh_access_token(data_provider_user: DataProviderUser):
+def schedule_task_refresh_access_token(data_provider_user: DataProviderUser):
     if data_provider_user.expires_in:
         signature = refresh_access_token.s(data_provider_user.data_provider.provider_name, data_provider_user.pk)
         buffer = 60
@@ -54,5 +54,15 @@ def schedule_refresh_access_token(data_provider_user: DataProviderUser):
         signature.apply_async(countdown=float(max(data_provider_user.expires_in - buffer, min_time)))
 
 
-def connect_tasks():
-    data_provider_user_save_methods.append(schedule_refresh_access_token)
+@celery.shared_task
+def clean_data_from_source(data_file_upload_pk, is_from_file_upload: bool):
+    DataObjectClass = DataFileUpload if is_from_file_upload else DataFetch
+    data_file_source = DataObjectClass.objects.get(pk=data_file_upload_pk)
+    data = transform_files_to_data.clean_data_from_data_file(data_file_source.data_file_from_source.file)
+    transform_files_to_data.create_data_file(data, data_file_source.user, data_file_source)
+
+
+def schedule_task_clean_data_from_source_file(data_object: DataFileSourceBase):
+    if not data_object.has_been_refined:
+        is_from_file_upload = isinstance(data_object, DataFileUpload)
+        clean_data_from_source.delay(data_object.pk, is_from_file_upload)
