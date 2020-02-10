@@ -99,11 +99,13 @@ class TestTransformFilesToData(TransactionTestCase):
     def test_clean_invalid_key_chars(self):
         data = self.dummy_json_data_structure()
         data["quiz$$"] = data.pop("quiz")
+        data["quiz$$"]["sport"]["q1%%"] = data["quiz$$"]["sport"].pop("q1")
+        data["quiz$$"]["sport"]["q1%%"]["questio@@n"] = data["quiz$$"]["sport"]["q1%%"].pop("question")
         res = clean_invalid_key_chars(data)
-        expected = {'quizXX': {'sport': {'q1': {'question': 'Which one is correct team name in NBA?',
-                                                'options': ['New York Bulls', 'Los Angeles Kings',
-                                                            'Golden State Warriros', 'Huston Rocket'],
-                                                'answer': 'Huston Rocket'}}, 'maths': {
+        expected = {'quizXX': {'sport': {'q1XX': {'questioXXn': 'Which one is correct team name in NBA?',
+                                                  'options': ['New York Bulls', 'Los Angeles Kings',
+                                                              'Golden State Warriros', 'Huston Rocket'],
+                                                  'answer': 'Huston Rocket'}}, 'maths': {
             'q1': {'question': '5 + 7 = ?', 'options': ['10', '11', '12', '13'], 'answer': '12'},
             'q2': {'question': '12 - 8 = ?', 'options': ['1', '2', '3', '4'], 'answer': '4'}}}}
         self.assertEqual(res, expected)
