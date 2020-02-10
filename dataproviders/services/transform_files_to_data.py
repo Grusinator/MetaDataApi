@@ -78,6 +78,7 @@ def clean_invalid_key_chars(data):
 
 
 def clean_data(data):
+    return data
     return clean_invalid_key_chars(data)
 
 

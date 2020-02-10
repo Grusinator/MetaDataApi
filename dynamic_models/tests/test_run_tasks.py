@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from django.test import TransactionTestCase
 from json2model.services.dynamic_model.dynamic_model_utils import get_dynamic_model
 from model_bakery import baker
+from mutant.models import ModelDefinition
 
 from MetaDataApi.tests.utils_for_testing.utils_for_testing import get_method_path
 from MetaDataApi.utils import JsonUtils
@@ -15,7 +16,7 @@ from MetaDataApi.utils.django_model_utils import django_file_utils
 from dataproviders import tasks
 from dataproviders.models import DataFetch, Endpoint, DataFileUpload
 from dataproviders.models.DataFile import DataFile
-from dataproviders.services import InitializeDataProviders, transform_files_to_data
+from dataproviders.services import transform_files_to_data
 from dataproviders.tests.mock_objects.mock_data_fetch import data_fetch_json_strava_activity
 from dynamic_models import tasks as dynamic_model_tasks
 
@@ -28,7 +29,10 @@ class TestRunTasks(TransactionTestCase):
     def setUpClass(cls):
         super().setUpClass()
         django.setup()
-        InitializeDataProviders.load()
+
+    def tearDown(self) -> None:
+        super().tearDown()
+        ModelDefinition.objects.all().delete()
 
     @unittest.skipIf(set(settings.TEST_SETTINGS_EXCLUDE) & TAGS, f"skipping: {settings.TEST_SETTINGS_EXCLUDE}")
     def test_clean_data_from_data_fetch(self):
