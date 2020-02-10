@@ -9,9 +9,9 @@ from MetaDataApi.tests.utils_for_testing.utils_for_testing import get_method_pat
 from MetaDataApi.utils import JsonUtils
 from MetaDataApi.utils.django_model_utils import django_file_utils
 from MetaDataApi.utils.django_model_utils.django_file_utils import FileType
+from dataproviders import tasks
 from dataproviders.models import DataFetch, DataFileUpload
-from dataproviders.services.transform_files_to_data import clean_data_from_data_file
-from dynamic_models import tasks
+from dataproviders.services.transform_files_to_data import clean_data_from_data_file, clean_invalid_key_chars
 
 
 class TestTransformFilesToData(TransactionTestCase):
@@ -95,6 +95,18 @@ class TestTransformFilesToData(TransactionTestCase):
                     'weather': {'id': 0, 'degree_c': 1.9, 'description': 'Scattered clouds', 'icon': '02n',
                                 'place': 'Brøndbyvester'}, 'photos': [], 'tags': []}
         self.assertEqual(next(iter(file_content.values())), expected)
+
+    def test_clean_invalid_key_chars(self):
+        data = self.dummy_json_data_structure()
+        data["quiz$$"] = data.pop("quiz")
+        res = clean_invalid_key_chars(data)
+        expected = {'quizXX': {'sport': {'q1': {'question': 'Which one is correct team name in NBA?',
+                                                'options': ['New York Bulls', 'Los Angeles Kings',
+                                                            'Golden State Warriros', 'Huston Rocket'],
+                                                'answer': 'Huston Rocket'}}, 'maths': {
+            'q1': {'question': '5 + 7 = ?', 'options': ['10', '11', '12', '13'], 'answer': '12'},
+            'q2': {'question': '12 - 8 = ?', 'options': ['1', '2', '3', '4'], 'answer': '4'}}}}
+        self.assertEqual(res, expected)
 
     def build_json_file(self):
         return django_file_utils.convert_str_to_file(self.dummy_json_string(), filetype=FileType.JSON)

@@ -1,17 +1,19 @@
 # Create your tests here.
 import unittest
-from unittest.mock import patch, Mock
+from unittest.mock import patch
 
 import django
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.test import TransactionTestCase
 from json2model.services.dynamic_model.dynamic_model_utils import get_dynamic_model
+from model_bakery import baker
 
+from MetaDataApi.tests.utils_for_testing.utils_for_testing import get_method_path
 from MetaDataApi.utils import JsonUtils
 from MetaDataApi.utils.django_model_utils import django_file_utils
 from dataproviders import tasks
-from dataproviders.models import DataFetch, DataProviderUser, DataProvider, Endpoint, DataFileUpload
+from dataproviders.models import DataFetch, Endpoint, DataFileUpload
 from dataproviders.models.DataFile import DataFile
 from dataproviders.services import InitializeDataProviders, transform_files_to_data
 from dataproviders.tests.mock_objects.mock_data_fetch import data_fetch_json_strava_activity
@@ -28,52 +30,58 @@ class TestRunTasks(TransactionTestCase):
         django.setup()
         InitializeDataProviders.load()
 
-    @patch("dataproviders.models.DataFetch.execute_on_save_methods", Mock())
     @unittest.skipIf(set(settings.TEST_SETTINGS_EXCLUDE) & TAGS, f"skipping: {settings.TEST_SETTINGS_EXCLUDE}")
     def test_clean_data_from_data_fetch(self):
-        data_file, user, data_provider, endpoint, data = self.build_test_data()
-        data_fetch = DataFetch.objects.create(endpoint=endpoint, data_file_from_source=data_file, user=user)
-        self.assertIsNone(DataFile.objects.first())
-        tasks.clean_data_from_source(data_fetch.pk, is_from_file_upload=False)
-        self.assertIsNotNone(DataFile.objects.first())
+        with patch(get_method_path(DataFetch.execute_on_save_methods)) as mock_method:
+            data, data_fetch, user = self.create_data_fetch_objects()
+            self.assertIsNone(DataFile.objects.first())
+            tasks.clean_data_from_source(data_fetch.pk, is_from_file_upload=False)
+            self.assertIsNotNone(DataFile.objects.first())
 
-    @patch("dataproviders.models.DataFileUpload.execute_on_save_methods", Mock())
     @unittest.skipIf(set(settings.TEST_SETTINGS_EXCLUDE) & TAGS, f"skipping: {settings.TEST_SETTINGS_EXCLUDE}")
     def test_clean_data_from_data_file_upload(self):
-        data_file, user, data_provider, endpoint, data = self.build_test_data()
-        data_file_download = DataFileUpload.objects.create(data_provider=data_provider, data_file_from_source=data_file,
-                                                           user=user)
-        self.assertIsNone(DataFile.objects.first())
-        tasks.clean_data_from_source(data_file_download.pk, is_from_file_upload=True)
-        self.assertIsNotNone(DataFile.objects.first())
+        with patch(get_method_path(DataFileUpload.execute_on_save_methods)) as mock_method:
+            data, data_file_upload, user = self.create_data_file_upload_objects()
+            self.assertIsNone(DataFile.objects.first())
+            tasks.clean_data_from_source(data_file_upload.pk, is_from_file_upload=True)
+            self.assertIsNotNone(DataFile.objects.first())
 
-    @patch("dataproviders.models.DataFetch.execute_on_save_methods", Mock())
     @unittest.skipIf(set(settings.TEST_SETTINGS_EXCLUDE) & TAGS, f"skipping: {settings.TEST_SETTINGS_EXCLUDE}")
     def test_build_data_from_data_fetch(self):
-        data_file, user, data_provider, endpoint, data = self.build_test_data()
-        data_fetch = DataFetch.objects.create(endpoint=endpoint, data_file_from_source=data_file, user=user)
-        transform_files_to_data.create_data_file(data, user, data_fetch)
-        dynamic_model_tasks.build_models_from_data_file(data_fetch.pk)
-        model = get_dynamic_model("activity")
-        self.assertIsNotNone(model)
+        with patch(get_method_path(DataFetch.execute_on_save_methods)) as mock_method:
+            data, data_fetch, user = self.create_data_fetch_objects()
+            transform_files_to_data.create_data_file(data, user, data_fetch)
+            dynamic_model_tasks.build_models_from_data_files(pk=data_fetch.refined_data_file.pk)
+            model = get_dynamic_model("activity")
+            self.assertIsNotNone(model)
 
-    @patch("dataproviders.models.DataFileUpload.execute_on_save_methods", Mock())
     @unittest.skipIf(set(settings.TEST_SETTINGS_EXCLUDE) & TAGS, f"skipping: {settings.TEST_SETTINGS_EXCLUDE}")
     def test_build_data_from_data_file_upload(self):
-        data_file, user, data_provider, endpoint, data = self.build_test_data()
-        data_file_upload = DataFileUpload.objects.create(data_provider=data_provider, data_file_from_source=data_file,
-                                                         user=user)
-        transform_files_to_data.create_data_file(data, user, data_file_upload, label_info={"root_label": "activity"})
-        dynamic_model_tasks.build_models_from_data_file(data_file_upload.pk)
-        model = get_dynamic_model("activity")
-        self.assertIsNotNone(model)
+        with patch(get_method_path(DataFileUpload.execute_on_save_methods)) as mock_method:
+            data, data_file_upload, user = self.create_data_file_upload_objects()
+            transform_files_to_data.create_data_file(data, user, data_file_upload,
+                                                     label_info={"root_label": "activity"})
+            dynamic_model_tasks.build_models_from_data_files(pk=data_file_upload.refined_data_file.pk)
+            model = get_dynamic_model("activity")
+            self.assertIsNotNone(model)
 
-    def build_test_data(self):
-        user = User.objects.create(username="test1")
-        data_provider = DataProvider.objects.get(provider_name="strava")
-        DataProviderUser.objects.create(data_provider=data_provider, user=user)
-        endpoint = Endpoint.objects.get(data_provider=data_provider, endpoint_name="activity")
+    def create_data_fetch_objects(self):
+        user = baker.make(User.__name__)
+        data_file = self.build_test_data_file()
+        data = data_fetch_json_strava_activity()
+        endpoint = baker.make(Endpoint.__name__, endpoint_name="activity")
+        data_fetch = baker.make(DataFetch.__name__, make_m2m=True, data_file_from_source=data_file,
+                                endpoint=endpoint, )
+        return data, data_fetch, user
+
+    def create_data_file_upload_objects(self):
+        user = baker.make(User.__name__)
+        data_file = self.build_test_data_file()
+        data_file_upload = baker.make(DataFileUpload.__name__, make_m2m=True, data_file_from_source=data_file)
+        data = data_fetch_json_strava_activity()
+        return data, data_file_upload, user
+
+    def build_test_data_file(self):
         data = data_fetch_json_strava_activity()
         data_str = JsonUtils.dumps(data)
-        data_file = django_file_utils.convert_str_to_file(data_str, filetype=django_file_utils.FileType.JSON)
-        return data_file, user, data_provider, endpoint, data
+        return django_file_utils.convert_str_to_file(data_str, filetype=django_file_utils.FileType.JSON)

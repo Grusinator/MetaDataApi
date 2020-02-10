@@ -2,6 +2,7 @@ import csv
 import io
 import logging
 import os
+import re
 
 from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
@@ -57,11 +58,35 @@ DATA_FROM_FILETYPE_METHOD_SELECTOR = {
 }
 
 
+def transform_nested_dict_keys(data, transform_method):
+    for key, value in data.copy().items():
+        new_key = transform_method(key)
+        if isinstance(value, dict):
+            data[key] = transform_nested_dict_keys(value, transform_method)
+        if new_key != key:
+            data[new_key] = data.pop(key)
+    return data
+
+
+def clean_invalid_key_chars(data):
+    def transform_method(key):
+        re_pattern = "[^\w\*]"
+        key = re.sub(re_pattern, "X", key)
+        return key
+
+    return transform_nested_dict_keys(data, transform_method)
+
+
+def clean_data(data):
+    return clean_invalid_key_chars(data)
+
+
 def clean_data_from_data_file(file: ContentFile) -> JsonType:
     filetype = get_file_type(file.name)
     get_data_from_filetype_method = DATA_FROM_FILETYPE_METHOD_SELECTOR.get(filetype)
     data = get_data_from_filetype_method(file)
-    return data
+    cleaned_data = clean_data(data)
+    return cleaned_data
 
 
 def build_label_info_for_data_file_upload(data_file_source: DataFileUpload):
@@ -77,6 +102,7 @@ def create_data_file(data: JsonType, user: User, data_file_source: DataFileSourc
     label_info = label_info or build_label_info(data_file_source)
     data_file_object = DataFile.objects.create(data_file=data_file, user=user, label_info=label_info)
     update_source_object(data_file_object, data_file_source)
+    return data_file_object
 
 
 def build_label_info(data_file_source):
