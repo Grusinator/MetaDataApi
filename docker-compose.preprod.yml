@@ -9,6 +9,8 @@ services:
       - POSTGRES_USER=django
       - POSTGRES_PASSWORD=dev1234
       - POSTGRES_DB=meta_data_api
+    ports:
+      - 5432:5432
   redis:
     image: "redis:alpine"
   web:
@@ -53,21 +55,21 @@ services:
       - FLOWER_PORT=8888
     ports:
       - 8888:8888
-  pgadmin:
-    container_name: metadataapi_pgadmin
-    restart: always
-    image: dpage/pgadmin4
-    ports:
-      - 8000:8080
-    environment:
-      PGADMIN_DEFAULT_EMAIL: grusinator@gmail.com
-      PGADMIN_DEFAULT_PASSWORD: dev1234
-    volumes:
-      - pgadmin_data:/var/lib/pgadmin
+  # pgadmin:
+  #   container_name: metadataapi_pgadmin
+  #   restart: always
+  #   image: dpage/pgadmin4
+  #   ports:
+  #     - 8000:8080
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: grusinator@gmail.com
+  #     PGADMIN_DEFAULT_PASSWORD: dev1234
+  #   volumes:
+  #     - pgadmin_data:/var/lib/pgadmin
 
 volumes:
   postgres_data:
-  pgadmin_data:
+  # pgadmin_data:
 
 
 
