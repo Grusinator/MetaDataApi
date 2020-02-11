@@ -55,15 +55,26 @@ services:
     depends_on:
       - db
       - redis
-  flower:  
+  flower:
     image: mher/flower
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - FLOWER_PORT=8888
-    ports:  
+    ports:
       - 8888:8888
+  pgAdmin:
+    restart: always
+    image: dpage/pgadmin4
+    ports:
+      - 8000:8080
+    environment:
+      PGADMIN_DEFAULT_EMAIL: grusinator@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: dev1234
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
 
 volumes:
   postgres_data:
+  pgadmin_data:
 
 
