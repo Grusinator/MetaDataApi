@@ -37,20 +37,16 @@ class TestTransformFilesToData(TransactionTestCase):
         file = django_file_utils.convert_str_to_file(self.dummy_csv_string(), filetype=FileType.CSV)
         result = clean_data_from_data_file(file)
         result = JsonUtils.validate(result)
-        expected = [{'Name': '                 "Alex"', '_XSexX': '       "M"', '_XAgeX': '   41',
-                     '_XHeight_XinXX': '       74', '_XWeight_XlbsXX_': '      170 '},
-                    {'Name': '                 "Bert"', '_XSexX': '       "M"', '_XAgeX': '   42',
-                     '_XHeight_XinXX': '       68', '_XWeight_XlbsXX_': '      166'}]
+        expected = [{'Name': '"Alex"', 'Sex': '"M"', 'Age': '41', 'Height_in': '74', 'Weight_lbs': '170'},
+                    {'Name': '"Bert"', 'Sex': '"M"', 'Age': '42', 'Height_in': '68', 'Weight_lbs': '166'}]
         self.assertEqual(result, expected)
 
     def test_transform_zip_with_csv(self):
         csv_file = self.dummy_csv_string()
         file = django_file_utils.create_django_zip_file({"csv1.csv": csv_file})
         result = clean_data_from_data_file(file)
-        expected = {'csv1': [{'Name': '                 "Alex"', '_XSexX': '       "M"', '_XAgeX': '   41',
-                              '_XHeight_XinXX': '       74', '_XWeight_XlbsXX_': '      170 '},
-                             {'Name': '                 "Bert"', '_XSexX': '       "M"', '_XAgeX': '   42',
-                              '_XHeight_XinXX': '       68', '_XWeight_XlbsXX_': '      166'}]}
+        expected = {'csv1': [{'Name': '"Alex"', 'Sex': '"M"', 'Age': '41', 'Height_in': '74', 'Weight_lbs': '170'},
+                             {'Name': '"Bert"', 'Sex': '"M"', 'Age': '42', 'Height_in': '68', 'Weight_lbs': '166'}]}
         self.assertEqual(result, expected)
 
     def build_csv_file(self):
@@ -73,11 +69,9 @@ class TestTransformFilesToData(TransactionTestCase):
                                                                     'Golden State Warriros', 'Huston Rocket'],
                                                         'answer': 'Huston Rocket'}}, 'maths': {
             'q1': {'question': '5 + 7 = ?', 'options': ['10', '11', '12', '13'], 'answer': '12'},
-            'q2': {'question': '12 - 8 = ?', 'options': ['1', '2', '3', '4'], 'answer': '4'}}}}, 'csv1': [
-            {'Name': '                 "Alex"', '_XSexX': '       "M"', '_XAgeX': '   41',
-             '_XHeight_XinXX': '       74', '_XWeight_XlbsXX_': '      170 '},
-            {'Name': '                 "Bert"', '_XSexX': '       "M"', '_XAgeX': '   42',
-             '_XHeight_XinXX': '       68', '_XWeight_XlbsXX_': '      166'}]}
+            'q2': {'question': '12 - 8 = ?', 'options': ['1', '2', '3', '4'], 'answer': '4'}}}},
+                    'csv1': [{'Name': '"Alex"', 'Sex': '"M"', 'Age': '41', 'Height_in': '74', 'Weight_lbs': '170'},
+                             {'Name': '"Bert"', 'Sex': '"M"', 'Age': '42', 'Height_in': '68', 'Weight_lbs': '166'}]}
         self.assertEqual(result, expected)
 
     @parameterized.expand([
@@ -141,10 +135,9 @@ class TestTransformFilesToData(TransactionTestCase):
         data["quiz$$"]["sport"]["q1%%"] = data["quiz$$"]["sport"].pop("q1")
         data["quiz$$"]["sport"]["q1%%"]["questio@@n"] = data["quiz$$"]["sport"]["q1%%"].pop("question")
         res = clean_invalid_key_chars(data)
-        expected = {'quizXX': {'sport': {'q1XX': {'questioXXn': 'Which one is correct team name in NBA?',
-                                                  'options': ['New York Bulls', 'Los Angeles Kings',
-                                                              'Golden State Warriros', 'Huston Rocket'],
-                                                  'answer': 'Huston Rocket'}}, 'maths': {
+        expected = {'quiz': {'sport': {
+            'q1': {'options': ['New York Bulls', 'Los Angeles Kings', 'Golden State Warriros', 'Huston Rocket'],
+                   'answer': 'Huston Rocket', 'question': 'Which one is correct team name in NBA?'}}, 'maths': {
             'q1': {'question': '5 + 7 = ?', 'options': ['10', '11', '12', '13'], 'answer': '12'},
             'q2': {'question': '12 - 8 = ?', 'options': ['1', '2', '3', '4'], 'answer': '4'}}}}
         self.assertEqual(res, expected)

@@ -10,6 +10,7 @@ class REPattern(Enum):
     multiple_underscore = '_+'
     special_characters = "[^\w\*]"
     trailing_underscore = "^_+|_+$"
+    trailing_whitespace = "^ +| +$"
 
     def replace(self, replacement, string: str):
         return re.sub(self.value, replacement, string)
