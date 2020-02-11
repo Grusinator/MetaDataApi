@@ -11,8 +11,8 @@ from MetaDataApi.utils.django_model_utils import django_file_utils
 from MetaDataApi.utils.django_model_utils.django_file_utils import FileType
 from dataproviders import tasks
 from dataproviders.models import DataFetch, DataFileUpload
-from dataproviders.services.json_key_string_replace.json_key_string_replace import clean_invalid_key_chars
 from dataproviders.services.transform_files_to_data import clean_data_from_data_file
+from dataproviders.services.transform_methods.json_key_string_replace import clean_invalid_key_chars
 
 
 class TestTransformFilesToData(TransactionTestCase):
@@ -92,25 +92,48 @@ class TestTransformFilesToData(TransactionTestCase):
     def test_transform_on_real_files(self):
         local_file_path = 'dataproviders/tests/services/test_files/journey-test1.zip'
         data_file = django_file_utils.create_django_file_from_local(local_file_path)
-        # provider = baker.make(DataProvider.__name__, make_m2m=True)
-        # user = baker.make(User.__name__)
-        # dfu = DataFileUpload(data_provider=provider, user=user)
-        # dfu.data_file_from_source.save("journey-test1.zip", data_file, save=True)
         dfu = baker.make(DataFileUpload.__name__, make_m2m=True, data_file_from_source=data_file,
                          has_been_refined=False)
         dfu.refresh_from_db()
         self.assertIsNotNone(dfu.refined_data_file)
         file_data = dfu.refined_data_file.data_file.read()
         file_content = JsonUtils.loads(file_data.decode())
-        expected = {'text': '<p dir="auto">Rimelig driven.</p>', 'date_modified': 1579414106050,
-                    'date_journal': 1579414071717, 'id': '1579414071512-3fd9d6575f3b10ea',
-                    'preview_text': '<p dir="auto">Rimelig driven.</p>',
-                    'address': 'Lagesminde Allé 1A, 2660 Brøndby Strand, Denmark', 'music_artist': '',
-                    'music_title': '', 'lat': 55.6175898, 'lon': 12.4346179, 'mood': 1, 'label': '', 'folder': '',
-                    'sentiment': 1.25, 'timezone': 'Europe/Copenhagen', 'favourite': False, 'type': 'html',
-                    'weather': {'id': 0, 'degree_c': 1.9, 'description': 'Scattered clouds', 'icon': '02n',
-                                'place': 'Brøndbyvester'}, 'photos': [], 'tags': []}
-        self.assertEqual(next(iter(file_content.values())), expected)
+        expected = {'journey_test1': {'text': '<p dir="auto">Rimelig driven.</p>', 'date_modified': 1579414106050,
+                                      'date_journal': 1579414071717, 'id': '1579414071512-3fd9d6575f3b10ea',
+                                      'preview_text': '<p dir="auto">Rimelig driven.</p>',
+                                      'address': 'Lagesminde Allé 1A, 2660 Brøndby Strand, Denmark', 'music_artist': '',
+                                      'music_title': '', 'lat': 55.6175898, 'lon': 12.4346179, 'mood': 1, 'label': '',
+                                      'folder': '', 'sentiment': 1.25, 'timezone': 'Europe/Copenhagen',
+                                      'favourite': False, 'type': 'html',
+                                      'weather': {'id': 0, 'degree_c': 1.9, 'description': 'Scattered clouds',
+                                                  'icon': '02n', 'place': 'Brøndbyvester'}, 'photos': [], 'tags': []}}
+        self.assertEqual(file_content, expected)
+
+    def test_transform_on_real_files2(self):
+        local_file_path = 'dataproviders/tests/services/test_files/journey_test2-2files.zip'
+        data_file = django_file_utils.create_django_file_from_local(local_file_path)
+        dfu = baker.make(DataFileUpload.__name__, make_m2m=True, data_file_from_source=data_file,
+                         has_been_refined=False)
+        dfu.refresh_from_db()
+        self.assertIsNotNone(dfu.refined_data_file)
+        file_data = dfu.refined_data_file.data_file.read()
+        file_content = JsonUtils.loads(file_data.decode())
+        expected = {'journey_test2_2files': [
+            {'text': 'første element', 'date_modified': 1579414106050, 'date_journal': 1579414071717,
+             'id': '1579414071512-3fd9d6575f3b10ea', 'preview_text': '<p dir="auto">Rimelig driven.</p>',
+             'address': '2660 Brøndby Strand, Denmark', 'music_artist': '', 'music_title': '', 'lat': 55.6175898,
+             'lon': 12.4346179, 'mood': 1, 'label': '', 'folder': '', 'sentiment': 1.25,
+             'timezone': 'Europe/Copenhagen', 'favourite': False, 'type': 'html',
+             'weather': {'id': 0, 'degree_c': 1.9, 'description': 'Scattered clouds', 'icon': '02n',
+                         'place': 'Brøndbyvester'}, 'photos': [], 'tags': []},
+            {'text': 'andet element', 'date_modified': 1579414106050, 'date_journal': 1579414071717,
+             'id': '1579414071512-3fd9d6575f3b10ea', 'preview_text': '<p dir="auto">Rimelig driven.</p>',
+             'address': '2660 Brøndby Strand, Denmark', 'music_artist': '', 'music_title': '', 'lat': 55.6175898,
+             'lon': 12.4346179, 'mood': 1, 'label': '', 'folder': '', 'sentiment': 1.25,
+             'timezone': 'Europe/Copenhagen', 'favourite': False, 'type': 'html',
+             'weather': {'id': 0, 'degree_c': 1.9, 'description': 'Scattered clouds', 'icon': '02n',
+                         'place': 'Brøndbyvester'}, 'photos': [], 'tags': []}]}
+        self.assertEqual(file_content, expected)
 
     def test_clean_invalid_key_chars(self):
         data = self.dummy_json_data_structure()

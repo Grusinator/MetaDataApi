@@ -1,4 +1,4 @@
-import re
+from dataproviders.services.transform_methods.regex_patterns import REPattern
 
 
 def transform_nested_data_structure_keys(data, transform_method):
@@ -9,10 +9,9 @@ def transform_nested_data_structure_keys(data, transform_method):
 
 def clean_invalid_key_chars(data):
     def transform_method(string):
-        multiple_whitespaces = ' +'
-        string = re.sub(multiple_whitespaces, '_', string)
-        special_characters = "[^\w\*]"
-        string = re.sub(special_characters, "X", string)
+        string = REPattern.multiple_whitespaces.replace('_', string)
+        string = REPattern.special_characters.replace("X", string)
+        string = REPattern.trailing_underscore.remove(string)
         return string
 
     return transform_nested_data_structure_keys(data, transform_method)

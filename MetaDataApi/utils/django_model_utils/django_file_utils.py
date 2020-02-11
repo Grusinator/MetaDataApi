@@ -24,19 +24,18 @@ def convert_file_to_str(file: ContentFile) -> str:
 
 def create_django_file_from_local(file_path: str) -> File:
     local_file = open(file_path, "rb")
-    file_name = get_default_file_name() + get_file_type(file_path).value
+    file_name = get_default_file_name(based_on=file_path)
     return File(local_file, name=file_name)
 
 
-def convert_binary_to_file(binary: bin, filename: str = None, filetype: FileType = FileType.TXT) -> ContentFile:
-    filename = filename or get_default_file_name()
-    filename += filetype.value
+def convert_binary_to_file(binary: bin, filename: str = None, filetype: FileType = None) -> ContentFile:
+    filename = filename or get_default_file_name(based_on=filename, force_ext=filetype)
     file = ContentFile(binary, name=filename)
     return file
 
 
-def convert_str_to_file(text_str: str, filename: str = None, filetype: FileType = FileType.TXT) -> ContentFile:
-    binary = text_str.encode("utf-8")
+def convert_str_to_file(text_str: str, filename: str = None, filetype: FileType = None) -> ContentFile:
+    binary = text_str.encode(file_encoding)
     return convert_binary_to_file(binary, filename, filetype)
 
 
@@ -60,5 +59,19 @@ def get_file_type(filename):
     return FileType(os.path.splitext(filename)[1])
 
 
-def get_default_file_name() -> str:
-    return str(uuid.uuid4())
+def get_filename(path):
+    basename = os.path.basename(path)
+    return os.path.splitext(basename)[0]
+
+
+def get_default_file_name(based_on=None, force_ext: FileType = None) -> str:
+    base_name = str(uuid.uuid4())
+    if based_on:
+        base_name += "-" + get_filename(based_on)
+    if force_ext:
+        base_name += force_ext.value
+    elif based_on:
+        base_name += get_file_type(based_on).value
+    else:
+        base_name += FileType.TXT.value
+    return base_name

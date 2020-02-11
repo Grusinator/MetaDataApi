@@ -1,6 +1,6 @@
 from abc import ABC
 
-from dataproviders.services.json_key_string_replace.i_json_iterator import IJsonIterator
+from dataproviders.services.transform_methods.i_json_iterator import IJsonIterator
 
 
 class JsonKeyTransformer(IJsonIterator, ABC):
