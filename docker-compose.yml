@@ -58,7 +58,7 @@ services:
       - db
       - redis
   flower:
-    container_name: metadataapi_flowers
+    container_name: metadataapi_flower
     image: mher/flower
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
