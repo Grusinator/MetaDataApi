@@ -30,7 +30,7 @@ class JsonUtils:
 
     @staticmethod
     def dumps(json_obj: JsonType) -> str:
-        return json.dumps(json_obj)
+        return json.dumps(json_obj, indent=4)
 
     @staticmethod
     def hash(text: str) -> str:

@@ -4,7 +4,17 @@ from datetime import datetime, timedelta
 from metadata.models import BaseInstance
 
 
+def is_class_method(method):
+    try:
+        return method.__self__.__name__
+    except:
+        pass
+
+
 def get_method_path(method):
+    class_name = is_class_method(method)
+    if class_name:
+        return f"{method.__module__}.{class_name}.{method.__name__}"
     return f"{method.__module__}.{method.__name__}"
 
 
