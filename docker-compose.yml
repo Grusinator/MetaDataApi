@@ -72,11 +72,11 @@ services:
     depends_on:
       - db
     ports:
-      - 80:80
+      - 5050:5050
     environment:
       PGADMIN_DEFAULT_EMAIL: grusinator@gmail.com
       PGADMIN_DEFAULT_PASSWORD: dev1234
-      PGADMIN_LISTEN_PORT: 80
+      PGADMIN_LISTEN_PORT: 5050
     volumes:
       - pgadmin_data:/var/lib/pgadmin
 volumes:
