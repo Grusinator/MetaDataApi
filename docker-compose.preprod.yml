@@ -10,7 +10,7 @@ services:
       - POSTGRES_PASSWORD=dev1234
       - POSTGRES_DB=meta_data_api
     ports:
-      - 5432:5431
+      - 5432:5432
   redis:
     image: "redis:alpine"
   web:
@@ -69,7 +69,7 @@ services:
 
 volumes:
   postgres_data:
-#  pgadmin_data:
+  pgadmin_data:
 
 
 
