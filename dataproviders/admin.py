@@ -1,11 +1,11 @@
 from django.contrib import admin
 
-# Register your models here.
 from MetaDataApi.utils.django_model_utils.base_model_admin import BaseModelAdmin
 from dataproviders import tasks
-from dataproviders.models import DataProvider, Endpoint, DataDump, OauthConfig, HttpConfig, \
-    DataProviderUser
-from dataproviders.services import oauth
+from dataproviders.models import DataProvider, Endpoint, DataFetch, OauthConfig, HttpConfig, \
+    DataProviderUser, DataFileUpload
+from dataproviders.models.DataFile import DataFile
+from dataproviders.services import oauth, InitializeDataProviders
 
 models = (
     OauthConfig,
@@ -21,25 +21,41 @@ class EndpointAdmin(BaseModelAdmin):
     ordering = ['endpoint_name']
     model = Endpoint
 
-    def fetch_datadump_from_endpoint(self, request, queryset):
+    def fetch_data_from_endpoint(self, request, queryset):
         for endpoint in queryset:
             tasks.fetch_data_from_endpoint.delay(endpoint.data_provider.provider_name, endpoint.endpoint_name,
                                                  request.user.pk)
 
-    actions = ["fetch_datadump_from_endpoint"]
+    actions = ["fetch_data_from_endpoint"]
 
 
 class DataProviderAdmin(admin.ModelAdmin):
     # list_display = ['profile', 'provider.provider_name']
     ordering = ['provider_name']
 
+    def save_to_json_file(self, request, queryset):
+        for data_provider in queryset:
+            InitializeDataProviders.update_data_provider_to_json_file(data_provider)
+
+    actions = ["save_to_json_file"]
+
 
 admin.site.register(DataProvider, DataProviderAdmin)
 
 
-@admin.register(DataDump)
-class DataDumpAdmin(BaseModelAdmin):
-    model = DataDump
+@admin.register(DataFetch)
+class DataFetchAdmin(BaseModelAdmin):
+    model = DataFetch
+
+
+@admin.register(DataFile)
+class DataFileAdmin(BaseModelAdmin):
+    model = DataFile
+
+
+@admin.register(DataFileUpload)
+class DataFileUploadAdmin(BaseModelAdmin):
+    model = DataFileUpload
 
 
 @admin.register(DataProviderUser)

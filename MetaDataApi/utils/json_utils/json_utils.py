@@ -3,7 +3,7 @@ import json
 from typing import Union
 
 JsonType = Union[dict, list]
-
+JsonTypeInstance = (dict, list)
 
 class JsonUtils:
     encoding = "utf-8"
@@ -14,8 +14,10 @@ class JsonUtils:
             return cls.validate(f.read())
 
     @classmethod
-    def validate(cls, text: str) -> JsonType:
-        return json.loads(text, encoding=cls.encoding)
+    def validate(cls, data: Union[str, JsonType]) -> JsonType:
+        if isinstance(data, JsonTypeInstance):
+            data = json.dumps(data)
+        return json.loads(data, encoding=cls.encoding)
 
     @classmethod
     def loads(cls, text: str) -> JsonType:
@@ -28,7 +30,7 @@ class JsonUtils:
 
     @staticmethod
     def dumps(json_obj: JsonType) -> str:
-        return json.dumps(json_obj)
+        return json.dumps(json_obj, indent=4)
 
     @staticmethod
     def hash(text: str) -> str:

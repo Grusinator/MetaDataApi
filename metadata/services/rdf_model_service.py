@@ -18,4 +18,4 @@ def CreateRdfsDataProviderService(provider_name, endpoint_name, file):
     provider = DataProvider.exists(provider_name)
     raise NotImplementedError
     # rest_endpoint = RdfsDataProvider._get_endpoint(provider.data_provider_instance, rest_endpoint_name)
-    # RdfsDataProvider.create_data_dump(rest_endpoint, file)
+    # RdfsDataProvider.create_data_fetch(rest_endpoint, file)

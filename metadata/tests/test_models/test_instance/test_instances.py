@@ -4,7 +4,7 @@ import unittest
 import django
 from django.test import TransactionTestCase
 
-from MetaDataApi.tests.utils_for_testing.common_utils_for_testing import UtilsForTesting
+from MetaDataApi.tests.utils_for_testing.utils_for_testing import UtilsForTesting
 from metadata.models import SchemaNode
 from metadata.tests.data import LoadTestData
 

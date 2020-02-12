@@ -11,37 +11,37 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import sys
-from enum import Enum
-
-import django_heroku
 
 from .env import Env
 
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-try:
-    SECRET_KEY = os.environ['SECRET_KEY']
-except:
-    SECRET_KEY = 'ymcvw8ej))e=9jo89315q_r$imri(u0-ae!utev&ck4rs6cz+d'
 
+SECRET_KEY = os.environ.get('SECRET_KEY', 'ymcvw8ej))e=9jo89315q_r$imri(u0-ae!utev&ck4rs6cz+d')
 TESTING = sys.argv[1:2] == ['test']
 ENV = Env[os.environ.get('ENV', default=Env.LOCAL.value)]
 DOCKER = bool(os.environ.get('DOCKER', default=False))
 DEBUG = bool(os.environ.get('DEBUG', False))
 
+
 def is_debugging():
     # gettrace() is none when not debugging
     return (sys.gettrace() is not None)
 
-DEBUG = DEBUG or (ENV != Env.PROD) or is_debugging()
 
-ALLOWED_HOSTS = []
+DEBUG = DEBUG or (ENV != Env.PROD) or is_debugging()
+DEBUG_PROPAGATE_EXCEPTIONS = not DEBUG
+
+ALLOWED_HOSTS = ["metadataapi.grusinator.com", "metadataapi.wsh-home.dk"]
+
+if ENV != Env.PROD:
+    ALLOWED_HOSTS += ("localhost", "127.0.0.1", "0.0.0.0")
 
 # Application definition
 
@@ -136,6 +136,8 @@ CIRCLECI_TEST_DATABASE = {
     }
 }
 
+APPEND_SLASH = True
+
 DEFAULT_DATABASE = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -149,7 +151,7 @@ DEFAULT_DATABASE = {
 
 DATABASES = CIRCLECI_TEST_DATABASE if ENV == Env.TEST else DEFAULT_DATABASE
 
-print(f"starting env with settings DOCKER: {DOCKER}, ENV: {ENV.name}, DEBUG: {DEBUG}")
+print(f"starting env with settings DOCKER: {DOCKER}, ENV: {ENV.name}, DEBUG: {DEBUG}, TESTING: {TESTING}")
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
@@ -161,7 +163,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': f'{dj_pass_val}NumericPasswordValidator', },
 ]
 
-SILENCED_SYSTEM_CHECKS = ["fields.E303"] #, "fields.E002"]
+SILENCED_SYSTEM_CHECKS = ["fields.E303"]  # , "fields.E002"]
 
 GRAPHENE = {
     'SCHEMA': 'MetaDataApi.schema.schema',
@@ -185,6 +187,10 @@ USE_TZ = True
 ENV_PATH = os.path.abspath(os.path.dirname(__file__))
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'app/static/'),
+]
 # STATIC_ROOT = os.path.join(ENV_PATH, "app/static/")
 # MEDIA_ROOT = os.path.join(ENV_PATH, "media/")
 
@@ -197,5 +203,5 @@ OAUTH_REDIRECT_URI = ENV.get_url() + "oauth2redirect"
 TEST_SETTINGS_EXCLUDE = ("rdf",)
 
 # Activate Django-Heroku.
-if (ENV != Env.TEST) and not TESTING:
-    django_heroku.settings(locals())
+# if (ENV != Env.TEST) and not TESTING:
+#     django_heroku.settings(locals())

@@ -24,7 +24,7 @@ class TestSerializableModel(TestCase):
             from django.db.models.fields.related_descriptors import ForwardManyToOneDescriptor
             self.assertIsInstance(sub_serializer.Meta.model.data_provider, ForwardManyToOneDescriptor)
             if name is "endpoints":
-                dump_serializer = self.assert_sub_serializer("data_dumps", sub_serializer)
+                dump_serializer = self.assert_sub_serializer("data_fetches", sub_serializer)
 
     def assert_sub_serializer(self, name, serializer):
         sub_serializer = getattr(serializer, name)
@@ -55,7 +55,7 @@ class TestSerializableModel(TestCase):
         for name in ['endpoints', 'http_config', 'oauth_config']:
             sub_serializer = self.assert_sub_serializer(name, serializer)
             if name is "endpoints":
-                self.assertFalse(hasattr(sub_serializer, "data_dumps"))
+                self.assertFalse(hasattr(sub_serializer, "data_fetches"))
 
     @unittest.skip("move to Serializer project, failing due to known issues")
     def test_build_serializer_depth_2(self):
@@ -63,7 +63,7 @@ class TestSerializableModel(TestCase):
         for name in ['endpoints', 'http_config', 'oauth_config']:
             sub_serializer = self.assert_sub_serializer(name, serializer)
             if name is "endpoints":
-                self.assertTrue(hasattr(sub_serializer, "data_dumps"))
+                self.assertTrue(hasattr(sub_serializer, "data_fetches"))
 
     def build_default_test_filter(self, max_depth=0, exclude_labels=(), start_object_name="data_provider"):
         from generic_serializer import SerializableModelFilter

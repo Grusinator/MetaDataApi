@@ -26,6 +26,7 @@ class TestDataProviderSerializer(TransactionTestCase):
         expected = {
             'oauth_config': None,
             'http_config': None,
+            'icon_image_url': None,
             'provider_name': 'dsfsd4',
             'api_type': "OauthRest",
             'api_endpoint': '',
@@ -55,6 +56,7 @@ class TestDataProviderSerializer(TransactionTestCase):
                     'http_config': None,
                     'provider_name': 'dsfsd4',
                     'api_type': 'OauthRest',
+                    'icon_image_url': None,
                     'api_endpoint': '',
                     'endpoints': []
                     }
@@ -69,7 +71,7 @@ class TestDataProviderSerializer(TransactionTestCase):
         expected = {'oauth_config': None, 'http_config': None,
                     'endpoints': [{'endpoint_name': 'test1', 'endpoint_url': 'testurl', 'request_type': 'GET'},
                                   {'endpoint_name': 'test2', 'endpoint_url': 'testurl', 'request_type': 'GET'}],
-                    'provider_name': 'dsfsd4', 'api_type': 'OauthGraphql', 'api_endpoint': '',
+                    'provider_name': 'dsfsd4', 'api_type': 'OauthGraphql', 'api_endpoint': '', 'icon_image_url': None,
                     }
         self.assertEqual(expected, data)
 

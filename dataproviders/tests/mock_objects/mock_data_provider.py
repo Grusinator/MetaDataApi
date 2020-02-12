@@ -88,7 +88,7 @@ class MockDataProvider:
                 {
                     "endpoint_name": "activity",
                     "endpoint_url": "v3/activities",
-                    "data_dumps": [
+                    "data_fetches": [
                         {
                             "date_downloaded": "20102019",
                         }
@@ -97,7 +97,7 @@ class MockDataProvider:
                 {
                     "endpoint_name": "zone",
                     "endpoint_url": "v3/athlete/zones",
-                    "data_dumps": [
+                    "data_fetches": [
                         {
                             "date_downloaded": "21102019",
                         }
@@ -106,7 +106,7 @@ class MockDataProvider:
                 {
                     "endpoint_name": "athlete",
                     "endpoint_url": "v3/athlete",
-                    "data_dumps": [
+                    "data_fetches": [
                         {
                             "date_downloaded": "22102019",
                         }

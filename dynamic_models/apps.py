@@ -5,5 +5,5 @@ class DynamicModelsConfig(AppConfig):
     name = 'dynamic_models'
 
     def ready(self):
-        from dynamic_models.tasks import connect_tasks
-        connect_tasks()
+        from dynamic_models.attach_tasks import attach_tasks
+        attach_tasks()

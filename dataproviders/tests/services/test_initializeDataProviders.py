@@ -1,7 +1,13 @@
+from unittest.mock import patch
+
 import django
 from django.test import TransactionTestCase
+from model_bakery import baker
 
+from MetaDataApi.tests.utils_for_testing.utils_for_testing import get_method_path
+from dataproviders.models import DataProvider
 from dataproviders.models.RequestType import RequestType
+from dataproviders.services.initialize_data_providers import InitializeDataProviders
 from dataproviders.tests.mock_objects.mock_data_provider import MockDataProvider
 
 
@@ -57,12 +63,25 @@ class TestInitializeDataProviders(TransactionTestCase):
         InitializeDataProviders.exclude = (
             "dataprovideruser",
             "data_provider_node",
-            "data_dumps"
+            "data_fetches"
         )
 
         InitializeDataProviders.create_data_provider_v2(data)
 
-        from dataproviders.models import DataProvider
         strava_dp = DataProvider.objects.get(provider_name="strava")
         self.assertEqual(strava_dp.oauth_config.client_id, "28148")
         self.assertEqual(strava_dp.endpoints.get(endpoint_name="athlete").request_type, RequestType.GET.value)
+
+    def test_update_data_provider_to_json_file(self):
+        api_endpoint = "test_dummy_endpoint"
+        dp = baker.make(DataProvider.__name__, make_m2m=True, provider_name="strava", api_endpoint=api_endpoint)
+
+        def side_effect(data):
+            data_provider = InitializeDataProviders.find_provider_with_name(data, dp)[1]
+            self.assertEqual(data_provider["api_endpoint"], api_endpoint)
+            return data
+
+        with patch(get_method_path(InitializeDataProviders.write_data_to_json_file)) as mock_method:
+            mock_method.side_effect = side_effect
+            InitializeDataProviders.update_data_provider_to_json_file(dp)
+        mock_method.assert_called_once()

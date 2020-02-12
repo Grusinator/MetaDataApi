@@ -88,15 +88,15 @@ class LoadTestData:
 
         # TODO fix error in obj rel load, this is a temp fix
         schema = Schema.objects.get(label="meta_data_api")
-        data_dump = SchemaNode.objects.get(schema=schema, label="endpoint_data_dump")
+        data_fetch = SchemaNode.objects.get(schema=schema, label="endpoint_data_fetch")
         SchemaEdge(
             schema=schema,
             label="has_generated",
             from_object=SchemaNode.objects.get(schema=schema, label="rest_endpoint"),
-            to_object=data_dump
+            to_object=data_fetch
         ).save()
 
-        att = SchemaAttribute.objects.get(label="data_dump_file", object=data_dump)
+        att = SchemaAttribute.objects.get(label="data_fetch_file", object=data_fetch)
         att.data_type = "file"
         att.save()
 

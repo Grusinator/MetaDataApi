@@ -18,11 +18,17 @@ class InitializeDataProviders:
     data_providers_filename = "data_providers.json"
     exclude = (
         "dataprovideruser",
-        "data_dump",
-        "data_dumps",
+        "data_fetch",
+        "data_fetches",
         # "endpoints",
         # "oauth_config",
         # "http_config"
+    )
+
+    model_filter = SerializableModelFilter(
+        exclude_labels=exclude,
+        max_depth=4,
+        start_object_name="data_provider"
     )
 
     @classmethod
@@ -47,6 +53,34 @@ class InitializeDataProviders:
             cls.create_data_provider_v2(provider_data)
         except Exception as e:
             logger.error(f'error durring loading of dataprovider {provider_data["provider_name"]} due to error {e}')
+
+    @classmethod
+    def update_data_provider_to_json_file(cls, data_provider: DataProvider):
+        serialized_dp = data_provider.serialize(filter=cls.model_filter)
+        data = InitializeDataProviders.read_data_from_data_provider_json_file()
+        index, provider = InitializeDataProviders.find_provider_with_name(data, data_provider)
+        # TODO serialize by id instead
+        if index is not None:
+            data[index] = serialized_dp
+        else:
+            data.append(serialized_dp)
+        cls.write_data_to_json_file(data)
+
+    @classmethod
+    def find_provider_with_name(cls, data: list, data_provider: DataProvider):
+        for i, provider in enumerate(data):
+            if provider["provider_name"] == data_provider.provider_name:
+                return i, provider
+        return None, None
+
+    @classmethod
+    def read_data_from_data_provider_json_file(cls):
+        return JsonUtils.validate(open(cls.data_providers_filename).read())
+
+    @classmethod
+    def write_data_to_json_file(cls, data):
+        with open(cls.data_providers_filename, 'w') as data_providers_file:
+            data_providers_file.write(JsonUtils.dumps(data))
 
     @classmethod
     def create_data_provider_v2(cls, provider_data):

@@ -3,27 +3,43 @@
 {% block content %}
 
 
-    <div>
-        <h2>Data Providers</h2>
+<header class="major">
+    <h2>Dataproviders</h2>
+    <p>Ipsum dolor feugiat aliquam tempus sed magna lorem consequat accumsan</p>
+</header>
+
+
+<section>
+    <div class="row">
+        {% for dp in dataproviders %}
+        {% if forloop.counter0|divisibleby:3 %}
     </div>
-
-    <div>
-        <form method="POST">
-            {% csrf_token %}
-            <input type="hidden" name="next" value="">
-            <button type="submit">reload providers</button>
-        </form>
-    </div>
-    {% for dp in dataproviders %}
-
-
-        <div>
-            <h3>
-                <a href={{ dp.get_internal_view_url }}>
-                    {{ dp.provider_name }}
-                </a>
-            </h3>
+    <br>
+    <div class="row">
+        {% endif %}
+        <div class="col-4">
+            <a href={{dp.get_internal_view_url}}>
+                <img alt={{dp.provider_name}} height="70" src={{dp.icon_image_url}} width=150">
+            </a>
+            <!--            <a href={{ dp.get_internal_view_url }}>-->
+            <!--&lt;!&ndash;                <img src="images/pic01.jpg" alt="" />&ndash;&gt;-->
+            <!--                    {{ dp.provider_name }}-->
+            <!--            </a>-->
+            <!--            {% block providericon %}-->
+            <!--                replace me-->
+            <!--            {% endblock %}-->
         </div>
-    {% endfor %}
+        {% endfor %}
+    </div>
+</section>
+
+<div>
+    <form method="POST">
+        {% csrf_token %}
+        <input name="next" type="hidden" value="">
+        <button class="button primary" type="submit">reload providers</button>
+    </form>
+</div>
+
 
 {% endblock %}

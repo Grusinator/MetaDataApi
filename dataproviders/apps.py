@@ -5,5 +5,5 @@ class DataprovidersConfig(AppConfig):
     name = 'dataproviders'
 
     def ready(self):
-        from dataproviders.tasks import connect_tasks
-        connect_tasks()
+        from dataproviders.attach_tasks import attach_tasks
+        attach_tasks()

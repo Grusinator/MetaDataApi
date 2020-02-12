@@ -7,6 +7,7 @@ from dataproviders.models.ApiTypes import ApiTypes
 
 
 class DataProvider(models.Model, SerializableModel):
+    icon_image_url = models.URLField(null=True, blank=True)
     provider_name = models.TextField(unique=True)
     api_type = models.TextField(choices=ApiTypes.build_choices(), default=ApiTypes.OAUTH_REST.value)
     api_endpoint = models.TextField()

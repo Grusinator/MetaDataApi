@@ -1,0 +1,80 @@
+version: '3.7'
+
+services:
+  db:
+    container_name: metadataapi_db
+    image: postgres:12.0-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=django
+      - POSTGRES_PASSWORD=dev1234
+      - POSTGRES_DB=meta_data_api
+    ports:
+      - 5432:5432
+  redis:
+    container_name: metadataapi_redis
+    image: "redis:alpine"
+  web:
+    container_name: metadataapi_django
+    build: .
+    command: bash -c "python3 /code/manage.py migrate --noinput && python3 /code/manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/code
+    environment:
+      - ENV=PROD
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+      - redis
+  celery:
+    build: .
+    command: celery -A MetaDataApi worker -l info
+    restart: on-failure
+    environment:
+      - ENV=PROD
+    volumes:
+      - .:/code
+    depends_on:
+      - db
+      - redis
+  celery-beat:
+    build: .
+    command: celery -A MetaDataApi beat -l INFO --pidfile= --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    restart: on-failure
+    environment:
+      - ENV=PROD
+    volumes:
+      - .:/code
+    depends_on:
+      - db
+      - redis
+  flower:
+    container_name: metadataapi_flower
+    image: mher/flower
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - FLOWER_PORT=8888
+    ports:
+      - 8888:8888
+#  pgadmin:
+#    container_name: metadataapi_pgadmin
+#    restart: always
+#    image: dpage/pgadmin4
+#    ports:
+#      - 8000:8000
+#    environment:
+#      PGADMIN_DEFAULT_EMAIL: grusinator@gmail.com
+#      PGADMIN_DEFAULT_PASSWORD: dev1234
+#    volumes:
+#      - pgadmin_data:/var/lib/pgadmin
+
+volumes:
+  postgres_data:
+  pgadmin_data:
+
+
+
+
+

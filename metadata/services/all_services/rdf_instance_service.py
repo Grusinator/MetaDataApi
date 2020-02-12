@@ -27,14 +27,14 @@ class RdfInstanceService(BaseRdfSchemaService):
 
         content = ContentFile(rdf_data)
 
-        data_dump = RDFDataDump(
+        data_fetch = RDFDataDump(
             schema=self.schema
         )
-        # data_dump.save()
-        data_dump.rdf_file.save("%s-%s.ttl" %
-                                (schema.label, uuid.uuid4()), content)
+        # data_fetch.save()
+        data_fetch.rdf_file.save("%s-%s.ttl" %
+                                 (schema.label, uuid.uuid4()), content)
 
-        return data_dump.rdf_file
+        return data_fetch.rdf_file
 
     def export_instances_from_list(self, schema, inst_list):
         g = Graph()

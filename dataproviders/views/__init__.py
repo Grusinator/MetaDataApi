@@ -1,2 +1,3 @@
-from .data_provider_view import DataProviderView
-from .oauth2redirect import oauth2redirect_view
+from .data_provider_view import data_provider_list_view, data_provider_view
+from .file_upload_view import file_upload_view
+from .oauth2redirect_view import oauth2redirect_view

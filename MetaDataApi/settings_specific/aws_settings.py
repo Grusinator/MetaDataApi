@@ -24,3 +24,6 @@ PUBLIC_FILE_STORAGE = 'MetaDataApi.custom_storages.PublicMediaStorage'
 
 PRIVATE_MEDIA_LOCATION = 'media/private'
 PRIVATE_FILE_STORAGE = 'MetaDataApi.custom_storages.PrivateMediaStorage'
+
+# separation of file types, currently only one for data dump / upload.
+DATAFILE_STORAGE_PATH = "datafiles/"
