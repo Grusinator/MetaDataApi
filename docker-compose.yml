@@ -2,6 +2,7 @@ version: '3.7'
 
 services:
   db:
+    container_name: metadataapi_db
     image: postgres:12.0-alpine
     volumes:
       - postgres_data:/var/lib/postgresql/data/
@@ -10,11 +11,11 @@ services:
       - POSTGRES_PASSWORD=dev1234
       - POSTGRES_DB=meta_data_api
     ports:
-      - 5432:5432
+      - 5432:5431
   redis:
     image: "redis:alpine"
     ports:
-      - "6379:6379"
+      - 6379:6379
   web:
     container_name: metadataapi_django
     build: .
@@ -29,7 +30,7 @@ services:
     environment:
       - ENV
     ports:
-      - "8000:8000"
+      - 8000:8000
     depends_on:
       - db
       - redis
@@ -66,14 +67,18 @@ services:
     container_name: metadataapi_pgadmin
     restart: always
     image: dpage/pgadmin4
+    #    links:
+    #      - db
+    depends_on:
+      - db
     ports:
-      - 8000:8080
+      - 80:80
     environment:
       PGADMIN_DEFAULT_EMAIL: grusinator@gmail.com
       PGADMIN_DEFAULT_PASSWORD: dev1234
+      PGADMIN_LISTEN_PORT: 80
     volumes:
       - pgadmin_data:/var/lib/pgadmin
-
 volumes:
   postgres_data:
   pgadmin_data:
