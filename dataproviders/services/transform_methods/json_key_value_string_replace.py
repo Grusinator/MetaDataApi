@@ -1,7 +1,7 @@
 from dataproviders.services.transform_methods.regex_patterns import REPattern
 
 
-def clean_invalid_key_chars(data):
+def clean_key_value_strings(data):
     def key_transform(key: str):
         key = REPattern.multiple_whitespaces.replace('_', key)
         key = REPattern.special_characters.remove(key)

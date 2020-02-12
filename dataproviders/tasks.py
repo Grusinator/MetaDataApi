@@ -58,7 +58,8 @@ def schedule_task_refresh_access_token(data_provider_user: DataProviderUser):
 def clean_data_from_source(data_file_upload_pk, is_from_file_upload: bool):
     DataObjectClass = DataFileUpload if is_from_file_upload else DataFetch
     data_file_source = DataObjectClass.objects.get(pk=data_file_upload_pk)
-    data = transform_files_to_data.clean_data_from_data_file(data_file_source.data_file_from_source.file)
+    origin_name = data_file_source.endpoint.endpoint_name if not is_from_file_upload else None
+    data = transform_files_to_data.clean_data_from_data_file(data_file_source.data_file_from_source.file, origin_name)
     transform_files_to_data.create_data_file(data, data_file_source.user, data_file_source)
 
 

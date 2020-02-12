@@ -1,5 +1,5 @@
 def data_fetch_json_strava_activity():
-    return [
+    return {"activity": [
         {
             "resource_state": 2,
             "athlete": {
@@ -1948,4 +1948,4 @@ def data_fetch_json_strava_activity():
             "total_photo_count": 0,
             "has_kudoed": False
         }
-    ]
+    ]}

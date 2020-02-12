@@ -20,7 +20,7 @@ def convert_path_to_underscore_name(path: str):
 
 
 def remove_id_like_strings(string):
-    string = REPattern.long_id.remove(string)
     string = REPattern.guid.remove(string)
     string = REPattern.guid_like.remove(string)
+    string = REPattern.long_id.remove(string)
     return string

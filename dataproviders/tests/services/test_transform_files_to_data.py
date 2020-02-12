@@ -12,7 +12,7 @@ from MetaDataApi.utils.django_model_utils.django_file_utils import FileType
 from dataproviders import tasks
 from dataproviders.models import DataFetch, DataFileUpload
 from dataproviders.services.transform_files_to_data import clean_data_from_data_file
-from dataproviders.services.transform_methods.json_key_string_replace import clean_invalid_key_chars
+from dataproviders.services.transform_methods.json_key_value_string_replace import clean_key_value_strings
 
 
 class TestTransformFilesToData(TransactionTestCase):
@@ -134,7 +134,7 @@ class TestTransformFilesToData(TransactionTestCase):
         data["quiz$$"] = data.pop("quiz")
         data["quiz$$"]["sport"]["q1%%"] = data["quiz$$"]["sport"].pop("q1")
         data["quiz$$"]["sport"]["q1%%"]["questio@@n"] = data["quiz$$"]["sport"]["q1%%"].pop("question")
-        res = clean_invalid_key_chars(data)
+        res = clean_key_value_strings(data)
         expected = {'quiz': {'sport': {
             'q1': {'options': ['New York Bulls', 'Los Angeles Kings', 'Golden State Warriros', 'Huston Rocket'],
                    'answer': 'Huston Rocket', 'question': 'Which one is correct team name in NBA?'}}, 'maths': {
