@@ -3,42 +3,41 @@
 {% block content %}
 
 
-<header class="major">
-    <h2>Dataproviders</h2>
-    <p>Ipsum dolor feugiat aliquam tempus sed magna lorem consequat accumsan</p>
-</header>
+    <header class="major">
+        <h2>Dataproviders</h2>
+    </header>
 
 
-<section>
-    <div class="row">
-        {% for dp in dataproviders %}
-        {% if forloop.counter0|divisibleby:3 %}
-    </div>
-    <br>
-    <div class="row">
-        {% endif %}
-        <div class="col-4">
-            <a href={{dp.get_internal_view_url}}>
-                <img alt={{dp.provider_name}} height="70" src={{dp.icon_image_url}} width=150">
-            </a>
-            <!--            <a href={{ dp.get_internal_view_url }}>-->
-            <!--&lt;!&ndash;                <img src="images/pic01.jpg" alt="" />&ndash;&gt;-->
-            <!--                    {{ dp.provider_name }}-->
-            <!--            </a>-->
-            <!--            {% block providericon %}-->
-            <!--                replace me-->
-            <!--            {% endblock %}-->
-        </div>
-        {% endfor %}
-    </div>
-</section>
+    <section>
+        <div class="row">
+            {% for dp in dataproviders %}
+                {% if forloop.counter0|divisibleby:3 %}
+                    </div>
+                    <br>
+                    <div class="row">
+                {% endif %}
+                <div class="col-4">
+                    <a href={{ dp.get_internal_view_url }}>
+                        <img height="150" width="150" alt={{ dp.provider_name }} src={{ dp.icon_image_url }} >
+                    </a>
+                    <!--            <a href={{ dp.get_internal_view_url }}>-->
+                    <!--&lt;!&ndash;                <img src="images/pic01.jpg" alt="" />&ndash;&gt;-->
+                    <!--                    {{ dp.provider_name }}-->
+                    <!--            </a>-->
+                    <!--            {% block providericon %}-->
+                        <!--                replace me-->
+                        <!--            {% endblock %}-->
+                </div>
+            {% endfor %}
+            </div>
+    </section>
 
-<div>
-    <form method="POST">
-        {% csrf_token %}
-        <input name="next" type="hidden" value="">
-        <button class="button primary" type="submit">reload providers</button>
-    </form>
+    <div>
+        <form method="POST">
+            {% csrf_token %}
+            <input name="next" type="hidden" value="">
+            <button class="button primary" type="submit">reload providers</button>
+        </form>
 </div>
 
 

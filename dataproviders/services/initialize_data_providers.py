@@ -56,7 +56,8 @@ class InitializeDataProviders:
 
     @classmethod
     def update_data_provider_to_json_file(cls, data_provider: DataProvider):
-        serialized_dp = data_provider.serialize(filter=cls.model_filter)
+        serialized_dp = data_provider.serialize(
+            filter=cls.model_filter)  # TODO test this properly, the serialization is not correct
         data = InitializeDataProviders.read_data_from_data_provider_json_file()
         index, provider = InitializeDataProviders.find_provider_with_name(data, data_provider)
         # TODO serialize by id instead
