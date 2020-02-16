@@ -43,6 +43,16 @@ ALLOWED_HOSTS = ["metadataapi.grusinator.com", "metadataapi.wsh-home.dk"]
 if ENV != Env.PROD:
     ALLOWED_HOSTS += ("localhost", "127.0.0.1", "0.0.0.0")
 
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:8000',
+    'https://localhost:8000',
+    'http://127.0.0.1:8000',
+    'https://127.0.0.1:8000',
+]
+
+CORS_ALLOW_CREDENTIALS = True
+# CORS_ORIGIN_ALLOW_ALL = True
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -102,8 +112,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'admin_reorder.middleware.ModelAdminReorder',
 ]
-
-CORS_ORIGIN_ALLOW_ALL = True
 
 ROOT_URLCONF = 'MetaDataApi.urls'
 

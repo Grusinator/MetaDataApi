@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.decorators.csrf import csrf_exempt
 from graphene_django.views import GraphQLView
+from graphql_jwt.decorators import jwt_cookie
 
 from app.views import admin_view, home_view
 from dataproviders.views import oauth2redirect_view
@@ -29,7 +30,7 @@ urlpatterns = [
     path('dynamic_models/', include('dynamic_models.urls')),
     path("providers/", include('dataproviders.urls')),
     url(r'^oauth2redirect', oauth2redirect_view, name='oauth2redirect'),
-    url(r'^graphql/', csrf_exempt(GraphQLView.as_view(graphiql=True))),
+    url(r'^graphql/', csrf_exempt(jwt_cookie(GraphQLView.as_view(graphiql=True)))),
     url('', home_view, name="home")
     # url(r'^$', RedirectView.as_view(url='accounts/login?next=/providers/', permanent=False), name='login'),
 ]
