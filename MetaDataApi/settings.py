@@ -55,7 +55,7 @@ INSTALLED_APPS = [
     'graphene_django',
     # 'rest_framework',
     # 'oauth2_provider',
-    # 'corsheaders',
+    'corsheaders',
     # 'storages',
     'admin_reorder',
     # 'graphene_file_upload',
@@ -92,6 +92,7 @@ INSTALLED_APPS += (
 )
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -101,6 +102,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'admin_reorder.middleware.ModelAdminReorder',
 ]
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 ROOT_URLCONF = 'MetaDataApi.urls'
 
@@ -148,6 +151,11 @@ DEFAULT_DATABASE = {
         'PORT': '5432',
     }
 }
+
+AUTHENTICATION_BACKENDS = [
+    'graphql_jwt.backends.JSONWebTokenBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
 
 DATABASES = CIRCLECI_TEST_DATABASE if ENV == Env.TEST else DEFAULT_DATABASE
 
