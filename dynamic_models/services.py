@@ -23,9 +23,13 @@ def _try_build_model_from_data_file(data_file: DataFile):
     root_label = get_root_label(data_file)
     modelbuilder = DynamicModelBuilder()
     try:
-        modelbuilder.create_models_from_data(root_label, data)
+        modelbuilder.create_models_from_data(data, root_label)
     except Exception as e:
         logger.warning(e)
+        raise e
+    else:
+        if modelbuilder.failed_objects:
+            logger.warning(modelbuilder.failed_objects)
 
 
 def load_data_from_provider_data_files(**data_file_filter):
@@ -41,10 +45,10 @@ def load_data_from_data_file(data_file_pk: int):
 
 def _try_load_data_from_data_file(data_file: DataFile):
     data = data_file.read_data()
-    root_name = get_root_label(data_file)
+    root_label = get_root_label(data_file)
     data_builder = DynamicDataInstances(user_pk=data_file.user.pk)
     try:
-        data_builder.create_instances_from_data(root_name, data)
+        data_builder.create_instances_from_data(data, root_label)
     except Exception as e:
         logger.warning(e)
 
@@ -54,4 +58,4 @@ def get_root_label(data_file: DataFile):
         return data_file.label_info["root_label"]
     except:
         logger.error(f"root label was not found in label info, in DataFile object: {data_file}")
-        return "DUMMY_ROOT_LABEL"
+        return None

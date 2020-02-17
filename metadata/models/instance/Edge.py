@@ -1,7 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 
-from MetaDataApi.utils.django_model_utils import DjangoModelUtils
+from MetaDataApi.utils.django_utils import DjangoModelUtils
 from .BaseInstance import BaseInstance
 
 

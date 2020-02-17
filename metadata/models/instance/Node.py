@@ -4,7 +4,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 
 from MetaDataApi.utils import BuildDjangoSearchArgs
-from MetaDataApi.utils.django_model_utils import DjangoModelUtils
+from MetaDataApi.utils.django_utils import DjangoModelUtils
 from metadata.models.instance import BaseAttribute
 from metadata.models.instance.BaseInstance import BaseInstance
 from metadata.models.meta import SchemaAttribute

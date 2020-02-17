@@ -5,7 +5,7 @@ from zipfile import ZipFile
 
 from django.core.files.base import ContentFile, File
 
-from MetaDataApi.utils.django_model_utils.in_memory_zip_file import InMemoryZip
+from MetaDataApi.utils.django_utils.in_memory_zip_file import InMemoryZip
 
 
 class FileType(Enum):

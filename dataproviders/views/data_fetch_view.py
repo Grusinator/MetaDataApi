@@ -2,7 +2,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
-from MetaDataApi.utils.django_model_utils import django_file_utils
+from MetaDataApi.utils.django_utils import django_file_utils
 from dataproviders.models import DataFetch
 
 

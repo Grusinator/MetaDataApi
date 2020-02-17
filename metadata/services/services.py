@@ -9,7 +9,7 @@ from graphql import GraphQLError
 
 from MetaDataApi.utils import JsonUtils
 from MetaDataApi.utils.common_utils import StringUtils
-from MetaDataApi.utils.django_model_utils import django_file_utils
+from MetaDataApi.utils.django_utils import django_file_utils
 from dataproviders.models import DataFetch, DataProvider
 from dataproviders.services import fetch_data_from_provider
 from metadata.models import *

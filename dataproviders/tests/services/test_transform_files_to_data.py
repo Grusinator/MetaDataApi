@@ -7,8 +7,8 @@ from parameterized import parameterized
 
 from MetaDataApi.tests.utils_for_testing.utils_for_testing import get_method_path
 from MetaDataApi.utils import JsonUtils
-from MetaDataApi.utils.django_model_utils import django_file_utils
-from MetaDataApi.utils.django_model_utils.django_file_utils import FileType
+from MetaDataApi.utils.django_utils import django_file_utils
+from MetaDataApi.utils.django_utils.django_file_utils import FileType
 from dataproviders import tasks
 from dataproviders.models import DataFetch, DataFileUpload
 from dataproviders.services.transform_files_to_data import clean_data_from_data_file

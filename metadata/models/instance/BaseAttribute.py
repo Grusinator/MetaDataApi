@@ -2,7 +2,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 
 from MetaDataApi.utils import DictUtils
-from MetaDataApi.utils.django_model_utils import DjangoModelUtils
+from MetaDataApi.utils.django_utils import DjangoModelUtils
 from metadata.models.meta import SchemaAttribute
 from .BaseInstance import BaseInstance
 

@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import MultipleObjectsReturned
 
 from MetaDataApi.utils import JsonUtils
-from MetaDataApi.utils.django_model_utils import django_file_utils
+from MetaDataApi.utils.django_utils import django_file_utils
 from dataproviders.models import DataProvider, DataFetch, Endpoint, HttpConfig
 from dataproviders.models.ApiTypes import ApiTypes
 from dataproviders.services.url_format_helper import UrlFormatHelper

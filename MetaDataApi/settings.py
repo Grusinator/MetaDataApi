@@ -66,7 +66,7 @@ INSTALLED_APPS = [
     # 'rest_framework',
     # 'oauth2_provider',
     'corsheaders',
-    # 'storages',
+    'storages',
     'admin_reorder',
     # 'graphene_file_upload',
     'django_celery_results',
