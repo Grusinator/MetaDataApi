@@ -58,15 +58,13 @@ class TestRunTasks(TransactionTestCase):
             model = get_dynamic_model("activity")
             self.assertIsNotNone(model)
 
-    @unittest.skip("some wierd integrity error: total_elevation gain on attribute creation get_or_create(), \
-                   but only when running all")
+    @unittest.skip("cant get activity, but only when running all")
     @unittest.skipIf(set(settings.TEST_SETTINGS_EXCLUDE) & TAGS, f"skipping: {settings.TEST_SETTINGS_EXCLUDE}")
     def test_build_data_from_data_file_upload(self):
         with patch(get_method_path(DataFileUpload.execute_on_save_methods)) as mock_method:
             data, data_file_upload, user = self.create_data_file_upload_objects()
             transform_files_to_data.create_data_file(data, user, data_file_upload)
             dynamic_model_tasks.build_models_from_data_files(pk=data_file_upload.refined_data_file.pk)
-
             model = get_dynamic_model("activity")
             self.assertIsNotNone(model)
 
