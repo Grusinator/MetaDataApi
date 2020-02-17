@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 
-from MetaDataApi.utils.django_model_utils.django_file_utils import get_default_file_name
+from MetaDataApi.utils.django_utils.django_file_utils import get_default_file_name
 from dataproviders.forms.file_upload_form import FileUploadForm
 from dataproviders.models import DataProvider
 

@@ -2,7 +2,7 @@ import django
 from django.core.files.base import ContentFile
 from django.test import TransactionTestCase
 
-from MetaDataApi.utils.django_model_utils.django_file_utils import create_django_zip_file, unzip_django_zipfile, \
+from MetaDataApi.utils.django_utils.django_file_utils import create_django_zip_file, unzip_django_zipfile, \
     convert_file_to_str
 
 

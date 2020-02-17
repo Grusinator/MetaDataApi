@@ -7,8 +7,8 @@ from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
 
 from MetaDataApi.utils import JsonUtils, JsonType
-from MetaDataApi.utils.django_model_utils import django_file_utils
-from MetaDataApi.utils.django_model_utils.django_file_utils import FileType, get_file_type, unzip_django_zipfile, \
+from MetaDataApi.utils.django_utils import django_file_utils
+from MetaDataApi.utils.django_utils.django_file_utils import FileType, get_file_type, unzip_django_zipfile, \
     convert_file_to_str
 from dataproviders.models import DataFileUpload, DataFetch
 from dataproviders.models.DataFile import DataFile

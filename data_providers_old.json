@@ -1,0 +1,255 @@
+[
+  {
+    "provider_name": "Dummy test",
+    "api_type": "OauthRest",
+    "api_endpoint": "56 adasdasd"
+  },
+  {
+    "provider_name": "endomondo",
+    "api_type": "OauthRest",
+    "api_endpoint": "https://api.endomondo.com/api/1/",
+    "oauth_config": {
+      "authorize_url": "https://www.endomondo.com/oauth/authorize",
+      "access_token_url": "https://api.endomondo.com/oauth/access_token",
+      "scope": []
+    },
+    "endpoints": []
+  },
+  {
+    "provider_name": "withings",
+    "api_type": "OauthRest",
+    "api_endpoint": "https://wbsapi.withings.net/",
+    "oauth_config": {
+      "authorize_url": "https://account.withings.com/oauth2_user/authorize2",
+      "access_token_url": "https://account.withings.com/oauth2/token",
+      "client_id": "a80378abe1059ef7c415cf79b09b1270f828c4a0fbfdc52dbec06ae5f71b4bb6",
+      "client_secret": "1f1d852451385469a56ef6494cbd2e94c07421c3ee5ffbfca63216079fd36d1a",
+      "scope": [
+        "user.activity"
+      ]
+    },
+    "endpoints": [
+      {
+        "endpoint_name": "sleep",
+        "endpoint_url": "v2/sleep?action=getsummary&access_token={AuthToken:}&startdateymd={StartDateTime:Y-M-d}&enddateymd={EndDateTime:Y-M-d}"
+      },
+      {
+        "endpoint_name": "athlete",
+        "endpoint_url": "v2/sleep?action=get&access_token={AuthToken:}&startdate={StartDateTime:UTCSEC}&enddate={EndDateTime:UTCSEC}"
+      }
+    ]
+  },
+  {
+    "provider_name": "strava",
+    "api_type": "OauthRest",
+    "api_endpoint": "https://www.strava.com/api/",
+    "oauth_config": {
+      "authorize_url": "https://www.strava.com/oauth/authorize",
+      "access_token_url": "https://www.strava.com/oauth/token",
+      "client_id": "28148",
+      "client_secret": "ed5f469f798830c7214fc8efad54790799fc3ae1",
+      "scope": [
+        "activity:read_all"
+      ]
+    },
+    "endpoints": [
+      {
+        "endpoint_name": "activity",
+        "endpoint_url": "v3/activities"
+      },
+      {
+        "endpoint_name": "zone",
+        "endpoint_url": "v3/athlete/zones"
+      },
+      {
+        "endpoint_name": "athlete",
+        "endpoint_url": "v3/athlete"
+      }
+    ]
+  },
+  {
+    "provider_name": "oura",
+    "api_type": "OauthRest",
+    "api_endpoint": "https://api.ouraring.com/",
+    "oauth_config": {
+      "authorize_url": "https://cloud.ouraring.com/oauth/authorize",
+      "access_token_url": "https://api.ouraring.com/oauth/token",
+      "client_id": "Q43N7PFF2RI3SF52",
+      "client_secret": "CX6MEERKWUBIMBMRZOVY6BAAQLF5KDDL",
+      "scope": [
+        "email",
+        "personal",
+        "daily"
+      ]
+    },
+    "endpoints": [
+      {
+        "endpoint_name": "user_info",
+        "endpoint_url": "v1/userinfo"
+      },
+      {
+        "endpoint_name": "sleep",
+        "endpoint_url": "v1/sleep?start={StartDateTime:Y-M-d}&end={EndDateTime:Y-M-d}"
+      },
+      {
+        "endpoint_name": "activity",
+        "endpoint_url": "v1/activity?start={StartDateTime:Y-M-d}&end={EndDateTime:Y-M-d}"
+      },
+      {
+        "endpoint_name": "readiness",
+        "endpoint_url": "v1/readiness?start={StartDateTime:Y-M-d}&end={EndDateTime:Y-M-d}"
+      }
+    ]
+  },
+  {
+    "provider_name": "google_fit",
+    "api_endpoint": "https://www.googleapis.com/fitness/",
+    "oauth_config": {
+      "authorize_url": "https://accounts.google.com/o/oauth2/v2/auth",
+      "access_token_url": "https://www.googleapis.com/oauth2/v4/token",
+      "client_id": "166351402500-m9302qf47ua66qbr1gdbgrronssnm2v2.apps.googleusercontent.com",
+      "client_secret": "W_jKUZmRCGl05G-TMYuFPbjY",
+      "scope": [
+        "https://www.googleapis.com/auth/fitness.activity.read"
+      ]
+    },
+    "endpoints": [
+      {
+        "endpoint_name": "data_source",
+        "endpoint_url": "v1/users/me/dataSources"
+      }
+    ]
+  },
+  {
+    "provider_name": "google_drive",
+    "api_endpoint": "DUMMY",
+    "oauth_config": {
+      "authorize_url": "https://accounts.google.com/o/oauth2/v2/auth",
+      "access_token_url": "https://www.googleapis.com/oauth2/v4/token",
+      "client_id": "166351402500-m9302qf47ua66qbr1gdbgrronssnm2v2.apps.googleusercontent.com",
+      "client_secret": "W_jKUZmRCGl05G-TMYuFPbjY",
+      "scope": [
+        "https://www.googleapis.com/auth/drive"
+      ]
+    },
+    "endpoints": []
+  },
+  {
+    "provider_name": "rescue_time",
+    "api_endpoint": "DUMMY",
+    "oauth_config": {
+      "authorize_url": "",
+      "access_token_url": "",
+      "client_id": "",
+      "client_secret": "",
+      "scope": []
+    },
+    "endpoints": []
+  },
+  {
+    "provider_name": "polar",
+    "api_endpoint": "https://www.polaraccesslink.com/",
+    "oauth_config": {
+      "authorize_url": "https://flow.polar.com/oauth2/authorization",
+      "access_token_url": "https://polarremote.com/v2/oauth2/token",
+      "client_id": "37b4731d-bb3a-4666-a4fa-6eb1fdffa146",
+      "client_secret": "5b552591-64e2-4180-a372-697082aebbfe",
+      "scope": []
+    },
+    "endpoints": [
+      {
+        "endpoint_name": "notifications",
+        "endpoint_url": "/v3/notifications"
+      }
+    ]
+  },
+  {
+    "provider_name": "facebook",
+    "api_endpoint": "DUMMY",
+    "oauth_config": {
+      "authorize_url": "",
+      "access_token_url": "",
+      "client_id": "284033629198396",
+      "client_secret": "5246a47abb8ad290a7a2f59c914bc7d7",
+      "scope": []
+    },
+    "endpoints": []
+  },
+  {
+    "provider_name": "spotify",
+    "api_endpoint": "https://api.spotify.com/",
+    "oauth_config": {
+      "authorize_url": "https://accounts.spotify.com/authorize",
+      "access_token_url": "https://accounts.spotify.com/api/token",
+      "client_id": "acfb3400228146bdbd8dbf8de4046cd0",
+      "client_secret": "2909ad767fc449f491cf33336869b457",
+      "scope": [
+        "user-read-recently-played"
+      ]
+    },
+    "endpoints": [
+      {
+        "endpoint_name": "recently_played",
+        "endpoint_url": "v1/me/player/recently-played"
+      }
+    ]
+  },
+  {
+    "provider_name": "tinder",
+    "api_type": "TokenRest",
+    "api_endpoint": "https://api.gotinder.com/",
+    "http_config": {
+      "header": {
+        "User-Agent": "Tinder/7.5.3 (iPhone; iOS 10.3.2; Scale/2.00)",
+        "X-Auth-Token": "{AuthToken:}",
+        "Content-Type": "application/json"
+      },
+      "url_encoded_params": {},
+      "body_content": "",
+      "request_type": "GET"
+    },
+    "endpoints": [
+      {
+        "endpoint_name": "profile",
+        "endpoint_url": "profile/"
+      }
+    ]
+  },
+  {
+    "provider_name": "template",
+    "api_type": "TokenRest",
+    "api_endpoint": "DUMMY",
+    "oauth_config": {
+      "authorize_url": "",
+      "access_token_url": "",
+      "client_id": "",
+      "client_secret": "",
+      "scope": []
+    },
+    "http_config": {
+      "header": {
+        "Content-Type": "application/json",
+        "X-Auth-Token": "{AuthToken:}"
+      },
+      "url_encoded_params": {},
+      "body_content": "",
+      "request_type": "GET"
+    },
+    "endpoints": [
+      {
+        "endpoint_name": "",
+        "endpoint_url": ""
+      }
+    ]
+  },
+  {
+    "api_type": "OauthRest",
+    "api_endpoint": "56",
+    "provider_name": "Dummy test 2"
+  },
+  {
+    "provider_name": "Dummy test",
+    "api_endpoint": "56 adasdasd",
+    "api_type": "OauthRest"
+  }
+]

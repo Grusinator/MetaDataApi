@@ -1,7 +1,7 @@
 import django
 from django.test import TransactionTestCase
 
-from MetaDataApi.utils.django_model_utils import BuildDjangoSearchArgs
+from MetaDataApi.utils.django_utils import BuildDjangoSearchArgs
 
 
 class test_buildDjangoSearchArgs(TransactionTestCase):

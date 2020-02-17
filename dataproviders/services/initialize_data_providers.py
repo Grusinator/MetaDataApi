@@ -6,10 +6,8 @@ import boto3
 from django.conf import settings
 from generic_serializer import SerializableModelFilter
 
-from MetaDataApi.utils import JsonUtils, JsonType, DjangoModelUtils
-from dataproviders.models import DataProvider, Endpoint
-from dataproviders.models.HttpConfig import HttpConfig
-from dataproviders.models.OauthConfig import OauthConfig
+from MetaDataApi.utils import JsonUtils
+from dataproviders.models import DataProvider
 
 logger = logging.getLogger(__name__)
 
@@ -34,11 +32,11 @@ class InitializeDataProviders:
     @classmethod
     def load(cls):
         pass
-        providers = cls.read_data_providers_from_file()
+        providers = cls.read_data_providers_from_local_or_remote_file()
         [cls.try_create_provider(provider) for provider in providers]
 
     @classmethod
-    def read_data_providers_from_file(cls):
+    def read_data_providers_from_local_or_remote_file(cls):
         try:
             return JsonUtils.read_json_file(cls.data_providers_filename)
         except FileNotFoundError as e:
@@ -56,8 +54,9 @@ class InitializeDataProviders:
 
     @classmethod
     def update_data_provider_to_json_file(cls, data_provider: DataProvider):
-        serialized_dp = data_provider.serialize(filter=cls.model_filter)
-        data = InitializeDataProviders.read_data_from_data_provider_json_file()
+        serialized_dp = data_provider.serialize(
+            filter=cls.model_filter)  # TODO test this properly, the serialization is not correct
+        data = InitializeDataProviders.read_data_from_data_provider_json_file(fail_on_file_missing=False)
         index, provider = InitializeDataProviders.find_provider_with_name(data, data_provider)
         # TODO serialize by id instead
         if index is not None:
@@ -74,12 +73,29 @@ class InitializeDataProviders:
         return None, None
 
     @classmethod
-    def read_data_from_data_provider_json_file(cls):
-        return JsonUtils.validate(open(cls.data_providers_filename).read())
+    def create_empty_provider_file(cls):
+        with open(cls.data_providers_filename, "w+") as provider_file:
+            provider_file.write("[]")
+
+    @classmethod
+    def read_data_from_data_provider_json_file(cls, fail_on_file_missing=True):
+        try:
+            data = open(cls.data_providers_filename).read()
+        except FileNotFoundError as e:
+            cls.create_empty_provider_file()
+            if fail_on_file_missing:
+                raise e
+            else:
+                return []
+        else:
+            if not data and fail_on_file_missing:
+                raise FileNotFoundError("there is no providers in the file")
+            else:
+                return JsonUtils.validate(data or [])
 
     @classmethod
     def write_data_to_json_file(cls, data):
-        with open(cls.data_providers_filename, 'w') as data_providers_file:
+        with open(cls.data_providers_filename, 'w+') as data_providers_file:
             data_providers_file.write(JsonUtils.dumps(data))
 
     @classmethod
@@ -98,54 +114,6 @@ class InitializeDataProviders:
             )
         )
         logger.debug(f"provider saved: {provider_name}")
-
-    @classmethod
-    def create_or_update_data_provider(cls, provider_data: dict):
-        provider_name = provider_data["provider_name"]
-        data_provider = DataProvider.exists(provider_name)
-        if data_provider:
-            return cls.update_data_provider(data_provider, provider_data)
-        else:
-            return cls.create_data_provider(provider_data)
-
-    @classmethod
-    def update_data_provider(cls, data_provider, provider_data):
-        excess_data = cls.remove_data_from_provider(provider_data)
-        DjangoModelUtils.update(data_provider, provider_data)
-        DjangoModelUtils.update(data_provider.oauth_config, excess_data.pop("oauth_config"))
-        DjangoModelUtils.update(data_provider.http_config, excess_data.pop("http_config"))
-        # TODO This approach has some flaws, if an endpoint is deleted etc.
-        for endpoint, endpoint_data in zip(data_provider.endpoints.all(), excess_data.pop("endpoints")):
-            DjangoModelUtils.update(endpoint, endpoint_data)
-        return data_provider
-
-    @classmethod
-    def create_data_provider(cls, provider_data: JsonType):
-        excess_data = cls.remove_data_from_provider(provider_data)
-        data_provider = DataProvider.objects.create(**provider_data)
-        cls.create_oauth_config(data_provider, excess_data.pop("oauth_config"))
-        cls.create_http_config(data_provider, excess_data.pop("http_config"))
-        cls.create_endpoints(data_provider, excess_data.pop("endpoints"))
-        return data_provider
-
-    @classmethod
-    def create_endpoints(cls, data_provider, endpoints_data):
-        for endpoint in endpoints_data:
-            Endpoint.objects.create(data_provider=data_provider, **endpoint)
-
-    @classmethod
-    def create_oauth_config(cls, data_provider, oauth_data):
-        oauth_data["scope"] = JsonUtils.dumps(oauth_data["scope"])
-        OauthConfig.objects.create(data_provider=data_provider, **oauth_data)
-
-    @classmethod
-    def create_http_config(cls, data_provider, http_data):
-        HttpConfig.objects.create(data_provider=data_provider, **http_data)
-
-    @classmethod
-    def remove_data_from_provider(cls, provider_data):
-        remove_list = ["endpoints", "oauth_config", "http_config"]
-        return {key: provider_data.pop[key] for key in remove_list}
 
     @classmethod
     def get_providers_from_aws(cls):

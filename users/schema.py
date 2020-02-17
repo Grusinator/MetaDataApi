@@ -30,6 +30,11 @@ class ProfileType(DjangoObjectType):
         # }
 
 
+class DummyType(DjangoObjectType):
+    class Meta:
+        model = User
+
+
 class CreateUser(Mutation):
     user = Field(UserType)
 
@@ -96,10 +101,14 @@ class Mutation(ObjectType):
 class Query(ObjectType):
     user = Field(UserType)
     profile = Field(ProfileType)
+    dummy = Field(DummyType)
 
     @login_required
     def resolve_user(self, info):
         return info.context.user
+
+    def resolve_dummy(self, info):
+        return User(first_name="peter", last_name="larsen")
 
     @login_required
     def resolve_profile(self, info):

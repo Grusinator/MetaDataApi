@@ -23,17 +23,19 @@ django-celery-results = "*"
 django-celery-beat = "*"
 django-timezone-field = "==3.0.0" # v4.0 requires django >2.2
 djangorestframework = "*"
-jsonfield = "*"
+jsonfield = "==2.1.1"
 django-mutant = {path = "./lib/django-mutant-0.3a5.tar.gz"}
 django-polymodels = ">=1.5.1"
 rdflib = "*"
 redis = "==3.3.11"
 django-modeladmin-reorder = "*"
 django-celery-model = "*"
-django-json2model = {path = "./lib/django_json2model-0.2.5-py3-none-any.whl"}
-django-generic-serializer = {path = "./lib/django_generic_serializer-0.0.2-py3-none-any.whl"}
 model-bakery = "*"
 parameterized = "*"
+django-cors-headers = "*"
+clean = "*"
+django-json2model = {path = "./lib/django_json2model-0.2.7-py3-none-any.whl"}
+django-generic-serializer = {path = "./lib/django_generic_serializer-0.0.2-py3-none-any.whl"}
 
 [dev-packages]
 eventlet = "==0.25.1"        #issue with eventlet, for celery on windows wrap_socket() got an unexpected keyword argument '_context'

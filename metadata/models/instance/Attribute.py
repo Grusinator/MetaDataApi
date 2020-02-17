@@ -6,7 +6,7 @@ from django.db import models
 from django.urls import reverse
 
 from MetaDataApi.custom_storages import PrivateMediaStorage
-from MetaDataApi.utils.django_model_utils import django_file_utils
+from MetaDataApi.utils.django_utils import django_file_utils
 from metadata.models.meta import SchemaAttribute
 from .BaseAttribute import BaseAttribute
 

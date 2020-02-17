@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from MetaDataApi.utils.django_model_utils.base_model_admin import BaseModelAdmin
+from MetaDataApi.utils.django_utils.base_model_admin import BaseModelAdmin
 from dataproviders import tasks
 from dataproviders.models import DataProvider, Endpoint, DataFetch, OauthConfig, HttpConfig, \
     DataProviderUser, DataFileUpload

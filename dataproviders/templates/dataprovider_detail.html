@@ -2,13 +2,20 @@
 
 {% block content %}
     <header class="major">
-        <h2>{{ data_provider.provider_name }}</h2>
+        <div>
+            <img height="150" width="150" alt={{ data_provider.provider_name }} src={{ data_provider.icon_image_url }} >
+        </div>
+        <div>
+            <h2>{{ data_provider.provider_name }}</h2>
+        </div>
     </header>
     <section>
         <div>
-            <a class="button primary" href={{ authorize_url }}>
-                Oauth Authorize {{ data_provider.provider_name }}
-            </a>
+            {% if oauth_authorize_url %}
+                <a class="button primary" href={{ oauth_authorize_url }}>
+                    Oauth Authorize {{ data_provider.provider_name }}
+                </a>
+            {% endif %}
             <a class="button primary" href=upload_file/> Upload data </a>
 
             {% if data_provider_user %}
