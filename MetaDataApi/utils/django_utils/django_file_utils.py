@@ -1,6 +1,7 @@
 import os
 import uuid
 from enum import Enum
+from typing import Union
 from zipfile import ZipFile
 
 from django.core.files.base import ContentFile, File
@@ -13,6 +14,16 @@ class FileType(Enum):
     JSON = ".json"
     CSV = ".csv"
     ZIP = ".zip"
+    # IMAGE = ".jpg"
+    UNKNOWN = ""
+
+    @classmethod
+    def identify(cls, filename: str, default_to_unknown=True):
+        ext = os.path.splitext(filename)[1]
+        try:
+            return FileType(ext)
+        except ValueError:
+            return cls.UNKNOWN if default_to_unknown else ext
 
 
 file_encoding = "utf-8"
@@ -28,8 +39,9 @@ def create_django_file_from_local(file_path: str) -> File:
     return File(local_file, name=file_name)
 
 
-def convert_binary_to_file(binary: bin, filename: str = None, filetype: FileType = None) -> ContentFile:
-    filename = filename or get_default_file_name(based_on=filename, force_ext=filetype)
+def convert_binary_to_file(binary: bin, filename_based_on: str = None,
+                           force_ext: Union[FileType, str] = None) -> ContentFile:
+    filename = get_default_file_name(based_on=filename_based_on, force_ext=force_ext)
     file = ContentFile(binary, name=filename)
     return file
 
@@ -42,7 +54,7 @@ def convert_str_to_file(text_str: str, filename: str = None, filetype: FileType 
 def create_django_zip_file(files: dict):
     imz = InMemoryZip()
     [imz.append(file_name, file_content) for file_name, file_content in files.items()]
-    return convert_binary_to_file(imz.read_binary(), filetype=FileType.ZIP)
+    return convert_binary_to_file(imz.read_binary(), force_ext=FileType.ZIP)
 
 
 def unzip_django_zipfile(content_file: ContentFile):
@@ -51,12 +63,10 @@ def unzip_django_zipfile(content_file: ContentFile):
     with ZipFile(content_file.file, 'r') as zf:
         for in_zip_file_name in zf.namelist():
             binary = zf.read(in_zip_file_name)
-            data_file_structure[in_zip_file_name] = convert_binary_to_file(binary)
+            ext = FileType.identify(in_zip_file_name, default_to_unknown=False)
+            data_file_structure[in_zip_file_name] = convert_binary_to_file(binary, filename_based_on=in_zip_file_name,
+                                                                           force_ext=ext)
     return data_file_structure
-
-
-def get_file_type(filename):
-    return FileType(os.path.splitext(filename)[1])
 
 
 def get_filename(path):
@@ -64,14 +74,19 @@ def get_filename(path):
     return os.path.splitext(basename)[0]
 
 
-def get_default_file_name(based_on=None, force_ext: FileType = None) -> str:
+def get_file_ext(path):
+    return os.path.splitext(path)[1]
+
+
+def get_default_file_name(based_on=None, force_ext: Union[FileType, str] = None) -> str:
     base_name = str(uuid.uuid4())
+    # TODO identify and remove guids before adding
     if based_on:
         base_name += "-" + get_filename(based_on)
     if force_ext:
-        base_name += force_ext.value
+        base_name += force_ext.value if isinstance(force_ext, FileType) else force_ext
     elif based_on:
-        base_name += get_file_type(based_on).value
+        base_name += FileType.identify(based_on).value
     else:
         base_name += FileType.TXT.value
     return base_name

@@ -8,8 +8,8 @@ from django.core.files.base import ContentFile
 
 from MetaDataApi.utils import JsonUtils, JsonType
 from MetaDataApi.utils.django_utils import django_file_utils
-from MetaDataApi.utils.django_utils.django_file_utils import FileType, get_file_type, unzip_django_zipfile, \
-    convert_file_to_str
+from MetaDataApi.utils.django_utils.django_file_utils import FileType, unzip_django_zipfile, convert_file_to_str
+from MetaDataApi.utils.json_utils.json_utils import JsonTypeInstance
 from dataproviders.models import DataFileUpload, DataFetch
 from dataproviders.models.DataFile import DataFile
 from dataproviders.models.DataFileSourceBase import DataFileSourceBase
@@ -31,17 +31,22 @@ def get_data_from_zipfile(file: ContentFile, origin_name):
     zip_file_object_name = infer_object_name_from_path(cleaned_file_path)
     for inner_zip_file_name, in_zip_file_content in unzip_django_zipfile(file).items():
         file_data = get_inner_zip_file_data(inner_zip_file_name, in_zip_file_content)
-        file_object_name = infer_object_name_from_path(inner_zip_file_name)
-        object_name = join_object_names((origin_name, zip_file_object_name, file_object_name))
-        if object_name in data.keys():
-            add_file_data_as_list(file_data, object_name, data)
-        else:
-            data.update({object_name: file_data})
+        if isinstance(file_data, JsonTypeInstance):
+            add_file_data(data, file_data, inner_zip_file_name, origin_name, zip_file_object_name)
     return data
 
 
+def add_file_data(data, file_data, inner_zip_file_name, origin_name, zip_file_object_name):
+    file_object_name = infer_object_name_from_path(inner_zip_file_name)
+    object_name = join_object_names((origin_name, zip_file_object_name, file_object_name))
+    if object_name in data.keys():
+        add_file_data_as_list(file_data, object_name, data)
+    else:
+        data.update({object_name: file_data})
+
+
 def get_inner_zip_file_data(in_zip_file_name, in_zip_file_content):
-    file_type = get_file_type(in_zip_file_name)
+    file_type = FileType.identify(in_zip_file_name)
     get_data_from_filetype = GET_DATA_FROM_FILETYPE_METHOD_SELECTOR.get(file_type)
     file_data = get_data_from_filetype(
         in_zip_file_content,
@@ -74,27 +79,29 @@ def validate_and_insert_origin_name(data, origin_name):
         return validated_data
 
 
-def get_data_from_txt_file(file: ContentFile, origin_name) -> JsonType:
-    raise NotImplementedError
+def get_data_from_unknown_file(file: ContentFile, origin_name):
+    logger.warning(f"this file type is not supported: {file.name}")
 
 
 GET_DATA_FROM_FILETYPE_METHOD_SELECTOR = {
     FileType.JSON: get_data_from_json_file,
     FileType.CSV: get_data_from_csv_file,
-    FileType.TXT: get_data_from_txt_file,
     FileType.ZIP: get_data_from_zipfile,
+    FileType.TXT: get_data_from_unknown_file,
+    FileType.UNKNOWN: get_data_from_unknown_file
 }
 
 
-def clean_data(data):
-    return json_key_value_string_replace.clean_key_value_strings(data)
+def clean_json_data(data):
+    if isinstance(data, JsonTypeInstance):
+        return json_key_value_string_replace.clean_key_value_strings(data)
 
 
 def clean_data_from_data_file(file: ContentFile, origin_name=None) -> JsonType:
-    filetype = get_file_type(file.name)
+    filetype = FileType.identify(file.name)
     get_data_from_filetype = GET_DATA_FROM_FILETYPE_METHOD_SELECTOR.get(filetype)
     data = get_data_from_filetype(file, origin_name)
-    cleaned_data = clean_data(data)
+    cleaned_data = clean_json_data(data)
     return cleaned_data
 
 

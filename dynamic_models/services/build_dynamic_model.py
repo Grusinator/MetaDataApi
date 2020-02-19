@@ -13,11 +13,6 @@ def build_models_from_provider_data_files(**data_file_filter):
         _try_build_model_from_data_file(data_file)
 
 
-def build_models_from_data_file(data_file_pk: int):
-    data_file = DataFile.objects.get(pk=data_file_pk)
-    _try_build_model_from_data_file(data_file)
-
-
 def _try_build_model_from_data_file(data_file: DataFile):
     data = data_file.read_data()
     root_label = get_root_label(data_file)
@@ -38,11 +33,6 @@ def load_data_from_provider_data_files(**data_file_filter):
         _try_load_data_from_data_file(data_file)
 
 
-def load_data_from_data_file(data_file_pk: int):
-    data_file = DataFile.objects.get(pk=data_file_pk)
-    return _try_load_data_from_data_file(data_file)
-
-
 def _try_load_data_from_data_file(data_file: DataFile):
     data = data_file.read_data()
     root_label = get_root_label(data_file)
@@ -57,5 +47,5 @@ def get_root_label(data_file: DataFile):
     try:
         return data_file.label_info["root_label"]
     except:
-        logger.error(f"root label was not found in label info, in DataFile object: {data_file}")
+        logger.info(f"root label was not found in label info, in DataFile object: {data_file}")
         return None
