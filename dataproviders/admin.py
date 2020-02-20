@@ -37,7 +37,10 @@ class DataProviderAdmin(admin.ModelAdmin):
         for data_provider in queryset:
             InitializeDataProviders.update_data_provider_to_json_file(data_provider)
 
-    actions = ["save_to_json_file"]
+    def reload_data_providers(self, request, queryset):
+        InitializeDataProviders.load()
+
+    actions = ["save_to_json_file", "reload_data_providers"]
 
 
 admin.site.register(DataProvider, DataProviderAdmin)

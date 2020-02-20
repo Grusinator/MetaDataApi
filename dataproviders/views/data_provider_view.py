@@ -6,7 +6,6 @@ from django.shortcuts import redirect
 from django.shortcuts import render
 
 from dataproviders.models import DataProvider, DataProviderUser
-from dataproviders.services.initialize_data_providers import InitializeDataProviders
 
 logger = logging.getLogger(__name__)
 
@@ -15,17 +14,14 @@ logger = logging.getLogger(__name__)
 def data_provider_list_view(request):
     if not request.user.is_authenticated:
         return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
-    if request.method == "POST":
-        InitializeDataProviders.load()
-        return redirect('providers')
-    else:
-        data_providers = DataProvider.objects.all()
 
-        return render(request, 'dataproviders.html',
-                      {
-                          "dataproviders": data_providers,
-                          "user_id": request.user.pk,
-                      })
+    data_providers = DataProvider.objects.all()
+
+    return render(request, 'dataproviders.html',
+                  {
+                      "dataproviders": data_providers,
+                      "user_id": request.user.pk,
+                  })
 
 
 @login_required
