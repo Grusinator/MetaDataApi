@@ -131,7 +131,7 @@
         },
         "django-generic-serializer": {
             "hashes": [
-                "sha256:a2618da904a1d3f600fc6e4052712d0244e7b2bc32c5e68c6b93bf7b06d49af1"
+                "sha256:3e4d2a313a7754ffa8eeb1ebd0e79604ae0492afb3b6bd044efc374656749ff0"
             ],
             "path": "./lib/django_generic_serializer-0.0.2-py3-none-any.whl",
             "version": "==0.0.2"
@@ -154,7 +154,7 @@
         },
         "django-json2model": {
             "hashes": [
-                "sha256:f162920e04484c72868c7729f6cdc249d24e63d3905b7007f653e5102665e183"
+                "sha256:05100adb84cbbca6a0a0ed0da0e7bd0281ff5679dd1d1b1818521eb7e7764707"
             ],
             "path": "./lib/django_json2model-0.2.7-py3-none-any.whl",
             "version": "==0.2.7"

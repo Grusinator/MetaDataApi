@@ -43,7 +43,6 @@ class TestSerializableModelDeserialize(TransactionTestCase):
 
         self.assertEqual(dp.provider_name, data["provider_name"])
         self.assertEqual(dp.endpoints.count(), 2)
-        self.assertEqual(dp.api_type, data["api_type"])
         self.assertEqual(dp.endpoints.first().endpoint_url, data["endpoints"][0]["endpoint_url"])
 
     def test_deserializing_configs_both(self):

@@ -7,6 +7,7 @@ from jsonfield import JSONField
 
 from MetaDataApi.custom_storages import PrivateMediaStorage
 from MetaDataApi.utils import JsonUtils
+from dataproviders.models.DataProvider import DataProvider
 
 data_file_on_save_methods = []
 
@@ -15,6 +16,7 @@ class DataFile(TaskMixin, models.Model):
     date_created = models.DateField(auto_now=True)
     data_file = models.FileField(upload_to=settings.DATAFILE_STORAGE_PATH, storage=PrivateMediaStorage())
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    data_provider = models.ForeignKey(DataProvider, on_delete=models.CASCADE)
     label_info = JSONField(null=True, blank=True)
 
     def __str__(self):

@@ -7,6 +7,7 @@ from djcelery_model.models import TaskMixin
 
 from MetaDataApi.custom_storages import PrivateMediaStorage
 from dataproviders.models.DataFile import DataFile
+from dataproviders.models.DataProvider import DataProvider
 
 
 class DataFileSourceBase(TaskMixin, models.Model):
@@ -16,6 +17,7 @@ class DataFileSourceBase(TaskMixin, models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     refined_data_file = models.OneToOneField(DataFile, on_delete=models.SET_NULL, null=True, blank=True)
     has_been_refined = models.BooleanField(default=False)
+    data_provider = models.ForeignKey(DataProvider, on_delete=models.CASCADE)
 
     class Meta:
         abstract = True

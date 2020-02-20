@@ -25,7 +25,7 @@ class TestSerializableModelSerialize(TransactionTestCase):
         )
         from generic_serializer import SerializableModelFilter
         data = data_provider.serialize(filter=SerializableModelFilter(max_depth=0))
-        expected = {'provider_name': 'dsfsd4', 'api_type': 'OauthRest', 'api_endpoint': ''}
+        expected = {'provider_name': 'dsfsd4', 'api_endpoint': None}
         self.assertDictEqual(expected, data)
 
     @unittest.skip("move to Serializer project, failing due to known issues")
@@ -89,3 +89,81 @@ class TestSerializableModelSerialize(TransactionTestCase):
     @unittest.skip("fails because validated data on data dumps are not correct, needs fixing.")
     def test_serialization_of_strava(self):
         dp = MockDataProvider.build_strava_data_provider_objects()
+
+    @unittest.skip("move to Serializer project, failing due to known issues")
+    def test_http_dynamic_serializer_deserialize(self):
+        data = self.build_http_expected_json()
+        exp_obj = self.build_http_model_objects()
+
+        from dataproviders.models import HttpConfig
+        from generic_serializer import SerializableModelFilter
+        obj = HttpConfig.deserialize(
+            data=data,
+            filter=SerializableModelFilter(
+                max_depth=0,
+                exclude_labels=("dataprovideruser", "data_provider", "data_provider_node"),
+                start_object_name="data_provider"
+            )
+        )
+        self.assertEqual(exp_obj.header, obj.header)
+        self.assertEqual(exp_obj.url_encoded_params, obj.url_encoded_params)
+
+    def test_http_dynamic_serializer_serialize(self):
+        expected = self.build_http_expected_json()
+
+        http = self.build_http_model_objects()
+
+        from generic_serializer import SerializableModelFilter
+        res = http.serialize(filter=SerializableModelFilter(
+            exclude_labels=("body_type", "body_content", "data_provider", "request_type")))
+        self.assertEqual(res, expected)
+
+    def assert_meta_equal(self, dyna, stat):
+        self.assertSetEqual(set(stat.Meta.fields), set(dyna.Meta.fields))
+        self.assertEqual(stat.Meta.model, dyna.Meta.model)
+
+    def build_http_model_objects(self):
+        from dataproviders.models import DataProvider
+        data_provider = DataProvider.objects.create(
+            provider_name="test"
+        )
+        from dataproviders.models import HttpConfig
+        http = HttpConfig.objects.create(
+            data_provider=data_provider,
+            url_encoded_params={
+                "d": "a",
+                "c": "t"
+            },
+            header={
+                "User-Agent": "Tinder",
+                "Content-Type": "application-json"
+            },
+        )
+        return http
+
+    def build_http_expected_json(self):
+        expected = {
+            "header": {
+                "User-Agent": "Tinder",
+                "Content-Type": "application-json"
+            },
+            "url_encoded_params": {
+                "d": "a",
+                "c": "t"
+            },
+        }
+        return expected
+
+    @staticmethod
+    def build_default_filter(max_depth=0):
+        from generic_serializer import SerializableModelFilter
+        filter = SerializableModelFilter(
+            max_depth=max_depth,
+            exclude_labels=(
+                "data_provider",
+                'body_type',
+                'body_content',
+                'request_type'
+            )
+        )
+        return filter
