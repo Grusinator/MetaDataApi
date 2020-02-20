@@ -35,6 +35,7 @@ parameterized = "*"
 django-cors-headers = "*"
 django-json2model = {path = "./lib/django_json2model-0.2.7-py3-none-any.whl"}
 django-generic-serializer = {path = "./lib/django_generic_serializer-0.0.2-py3-none-any.whl"}
+python-dotenv = "*"
 
 [dev-packages]
 eventlet = "==0.25.1"        #issue with eventlet, for celery on windows wrap_socket() got an unexpected keyword argument '_context'
@@ -46,6 +47,8 @@ autopep8 = "*"
 rope = "*"
 coverage = "*"
 codacy-coverage = "*"
+meta-data-client = {editable = true,path = "./../meta-data-client"}
+matplotlib = "*"
 
 [requires]
 python_version = "3.7"
