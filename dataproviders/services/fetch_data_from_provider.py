@@ -65,7 +65,7 @@ def _build_header(endpoint: Endpoint, access_token: str):
     except HttpConfig.DoesNotExist:
         logger.warning("dataprovider has no http config, so header will be default")
 
-    if endpoint.data_provider.api_type == ApiTypes.OAUTH_REST.value:
+    if endpoint.api_type == ApiTypes.OAUTH_REST.value:
         header["Authorization"] = "Bearer %s" % access_token
 
     return header

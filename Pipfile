@@ -49,6 +49,7 @@ coverage = "*"
 codacy-coverage = "*"
 meta-data-client = {editable = true,path = "./../meta-data-client"}
 matplotlib = "*"
+jupyter = "*"
 
 [requires]
 python_version = "3.7"

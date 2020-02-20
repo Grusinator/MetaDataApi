@@ -3,15 +3,13 @@ from django.db import models
 from django.urls import reverse
 from generic_serializer import SerializableModel
 
-from dataproviders.models.ApiTypes import ApiTypes
-
 
 class DataProvider(models.Model, SerializableModel):
     icon_image_url = models.URLField(null=True, blank=True)
     # icon_image = models.ImageField(null=True, blank=True)
     provider_name = models.TextField(unique=True)
-    api_type = models.TextField(choices=ApiTypes.build_choices(), default=ApiTypes.OAUTH_REST.value)
-    api_endpoint = models.TextField()
+    provider_url = models.URLField(null=True, blank=True)
+    api_endpoint = models.TextField(null=True, blank=True)
 
     def get_internal_view_url(self):
         return reverse('provider_detail', args=[str(self.provider_name)])
