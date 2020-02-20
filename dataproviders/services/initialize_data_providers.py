@@ -48,7 +48,7 @@ class InitializeDataProviders:
     @classmethod
     def try_create_provider(cls, provider_data: dict):
         try:
-            cls.create_data_provider_v2(provider_data)
+            cls.create_data_provider(provider_data)
         except Exception as e:
             logger.error(f'error durring loading of dataprovider {provider_data["provider_name"]} due to error {e}')
 
@@ -99,7 +99,7 @@ class InitializeDataProviders:
             data_providers_file.write(JsonUtils.dumps(data))
 
     @classmethod
-    def create_data_provider_v2(cls, provider_data):
+    def create_data_provider(cls, provider_data):
         provider_name = provider_data["provider_name"]
         data_provider = DataProvider.exists(provider_name)
         if data_provider:

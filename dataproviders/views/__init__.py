@@ -1,3 +1,6 @@
-from .data_provider_view import data_provider_list_view, data_provider_view
+from .data_fetch_view import data_fetch_view
+from .data_provider_detail_view import data_provider_view
+from .data_providers_list_view import data_provider_list_view
+from .endpoint_detail_view import endpoint_detail_view
 from .file_upload_view import file_upload_view
 from .oauth2redirect_view import oauth2redirect_view

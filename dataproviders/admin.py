@@ -28,7 +28,7 @@ class EndpointAdmin(BaseModelAdmin):
 
     actions = ["fetch_data_from_endpoint"]
 
-
+@admin.register(DataProvider)
 class DataProviderAdmin(admin.ModelAdmin):
     # list_display = ['profile', 'provider.provider_name']
     ordering = ['provider_name']
@@ -41,9 +41,6 @@ class DataProviderAdmin(admin.ModelAdmin):
         InitializeDataProviders.load()
 
     actions = ["save_to_json_file", "reload_data_providers"]
-
-
-admin.site.register(DataProvider, DataProviderAdmin)
 
 
 @admin.register(DataFetch)

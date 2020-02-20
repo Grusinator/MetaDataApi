@@ -11,7 +11,7 @@ ADMIN_REORDER = (
     {'app': 'django_celery_results', 'label': "Celery results"},
     {'app': 'django_celery_beat', 'label': "Celery Cron jobs", },
     {'app': 'dataproviders', 'label': 'dataproviders'},
-    #{'app': 'dynamic_models', 'label': 'dynamic models'},
+    {'app': 'dynamic_models', 'label': 'dynamic models'},
     {'app': 'json2model', 'label': 'dynamic models'},
     {'app': 'mutant', 'label': 'dynamic model definitions', },
     {'app': 'related', 'label': 'dynamic model definition relations'},

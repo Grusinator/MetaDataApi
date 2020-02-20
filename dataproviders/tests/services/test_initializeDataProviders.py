@@ -66,7 +66,7 @@ class TestInitializeDataProviders(TransactionTestCase):
             "data_fetches"
         )
 
-        InitializeDataProviders.create_data_provider_v2(data)
+        InitializeDataProviders.create_data_provider(data)
 
         strava_dp = DataProvider.objects.get(provider_name="strava")
         self.assertEqual(strava_dp.oauth_config.client_id, "28148")
