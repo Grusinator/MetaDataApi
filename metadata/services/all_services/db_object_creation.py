@@ -2,7 +2,8 @@
 import logging
 
 # Get an instance of a logger
-from MetaDataApi.utils.common_utils import DataTypeUtils
+from json2model.services import data_type_transform
+
 from metadata.models import *
 from metadata.services.all_services.base_functions import BaseMetaDataService
 
@@ -25,7 +26,7 @@ class DbObjectCreation(BaseMetaDataService):
 
     def try_create_attribute(self, parrent_object, data, label):
 
-        data_as_type = DataTypeUtils.identify_data_type(data)
+        data_as_type = data_type_transform.transform_data_type(data)
         data_type = type(data_as_type)  # if data_as_type is not None else None
 
         if parrent_object is not None:
@@ -74,7 +75,7 @@ class DbObjectCreation(BaseMetaDataService):
                 logger.error("object_create_" + str(e))
 
     def try_create_attribute_instance(self, parrent_object, data, label):
-        data_as_type = DataTypeUtils.identify_data_type(data)
+        data_as_type = data_type_transform.transform_data_type(data)
         data_type = type(data_as_type)  # if data_as_type is not None else None
         # create the attribute with the parrent
         # label since its a list of values

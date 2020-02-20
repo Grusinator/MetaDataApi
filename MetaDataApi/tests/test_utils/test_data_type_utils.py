@@ -2,8 +2,7 @@ from datetime import datetime
 
 import django
 from django.test import TransactionTestCase
-
-from MetaDataApi.utils.common_utils import DataTypeUtils
+from json2model.services import data_type_transform
 
 
 class TestJsonUtils(TransactionTestCase):
@@ -31,6 +30,6 @@ class TestJsonUtils(TransactionTestCase):
 
         inputd, expected = zip(*input_vs_expected)
 
-        resp = [type(DataTypeUtils.identify_data_type(elm)) for elm in inputd]
+        resp = [type(data_type_transform.transform_data_type(elm)) for elm in inputd]
 
         self.assertListEqual(list(resp), list(expected))

@@ -1,8 +1,9 @@
 import logging
 
 from django.db import IntegrityError, transaction
+from json2model.services import data_type_transform
 
-from MetaDataApi.utils import DictUtils, DataTypeUtils
+from MetaDataApi.utils import DictUtils
 from MetaDataApi.utils import IJsonIterator
 from metadata.models import (
     Node,
@@ -68,7 +69,7 @@ class BuildDataObjectsFromJson(IJsonIterator):
             data = data.get('value')
 
         # identify datatype
-        data_as_type = DataTypeUtils.identify_data_type(data)
+        data_as_type = data_type_transform.transform_data_type(data)
         data_type = type(data_as_type)
 
         if att is None:
