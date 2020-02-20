@@ -91,3 +91,5 @@ data_providers.json
 
 celerybeat.pid
 
+/notebooks/.ipynb_checkpoints/analysis-checkpoint.ipynb
+.env
