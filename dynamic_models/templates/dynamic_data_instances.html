@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>View data</h1>
+    <h2>{{ model_name }}</h2>
+    {% if dynamic_data_instances %}
+        <table id="table" style="width:100%">
+            {% if field_names %}
+                <tr>
+                    <td>id</td>
+                    {% for field_name in field_names %}
+                        <td>{{ field_name }}</td>
+                    {% endfor %}
+                </tr>
+            {% endif %}
+
+            {% for data_instance in dynamic_data_instances %}
+                <tr>
+                    <td>
+                        <p> {{ data_instance.id }} </p>
+                    </td>
+                    {% if field_names %}
+                        {% for field_value in data_instance.field_values %}
+                            <td>{{ field_value }}</td>
+                        {% endfor %}
+                    {% else %}
+                        <td>{{ data_instance.col1 }}</td>
+                        <td>{{ data_instance.col2 }}</td>
+                        <td>{{ data_instance.col3 }}</td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>There are no objects.</p>
+    {% endif %}
+{% endblock %}

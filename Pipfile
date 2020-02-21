@@ -47,7 +47,6 @@ autopep8 = "*"
 rope = "*"
 coverage = "*"
 codacy-coverage = "*"
-meta-data-client = {editable = true,path = "./../meta-data-client"}
 matplotlib = "*"
 jupyter = "*"
 
