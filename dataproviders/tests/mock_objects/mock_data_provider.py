@@ -73,7 +73,6 @@ class MockDataProvider:
     def build_strava_data_provider_json(cls):
         return {
             "provider_name": "strava",
-            "api_type": "OauthRest",
             "api_endpoint": "https://www.strava.com/api/",
             "oauth_config": {
                 "authorize_url": "https://www.strava.com/oauth/authorize",
@@ -86,6 +85,7 @@ class MockDataProvider:
             },
             "endpoints": [
                 {
+                    "api_type": "OauthRest",
                     "endpoint_name": "activity",
                     "endpoint_url": "v3/activities",
                     "data_fetches": [
@@ -95,6 +95,7 @@ class MockDataProvider:
                     ]
                 },
                 {
+                    "api_type": "OauthRest",
                     "endpoint_name": "zone",
                     "endpoint_url": "v3/athlete/zones",
                     "data_fetches": [
@@ -104,6 +105,7 @@ class MockDataProvider:
                     ]
                 },
                 {
+                    "api_type": "OauthRest",
                     "endpoint_name": "athlete",
                     "endpoint_url": "v3/athlete",
                     "data_fetches": [

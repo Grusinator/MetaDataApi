@@ -2,10 +2,11 @@ from unittest.mock import patch
 
 import django
 from django.test import TransactionTestCase
+from generic_serializer import SerializableModelFilter
 from model_bakery import baker
 
 from MetaDataApi.tests.utils_for_testing.utils_for_testing import get_method_path
-from dataproviders.models import DataProvider
+from dataproviders.models import DataProvider, Endpoint
 from dataproviders.models.RequestType import RequestType
 from dataproviders.services.initialize_data_providers import InitializeDataProviders
 from dataproviders.tests.mock_objects.mock_data_provider import MockDataProvider
@@ -19,24 +20,34 @@ class TestInitializeDataProviders(TransactionTestCase):
         super(TestInitializeDataProviders, cls).setUpClass()
         django.setup()
 
+    def test_load_one_provider(self):
+        data = MockDataProvider.build_strava_data_provider_json()
+        with patch(get_method_path(InitializeDataProviders.get_data_providers_from_local_or_remote_file)) as mock:
+            mock.return_value = [data, ]
+            InitializeDataProviders.load()
+        data_provider = DataProvider.objects.get(provider_name="strava")
+        self.assertEqual(data_provider.api_endpoint, data["api_endpoint"])
+
+    def test_deserialize_serialize_provider(self):
+        filter = SerializableModelFilter(
+            exclude_labels=(),
+            max_depth=2,
+        )
+        data_provider = baker.make(DataProvider, make_m2m=False)
+        data = data_provider.serialize(filter=filter)
+        new_dp = DataProvider.deserialize(data=data, filter=filter)
+        self.assertEqual(new_dp.provider_name, data_provider.provider_name)
+
     def test_load_from_json(self):
-        from dataproviders.services.initialize_data_providers import InitializeDataProviders
         InitializeDataProviders.load()
-
-        from dataproviders.models import DataProvider
         dps = DataProvider.objects.all()
-
-        from dataproviders.models import Endpoint
-
         client_ids = list(map(lambda x: getattr(getattr(x, "oauth_config", None), "client_id", None), dps))
-
         expected_client_ids = ['a80378abe1059ef7c415cf79b09b1270f828c4a0fbfdc52dbec06ae5f71b4bb6', '28148',
                                'Q43N7PFF2RI3SF52',
                                '166351402500-m9302qf47ua66qbr1gdbgrronssnm2v2.apps.googleusercontent.com',
                                '166351402500-m9302qf47ua66qbr1gdbgrronssnm2v2.apps.googleusercontent.com',
                                '37b4731d-bb3a-4666-a4fa-6eb1fdffa146', 'acfb3400228146bdbd8dbf8de4046cd0', None, None,
                                None]
-
         self.assertListEqual(expected_client_ids, client_ids)
 
         ep = list(Endpoint.objects.all())
