@@ -1,8 +1,30 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>View data</h1>
-    <h2>{{ model_name }}</h2>
+    <header class="major">
+        <h2>View dynamic data</h2>
+        {% if selected_model_name %}
+            <p>{{ selected_model_name }}</p>
+        {% endif %}
+    </header>
+    <div>
+        <form method="get">
+            <label for="model">Choose a model:</label>
+            <select id="model" name="model">
+                <option value="">None</option>
+                {% for model_name in model_names %}
+                    <option value={{ model_name }}
+                                    {% if selected_model_name == model_name %}
+                                        selected="selected"
+                                    {% endif %}
+                    >{{ model_name }}</option>
+                {% endfor %}
+            </select>
+            <input type="submit" value="refresh"/>
+        </form>
+    </div>
+
+
     {% if dynamic_data_instances %}
         <table id="table" style="width:100%">
             {% if field_names %}
