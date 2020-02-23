@@ -87,43 +87,20 @@ class MockDataProvider:
                 {
                     "api_type": "OauthRest",
                     "endpoint_name": "activity",
-                    "endpoint_url": "v3/activities",
-                    "data_fetches": [
-                        {
-                            "date_downloaded": "20102019",
-                        }
-                    ]
+                    "endpoint_url": "v3/activities"
                 },
                 {
                     "api_type": "OauthRest",
                     "endpoint_name": "zone",
-                    "endpoint_url": "v3/athlete/zones",
-                    "data_fetches": [
-                        {
-                            "date_downloaded": "21102019",
-                        }
-                    ]
+                    "endpoint_url": "v3/athlete/zones"
                 },
                 {
                     "api_type": "OauthRest",
                     "endpoint_name": "athlete",
-                    "endpoint_url": "v3/athlete",
-                    "data_fetches": [
-                        {
-                            "date_downloaded": "22102019",
-                        }
-                    ]
+                    "endpoint_url": "v3/athlete"
                 }
             ]
         }
-
-    @classmethod
-    def build_strava_data_provider_objects(cls):
-        from dataproviders.models import DataProvider
-        dp = DataProvider.create(
-            MockDataProvider.build_strava_data_provider_json()
-        )
-        return dp
 
     @classmethod
     def create_data_provider_with_endpoints(cls):

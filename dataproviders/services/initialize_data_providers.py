@@ -8,6 +8,7 @@ from generic_serializer import SerializableModelFilter
 
 from MetaDataApi.utils import JsonUtils
 from dataproviders.models import DataProvider
+from dataproviders.serializers.DataProviderSerializer import DataProviderSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -104,7 +105,21 @@ class InitializeDataProviders:
         if data_provider:
             data_provider.delete()
             logger.debug("provider exists - deleted")
-        data_provider = DataProvider.deserialize(
+        data_provider = cls.deserialize_data_provider(provider_data)
+        logger.debug(f"provider saved: {provider_name}")
+        return data_provider
+
+    @classmethod
+    def deserialize_data_provider(cls, provider_data):
+        serializer = DataProviderSerializer(data=provider_data)
+        if serializer.is_valid():
+            return serializer.save()
+        else:
+            raise ValueError(serializer.errors)
+
+    @classmethod
+    def deserialize_data_provider_generic(cls, provider_data):
+        return DataProvider.deserialize(
             provider_data,
             filter=SerializableModelFilter(
                 exclude_labels=cls.exclude,
@@ -112,7 +127,6 @@ class InitializeDataProviders:
                 start_object_name="data_provider"
             )
         )
-        logger.debug(f"provider saved: {provider_name}")
 
     @classmethod
     def get_providers_from_aws(cls):

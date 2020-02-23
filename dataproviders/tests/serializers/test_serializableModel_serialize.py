@@ -86,9 +86,6 @@ class TestSerializableModelSerialize(TransactionTestCase):
         }
         self.assertEqual(expected, data)
 
-    @unittest.skip("fails because validated data on data dumps are not correct, needs fixing.")
-    def test_serialization_of_strava(self):
-        dp = MockDataProvider.build_strava_data_provider_objects()
 
     @unittest.skip("move to Serializer project, failing due to known issues")
     def test_http_dynamic_serializer_deserialize(self):
