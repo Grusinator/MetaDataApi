@@ -9,3 +9,6 @@ class OauthConfigSerializer(serializers.ModelSerializer):
     class Meta:
         model = OauthConfig
         exclude = ["id", "data_provider"]
+
+    def create(self, validated_data):
+        return self.Meta.model.objects.create(**validated_data)

@@ -32,3 +32,6 @@ class HttpConfigSerializer(ModelSerializer):
             "fields": ["header", "url_encoded_params"]
         }
         return type("Meta", (), properties)
+
+    def create(self, validated_data):
+        return self.Meta.model.objects.create(**validated_data)

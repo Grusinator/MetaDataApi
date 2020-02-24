@@ -54,8 +54,8 @@ class InitializeDataProviders:
 
     @classmethod
     def update_data_provider_to_json_file(cls, data_provider: DataProvider):
-        serialized_dp = data_provider.serialize(
-            filter=cls.model_filter)  # TODO test this properly, the serialization is not correct
+        serialized_dp = cls.serialize_data_provider(data_provider)
+        # TODO test this properly, the serialization is not correct
         data = InitializeDataProviders.read_data_from_data_provider_json_file(fail_on_file_missing=False)
         index, provider = InitializeDataProviders.find_provider_with_name(data, data_provider)
         # TODO serialize by id instead
@@ -68,7 +68,7 @@ class InitializeDataProviders:
     @classmethod
     def find_provider_with_name(cls, data: list, data_provider: DataProvider):
         for i, provider in enumerate(data):
-            if provider["provider_name"] == data_provider.provider_name:
+            if provider.get("provider_name", None) == data_provider.provider_name:
                 return i, provider
         return None, None
 
@@ -108,6 +108,15 @@ class InitializeDataProviders:
         data_provider = cls.deserialize_data_provider(provider_data)
         logger.debug(f"provider saved: {provider_name}")
         return data_provider
+
+    @classmethod
+    def serialize_data_provider(cls, data_provider):
+        serializer = DataProviderSerializer(instance=data_provider)
+        return serializer.data
+
+    @classmethod
+    def serialize_data_provider_generic(cls, data_provider):
+        data_provider.serialize(filter=cls.model_filter)
 
     @classmethod
     def deserialize_data_provider(cls, provider_data):

@@ -1,7 +1,25 @@
+from dataproviders.models import Endpoint, DataProvider
 from dataproviders.models.ApiTypes import ApiTypes
 
 
 class MockDataProvider:
+
+    @classmethod
+    def create_data_provider_with_endpoints(cls):
+        data_provider = DataProvider.objects.create(provider_name="test_provider_name", api_endpoint="test_endpoint")
+        Endpoint.objects.create(
+            api_type=ApiTypes.OAUTH_GRAPHQL.value,
+            data_provider=data_provider,
+            endpoint_name="test1",
+            endpoint_url="testurl"
+        )
+        Endpoint.objects.create(
+            api_type=ApiTypes.OAUTH_GRAPHQL.value,
+            data_provider=data_provider,
+            endpoint_name="test2",
+            endpoint_url="testurl"
+        )
+        return data_provider
 
     @classmethod
     def build_full_data(cls):
@@ -27,7 +45,8 @@ class MockDataProvider:
     @classmethod
     def build_base_data(cls):
         return {
-            'provider_name': 'dsfsd4',
+            "icon_image_url": "http://someurl.com/image",
+            'provider_name': 'test_provider_name',
             'api_type': ApiTypes.OAUTH_GRAPHQL.value,
             'api_endpoint': '56',
         }
@@ -101,26 +120,3 @@ class MockDataProvider:
                 }
             ]
         }
-
-    @classmethod
-    def create_data_provider_with_endpoints(cls):
-        from dataproviders.models import DataProvider
-        data_provider = DataProvider.objects.create(
-            provider_name="dsfsd4",
-            api_type=ApiTypes.OAUTH_GRAPHQL.value
-        )
-        data_provider.save()
-        from dataproviders.models import Endpoint
-        endpoint = Endpoint.objects.create(
-            data_provider=data_provider,
-            endpoint_name="test1",
-            endpoint_url="testurl"
-        )
-        endpoint.save()
-        endpoint2 = Endpoint.objects.create(
-            data_provider=data_provider,
-            endpoint_name="test2",
-            endpoint_url="testurl"
-        )
-        endpoint2.save()
-        return data_provider
