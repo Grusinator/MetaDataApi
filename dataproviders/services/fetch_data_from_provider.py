@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime, timedelta
-from urllib import request
 
+import requests
 from django.contrib.auth.models import User
 from django.core.exceptions import MultipleObjectsReturned
 
@@ -46,11 +46,9 @@ def _get_endpoint(data_provider, endpoint_name):
 
 
 def _request_from_endpoint(url, body, header):
-    req = request.Request(url, body, header)
-    response = request.urlopen(req)
-    response.raise_for_status()
-    html = response.read()
-    return html
+    r = requests.get(url, body, headers=header)
+    r.raise_for_status()
+    return r.json()
 
 
 def _save_data_to_file(endpoint: Endpoint, user: User, data: str):
@@ -73,7 +71,7 @@ def _build_header(endpoint: Endpoint, access_token: str):
 
 
 def _build_body(endpoint):
-    return None
+    return {}
 
 
 def _build_url(endpoint, access_token):

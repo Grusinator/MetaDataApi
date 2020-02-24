@@ -5,7 +5,8 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db.models import TextField, Q
 from django.shortcuts import render
-from json2model.services.dynamic_model.dynamic_model_utils import get_dynamic_model, get_all_model_definition_names
+from json2model.services.dynamic_model.dynamic_model_utils import get_dynamic_model, get_all_model_definition_names, \
+    get_all_dynamic_models
 
 from dynamic_models.schema import get_all_field_names_of_type
 from dynamic_models.views.dynamic_view_object import DynamicViewObject
@@ -31,15 +32,19 @@ def dynamic_data_instances_view(request):
     page = request.GET.get('page', 1)
     search_query = request.GET.get('search', 1)
     html_params = {"model_names": model_names, "selected_model_name": selected_model_name, "search_query": search_query}
-    if selected_model_name:
-        model = get_dynamic_model(selected_model_name)
+    html_params["view_instances"] = create_view_instances(selected_model_name, search_query, user_pk, page)
+    return render(request, 'dynamic_data_instances.html', html_params)
+
+
+def create_view_instances(selected_model_name, search_query, user_pk, page):
+    models = [get_dynamic_model(selected_model_name)] if selected_model_name else get_all_dynamic_models()
+    view_instances = []
+    for model in models:
         instances = query_instances(model, search_query, user_pk)
         # TODO figure out a smart way to only create dynamicViewObjects of insances in page
-        view_instances = [DynamicViewObject(inst) for inst in instances]
-        view_instances = make_paginator(page, view_instances)
-        html_params["view_instances"] = view_instances
-        html_params["field_names"] = view_instances[0].field_names if model and len(instances) else None
-    return render(request, 'dynamic_data_instances.html', html_params)
+        view_instances.extend([DynamicViewObject(inst) for inst in instances])
+    paged_view_instances = make_paginator(page, view_instances)
+    return paged_view_instances
 
 
 def query_instances(model, search_query, user_pk):

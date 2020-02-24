@@ -24,9 +24,10 @@ class JsonUtils:
         return json.loads(text, encoding=cls.encoding)
 
     @classmethod
-    def clean(cls, text: str) -> str:
-        json_obj = json.loads(text, encoding=cls.encoding)
-        return json.dumps(json_obj, indent=4)
+    def clean(cls, data: Union[str, JsonType]) -> str:
+        if isinstance(data, str):
+            data = json.loads(data, encoding=cls.encoding)
+        return json.dumps(data, indent=4)
 
     @staticmethod
     def dumps(json_obj: JsonType) -> str:
