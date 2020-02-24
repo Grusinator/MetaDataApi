@@ -3,10 +3,9 @@
 {% block content %}
 
 
-<div>
+    <div>
         <h2>{{ data_provider.provider_name }} {{ endpoint.endpoint_name }}</h2>
     </div>
-
     <div>
         <a href="{{ data_provider.get_internal_view_url }}">
             Back to: {{ data_provider.provider_name }}
@@ -24,8 +23,6 @@
             <td>filename</td>
             <td>date</td>
             <td>Go to file</td>
-            <td>loaded</td>
-            <td>load file</td>
         </tr>
         {% for data_fetch in data_fetches %}
             <tr>
@@ -33,23 +30,14 @@
                     <p> {{ data_fetch.pk }} </p>
                 </td>
                 <th>
-                    <p> {{ data_fetch.file }} </p>
+                    <p> {{ data_fetch.data_file_from_source }} </p>
                 </th>
                 <td>
-                    <p> {{ data_fetch.date_downloaded }} </p>
+                    <p> {{ data_fetch.date_created }} </p>
                 </td>
                 <td>
                     <form action="{{ data_fetch.get_internal_view_url }}" method="get">
                         <input type="submit" value="file"/>
-                    </form>
-                </td>
-                <td>
-                    <p> {{ data_fetch.loaded }} </p>
-                </td>
-                <td>
-                    <form method="get">
-                        <input name="load_file" type="hidden" value="{{ data_fetch.pk }}"/>
-                        <input type="submit" value="Load file"/>
                     </form>
                 </td>
             </tr>

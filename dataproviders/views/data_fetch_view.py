@@ -8,6 +8,6 @@ from dataproviders.models import DataFetch
 
 @login_required
 def data_fetch_view(request, file_name):
-    data_fetch = DataFetch.objects.get(file=settings.DATAFILE_STORAGE_PATH + file_name)
-    file_content = django_file_utils.convert_file_to_str(data_fetch.refined_data_file)
+    data_fetch = DataFetch.objects.get(data_file_from_source=settings.DATAFILE_STORAGE_PATH + file_name)
+    file_content = django_file_utils.convert_file_to_str(data_fetch.data_file_from_source)
     return render(request, 'data_file.html', {"file_content": file_content})
