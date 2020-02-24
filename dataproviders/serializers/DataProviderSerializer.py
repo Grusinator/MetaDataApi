@@ -7,9 +7,9 @@ from dataproviders.serializers.OauthConfigSerializer import OauthConfigSerialize
 
 
 class DataProviderSerializer(serializers.ModelSerializer):
-    oauth_config = OauthConfigSerializer(required=False)
-    http_config = HttpConfigSerializer(required=False)
-    endpoints = EndpointSerializer(many=True, required=False)
+    oauth_config = OauthConfigSerializer(required=False, allow_null=True)
+    http_config = HttpConfigSerializer(required=False, allow_null=True)
+    endpoints = EndpointSerializer(many=True, required=False, allow_null=True)
 
     class Meta:
         model = DataProvider

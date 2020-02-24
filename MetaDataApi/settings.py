@@ -37,7 +37,7 @@ def is_debugging():
 
 
 DEBUG = DEBUG or (ENV != Env.PROD) or is_debugging()
-DEBUG_PROPAGATE_EXCEPTIONS = not DEBUG
+DEBUG_PROPAGATE_EXCEPTIONS = (not DEBUG) and (ENV == ENV.PROD)
 
 ALLOWED_HOSTS = ["metadataapi.grusinator.com", "metadataapi.wsh-home.dk"]
 
