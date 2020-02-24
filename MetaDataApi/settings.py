@@ -36,7 +36,7 @@ def is_debugging():
     return (sys.gettrace() is not None)
 
 
-DEBUG = DEBUG or (ENV not in (Env.PROD)) or is_debugging()
+DEBUG = DEBUG or (ENV not in (Env.PROD, Env.PREPROD)) or is_debugging()
 DEBUG_PROPAGATE_EXCEPTIONS = (not DEBUG) and (ENV == ENV.PROD)
 
 ALLOWED_HOSTS = ["metadataapi.grusinator.com", "metadataapi.wsh-home.dk"]
