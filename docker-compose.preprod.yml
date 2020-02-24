@@ -22,7 +22,7 @@ services:
     volumes:
       - .:/code
     environment:
-      - ENV=PROD
+      - ENV=PREPROD
     ports:
       - 8000:8000
     depends_on:
@@ -33,7 +33,7 @@ services:
     command: celery -A MetaDataApi worker -l info
     restart: on-failure
     environment:
-      - ENV=PROD
+      - ENV=PREPROD
     volumes:
       - .:/code
     depends_on:
@@ -44,7 +44,7 @@ services:
     command: celery -A MetaDataApi beat -l INFO --pidfile= --scheduler django_celery_beat.schedulers:DatabaseScheduler
     restart: on-failure
     environment:
-      - ENV=PROD
+      - ENV=PREPROD
     volumes:
       - .:/code
     depends_on:
