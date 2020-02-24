@@ -5,7 +5,7 @@ from dataproviders import tasks
 from dataproviders.models import DataProvider, Endpoint, DataFetch, OauthConfig, HttpConfig, \
     DataProviderUser, DataFileUpload
 from dataproviders.models.DataFile import DataFile
-from dataproviders.services import oauth, InitializeDataProviders
+from dataproviders.services import oauth
 
 models = (
     OauthConfig,
@@ -28,19 +28,19 @@ class EndpointAdmin(BaseModelAdmin):
 
     actions = ["fetch_data_from_endpoint"]
 
+
 @admin.register(DataProvider)
 class DataProviderAdmin(admin.ModelAdmin):
     # list_display = ['profile', 'provider.provider_name']
     ordering = ['provider_name']
 
-    def save_to_json_file(self, request, queryset):
-        for data_provider in queryset:
-            InitializeDataProviders.update_data_provider_to_json_file(data_provider)
-
-    def reload_data_providers(self, request, queryset):
-        InitializeDataProviders.load()
-
-    actions = ["save_to_json_file", "reload_data_providers"]
+    # def save_to_json_file(self, request, queryset):
+    #     for data_provider in queryset:
+    #         InitializeDataProviders.update_data_provider_to_json_file(data_provider)
+    #
+    # def reload_data_providers(self, request, queryset):
+    #     InitializeDataProviders.load()
+    # actions = ["save_to_json_file", "reload_data_providers"]
 
 
 @admin.register(DataFetch)

@@ -1,3 +1,4 @@
+import errno
 import io
 import logging
 import os
@@ -7,6 +8,8 @@ from django.conf import settings
 from generic_serializer import SerializableModelFilter
 
 from MetaDataApi.utils import JsonUtils
+from MetaDataApi.utils.django_utils import django_file_utils
+from MetaDataApi.utils.django_utils.django_file_utils import FileType
 from dataproviders.models import DataProvider
 from dataproviders.serializers.DataProviderSerializer import DataProviderSerializer
 
@@ -15,6 +18,7 @@ logger = logging.getLogger(__name__)
 
 class InitializeDataProviders:
     data_providers_filename = "data_providers.json"
+    data_provider_backup_path = "data_providers_backup/"
     exclude = (
         "dataprovideruser",
         "data_fetch",
@@ -31,9 +35,32 @@ class InitializeDataProviders:
     )
 
     @classmethod
+    def create_backup_folder_if_not_exists(cls):
+        if not os.path.exists(cls.data_provider_backup_path):
+            try:
+                os.makedirs(cls.data_provider_backup_path)
+            except OSError as exc:  # Guard against race condition
+                if exc.errno != errno.EEXIST:
+                    raise
+
+    @classmethod
     def load(cls):
         providers = cls.get_data_providers_from_local_or_remote_file()
         [cls.try_create_provider(provider) for provider in providers]
+
+    @classmethod
+    def dump_all_providers_to_providers_file(cls):
+        providers = DataProvider.objects.all()
+        data = [cls.serialize_data_provider(provider) for provider in providers]
+        cls.create_backup_folder_if_not_exists()
+        filename = cls.create_backup_filename()
+        cls.write_data_to_json_file(data, filename=filename)
+        return filename
+
+    @classmethod
+    def create_backup_filename(cls):
+        filename = django_file_utils.get_default_file_name(based_on="data_providers", force_ext=FileType.JSON)
+        return os.path.join(cls.data_provider_backup_path, filename)
 
     @classmethod
     def get_data_providers_from_local_or_remote_file(cls):
@@ -94,8 +121,8 @@ class InitializeDataProviders:
                 return JsonUtils.validate(data or [])
 
     @classmethod
-    def write_data_to_json_file(cls, data):
-        with open(cls.data_providers_filename, 'w+') as data_providers_file:
+    def write_data_to_json_file(cls, data, filename=data_providers_filename):
+        with open(filename, 'w+') as data_providers_file:
             data_providers_file.write(JsonUtils.dumps(data))
 
     @classmethod

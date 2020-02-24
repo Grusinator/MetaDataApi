@@ -93,3 +93,4 @@ celerybeat.pid
 
 /notebooks/.ipynb_checkpoints/analysis-checkpoint.ipynb
 .env
+data_providers_backup/
