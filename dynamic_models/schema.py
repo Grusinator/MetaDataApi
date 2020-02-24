@@ -28,6 +28,7 @@ def create_graphene_type(model: Model):
         "model": model,
         "interfaces": (graphene.relay.Node,),
         "fields": get_all_field_names_of_type(model, attribute_types),
+        # TODO add better filter fields such as icontains on text etc
         "filter_fields": get_all_field_names_of_type(model, filter_attribute_types)
     }
     meta_class = type("Meta", (), meta_properties)
