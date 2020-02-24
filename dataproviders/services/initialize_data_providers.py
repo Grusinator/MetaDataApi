@@ -1,4 +1,3 @@
-import errno
 import io
 import logging
 import os
@@ -36,12 +35,7 @@ class InitializeDataProviders:
 
     @classmethod
     def create_backup_folder_if_not_exists(cls):
-        if not os.path.exists(cls.data_provider_backup_path):
-            try:
-                os.makedirs(cls.data_provider_backup_path)
-            except OSError as exc:  # Guard against race condition
-                if exc.errno != errno.EEXIST:
-                    raise
+        os.makedirs(cls.data_provider_backup_path, exist_ok=True)
 
     @classmethod
     def load(cls):
