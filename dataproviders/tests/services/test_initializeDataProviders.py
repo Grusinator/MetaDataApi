@@ -3,7 +3,7 @@ from unittest.mock import patch
 import django
 from django.test import TransactionTestCase
 
-from MetaDataApi.tests.utils_for_testing.utils_for_testing import get_method_path
+from MetaDataApi.utils.unittest_utils.unittest_utils import get_method_path
 from dataproviders.models import DataProvider, Endpoint
 from dataproviders.models.RequestType import RequestType
 from dataproviders.services.initialize_data_providers import InitializeDataProviders

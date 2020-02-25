@@ -5,6 +5,7 @@ import logging
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
+from json2model.services.data_type_transform import transform_data_type
 
 from MetaDataApi.utils import JsonUtils, JsonType
 from MetaDataApi.utils.django_utils import django_file_utils
@@ -65,10 +66,38 @@ def get_data_from_json_file(file: ContentFile, origin_name) -> JsonType:
 
 
 def get_data_from_csv_file(file: ContentFile, origin_name) -> JsonType:
-    with io.TextIOWrapper(file.file, encoding='utf-8') as text_file:
-        reader = csv.DictReader(text_file)
+    with io.TextIOWrapper(file, encoding='utf-8') as text_file:
+        fieldnames = get_or_create_fieldnames(text_file)
+        # TODO handle if header exists and how long it is.
+        reader = csv.DictReader(text_file, fieldnames=fieldnames, dialect=get_csv_dialect(text_file))
         data = [row for row in reader]
         return validate_and_insert_origin_name(data, origin_name)
+
+
+def get_or_create_fieldnames(text_file):
+    reader = csv.reader(text_file, dialect=get_csv_dialect(text_file))
+    for n, row in enumerate(reader):
+        transformed_row = [transform_data_type(cell) for cell in row]
+        is_header = all(isinstance(cell, str) for cell in transformed_row)
+        if is_header:
+            return row
+        elif n > 6:
+            return build_fieldnames(transformed_row)
+
+
+def get_csv_dialect(text_file):
+    sniffer = csv.Sniffer()
+    try:
+        dialect = sniffer.sniff(text_file.read(200), delimiters=";,")
+    except Exception:
+        return None
+    else:
+        text_file.seek(0)
+    return dialect
+
+
+def build_fieldnames(transformed_first_line):
+    return [f"{type(cell).__name__}_col{n}" for n, cell in enumerate(transformed_first_line)]
 
 
 def validate_and_insert_origin_name(data, origin_name):

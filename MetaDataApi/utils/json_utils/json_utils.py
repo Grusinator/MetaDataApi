@@ -5,6 +5,7 @@ from typing import Union
 JsonType = Union[dict, list]
 JsonTypeInstance = (dict, list)
 
+
 class JsonUtils:
     encoding = "utf-8"
 
@@ -12,6 +13,11 @@ class JsonUtils:
     def read_json_file(cls, filename):
         with open(filename, encoding=cls.encoding) as f:
             return cls.validate(f.read())
+
+    @classmethod
+    def write_to_file(cls, data, file):
+        with open(file, 'w') as outfile:
+            outfile.write(cls.clean(data))
 
     @classmethod
     def validate(cls, data: Union[str, JsonType]) -> JsonType:

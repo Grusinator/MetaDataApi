@@ -6,7 +6,7 @@ import django
 from django.conf import settings
 from django.test import TransactionTestCase
 
-from MetaDataApi.tests.utils_for_testing.utils_for_testing import UtilsForTesting
+from MetaDataApi.utils.unittest_utils.unittest_utils import UnittestUtils
 from metadata.tests.data import LoadTestData
 
 TAGS = set("rdf")
@@ -51,7 +51,7 @@ class TestSchemaIdentificationService(TransactionTestCase):
 
         instances = service.identify_from_json_data(input_data, schema, user, "body-temperature")
 
-        labels = UtilsForTesting.build_meta_instance_strings_for_comparison(instances)
+        labels = UnittestUtils.build_meta_instance_strings_for_comparison(instances)
 
         expected = self.open_m_health()
 
@@ -75,7 +75,7 @@ class TestSchemaIdentificationService(TransactionTestCase):
         instances = service.identify_from_json_data(
             data, schema, user, parrent_label="activities")
 
-        labels = UtilsForTesting.build_meta_instance_strings_for_comparison(instances)
+        labels = UnittestUtils.build_meta_instance_strings_for_comparison(instances)
 
         expected = self.expected_strava_instances2()
 

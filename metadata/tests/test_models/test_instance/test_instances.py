@@ -4,7 +4,7 @@ import unittest
 import django
 from django.test import TransactionTestCase
 
-from MetaDataApi.tests.utils_for_testing.utils_for_testing import UtilsForTesting
+from MetaDataApi.utils.unittest_utils.unittest_utils import UnittestUtils
 from metadata.models import SchemaNode
 from metadata.tests.data import LoadTestData
 
@@ -70,7 +70,7 @@ class TestModelInstances(TransactionTestCase):
         positive_list = [[type(att), att.base.label, att.object.pk, att.value]
                          for att in real_atts]
 
-        negative_list = [UtilsForTesting.mutate(
+        negative_list = [UnittestUtils.mutate(
             elm) for elm in list(positive_list)]
 
         positive_res = [Instance.exists_by_label(*args)
@@ -103,7 +103,7 @@ class TestModelInstances(TransactionTestCase):
         positive_list = [[obj, obj.base.label, children]
                          for obj, children in childrenslist]
 
-        negative_list = [UtilsForTesting.mutate(
+        negative_list = [UnittestUtils.mutate(
             elm) for elm in list(positive_list)]
 
         positive_res = [Instance.exists_by_label(*args)

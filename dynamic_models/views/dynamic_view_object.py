@@ -1,16 +1,9 @@
 from django.db.models import TextField, IntegerField, FloatField, BooleanField
 
+from MetaDataApi.utils.common_utils.data_type_utils import is_integer
 from dynamic_models.schema import get_all_field_names_of_type
 
 attribute_types = (TextField, IntegerField, FloatField, BooleanField)
-
-
-def is_integer(s):
-    try:
-        int(s)
-        return True
-    except ValueError:
-        return False
 
 
 class DynamicViewObject:

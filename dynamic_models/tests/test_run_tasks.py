@@ -9,9 +9,9 @@ from django.test import TransactionTestCase
 from json2model.services.dynamic_model.dynamic_model_utils import get_dynamic_model
 from model_bakery import baker
 
-from MetaDataApi.tests.utils_for_testing.utils_for_testing import get_method_path
 from MetaDataApi.utils import JsonUtils
 from MetaDataApi.utils.django_utils import django_file_utils
+from MetaDataApi.utils.unittest_utils.unittest_utils import get_method_path
 from dataproviders import tasks
 from dataproviders.models import DataFetch, Endpoint, DataFileUpload
 from dataproviders.models.DataFile import DataFile
