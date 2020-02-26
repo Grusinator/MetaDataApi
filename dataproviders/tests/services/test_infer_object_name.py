@@ -2,7 +2,8 @@ import django
 from django.test import TransactionTestCase
 from parameterized import parameterized
 
-from dataproviders.services.transform_methods.infer_object_name import infer_object_name_from_path
+from dataproviders.services.transform_files_to_data.transform_methods.infer_object_name import \
+    infer_object_name_from_path
 
 
 class TestInferObjectName(TransactionTestCase):

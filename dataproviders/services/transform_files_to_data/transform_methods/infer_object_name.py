@@ -1,6 +1,6 @@
 import os
 
-from dataproviders.services.transform_methods.regex_patterns import REPattern
+from dataproviders.services.transform_files_to_data.transform_methods.regex_patterns import REPattern
 
 
 def infer_object_name_from_path(path: str):

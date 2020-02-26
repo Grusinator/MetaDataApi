@@ -13,7 +13,7 @@ from dataproviders.models import DataFileUpload
 class TestTransformFilesToData(TransactionTestCase, BaseRegressionTest):
     test_data_path = 'dataproviders/tests/services/test_data/test_files'
     test_data_results_path = 'dataproviders/tests/services/test_data/expected_result'
-    exclude = ("samsunghealth_201809301847.zip",)
+    exclude = ()  # ("samsunghealth_201809301847.zip",)
 
     @classmethod
     def setUpClass(cls):

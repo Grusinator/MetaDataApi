@@ -46,9 +46,9 @@ def convert_binary_to_file(binary: bin, filename_based_on: str = None,
     return file
 
 
-def convert_str_to_file(text_str: str, filename: str = None, filetype: FileType = None) -> ContentFile:
+def convert_str_to_file(text_str: str, filename_based_on: str = None, filetype: FileType = None) -> ContentFile:
     binary = text_str.encode(file_encoding)
-    return convert_binary_to_file(binary, filename, filetype)
+    return convert_binary_to_file(binary, filename_based_on, filetype)
 
 
 def create_django_zip_file(files: dict):

@@ -11,8 +11,8 @@ from MetaDataApi.utils.django_utils.django_file_utils import FileType
 from MetaDataApi.utils.unittest_utils.unittest_utils import get_method_path
 from dataproviders import tasks
 from dataproviders.models import DataFetch
-from dataproviders.services.transform_files_to_data import clean_data_from_data_file
-from dataproviders.services.transform_methods.json_key_value_string_replace import clean_key_value_strings
+from dataproviders.services.transform_files_to_data import TransformFilesToData
+from dataproviders.services.transform_files_to_data.transform_methods import clean_key_value_strings
 
 
 class TestTransformFilesToData(TransactionTestCase):
@@ -23,7 +23,7 @@ class TestTransformFilesToData(TransactionTestCase):
 
     def test_transform_json_file(self):
         json_file = self.build_json_file()
-        result = clean_data_from_data_file(json_file)
+        result = TransformFilesToData().clean_data_from_file(json_file)
         result = JsonUtils.validate(result)
         expected = {'quiz': {'sport': {'q1': {'question': 'Which one is correct team name in NBA?',
                                               'options': ['New York Bulls', 'Los Angeles Kings',
@@ -35,7 +35,7 @@ class TestTransformFilesToData(TransactionTestCase):
 
     def test_transform_csv_file(self):
         file = django_file_utils.convert_str_to_file(self.dummy_csv_string(), filetype=FileType.CSV)
-        result = clean_data_from_data_file(file)
+        result = TransformFilesToData().clean_data_from_file(file)
         result = JsonUtils.validate(result)
         expected = [{'Name': '"Alex"', 'Sex': '"M"', 'Age': '41', 'Height_in': '74', 'Weight_lbs': '170'},
                     {'Name': '"Bert"', 'Sex': '"M"', 'Age': '42', 'Height_in': '68', 'Weight_lbs': '166'}]
@@ -44,7 +44,7 @@ class TestTransformFilesToData(TransactionTestCase):
     def test_transform_zip_with_csv(self):
         csv_file = self.dummy_csv_string()
         file = django_file_utils.create_django_zip_file({"csv1.csv": csv_file})
-        result = clean_data_from_data_file(file)
+        result = TransformFilesToData().clean_data_from_file(file)
         expected = {'csv1': [{'Name': '"Alex"', 'Sex': '"M"', 'Age': '41', 'Height_in': '74', 'Weight_lbs': '170'},
                              {'Name': '"Bert"', 'Sex': '"M"', 'Age': '42', 'Height_in': '68', 'Weight_lbs': '166'}]}
         self.assertEqual(result, expected)
@@ -55,7 +55,7 @@ class TestTransformFilesToData(TransactionTestCase):
     def test_transform_zip_with_json(self):
         json_file = self.dummy_json_string()
         file = django_file_utils.create_django_zip_file({"json1.json": json_file})
-        result = clean_data_from_data_file(file)
+        result = TransformFilesToData().clean_data_from_file(file)
         expected = {'json1': self.dummy_json_data_structure()}
         self.assertEqual(result, expected)
 
@@ -63,7 +63,7 @@ class TestTransformFilesToData(TransactionTestCase):
         csv_file = self.dummy_csv_string()
         json_file = self.dummy_json_string()
         file = django_file_utils.create_django_zip_file({"json1.json": json_file, "csv1.csv": csv_file})
-        result = clean_data_from_data_file(file)
+        result = TransformFilesToData().clean_data_from_file(file)
         expected = {'json1': {'quiz': {'sport': {'q1': {'question': 'Which one is correct team name in NBA?',
                                                         'options': ['New York Bulls', 'Los Angeles Kings',
                                                                     'Golden State Warriros', 'Huston Rocket'],

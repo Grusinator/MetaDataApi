@@ -7,6 +7,7 @@ from django.core.exceptions import MultipleObjectsReturned
 
 from MetaDataApi.utils import JsonUtils
 from MetaDataApi.utils.django_utils import django_file_utils
+from MetaDataApi.utils.django_utils.django_file_utils import FileType
 from dataproviders.models import DataProvider, DataFetch, Endpoint, HttpConfig
 from dataproviders.models.ApiTypes import ApiTypes
 from dataproviders.services.url_format_helper import UrlFormatHelper
@@ -52,7 +53,8 @@ def _request_from_endpoint(url, body, header):
 
 
 def _save_data_to_file(endpoint: Endpoint, user: User, data: str):
-    data_file = django_file_utils.convert_str_to_file(data, filetype=django_file_utils.FileType.JSON)
+    data_file = django_file_utils.convert_str_to_file(data, filetype=FileType.JSON,
+                                                      filename_based_on=endpoint.endpoint_name)
     return DataFetch.objects.create(endpoint=endpoint, data_file_from_source=data_file, user=user,
                                     data_provider=endpoint.data_provider)
 

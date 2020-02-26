@@ -7,7 +7,8 @@ from django.contrib.auth.models import User
 import dataproviders.services.fetch_data_from_provider as fetch_service
 from dataproviders.models import DataProviderUser, DataFileUpload, DataFetch
 from dataproviders.models.DataFileSourceBase import DataFileSourceBase
-from dataproviders.services import oauth, transform_files_to_data
+from dataproviders.services import oauth
+from dataproviders.services.transform_files_to_data import TransformFilesToData
 
 
 @celery.shared_task
@@ -56,11 +57,14 @@ def schedule_task_refresh_access_token(data_provider_user: DataProviderUser):
 
 @celery.shared_task
 def clean_data_from_source(data_file_upload_pk, is_from_file_upload: bool):
+    data_file_source = get_data_file_source(data_file_upload_pk, is_from_file_upload)
+    TransformFilesToData().clean_data_from_data_file_source(data_file_source)
+
+
+def get_data_file_source(data_file_upload_pk, is_from_file_upload) -> DataFileSourceBase:
     DataObjectClass = DataFileUpload if is_from_file_upload else DataFetch
     data_file_source = DataObjectClass.objects.get(pk=data_file_upload_pk)
-    origin_name = data_file_source.endpoint.endpoint_name if not is_from_file_upload else None
-    data = transform_files_to_data.clean_data_from_data_file(data_file_source.data_file_from_source.file, origin_name)
-    transform_files_to_data.create_data_file(data, data_file_source.user, data_file_source)
+    return data_file_source
 
 
 def schedule_task_clean_data_from_source_file(data_object: DataFileSourceBase):
