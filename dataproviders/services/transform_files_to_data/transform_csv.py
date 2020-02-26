@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 class TransformCsvMixin(BaseTransformFilesToData):
     def __init__(self):
         super().__init__()
-        self.GET_DATA_FROM_FILETYPE_METHOD_SELECTOR[FileType.CSV] = self.get_data_from_csv_file
+        self.GET_DATA_FROM_FILE_OF_TYPE[FileType.CSV] = self.get_data_from_csv_file
 
     def get_data_from_csv_file(self, file: ContentFile, origin_name=None) -> JsonType:
         with io.TextIOWrapper(file, encoding="utf-8") as text_file:

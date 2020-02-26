@@ -16,10 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 class BaseTransformFilesToData:
-    GET_DATA_FROM_FILETYPE_METHOD_SELECTOR = {}
-
-    def __init__(self):
-        self.GET_DATA_FROM_FILETYPE_METHOD_SELECTOR[FileType.UNKNOWN] = self.get_data_from_unknown_file
+    GET_DATA_FROM_FILE_OF_TYPE = {}
 
     def _insert_origin_name(self, data, origin_name):
         if origin_name:
@@ -29,7 +26,7 @@ class BaseTransformFilesToData:
 
     @classmethod
     def get_data_from_unknown_file(self, file: ContentFile, origin_name=None):
-        logger.warning(f"this file type is not supported: {file.name}")
+        logger.warning(f"this file type: {FileType.identify(file.name)} is not supported: {file.name}")
 
     def clean_data_from_data_file_source(self, data_file_source: DataFileSourceBase):
         data = self.clean_data_from_file(data_file_source.data_file_from_source.file)
@@ -45,7 +42,7 @@ class BaseTransformFilesToData:
 
     def get_data_from_file_of_type(self, file, origin_name):
         filetype = FileType.identify(file.name)
-        get_data_from_filetype = self.GET_DATA_FROM_FILETYPE_METHOD_SELECTOR.get(filetype)
+        get_data_from_filetype = self.GET_DATA_FROM_FILE_OF_TYPE.get(filetype, self.get_data_from_unknown_file)
         data = get_data_from_filetype(file, origin_name)
         return data
 

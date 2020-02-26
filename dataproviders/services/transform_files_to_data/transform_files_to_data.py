@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 class TransformFilesToData(TransformZipMixin, TransformCsvMixin):
     def __init__(self):
         super().__init__()
-        self.GET_DATA_FROM_FILETYPE_METHOD_SELECTOR[FileType.JSON] = self.get_data_from_json_file
+        self.GET_DATA_FROM_FILE_OF_TYPE[FileType.JSON] = self.get_data_from_json_file
 
     def get_data_from_json_file(self, file: ContentFile, origin_name=None) -> JsonType:
         data = convert_file_to_str(file)

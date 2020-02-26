@@ -10,7 +10,7 @@ from dataproviders.services.transform_files_to_data.transform_methods import inf
 class TransformZipMixin(BaseTransformFilesToData):
     def __init__(self):
         super().__init__()
-        self.GET_DATA_FROM_FILETYPE_METHOD_SELECTOR[FileType.ZIP] = self.get_data_from_zipfile
+        self.GET_DATA_FROM_FILE_OF_TYPE[FileType.ZIP] = self.get_data_from_zipfile
 
     def get_data_from_zipfile(self, file: ContentFile, origin_name):
         data = {}
