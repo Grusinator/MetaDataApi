@@ -8,7 +8,7 @@ from django.shortcuts import render
 from json2model.services.dynamic_model.dynamic_model_utils import get_dynamic_model, get_all_model_definition_names, \
     get_all_dynamic_models
 
-from dynamic_models.schema import get_all_field_names_of_type
+from dynamic_models.schema import get_field_names
 from dynamic_models.views.dynamic_view_object import DynamicViewObject
 
 
@@ -48,10 +48,13 @@ def bitwise_any(a_list):
 
 
 def build_search_args(model, search_query):
-    text_field_names = get_all_field_names_of_type(model, (TextField,))
-    query_elm = [Q(**{f"{text_field_name}__icontains": search_query}) for text_field_name in text_field_names]
-    query = bitwise_any(query_elm)
-    return query
+    if search_query:
+        text_field_names = get_field_names(model, (TextField,))
+        query_elm = [Q(**{f"{text_field_name}__icontains": search_query}) for text_field_name in text_field_names]
+        query = bitwise_any(query_elm)
+        return query
+    else:
+        return Q()
 
 
 def make_paginator(page, view_instances):

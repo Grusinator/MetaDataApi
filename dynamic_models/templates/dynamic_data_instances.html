@@ -7,6 +7,8 @@
             <p>{{ selected_model_name }}</p>
         {% endif %}
     </header>
+
+    {# Search form #}
     <div>
         <form method="get">
             <label for="model">Choose a model:</label>
@@ -20,21 +22,22 @@
                     >{{ model_name }}</option>
                 {% endfor %}
             </select>
-            <label for="search">Search:</label>
+            <label for="search">Search in text:</label>
             <input type="text" id="search" name="search" value="{{ search_query }}">
             <input type="submit" value="refresh"/>
         </form>
     </div>
 
-
+    {# data instances #}
     {% if view_instances %}
         <table id="table" style="width:100%">
-            {% if field_names %}
+            {# global header - write header if all elm are the same model #}
+            {% if selected_model_name %}
                 <thead>
                 <tr>
                     <td>id</td>
-                    {% for field_name in field_names %}
-                        <td>{{ field_name }}</td>
+                    {% for field in view_instances.0.fields %}
+                        <td>{{ field.name }}</td>
                     {% endfor %}
                 </tr>
                 </thead>
@@ -42,25 +45,31 @@
 
             {% for data_instance in view_instances %}
                 <tbody>
+                {# local header #}
+                {% if selected_model_name == "" %}
+                    <tr>
+                        <td>
+                            <p> id </p>
+                        </td>
+                        {% for field in data_instance.fields %}
+                            <td>{{ field.name }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endif %}
                 <tr>
                     <td>
                         <p> {{ data_instance.id }} </p>
                     </td>
-                    {% if field_names %}
-                        {% for field_value in data_instance.field_values %}
-                            <td>{{ field_value }}</td>
-                        {% endfor %}
-                    {% else %}
-                        <td>{{ data_instance.col1 }}</td>
-                        <td>{{ data_instance.col2 }}</td>
-                        <td>{{ data_instance.col3 }}</td>
-                    {% endif %}
+                    {% for field in data_instance.fields %}
+                        <td>{{ field.value }}</td>
+                    {% endfor %}
                 </tr>
                 </tbody>
 
             {% endfor %}
         </table>
 
+        {# Paginating #}
         {% if view_instances.has_other_pages %}
             <ul class="actions small">
                 {% if view_instances.has_previous %}

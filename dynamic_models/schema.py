@@ -1,12 +1,14 @@
+from typing import Union
+
 import graphene
-from django.db.models import Model, TextField, IntegerField, FloatField, BooleanField
+from django.db.models import Model, TextField, IntegerField, FloatField, BooleanField, DateTimeField
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 from graphql import GraphQLError
 from graphql_jwt.decorators import login_required
 from mutant.models import ModelDefinition
 
-filter_attribute_types = (TextField, IntegerField, FloatField, BooleanField)
+filter_attribute_types = (TextField, IntegerField, FloatField, BooleanField, DateTimeField)
 attribute_types = filter_attribute_types
 
 
@@ -27,17 +29,32 @@ def create_graphene_type(model: Model):
     meta_properties = {
         "model": model,
         "interfaces": (graphene.relay.Node,),
-        "fields": get_all_field_names_of_type(model, attribute_types),
-        # TODO add better filter fields such as icontains on text etc
-        "filter_fields": get_all_field_names_of_type(model, filter_attribute_types)
+        # "fields": get_field_names(model),
+        "filter_fields": build_filter_fields(model)
     }
     meta_class = type("Meta", (), meta_properties)
     properties = {"Meta": meta_class}
     return type(name, (DjangoObjectType,), properties)
 
 
-def get_all_field_names_of_type(model, types) -> list:
-    return [field.name for field in model._meta.get_fields() if isinstance(field, types)]
+def get_fields(model, types=attribute_types):
+    return [field for field in model._meta.get_fields() if isinstance(field, types)]
+
+
+def get_field_names(model, types=attribute_types):
+    return [field.name for field in get_fields(model, types)]
+
+
+def build_filter_fields(model, types=attribute_types) -> dict:
+    return {field.name: get_data_type_filter_fields_key_value(field) for field in get_fields(model, types)}
+
+
+def get_data_type_filter_fields_key_value(field: Union[filter_attribute_types]):
+    data_type_mapper = {
+        TextField: ['exact', 'in', 'icontains', 'istartswith'],
+        FloatField: ['exact']
+    }
+    return data_type_mapper.get(type(field), data_type_mapper[FloatField])
 
 
 def build_query_properties(graphene_types):
