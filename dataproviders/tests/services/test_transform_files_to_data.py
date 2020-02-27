@@ -37,16 +37,16 @@ class TestTransformFilesToData(TransactionTestCase):
         file = django_file_utils.convert_str_to_file(self.dummy_csv_string(), filetype=FileType.CSV)
         result = TransformFilesToData().clean_data_from_file(file)
         result = JsonUtils.validate(result)
-        expected = [{'Name': '"Alex"', 'Sex': '"M"', 'Age': '41', 'Height_in': '74', 'Weight_lbs': '170'},
-                    {'Name': '"Bert"', 'Sex': '"M"', 'Age': '42', 'Height_in': '68', 'Weight_lbs': '166'}]
+        expected = [{'Name': 'Alex', 'Sex': 'M', 'Age': '41', 'Height_in': '74', 'Weight_lbs': '170'},
+                    {'Name': 'Bert', 'Sex': 'M', 'Age': '42', 'Height_in': '68', 'Weight_lbs': '166'}]
         self.assertEqual(result, expected)
 
     def test_transform_zip_with_csv(self):
         csv_file = self.dummy_csv_string()
         file = django_file_utils.create_django_zip_file({"csv1.csv": csv_file})
         result = TransformFilesToData().clean_data_from_file(file)
-        expected = {'csv1': [{'Name': '"Alex"', 'Sex': '"M"', 'Age': '41', 'Height_in': '74', 'Weight_lbs': '170'},
-                             {'Name': '"Bert"', 'Sex': '"M"', 'Age': '42', 'Height_in': '68', 'Weight_lbs': '166'}]}
+        expected = {'csv1': [{'Name': 'Alex', 'Sex': 'M', 'Age': '41', 'Height_in': '74', 'Weight_lbs': '170'},
+                             {'Name': 'Bert', 'Sex': 'M', 'Age': '42', 'Height_in': '68', 'Weight_lbs': '166'}]}
         self.assertEqual(result, expected)
 
     def build_csv_file(self):
@@ -70,8 +70,8 @@ class TestTransformFilesToData(TransactionTestCase):
                                                         'answer': 'Huston Rocket'}}, 'maths': {
             'q1': {'question': '5 + 7 = ?', 'options': ['10', '11', '12', '13'], 'answer': '12'},
             'q2': {'question': '12 - 8 = ?', 'options': ['1', '2', '3', '4'], 'answer': '4'}}}},
-                    'csv1': [{'Name': '"Alex"', 'Sex': '"M"', 'Age': '41', 'Height_in': '74', 'Weight_lbs': '170'},
-                             {'Name': '"Bert"', 'Sex': '"M"', 'Age': '42', 'Height_in': '68', 'Weight_lbs': '166'}]}
+                    'csv1': [{'Name': 'Alex', 'Sex': 'M', 'Age': '41', 'Height_in': '74', 'Weight_lbs': '170'},
+                             {'Name': 'Bert', 'Sex': 'M', 'Age': '42', 'Height_in': '68', 'Weight_lbs': '166'}]}
         self.assertEqual(result, expected)
 
     @parameterized.expand([

@@ -25,7 +25,7 @@ class BaseTransformFilesToData:
             return data
 
     @classmethod
-    def get_data_from_unknown_file(self, file: ContentFile, origin_name=None):
+    def get_data_from_unknown_file(self, file: ContentFile):
         logger.warning(f"this file type: {FileType.identify(file.name)} is not supported: {file.name}")
 
     def clean_data_from_data_file_source(self, data_file_source: DataFileSourceBase):
@@ -33,17 +33,17 @@ class BaseTransformFilesToData:
         self.create_data_file(data, data_file_source.user, data_file_source)
 
     def clean_data_from_file(self, file: ContentFile) -> JsonType:
-        origin_name = transform_methods.infer_object_name_from_path(file.name)
-        data = self.get_data_from_file_of_type(file, origin_name)
+        data = self.get_data_from_file_of_type(file)
         if FileType.identify(file.name) != FileType.ZIP:
+            origin_name = transform_methods.infer_object_name_from_path(file.name)
             data = self._insert_origin_name(data, origin_name)
         cleaned_data = self.clean_data(data)
         return cleaned_data
 
-    def get_data_from_file_of_type(self, file, origin_name):
+    def get_data_from_file_of_type(self, file):
         filetype = FileType.identify(file.name)
         get_data_from_filetype = self.GET_DATA_FROM_FILE_OF_TYPE.get(filetype, self.get_data_from_unknown_file)
-        data = get_data_from_filetype(file, origin_name)
+        data = get_data_from_filetype(file)
         return data
 
     def clean_data(self, data):

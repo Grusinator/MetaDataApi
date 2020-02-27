@@ -17,7 +17,7 @@ class TransformCsvMixin(BaseTransformFilesToData):
         super().__init__()
         self.GET_DATA_FROM_FILE_OF_TYPE[FileType.CSV] = self.get_data_from_csv_file
 
-    def get_data_from_csv_file(self, file: ContentFile, origin_name=None) -> JsonType:
+    def get_data_from_csv_file(self, file: ContentFile) -> JsonType:
         with io.TextIOWrapper(file, encoding="utf-8") as text_file:
             dialect = self.get_csv_dialect(text_file)
             csv_start = self.read_csv_start_of_file(text_file, dialect)

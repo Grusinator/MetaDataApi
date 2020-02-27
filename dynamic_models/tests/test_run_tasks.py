@@ -15,7 +15,7 @@ from MetaDataApi.utils.unittest_utils.unittest_utils import get_method_path
 from dataproviders import tasks
 from dataproviders.models import DataFetch, Endpoint, DataFileUpload
 from dataproviders.models.DataFile import DataFile
-from dataproviders.services import transform_files_to_data
+from dataproviders.services.transform_files_to_data import TransformFilesToData
 from dataproviders.tests.mock_objects.mock_data_fetch import data_fetch_json_strava_activity
 from dynamic_models import tasks as dynamic_model_tasks
 
@@ -33,7 +33,7 @@ class TestRunTasks(TransactionTestCase):
         super().tearDown()
         # ModelDefinition.objects.all().delete()
 
-    @unittest.skipIf(set(settings.TEST_SETTINGS_EXCLUDE) & TAGS, f"skipping: {settings.TEST_SETTINGS_EXCLUDE}")
+    @unittest.skipIf(set(settings.TEST_SETTINGS_EXCLUDE) & TAGS, f"skipping: {settings.TEST_SETTINGS_EXCLUDE} ")
     def test_clean_data_from_data_fetch(self):
         with patch(get_method_path(DataFetch.execute_on_save_methods)) as mock_method:
             data, data_fetch, user = self.create_data_fetch_objects()
@@ -53,7 +53,7 @@ class TestRunTasks(TransactionTestCase):
     def test_build_data_from_data_fetch(self):
         with patch(get_method_path(DataFetch.execute_on_save_methods)) as mock_method:
             data, data_fetch, user = self.create_data_fetch_objects()
-            transform_files_to_data.create_data_file(data, user, data_fetch)
+            TransformFilesToData().create_data_file(data, user, data_fetch)
             dynamic_model_tasks.build_models_from_data_files(pk=data_fetch.refined_data_file.pk)
             model = get_dynamic_model("activity")
             self.assertIsNotNone(model)
@@ -63,7 +63,7 @@ class TestRunTasks(TransactionTestCase):
     def test_build_data_from_data_file_upload(self):
         with patch(get_method_path(DataFileUpload.execute_on_save_methods)) as mock_method:
             data, data_file_upload, user = self.create_data_file_upload_objects()
-            transform_files_to_data.create_data_file(data, user, data_file_upload)
+            TransformFilesToData().create_data_file(data, user, data_file_upload)
             dynamic_model_tasks.build_models_from_data_files(pk=data_file_upload.refined_data_file.pk)
             model = get_dynamic_model("activity")
             self.assertIsNotNone(model)

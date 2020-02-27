@@ -21,7 +21,7 @@ class TestTransformFilesToData(TransactionTestCase, BaseRegressionTest):
         django.setup()
 
     def test_run_specific_test(self):
-        file = "samsunghealth_201809301847.zip"
+        file = "rescuetime-activity-history.csv"
         self.run_regression_test_on_file(file)
 
     def test_all_files(self):

@@ -1,12 +1,16 @@
 import os
 
+from django.conf import settings
+
 from dataproviders.services.transform_files_to_data.transform_methods.regex_patterns import REPattern
 
 
 def infer_object_name_from_path(path: str):
+    path = path.replace(settings.DATAFILE_STORAGE_PATH, "")
     path = convert_path_to_underscore_name(path)
     path = remove_id_like_strings(path)
     path = path.replace("-", "_")
+    path = path.replace(".", "_")
     path = REPattern.multiple_underscore.replace("_", path)
     path = REPattern.trailing_underscore.remove(path)
     return path

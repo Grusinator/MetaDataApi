@@ -15,6 +15,6 @@ class TransformFilesToData(TransformZipMixin, TransformCsvMixin):
         super().__init__()
         self.GET_DATA_FROM_FILE_OF_TYPE[FileType.JSON] = self.get_data_from_json_file
 
-    def get_data_from_json_file(self, file: ContentFile, origin_name=None) -> JsonType:
+    def get_data_from_json_file(self, file: ContentFile) -> JsonType:
         data = convert_file_to_str(file)
         return JsonUtils.validate(data)
