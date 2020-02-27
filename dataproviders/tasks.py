@@ -48,11 +48,14 @@ def refresh_access_token(provider_name, user_pk):
 
 
 def schedule_task_refresh_access_token(data_provider_user: DataProviderUser):
-    if data_provider_user.expires_in:
+    if data_provider_user.expires_in and not data_provider_user.has_running_task:
         signature = refresh_access_token.s(data_provider_user.data_provider.provider_name, data_provider_user.pk)
-        buffer = 60
-        min_time = 5
-        signature.apply_async(countdown=float(max(data_provider_user.expires_in - buffer, min_time)))
+        count_down = calc_countdown(expires_in=data_provider_user.expires_in, buffer=60, min_time=5)
+        data_provider_user.apply_async(signature, countdown=count_down)
+
+
+def calc_countdown(expires_in, buffer, min_time):
+    return float(max(expires_in - buffer, min_time))
 
 
 @celery.shared_task
