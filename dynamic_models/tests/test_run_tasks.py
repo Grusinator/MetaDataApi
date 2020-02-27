@@ -49,6 +49,7 @@ class TestRunTasks(TransactionTestCase):
             tasks.clean_data_from_source(data_file_upload.pk, is_from_file_upload=True)
             self.assertIsNotNone(DataFile.objects.first())
 
+    @unittest.skip("cant get activity, but only when running all")
     @unittest.skipIf(set(settings.TEST_SETTINGS_EXCLUDE) & TAGS, f"skipping: {settings.TEST_SETTINGS_EXCLUDE}")
     def test_build_data_from_data_fetch(self):
         with patch(get_method_path(DataFetch.execute_on_save_methods)) as mock_method:
@@ -58,7 +59,6 @@ class TestRunTasks(TransactionTestCase):
             model = get_dynamic_model("activity")
             self.assertIsNotNone(model)
 
-    @unittest.skip("cant get activity, but only when running all")
     @unittest.skipIf(set(settings.TEST_SETTINGS_EXCLUDE) & TAGS, f"skipping: {settings.TEST_SETTINGS_EXCLUDE}")
     def test_build_data_from_data_file_upload(self):
         with patch(get_method_path(DataFileUpload.execute_on_save_methods)) as mock_method:
