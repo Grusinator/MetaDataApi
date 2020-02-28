@@ -19,7 +19,7 @@ def dynamic_data_list_view(request):
     selected_model_name = request.GET.get('model')
     order_by = request.GET.get('order_by')
     page = request.GET.get('page', 1)
-    search_query = request.GET.get('search', 1)
+    search_query = request.GET.get('search', "")
     html_params = {
         "model_names": model_names, "selected_model_name": selected_model_name, "search_query": search_query,
         "view_instances": create_view_instances(selected_model_name, search_query, user_pk, page)

@@ -2,7 +2,7 @@
 
 {% block content %}
     <header class="major">
-        <h2>View dynamic data</h2>
+        <h2>View data</h2>
         {% if selected_model_name %}
             <p>{{ selected_model_name }}</p>
         {% endif %}
@@ -61,7 +61,7 @@
                         <p><a href={{ instance.model_name }}/{{ instance.id }}/>{{ instance.id }}</a></p>
                     </td>
                     {% for field in instance.fields %}
-                        <td>{{ field.value }}</td>
+                        <td>{{ field.value_short }}</td>
                     {% endfor %}
                 </tr>
                 </tbody>
