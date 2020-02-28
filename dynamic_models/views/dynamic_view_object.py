@@ -12,10 +12,14 @@ class DynamicViewObject:
         self.inst = dynamic_data_instance
         self.model = type(self.inst)
         self.model_name = self.model.__name__
-        self.fields = [FieldViewObject(self.inst, field) for field in get_fields(self.model) if
-                       field.name not in exclude]
+        self.fields = self.create_field_view_objects()
         self.field_names = [name for name in get_field_names(self.model) if name not in exclude]
         self.meta_object = get_model_def(self.model_name).meta_object
+
+    def create_field_view_objects(self):
+        fields = [FieldViewObject(self.inst, field) for field in get_fields(self.model) if field.name not in exclude]
+        fields.sort(key=lambda field: attribute_types.index(field.type_obj))
+        return fields[:6]
 
     @property
     def field_values(self):
@@ -38,7 +42,8 @@ class FieldViewObject:
         self.value = getattr(inst, self.field.name) or ""
         self.value_short = self.create_short_value()
         self.name = self.field.name
-        self.type = type(self.field).__name__
+        self.type_obj = type(self.field)
+        self.type = self.type_obj.__name__
 
     def create_short_value(self):
         if isinstance(self.value, str) and len(self.value) > 18:

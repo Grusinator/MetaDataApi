@@ -8,7 +8,7 @@ from graphql import GraphQLError
 from graphql_jwt.decorators import login_required
 from mutant.models import ModelDefinition
 
-filter_attribute_types = (TextField, IntegerField, FloatField, BooleanField, DateTimeField)
+filter_attribute_types = (DateTimeField, TextField, IntegerField, FloatField, BooleanField)
 attribute_types = filter_attribute_types
 
 

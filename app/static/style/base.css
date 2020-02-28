@@ -1,3 +1,10 @@
+#table-mini-header {
+  text-align: left;
+  font-size: 12px;
+  color: gray;
+}
+
+
 /*iframe {*/
 /*    display: block;*/
 /*    background: #000;*/

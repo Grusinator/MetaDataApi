@@ -45,23 +45,17 @@
 
             {% for instance in view_instances %}
                 <tbody>
-                {# local header #}
-                {% if selected_model_name == "" %}
-                    <tr>
-                        <td>
-                            <p> id </p>
-                        </td>
-                        {% for field in instance.fields %}
-                            <td>{{ field.name }}</td>
-                        {% endfor %}
-                    </tr>
-                {% endif %}
                 <tr>
                     <td>
                         <p><a href={{ instance.model_name }}/{{ instance.id }}/>{{ instance.id }}</a></p>
                     </td>
                     {% for field in instance.fields %}
-                        <td>{{ field.value_short }}</td>
+                        <td>
+                            {% if selected_model_name == "" %}
+                                <p id="table-mini-header">{{ field.name }}</p>
+                            {% endif %}
+                            <div>{{ field.value_short }}</div>
+                        </td>
                     {% endfor %}
                 </tr>
                 </tbody>
