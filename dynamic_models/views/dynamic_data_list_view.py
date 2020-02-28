@@ -16,7 +16,7 @@ from dynamic_models.views.dynamic_view_object import DynamicViewObject
 def dynamic_data_list_view(request):
     user_pk = request.user.pk
     model_names = get_all_model_definition_names()
-    selected_model_name = request.GET.get('model')
+    selected_model_name = request.GET.get('model', "")
     order_by = request.GET.get('order_by')
     page = request.GET.get('page', 1)
     search_query = request.GET.get('search', "")
