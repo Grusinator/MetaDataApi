@@ -18,7 +18,7 @@ class DynamicViewObject:
 
     def create_field_view_objects(self):
         fields = [FieldViewObject(self.inst, field) for field in get_fields(self.model) if field.name not in exclude]
-        fields.sort(key=lambda field: attribute_types.index(field.type_obj))
+        fields.sort(key=lambda field: attribute_types.index(field.type_obj) if field.type_obj in attribute_types else 9)
         return fields[:6]
 
     @property
