@@ -43,7 +43,7 @@
                 </thead>
             {% endif %}
 
-            {% for data_instance in view_instances %}
+            {% for instance in view_instances %}
                 <tbody>
                 {# local header #}
                 {% if selected_model_name == "" %}
@@ -51,16 +51,16 @@
                         <td>
                             <p> id </p>
                         </td>
-                        {% for field in data_instance.fields %}
+                        {% for field in instance.fields %}
                             <td>{{ field.name }}</td>
                         {% endfor %}
                     </tr>
                 {% endif %}
                 <tr>
                     <td>
-                        <p> {{ data_instance.id }} </p>
+                        <p><a href={{ instance.model_name }}/{{ instance.id }}/>{{ instance.id }}</a></p>
                     </td>
-                    {% for field in data_instance.fields %}
+                    {% for field in instance.fields %}
                         <td>{{ field.value }}</td>
                     {% endfor %}
                 </tr>

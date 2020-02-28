@@ -7,6 +7,7 @@ class DynamicViewObject:
     def __init__(self, dynamic_data_instance):
         self.inst = dynamic_data_instance
         self.model = type(self.inst)
+        self.model_name = self.model.__name__
         self.fields = [FieldViewObject(self.inst, field) for field in get_fields(self.model)]
         self.field_names = get_field_names(self.model)
         # self.meta_object = self.inst.meta_object

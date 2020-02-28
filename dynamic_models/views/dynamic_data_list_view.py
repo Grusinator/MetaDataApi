@@ -13,7 +13,7 @@ from dynamic_models.views.dynamic_view_object import DynamicViewObject
 
 
 @login_required
-def dynamic_data_instances_view(request):
+def dynamic_data_list_view(request):
     user_pk = request.user.pk
     model_names = get_all_model_definition_names()
     selected_model_name = request.GET.get('model')
@@ -24,7 +24,7 @@ def dynamic_data_instances_view(request):
         "model_names": model_names, "selected_model_name": selected_model_name, "search_query": search_query,
         "view_instances": create_view_instances(selected_model_name, search_query, user_pk, page)
     }
-    return render(request, 'dynamic_data_instances.html', html_params)
+    return render(request, 'dynamic_data_list.html', html_params)
 
 
 def create_view_instances(selected_model_name, search_query, user_pk, page):
