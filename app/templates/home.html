@@ -16,7 +16,6 @@
         if you would like to try it out follow this link: <a href="http://metadataapi.grusinator.com">Platform</a>
     </p>
 
-
     <h3> Guideline </h3>
     <p>
         Currently you can create a user and connect to different services that offer either Oauth authentication or open
@@ -35,8 +34,12 @@
         <a href="https://github.com/Grusinator/MetaDataApi/issues">Github Issue Tracking</a>
 
         currently the best feature is that you can search in all text fields in your data, but hopefully more will come
-        in
-        the future.
+        in the future.
+
+        Be aware that the page does not use https, and that since i am the administrator of the page, that i have access
+        to the data that you upload, but i will of course not use or sell it. Though i cant access your profile on
+        connected services ie. spotify, the system only stores a token that gives access to fetch the data from that
+        service.
     </p>
 
     <h3>Guideline for advanced users</h3>
@@ -46,8 +49,7 @@
         [grusinator/meta-data-client](https://github.com/Grusinator/meta-data-client)
         i find it quite nice to use in a jupyter notebook, to visualize the data.
         You can also just try to query some data using the filter methods in the iGraphQL page on the platform. It is
-        also
-        good to explore the datamodel of your data a bit.
+        also good to explore the datamodel of your data a bit.
     </p>
 
     <h3>Details on the implementation</h3>
@@ -125,6 +127,7 @@
                         animation: octocat-wave 560ms ease-in-out
                     }
                 }
+
 
 
 

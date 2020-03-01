@@ -27,6 +27,8 @@ There might still be some bugs around. but feel free to create an issue if you e
 
 currently the best feature is that you can search in all text fields in your data, but hopefully more will come in the future.
 
+Be aware that the page does not use https, and that since i am the administrator of the page, that i have access to the data that you upload, but i will of course not use or sell it. Though i cant access your profile on connected services ie. spotify, the system only stores a token that gives access to fetch the data from that service.
+
 ## Guideline for advanced users
 if you know a bit of python i can recommend to try out the client lib that i have made. It is good for writing queries into the GraphQL endpoint
 [grusinator/meta-data-client](https://github.com/Grusinator/meta-data-client)
