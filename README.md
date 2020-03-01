@@ -15,11 +15,13 @@ if you would like to try it out follow this link:
 
 ## Guideline 
 Currently you can create a user and connect to different services that offer either Oauth authentication or open Rest Apis. 
-If there are some services that you would like me to add is is fairly easy for me, just open an issue with a link to their website, preferably to their developer documentation.
-as soon as you have authenticated with oauth, the server should fetch a new version of your data
+If there are some services that you would like me to add is is fairly easy for me, just open an issue with a link to 
+their website, preferably to their developer documentation.
+To authenticate a specific provider, go to providers, select the one relevant and click on the Oauth button, 
+from there you have to go though the login flow of that specific provider.
 
+As soon as you have authenticated with oauth, the server should fetch a new version of your data.
 If you have some data in a zip file of csvs or json files, that can be uploaded as well though the upload page. 
-
 
 There might still be some bugs around. but feel free to create an issue if you experience problems here: [https://github.com/Grusinator/MetaDataApi/issues][Github Issue Tracking]
 
