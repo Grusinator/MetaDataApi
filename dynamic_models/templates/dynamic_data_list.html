@@ -14,6 +14,7 @@
             <label for="model">Choose a model:</label>
             <select id="model" name="model">
                 <option value="">None</option>
+                <option value="ALL">All</option>
                 {% for model_name in model_names %}
                     <option value={{ model_name }}
                                     {% if selected_model_name == model_name %}

@@ -28,7 +28,9 @@ def dynamic_data_list_view(request):
 
 
 def create_view_instances(selected_model_name, search_query, user_pk, page):
-    models = [get_dynamic_model(selected_model_name)] if selected_model_name else get_all_dynamic_models()
+    if selected_model_name == "":
+        return []
+    models = [get_dynamic_model(selected_model_name)] if selected_model_name != "ALL" else get_all_dynamic_models()
     view_instances = []
     for model in models:
         instances = query_instances(model, search_query, user_pk)
