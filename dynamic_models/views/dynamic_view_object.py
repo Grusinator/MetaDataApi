@@ -13,6 +13,7 @@ class DynamicViewObject:
         self.model = type(self.inst)
         self.model_name = self.model.__name__
         self.fields = self.create_field_view_objects()
+        self.fields_short = self.fields[:6]
         self.field_names = [name for name in get_field_names(self.model) if name not in exclude]
         self.meta_object = get_model_def(self.model_name).meta_object
 
@@ -26,7 +27,7 @@ class DynamicViewObject:
                 return 100  # just lowest index
 
         fields.sort(key=key_sort_by_order_of_atts)
-        return fields[:6]
+        return fields
 
     @property
     def field_values(self):

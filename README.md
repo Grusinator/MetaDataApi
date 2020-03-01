@@ -3,38 +3,51 @@
 [![CircleCI](https://circleci.com/gh/Grusinator/MetaDataApi.svg?style=svg)](https://circleci.com/gh/Grusinator/MetaDataApi)
 
 # MetaDataApi
-## Description
-This project aims to gather relevant data from a lot of services an analyse on top. You might call it HumanIntelligence 
-It is based on the semantic web idea, so json data can just be loaded in from Api endpoints, that you create.  
-First a datamodel from that json file is created, and thereafter instances of objects and attributes are added.
-You can also upload RDF schemas defined in OWL, and thereafter upload your rdf data to it. The goal is to standardize the incoming data by comparing with other models, and mapping it onto a more covering model within the field. My initial approach has been to take the OpenMHealth [ref](http://www.openmhealth.org/) data model which is defined in JSONSchema, i have converted it to OWL. 
+## Introduction
+
+This project aims to deliver a service where people interested in their personal lifes seen from a data perspective, can explore and gain insight in their own lifes. 
+The idea for this project started out as an idea inspired by the biohacking community and my personal interest in data.    
+This version is still work in progress and i still have a lot of ideas for improvement. 
 
 
-the platform can connect to different oauth2 rest apis, by adding the endpoints, and authorizing first. different parameters can be added as well as url-encoded parameters 
+if you would like to try it out follow this link:
+[http://metadataapi.grusinator.com][Platform]
 
-if the parameter value has to be something specific, it can be added by replacing the value with a tag insted. currently the tags that are supported is: 
-* StartDateTime
-* EndDateTime
-* AuthToken
+## Guideline 
+Currently you can create a user and connect to different services that offer either Oauth authentication or open Rest Apis. 
+If there are some services that you would like me to add is is fairly easy for me, just open an issue with a link to their website, preferably to their developer documentation.
+as soon as you have authenticated with oauth, the server should fetch a new version of your data
 
-each value will then be substituted with the relevant variable converted to the desired format. 
+If you have some data in a zip file of csvs or json files, that can be uploaded as well though the upload page. 
 
-AuthToken is just as is, no formatting.
-The DateTime parameters can be formatted as the following:
-* UTCSEC
-* Y-M-d
 
-More should be added, so that any api datetime format is supported.
+There might still be some bugs around. but feel free to create an issue if you experience problems here: [https://github.com/Grusinator/MetaDataApi/issues][Github Issue Tracking]
 
-Example:
-https://brainscan.io/api?key={AuthToken:}&startdate={StartDateTime:UTCSEC}&eyesclosed=true  
+currently the best feature is that you can search in all text fields in your data, but hopefully more will come in the future.
 
-I have made a small client in python to request some of the data from the server, but it is not complete, have a look at:
+## Guideline for advanced users
+if you know a bit of python i can recommend to try out the client lib that i have made. It is good for writing queries into the GraphQL endpoint
 [grusinator/meta-data-client](https://github.com/Grusinator/meta-data-client)
+i find it quite nice to use in a jupyter notebook, to visualize the data. 
+You can also just try to query some data using the filter methods in the iGraphQL page on the platform. It is also good to explore the datamodel of your data a bit.
 
-how to test if an object instance or attribute instance allready exists. If the parrent attribute is the same, the object is too. If an object relation has the same 2 objects, then it is the same, but the objects must be tested more delicately. 
+## Details on the implementation
+It is build in Python Django, and uses Celery to handle background tasks such as processing of data. All the data is transformed to Json and being transformed 
+into tables with relations to the nested objects using the django Mutant project to build the django objects dynamically.
+Based on those models a graphql schema is being created so that these models can be queried.
+I have made a fairly generic way of creating dataproviders, so that is is easy to add endpoints or add new providers. It can be done through the django admin panel.
+But for that you need admin rights.
 
-inferring some sort of uniqueness score?
+## Future vision
+I am hoping to implement some further data analysis tools in the platform and visualization. I think it would be nice with a pivot table with graphs.
+Later i would really like to do some automatic identifiction of attributes an label them semantically.
+Of cource at some point i need to try to do some deep learning predictive analysis using LSTM or similar.
+I hope that this could develop into a platform where users can build and share their own algorithms for analysing data 
+from specific sources that others can then just activate on their on profile if they have data of the same type.
 
-or just comparing with all previously created objects, nobody with the same combination of objects and relations? its a new one then.
-  
+## Contribution
+Let me know if you like the project, or would like to contribute. That would be nice.
+
+[Platform]: http://metadataapi.grusinator.com
+
+[Github Issue Tracking]: https://github.com/Grusinator/MetaDataApi/issues
