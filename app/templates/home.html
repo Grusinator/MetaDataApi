@@ -1,28 +1,105 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <header class="major">
-        <h2>Introduction</h2>
-        <p>This page is nice</p>
-    </header>
-    <section>
-        <div>
-            <a aria-label="View source on GitHub" class="github-corner"
-               href="https://github.com/grusinator/metadataapi">
-                <svg aria-hidden="true" height="80"
-                     style="fill:#FD6C6C; color:#fff; position: absolute; top: 0; border: 0; right: 0;"
-                     viewBox="0 0 250 250"
-                     width="80">
-                    <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
-                    <path class="octo-arm"
-                          d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
-                          fill="currentColor" style="transform-origin: 130px 106px;"></path>
-                    <path class="octo-body"
-                          d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
-                          fill="currentColor"></path>
-                </svg>
-            </a>
-            <style>
+<header class="major">
+    <h2>About</h2>
+</header>
+<section>
+    <h3>Introduction</h3>
+    <p>
+        This project aims to deliver a service where people interested in their personal lifes seen from a data
+        perspective, can explore and gain insight in their own lifes.
+        The idea for this project started out as an idea inspired by the biohacking community and my personal interest
+        in data.
+        This version is still work in progress and i still have a lot of ideas for improvement. </p>
+
+    <p>
+        if you would like to try it out follow this link:
+    </p>
+    <a href="http://metadataapi.grusinator.com">Platform</a>
+
+
+    <h3> Guideline </h3>
+    <p>Currently you can create a user and connect to different services that offer either Oauth authentication or open
+        Rest Apis.
+        If there are some services that you would like me to add is is fairly easy for me, just open an issue with a
+        link to
+        their website, preferably to their developer documentation.
+        as soon as you have authenticated with oauth, the server should fetch a new version of your data
+
+        If you have some data in a zip file of csvs or json files, that can be uploaded as well though the upload page.
+
+
+        There might still be some bugs around. but feel free to create an issue if you experience problems here:
+
+        <a href="https://github.com/Grusinator/MetaDataApi/issues">Github Issue Tracking</a>
+
+        currently the best feature is that you can search in all text fields in your data, but hopefully more will come
+        in
+        the future.
+    </p>
+
+    <h3>Guideline for advanced users</h3>
+    <p>
+        if you know a bit of python i can recommend to try out the client lib that i have made. It is good for writing
+        queries into the GraphQL endpoint
+        [grusinator/meta-data-client](https://github.com/Grusinator/meta-data-client)
+        i find it quite nice to use in a jupyter notebook, to visualize the data.
+        You can also just try to query some data using the filter methods in the iGraphQL page on the platform. It is
+        also
+        good to explore the datamodel of your data a bit.
+    </p>
+
+    <h3>Details on the implementation</h3>
+
+    <p>
+        It is build in Python Django, and uses Celery to handle background tasks such as processing of data. All the
+        data is
+        transformed to Json and being transformed
+        into tables with relations to the nested objects using the django Mutant project to build the django objects
+        dynamically.
+        Based on those models a graphql schema is being created so that these models can be queried.
+        I have made a fairly generic way of creating dataproviders, so that is is easy to add endpoints or add new
+        providers. It can be done through the django admin panel.
+        But for that you need admin rights.
+    </p>
+
+
+    <h3> Future vision </h3>
+    <p>I am hoping to implement some further data analysis tools in the platform and visualization. I think it would be
+        nice with a pivot table with graphs.
+        Later i would really like to do some automatic identifiction of attributes an label them semantically.
+        Of cource at some point i need to try to do some deep learning predictive analysis using LSTM or similar.
+        I hope that this could develop into a platform where users can build and share their own algorithms for
+        analysing
+        data
+        from specific sources that others can then just activate on their on profile if they have data of the same
+        type.</p>
+
+
+    <h3>Contribution</h3>
+    <p>
+        Let me know if you like the project, or would like to contribute. That would be nice.
+    </p>
+
+
+    <div>
+        <a aria-label="View source on GitHub" class="github-corner"
+           href="https://github.com/grusinator/metadataapi">
+            <svg aria-hidden="true" height="80"
+                 style="fill:#FD6C6C; color:#fff; position: absolute; top: 0; border: 0; right: 0;"
+                 viewBox="0 0 250 250"
+                 width="80">
+                <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+                <path class="octo-arm"
+                      d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+                      fill="currentColor" style="transform-origin: 130px 106px;"></path>
+                <path class="octo-body"
+                      d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+                      fill="currentColor"></path>
+            </svg>
+        </a>
+        <style>
                 .github-corner:hover .octo-arm {
                     animation: octocat-wave 560ms ease-in-out
                 }
@@ -49,9 +126,17 @@
                     }
                 }
 
-            </style>
-        </div>
-    </section>
+
+
+
+
+
+
+
+
+        </style>
+    </div>
+</section>
 
 
 {% endblock %}
