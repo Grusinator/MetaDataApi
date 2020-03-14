@@ -19,7 +19,10 @@ COPY . /code/
 
 RUN pipenv install --system --deploy --ignore-pipfile && pip install graphene-django
 
-CMD  ["init.sh"]
+COPY init.sh /usr/local/bin/
+RUN chmod u+x /usr/local/bin/init.sh
+
+ENTRYPOINT [ "init.sh" ]
 
 
 
