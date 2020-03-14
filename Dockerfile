@@ -19,6 +19,8 @@ COPY . /code/
 
 RUN pipenv install --system --deploy --ignore-pipfile && pip install graphene-django
 
+CMD  ["init.sh"]
+
 
 
 
