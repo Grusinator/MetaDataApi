@@ -14,15 +14,25 @@ WORKDIR /code/
 # Install dependencies
 RUN pip install pipenv
 
-# Copy project
-COPY . /code/
+# copy only neccecesary files for install
+# if full repo is copied this step cannot be cached because code change all the time, 
+# which makes install run again. 
+COPY Pipfile.lock /code/Pipfile.lock
+COPY Pipfile /code/Pipfile
+COPY lib /code/lib
+
 
 RUN pipenv install --system --deploy --ignore-pipfile && pip install graphene-django
 
-COPY init.sh /usr/local/bin/
-RUN chmod u+x /usr/local/bin/init.sh
+# Copy full project
+COPY . /code/
 
-ENTRYPOINT [ "init.sh" ]
+# make init file executable
+RUN chmod u+x /code/init.sh
+
+# set default cmd for running container
+CMD /code/init.sh
+# CMD python3 /code/manage.py migrate --noinput && python3 /code/manage.py runserver 0.0.0.0:80
 
 
 
