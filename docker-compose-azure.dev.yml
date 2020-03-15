@@ -12,56 +12,57 @@ services:
       - POSTGRES_DB=meta_data_api
     ports:
       - 5432:5432
-  redis:
-    container_name: metadataapi_redis
-    image: "redis:alpine"
-    ports:
-      - 6379:6379
+  # redis:
+  #   container_name: metadataapi_redis
+  #   image: "redis:alpine"
+  #   ports:
+  #     - 6379:6379
   web:
     container_name: metadataapi_django
+    # build: .
     image: grusinator/meta-data-api:develop
     volumes:
       - .:/code
     environment:
-      - ENV
+      - ENV=DEV
     ports:
       - 80:80
     depends_on:
       - db
-      - redis
-  celery:
-    image: grusinator/meta-data-api:develop
-    command: celery -A MetaDataApi worker -l info
-    restart: on-failure
-    environment:
-      - ENV=PREPROD
-    volumes:
-      - .:/code
-    depends_on:
-      - db
-      - redis
-  celery-beat:
-    image: grusinator/meta-data-api:develop
-    command: celery -A MetaDataApi beat -l INFO --pidfile= --scheduler django_celery_beat.schedulers:DatabaseScheduler
-    restart: on-failure
-    environment:
-      - ENV=PREPROD
-    volumes:
-      - .:/code
-    depends_on:
-      - db
-      - redis
-  flower:
-    container_name: metadataapi_flower
-    image: mher/flower
-    environment:
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - FLOWER_PORT=8888
-    ports:
-      - 8888:8888
+#      - redis
+  # celery:
+  #   image: grusinator/meta-data-api:develop
+  #   command: celery -A MetaDataApi worker -l info
+  #   restart: on-failure
+  #   environment:
+  #     - ENV=PREPROD
+  #   volumes:
+  #     - .:/code
+  #   depends_on:
+  #     - db
+  #     - redis
+  # celery-beat:
+  #   image: grusinator/meta-data-api:develop
+  #   command: celery -A MetaDataApi beat -l INFO --pidfile= --scheduler django_celery_beat.schedulers:DatabaseScheduler
+  #   restart: on-failure
+  #   environment:
+  #     - ENV=PREPROD
+  #   volumes:
+  #     - .:/code
+  #   depends_on:
+  #     - db
+  #     - redis
+  # flower:
+  #   container_name: metadataapi_flower
+  #   image: mher/flower
+  #   environment:
+  #     - CELERY_BROKER_URL=redis://redis:6379/0
+  #     - FLOWER_PORT=8888
+  #   ports:
+  #     - 8888:8888
 volumes:
   postgres_data:
-  pgadmin_data:
+  #pgadmin_data:
 networks:
   postgres:
     driver: bridge

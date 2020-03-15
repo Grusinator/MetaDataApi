@@ -37,6 +37,7 @@ python-dotenv = "*"
 flower = "*"
 django-json2model = {path = "./lib/django_json2model-0.2.7-py3-none-any.whl"}
 django-generic-serializer = {path = "./lib/django_generic_serializer-0.0.2-py3-none-any.whl"}
+gunicorn = "*"
 
 [dev-packages]
 django-coverage-plugin = "*"
