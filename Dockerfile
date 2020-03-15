@@ -27,11 +27,12 @@ RUN pipenv install --system --deploy --ignore-pipfile && pip install graphene-dj
 COPY . /code/
 
 # make init file executable
-# RUN chmod +x /code/init.sh
+# RUN dos2unix /code/init.sh && apt-get --purge remove -y dos2unix && rm -rf /var/lib/apt/lists/*
+RUN chmod +x /code/init.sh
 
 # set default cmd for running container
-# CMD /code/init.sh
-CMD python3 /code/manage.py migrate --noinput && python3 /code/manage.py runserver 0.0.0.0:80
+CMD /code/init.sh
+# CMD python3 /code/manage.py migrate --noinput && python3 /code/manage.py runserver 0.0.0.0:80
 
 
 
