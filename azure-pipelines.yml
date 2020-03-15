@@ -18,11 +18,11 @@ steps:
     echo See https://aka.ms/yaml
   displayName: 'Run a multi-line script'
 
+- script: python -m pipenv lock -r > requirements.txt
+  displayName: 'Create requirements.txt from Pipfile'
 
-- script: |
-    python -m pip install pipenv
-    pipenv install
-  displayName: 'Install prerequisites'
+- script: pip install -r requirements.txt
+  displayName: 'Install requirements.txt'
 
 - script: |
     pushd '$(projectRoot)'
