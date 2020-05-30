@@ -22,8 +22,8 @@ class Migration(migrations.Migration):
             model_name='endpoint',
             name='api_type',
             field=models.CharField(
-                choices=[('OauthRest', 'OauthRest'), ('OauthGraphql', 'OauthGraphql'), ('TokenRest', 'TokenRest')],
-                default='OauthRest', max_length=15),
+                choices=[('rest', 'rest'), ('OauthGraphql', 'OauthGraphql'), ('TokenRest', 'TokenRest')],
+                default='rest', max_length=15),
         ),
         migrations.AlterField(
             model_name='dataprovider',

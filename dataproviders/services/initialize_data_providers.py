@@ -16,8 +16,8 @@ logger = logging.getLogger(__name__)
 
 
 class InitializeDataProviders:
-    data_providers_filename = "data_providers.json"
     data_provider_backup_path = "data_providers_backup/"
+    data_providers_filename = os.path.join(data_provider_backup_path, "data_providers.json")
     exclude = (
         "dataprovideruser",
         "data_fetch",

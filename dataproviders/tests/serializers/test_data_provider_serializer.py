@@ -40,9 +40,9 @@ class TestDataProviderSerializer(TransactionTestCase):
                            'X-Auth-Token': '{AuthToken:}', 'Content-Type': 'application/json'}},
             'endpoints': [
                 {'endpoint_name': 'test1', 'endpoint_url': 'testurl', 'request_type': 'GET',
-                 'api_type': 'OauthRest'},
+                 'api_type': 'rest'},
                 {'endpoint_name': 'test2', 'endpoint_url': 'testurl', 'request_type': 'GET',
-                 'api_type': 'OauthRest'}
+                 'api_type': 'rest'}
             ],
             'icon_image_url': 'http://someurl.com/image',
             'provider_name': 'test_provider_name', 'provider_url': None, 'api_endpoint': '56'}

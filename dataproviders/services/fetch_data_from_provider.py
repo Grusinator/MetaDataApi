@@ -9,8 +9,8 @@ from MetaDataApi.utils import JsonUtils
 from MetaDataApi.utils.django_utils import django_file_utils
 from MetaDataApi.utils.django_utils.django_file_utils import FileType
 from dataproviders.models import DataProvider, DataFetch, Endpoint, HttpConfig
-from dataproviders.models.ApiTypes import ApiTypes
-from dataproviders.services.url_format_helper import UrlFormatHelper
+from dataproviders.models.AuthType import AuthType
+from dataproviders.services.url_args_formatter.url_formatter import UrlFormatter
 
 logger = logging.getLogger(__name__)
 
@@ -19,13 +19,17 @@ def fetch_data_from_endpoint(provider_name, endpoint_name, user_pk):
     data_provider = DataProvider.objects.get(provider_name=provider_name)
     user = User.objects.get(pk=user_pk)
     endpoint = _get_endpoint(data_provider, endpoint_name)
-    # get the profile, with the access token matching the provider_name
-    third_party_profiles = user.data_provider_users
-    third_party_profile = third_party_profiles.get(data_provider__provider_name=provider_name)
-    data = _fetch_data_from_endpoint(endpoint, third_party_profile.access_token)
+    access_token = try_get_access_token_from_data_provider_user(provider_name, user, endpoint)
+    data = _fetch_data_from_endpoint(endpoint, access_token)
     data = JsonUtils.clean(data)
     _save_data_to_file(endpoint, user, data)
     return data
+
+
+def try_get_access_token_from_data_provider_user(provider_name, user, endpoint) -> str:
+    if endpoint.requires_auth:
+        data_provider_user = user.data_provider_users.get(data_provider__provider_name=provider_name)
+        return data_provider_user.access_token
 
 
 def _fetch_data_from_endpoint(endpoint: Endpoint, access_token: str = None):
@@ -36,7 +40,7 @@ def _fetch_data_from_endpoint(endpoint: Endpoint, access_token: str = None):
     return data
 
 
-def _get_endpoint(data_provider, endpoint_name):
+def _get_endpoint(data_provider, endpoint_name) -> Endpoint:
     # TODO Endpoint should be identified uniquely by some means but for now this works fine
     try:
         endpoint = data_provider.endpoints.get(endpoint_name=endpoint_name)
@@ -65,10 +69,8 @@ def _build_header(endpoint: Endpoint, access_token: str):
         header += endpoint.data_provider.http_config.build_header()
     except HttpConfig.DoesNotExist:
         logger.warning("dataprovider has no http config, so header will be default")
-
-    if endpoint.api_type == ApiTypes.OAUTH_REST.value:
+    if endpoint.auth_type == AuthType.TOKEN.value:
         header["Authorization"] = "Bearer %s" % access_token
-
     return header
 
 
@@ -82,5 +84,5 @@ def _build_url(endpoint, access_token):
         "EndDateTime": datetime.now(),
         "AuthToken": access_token
     }
-    endpoint_url = UrlFormatHelper.build_args_for_url(endpoint.endpoint_url, **kwargs)
-    return UrlFormatHelper.join_urls(endpoint.data_provider.api_endpoint, endpoint_url)
+    endpoint_url = UrlFormatter.build_args_for_url(endpoint.endpoint_url, **kwargs)
+    return UrlFormatter.join_urls(endpoint.data_provider.api_endpoint, endpoint_url)

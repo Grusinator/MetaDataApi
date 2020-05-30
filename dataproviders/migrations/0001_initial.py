@@ -23,8 +23,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('provider_name', models.TextField(unique=True)),
                 ('api_type', models.TextField(
-                    choices=[('OauthRest', 'OauthRest'), ('OauthGraphql', 'OauthGraphql'), ('TokenRest', 'TokenRest')],
-                    default='OauthRest')),
+                    choices=[('rest', 'rest'), ('OauthGraphql', 'OauthGraphql'), ('TokenRest', 'TokenRest')],
+                    default='rest')),
                 ('api_endpoint', models.TextField()),
             ],
             bases=(models.Model, generic_serializer.serializable_model.SerializableModel),

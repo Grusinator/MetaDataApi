@@ -1,8 +1,11 @@
 import re
+from typing import List
 from urllib import parse
 
+from dataproviders.services.url_args_formatter.base_url_arg_formatting_rule import BaseUrlArgFormattingRule
 
-class UrlFormatHelper:
+
+class UrlFormatter:
     valid_url_arg_names = [
         "StartDateTime",
         "EndDateTime",
@@ -14,6 +17,10 @@ class UrlFormatHelper:
         "Y-M-d": lambda x: x.strftime('%Y-%m-%d'),
         "": lambda x: x
     }
+
+    @classmethod
+    def new_build_args_for_url(cls, url_arg_formatters: List[BaseUrlArgFormattingRule]):
+        raise NotImplementedError
 
     @classmethod
     def build_args_for_url(cls, endpoint_url: str, **inserted_arguments) -> str:
@@ -28,7 +35,7 @@ class UrlFormatHelper:
         return output_endpoint
 
     @classmethod
-    def standardize_url(cls, url):
+    def standardize_url(cls, url: str):
         # remove first slash if exists
         return url[1:] if url[0] == "/" else url
 

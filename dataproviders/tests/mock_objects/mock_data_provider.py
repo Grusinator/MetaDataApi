@@ -1,5 +1,5 @@
 from dataproviders.models import Endpoint, DataProvider
-from dataproviders.models.ApiTypes import ApiTypes
+from dataproviders.models.ApiType import ApiType
 
 
 class MockDataProvider:
@@ -8,13 +8,13 @@ class MockDataProvider:
     def create_data_provider_with_endpoints(cls):
         data_provider = DataProvider.objects.create(provider_name="test_provider_name", api_endpoint="test_endpoint")
         Endpoint.objects.create(
-            api_type=ApiTypes.OAUTH_GRAPHQL.value,
+            api_type=ApiType.GRAPHQL.value,
             data_provider=data_provider,
             endpoint_name="test1",
             endpoint_url="testurl"
         )
         Endpoint.objects.create(
-            api_type=ApiTypes.OAUTH_GRAPHQL.value,
+            api_type=ApiType.GRAPHQL.value,
             data_provider=data_provider,
             endpoint_name="test2",
             endpoint_url="testurl"
@@ -47,7 +47,7 @@ class MockDataProvider:
         return {
             "icon_image_url": "http://someurl.com/image",
             'provider_name': 'test_provider_name',
-            'api_type': ApiTypes.OAUTH_GRAPHQL.value,
+            'api_type': ApiType.GRAPHQL.value,
             'api_endpoint': '56',
         }
 
@@ -104,17 +104,17 @@ class MockDataProvider:
             },
             "endpoints": [
                 {
-                    "api_type": "OauthRest",
+                    "api_type": "rest",
                     "endpoint_name": "activity",
                     "endpoint_url": "v3/activities"
                 },
                 {
-                    "api_type": "OauthRest",
+                    "api_type": "rest",
                     "endpoint_name": "zone",
                     "endpoint_url": "v3/athlete/zones"
                 },
                 {
-                    "api_type": "OauthRest",
+                    "api_type": "rest",
                     "endpoint_name": "athlete",
                     "endpoint_url": "v3/athlete"
                 }

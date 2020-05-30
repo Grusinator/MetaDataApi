@@ -75,9 +75,6 @@ class SchemaAttribute(BaseMeta):
     @classmethod
     def assert_data_type(cls, attribute, data_type):
         data_type_name = cls.data_type_map[data_type]
-        assert attribute.data_type == data_type_name, \
-            "the found attr: %s has type %s, but it must be a %s" % (
-                attribute.label,
-                attribute.data_type,
-                str(data_type_name)
-            )
+        msg = f"the found attr: {attribute.label} has type {attribute.data_type}," \
+              f" but it must be a {str(data_type_name)}"
+        assert attribute.data_type == data_type_name, msg

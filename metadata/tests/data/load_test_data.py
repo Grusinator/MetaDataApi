@@ -199,7 +199,7 @@ class LoadTestData:
     def load_dummy_provider_json(cls):
         return {
             "provider_name": "strava3",
-            "api_type": "OauthRest",
+            "api_type": "rest",
             "api_endpoint": "https://www.strava.com/api/",
             "authorize_url": "https://www.strava.com/oauth/authorize",
             "access_token_url": "https://www.strava.com/oauth/token",

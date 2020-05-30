@@ -1,7 +1,7 @@
 from datetime import datetime
 from unittest import TestCase
 
-from dataproviders.services.url_format_helper import UrlFormatHelper
+from dataproviders.services.url_args_formatter.url_formatter import UrlFormatter
 
 
 class TestUrlFormatHelper(TestCase):
@@ -11,7 +11,7 @@ class TestUrlFormatHelper(TestCase):
 
         endpoint = "testendpoint?start={StartDateTime:UTCSEC}&end={EndDateTime:UTCSEC}"
 
-        output_endpoint = UrlFormatHelper.build_args_for_url(
+        output_endpoint = UrlFormatter.build_args_for_url(
             endpoint, StartDateTime=start_time, EndDateTime=end_time)
 
         expected = "testendpoint?start=%i&end=%i" % (start_time.timestamp(), end_time.timestamp())

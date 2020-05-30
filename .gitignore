@@ -85,7 +85,6 @@ target/
 local_settings.py
 db.sqlite3
 api_keys.json
-data_providers.json
 .idea/
 .vscode
 
