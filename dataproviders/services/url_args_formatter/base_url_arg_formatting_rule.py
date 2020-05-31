@@ -1,5 +1,6 @@
 from abc import ABC
 
 
-class BaseUrlArgFormattingRule(ABC):
-    pass
+class BaseUrlArgValue(ABC):
+    def __init__(self, value):
+        self.value = value

@@ -3,13 +3,14 @@ from django.contrib import admin
 from MetaDataApi.utils.django_utils.base_model_admin import BaseModelAdmin
 from dataproviders import tasks
 from dataproviders.models import DataProvider, Endpoint, DataFetch, OauthConfig, HttpConfig, \
-    DataProviderUser, DataFileUpload
+    DataProviderUser, DataFileUpload, UrlArg
 from dataproviders.models.DataFile import DataFile
 from dataproviders.services import oauth
 
 models = (
     OauthConfig,
     HttpConfig,
+    UrlArg,
 )
 
 [admin.site.register(model) for model in models]

@@ -1,17 +1,15 @@
-import re
 from typing import List
 from urllib import parse
 
-from dataproviders.services.url_args_formatter.base_url_arg_formatting_rule import BaseUrlArgFormattingRule
+from django.core.exceptions import ObjectDoesNotExist
+
+from dataproviders.models import Endpoint
+from dataproviders.models.UrlArgFormatter import UrlArgFormatter
+from dataproviders.models.UrlArgType import UrlArgType
+from dataproviders.services.url_args_formatter.base_url_arg_formatting_rule import BaseUrlArgValue
 
 
 class UrlFormatter:
-    valid_url_arg_names = [
-        "StartDateTime",
-        "EndDateTime",
-        "AuthToken"
-    ]
-
     arg_data_type_converter = {
         "UTCSEC": lambda x: str(int(x.timestamp())),
         "Y-M-d": lambda x: x.strftime('%Y-%m-%d'),
@@ -19,20 +17,38 @@ class UrlFormatter:
     }
 
     @classmethod
-    def new_build_args_for_url(cls, url_arg_formatters: List[BaseUrlArgFormattingRule]):
+    def new_build_args_for_url(cls, url_arg_formatters: List[BaseUrlArgValue]):
         raise NotImplementedError
 
     @classmethod
-    def build_args_for_url(cls, endpoint_url: str, **inserted_arguments) -> str:
-        [cls.validate(key) for key in inserted_arguments.keys()]
-        output_endpoint = endpoint_url
-        url_arg_defs = cls.find_all_url_arg_definitions(endpoint_url)
-        for url_arg_name, dataformat in url_arg_defs.items():
-            cls.validate(url_arg_name)
-            value = inserted_arguments[url_arg_name]
-            url_arg_value = cls.convert(value, dataformat)
-            output_endpoint = output_endpoint.replace(cls.build_url_arg_def(dataformat, url_arg_name), url_arg_value)
-        return output_endpoint
+    def build_args_for_url(cls, endpoint: Endpoint, selected_args: List[BaseUrlArgValue]) -> str:
+        kwargs = cls.build_kwargs_from_url_arg_values(endpoint, selected_args)
+        return cls.build_url_with_args(endpoint.endpoint_url, kwargs)
+
+    @classmethod
+    def build_url_with_args(cls, endpoint_url, url_args):
+        url_parts = list(parse.urlparse(endpoint_url))
+        existing_url_args = dict(parse.parse_qsl(url_parts[4]))
+        existing_url_args.update(url_args)
+        url_parts[4] = parse.urlencode(existing_url_args)
+        return parse.urlunparse(url_parts)
+
+    @classmethod
+    def build_kwargs_from_url_arg_values(cls, endpoint, selected_args) -> dict:
+        args = {}
+        for selected_arg in selected_args:
+            try:
+                url_arg = endpoint.url_args.get(arg_type=selected_arg.__class__.__name__)
+            except ObjectDoesNotExist:
+                continue
+            if UrlArgType.get_class_from_value(url_arg.arg_type):
+                formatter = UrlArgFormatter.get_class_from_value(url_arg.value_formatter)
+                if formatter:
+                    value = formatter.convert(selected_arg)
+                else:
+                    value = selected_arg.value
+                args[url_arg.key_name] = value
+        return args
 
     @classmethod
     def standardize_url(cls, url: str):
@@ -47,22 +63,3 @@ class UrlFormatter:
             cls.standardize_url(base),
             cls.standardize_url(endpoint)
         )
-
-    @classmethod
-    def build_url_arg_def(cls, data_format: str, url_arg_name: str):
-        cls.validate(url_arg_name)
-        return ("{%s-%s}" % (url_arg_name, data_format)) \
-            .replace("-", ":")
-
-    @classmethod
-    def find_all_url_arg_definitions(cls, endpoint_url: str) -> dict:
-        url_arg_defs = re.findall("{(.*?)}", endpoint_url)
-        return dict(url_arg_def.split(":") for url_arg_def in url_arg_defs)
-
-    @classmethod
-    def convert(cls, data, data_format):
-        return cls.arg_data_type_converter[data_format](data)
-
-    @classmethod
-    def validate(cls, key):
-        assert key in cls.valid_url_arg_names, "invalid args"

@@ -10,6 +10,8 @@ from MetaDataApi.utils.django_utils import django_file_utils
 from MetaDataApi.utils.django_utils.django_file_utils import FileType
 from dataproviders.models import DataProvider, DataFetch, Endpoint, HttpConfig
 from dataproviders.models.AuthType import AuthType
+from dataproviders.services.url_args_formatter.args_rule_types import StartDateTime, EndDateTime, AuthToken, \
+    PageCurrent, PageSize
 from dataproviders.services.url_args_formatter.url_formatter import UrlFormatter
 
 logger = logging.getLogger(__name__)
@@ -79,10 +81,12 @@ def _build_body(endpoint):
 
 
 def _build_url(endpoint, access_token):
-    kwargs = {
-        "StartDateTime": datetime.now() - timedelta(days=30),
-        "EndDateTime": datetime.now(),
-        "AuthToken": access_token
-    }
-    endpoint_url = UrlFormatter.build_args_for_url(endpoint.endpoint_url, **kwargs)
+    selected = [
+        StartDateTime(datetime.now() - timedelta(days=30)),
+        EndDateTime(datetime.now()),
+        AuthToken(access_token),
+        PageCurrent(0),
+        PageSize(100)
+    ]
+    endpoint_url = UrlFormatter.build_args_for_url(endpoint, selected)
     return UrlFormatter.join_urls(endpoint.data_provider.api_endpoint, endpoint_url)
