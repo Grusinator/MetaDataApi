@@ -17,6 +17,7 @@ class Endpoint(models.Model, SerializableModel):
     auth_type = models.CharField(choices=AuthType.build_choices(), default=AuthType.NONE.value, null=True, blank=True,
                                  max_length=10)
     data_provider = models.ForeignKey(DataProvider, related_name="endpoints", on_delete=models.CASCADE)
+    data_structure_root = models.CharField(max_length=255, null=True, blank=True, default=None)
 
     def __str__(self):
         return f"{self.data_provider} - {self.endpoint_name} - {self.endpoint_url}"

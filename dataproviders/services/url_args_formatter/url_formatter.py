@@ -10,20 +10,10 @@ from dataproviders.services.url_args_formatter.base_url_arg_formatting_rule impo
 
 
 class UrlFormatter:
-    arg_data_type_converter = {
-        "UTCSEC": lambda x: str(int(x.timestamp())),
-        "Y-M-d": lambda x: x.strftime('%Y-%m-%d'),
-        "": lambda x: x
-    }
-
-    @classmethod
-    def new_build_args_for_url(cls, url_arg_formatters: List[BaseUrlArgValue]):
-        raise NotImplementedError
-
     @classmethod
     def build_args_for_url(cls, endpoint: Endpoint, selected_args: List[BaseUrlArgValue]) -> str:
-        kwargs = cls.build_kwargs_from_url_arg_values(endpoint, selected_args)
-        return cls.build_url_with_args(endpoint.endpoint_url, kwargs)
+        url_args = cls.build_kwargs_from_url_arg_values(endpoint, selected_args)
+        return cls.build_url_with_args(endpoint.endpoint_url, url_args)
 
     @classmethod
     def build_url_with_args(cls, endpoint_url, url_args):

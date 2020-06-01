@@ -24,8 +24,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 load_env(BASE_DIR)
-SECRET_KEY = os.environ.get('SECRET_KEY', 'ymcvw8ej))e=9jo89315q_r$imri(u0-ae!utev&ck4rs6cz+d')
-TESTING = sys.argv[1:2] == ['test'] or True
+SECRET_KEY = os.environ.get('SECRET_KEY')
+TESTING = sys.argv[1:2] == ['test']
 ENV = Env[os.environ.get('ENV', default=Env.LOCAL.value)]
 DOCKER = bool(os.environ.get('DOCKER', default=False))
 DEBUG = bool(os.environ.get('DEBUG', False))

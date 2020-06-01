@@ -18,16 +18,18 @@
             {% endif %}
             <a class="button primary" href=upload_file/> Upload data </a>
 
-            {% if data_provider_user %}
-                <h3>Endpoints</h3>
-                {% for endpoint in endpoints %}
+
+            <h3>Endpoints</h3>
+            {% for endpoint in endpoints %}
+                {% if data_provider_user or not endpoint.requires_auth %}
                     <div>
                         <a href="{{ endpoint.get_internal_view_url }}">
                             {{ endpoint.endpoint_name }}
                         </a>
                     </div>
-                {% endfor %}
-            {% endif %}
+                {% endif %}
+            {% endfor %}
+
         </div>
 
         <div>
