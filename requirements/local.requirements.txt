@@ -1,0 +1,5 @@
+-r ./base.requirements.txt
+-r ./test.requirements.txt
+-r ./docs.requirements.txt
+
+

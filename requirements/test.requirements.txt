@@ -1,0 +1,12 @@
+#Test and Dev
+pytest
+pytest-dotenv
+pytest-cov
+pytest-ordering
+pytest-repeat
+pytest-regressions
+pytest-benchmark
+black
+pylint
+mypy
+bandit
