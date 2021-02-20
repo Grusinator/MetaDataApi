@@ -13,9 +13,9 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 import os
 import sys
 
-from .env import Env
+from MetaDataApi.env import Env
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-from .load_env import load_env
+from MetaDataApi.load_env import load_env
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -206,14 +206,14 @@ STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'app/static/'),
+    os.path.join(BASE_DIR, 'app/../../app/static/'),
 ]
 # STATIC_ROOT = os.path.join(ENV_PATH, "app/static/")
 # MEDIA_ROOT = os.path.join(ENV_PATH, "media/")
 
-from .settings_specific.admin_reorder_settings import ADMIN_REORDER
-from .settings_specific.aws_settings import *
-from .settings_specific.celery_settings import *
+from MetaDataApi.settings.admin_reorder_settings import ADMIN_REORDER
+from MetaDataApi.settings.aws_settings import *
+from MetaDataApi.settings.celery_settings import *
 
 OAUTH_REDIRECT_URI = ENV.get_url() + "oauth2redirect"
 

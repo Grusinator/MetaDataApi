@@ -10,25 +10,33 @@ services:
       - POSTGRES_USER=django
       - POSTGRES_PASSWORD=dev1234
       - POSTGRES_DB=meta_data_api
+    ports:
+      - 5432:5432
   redis:
     container_name: metadataapi_redis
     image: "redis:alpine"
+    ports:
+      - 6379:6379
   web:
     container_name: metadataapi_django
-    build: .
-    command: bash -c "python3 /code/manage.py migrate --noinput && python3 /code/manage.py runserver 0.0.0.0:80"
+    build: ../..
+    # runserver
+    command: bash -c "python3 /code/manage.py migrate --noinput && python3 /code/manage.py runserver 0.0.0.0:8000"
+    # testing
+    #command: bash -c "python3 /code/manage.py migrate --noinput && python3 /code/manage.py test"
+
+    #    command: echo "django web has been disabled"
     volumes:
       - .:/code
     environment:
       - ENV
-      - SECRET_KEY
     ports:
-      - "80:80"
+      - 8000:8000
     depends_on:
       - db
       - redis
   celery:
-    build: .
+    build: ../..
     command: celery -A MetaDataApi worker -l info
     restart: on-failure
     environment:
@@ -39,7 +47,7 @@ services:
       - db
       - redis
   celery-beat:
-    build: .
+    build: ../..
     command: celery -A MetaDataApi beat -l INFO --pidfile= --scheduler django_celery_beat.schedulers:DatabaseScheduler
     restart: on-failure
     environment:
@@ -49,19 +57,37 @@ services:
     depends_on:
       - db
       - redis
-  flower:  
+  flower:
     container_name: metadataapi_flower
     image: mher/flower
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - FLOWER_PORT=8888
-    ports:  
+    ports:
       - 8888:8888
-
+  pgadmin:
+    container_name: metadataapi_pgadmin
+    restart: always
+    image: dpage/pgadmin4
+    #    links:
+    #      - db
+    depends_on:
+      - db
+    ports:
+      - 5050:5050
+    environment:
+      PGADMIN_DEFAULT_EMAIL: grusinator@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: dev1234
+      PGADMIN_LISTEN_PORT: 5050
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - postgres
 volumes:
   postgres_data:
-
-
-
+  pgadmin_data:
+networks:
+  postgres:
+    driver: bridge
 
 

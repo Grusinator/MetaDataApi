@@ -1,0 +1,38 @@
+version: '3.7'
+
+services:
+  db:
+    container_name: postgres_db
+    image: postgres:12.0-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=django
+      - POSTGRES_PASSWORD=dev1234
+      - POSTGRES_DB=meta_data_api
+    ports:
+      - 5432:5432
+  pgadmin:
+    container_name: pgadmin
+    restart: always
+    image: dpage/pgadmin4
+    depends_on:
+      - db
+    ports:
+      - 5050:5050
+    environment:
+      PGADMIN_DEFAULT_EMAIL: grusinator@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: dev1234
+      PGADMIN_LISTEN_PORT: 5050
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - postgres
+volumes:
+  postgres_data:
+  pgadmin_data:
+networks:
+  postgres:
+    driver: bridge
+
+

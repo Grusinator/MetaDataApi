@@ -17,14 +17,14 @@ RUN pip install pipenv
 # copy only neccecesary files for install
 # if full repo is copied this step cannot be cached because code change all the time, 
 # which makes install run again. 
-COPY Pipfile.lock Pipfile /code/
-COPY lib /code/lib
+COPY ../../Pipfile.lock Pipfile /code/
+COPY ../../lib /code/lib
 
 
 RUN pipenv install --system --deploy --ignore-pipfile && pip install graphene-django
 
 # Copy full project
-COPY . /code/
+COPY ../.. /code/
 
 # make init file executable
 # RUN dos2unix /code/init.sh && apt-get --purge remove -y dos2unix && rm -rf /var/lib/apt/lists/*

@@ -16,28 +16,24 @@ django-filter
 celery
 django-celery-results
 django-celery-beat
+#django-celery-model
+-e git://github.com/mback2k/django-celery-model.git
 django-timezone-field
 djangorestframework
-jsonfield==2.1.1
-./lib/django-mutant-0.3a5.tar.gz
+jsonfield # ==2.1.1
 django-polymodels>=1.5.1
 rdflib
 redis
 django-modeladmin-reorder
-django-celery-model
 model-bakery
 parameterized
 django-cors-headers
-
 flower
-./lib/django_json2model-0.2.7-py3-none-any.whl
+./lib/django_json2model-0.3.0-py3-none-any.whl
+./lib/django_mutant-0.4-py2.py3-none-any.whl
 ./lib/django_generic_serializer-0.0.2-py3-none-any.whl
 gunicorn
 
 # generic
 invoke
 python-dotenv
-
-
-
-# dummy change 2

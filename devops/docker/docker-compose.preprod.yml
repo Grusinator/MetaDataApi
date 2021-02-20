@@ -17,7 +17,7 @@ services:
     image: "redis:alpine"
   web:
     container_name: metadataapi_django
-    build: .
+    build: ../..
     command: bash -c "python3 /code/manage.py migrate --noinput && python3 /code/manage.py runserver 0.0.0.0:8000"
     volumes:
       - .:/code
@@ -29,7 +29,7 @@ services:
       - db
       - redis
   celery:
-    build: .
+    build: ../..
     command: celery -A MetaDataApi worker -l info
     restart: on-failure
     environment:
@@ -40,7 +40,7 @@ services:
       - db
       - redis
   celery-beat:
-    build: .
+    build: ../..
     command: celery -A MetaDataApi beat -l INFO --pidfile= --scheduler django_celery_beat.schedulers:DatabaseScheduler
     restart: on-failure
     environment:
