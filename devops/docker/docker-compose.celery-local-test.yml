@@ -1,13 +1,24 @@
 version: '3.7'
 
 services:
+  db:
+    container_name: postgres_db
+    image: postgres:12.0-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=django
+      - POSTGRES_PASSWORD=dev1234
+      - POSTGRES_DB=meta_data_api
+    ports:
+      - 5432:5432
   redis:
     container_name: metadataapi_redis
     image: "redis:alpine"
     ports:
       - 6379:6379
   celery:
-    build: ../..
+    build: ..
     command: celery -A MetaDataApi worker -l info
     restart: on-failure
     environment:
@@ -18,7 +29,7 @@ services:
       - db
       - redis
   celery-beat:
-    build: ../..
+    build: ..
     command: celery -A MetaDataApi beat -l INFO --pidfile= --scheduler django_celery_beat.schedulers:DatabaseScheduler
     restart: on-failure
     environment:
@@ -36,7 +47,8 @@ services:
       - FLOWER_PORT=8888
     ports:
       - 8888:8888
-
+volumes:
+  postgres_data:
 
 
 

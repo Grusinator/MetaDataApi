@@ -9,5 +9,4 @@ def setup_py(command):
 
 @task
 def run(command):
-    # for somehow reason streamlit does not want to import from optisoil when the path has not been set
-    command.run("streamlit run optisoil/app/optisoil_engineering_tools.py")
+    command.run("python3 /code/manage.py migrate --noinput && python3 /code/manage.py runserver 0.0.0.0:80")

@@ -1,0 +1,18 @@
+
+celery-beat:
+  build:
+    context: ../../..
+    dockerfile: ../app.Dockerfile
+  command: celery -A MetaDataApi beat -l INFO --pidfile= --scheduler django_celery_beat.schedulers:DatabaseScheduler
+  restart: on-failure
+  environment:
+    - ENV
+  volumes:
+    - .:/code
+  depends_on:
+    - redis
+    - db
+
+
+
+

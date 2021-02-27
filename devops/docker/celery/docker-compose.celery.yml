@@ -1,0 +1,18 @@
+
+celery:
+  build:
+    context: ./../..
+    dockerfile: devops/docker/app.Dockerfile
+  command: celery -A MetaDataApi worker -l info
+  restart: on-failure
+  environment:
+    - ENV
+  volumes:
+    - .:/code
+  depends_on:
+    - redis
+    - db
+
+
+
+
