@@ -18,33 +18,17 @@ CIRCLECI_TEST_DATABASE = {
     }
 }
 
-# DEFAULT_DATABASE = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'meta_data_api',
-#         'USER': 'django',
-#         'PASSWORD': 'dev1234',
-#         'HOST': 'db' if DOCKER else 'localhost',
-#         'PORT': '5432',
-#         'TEST': {
-#             'NAME': 'meta_data_api_test',
-#         },
-#     }
-# }
-
-
 DATABASES = {
     'default': {
-        'ENGINE': 'djongo',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'meta_data_api',
-        'CLIENT': {
-            'host': 'host-name or ip address',
-            'port': 27017,
-            'username': 'django',
-            'password': 'dev1234',
-            'authSource': 'admin',
-            'authMechanism': 'SCRAM-SHA-1'
-        }
+        'USER': 'django',
+        'PASSWORD': 'dev1234',
+        'HOST': 'db' if DOCKER else 'localhost',
+        'PORT': '5432',
+        'TEST': {
+            'NAME': 'meta_data_api_test',
+        },
     }
 }
 
