@@ -4,9 +4,13 @@ services:
   mongo:
     image: mongo
     restart: always
+    ports:
+      - 27017:27017
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_ROOT_USERNAME: django
+      MONGO_INITDB_ROOT_PASSWORD: dev1234
+    volumes:
+      - mongo_data:/var/lib/mongo/data/
 
   mongo-express:
     image: mongo-express
@@ -14,7 +18,10 @@ services:
     ports:
       - 8081:8081
     environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+      ME_CONFIG_MONGODB_ADMINUSERNAME: django
+      ME_CONFIG_MONGODB_ADMINPASSWORD: dev1234
+
+volumes:
+  mongo_data:
 
 

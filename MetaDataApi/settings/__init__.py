@@ -26,9 +26,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 load_env(BASE_DIR)
 SECRET_KEY = os.environ.get('SECRET_KEY', 'ymcvw8ej))e=9jo89315q_r$imri(u0-ae!utev&ck4rs6cz+d')
 TESTING = sys.argv[1:2] == ['test']
-ENV = Env[os.environ.get('ENV', default=Env.LOCAL.value)]
-DOCKER = bool(os.environ.get('DOCKER', default=False))
-DEBUG = bool(os.environ.get('DEBUG', False))
+ENV = Env[os.getenv('ENV', Env.LOCAL.value)]
+DOCKER = bool(os.getenv('DOCKER', False))
+DEBUG = bool(os.getenv('DEBUG', False))
 
 
 def is_debugging():
@@ -136,40 +136,16 @@ WSGI_APPLICATION = 'MetaDataApi.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
-
-
-CIRCLECI_TEST_DATABASE = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'circle_test',
-        'USER': 'root',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
-}
-
 APPEND_SLASH = True
 
-DEFAULT_DATABASE = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'meta_data_api',
-        'USER': 'django',
-        'PASSWORD': 'dev1234',
-        'HOST': 'db' if DOCKER else 'localhost',
-        'PORT': '5432',
-        'TEST': {
-            'NAME': 'meta_data_api_test',
-        },
-    }
-}
+
 
 AUTHENTICATION_BACKENDS = [
     'graphql_jwt.backends.JSONWebTokenBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
 
-DATABASES = CIRCLECI_TEST_DATABASE if ENV == Env.TEST else DEFAULT_DATABASE
+
 
 print(f"starting env with settings DOCKER: {DOCKER}, ENV: {ENV.name}, DEBUG: {DEBUG}, TESTING: {TESTING}")
 

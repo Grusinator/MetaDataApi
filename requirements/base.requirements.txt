@@ -22,6 +22,7 @@ djangorestframework
 jsonfield # ==2.1.1
 rdflib
 redis
+djongo
 django-modeladmin-reorder
 model-bakery
 parameterized
