@@ -12,4 +12,5 @@ def attach_tasks():
     DataFileUploadAdmin.add_action_from_single_arg_method(tasks.schedule_task_clean_data_from_source_file)
 
     data_fetch_on_save_methods.append(tasks.schedule_task_clean_data_from_source_file)
-    DataFetchAdmin.add_action_from_single_arg_method(tasks.schedule_task_clean_data_from_source_file)
+    # TODO causeing some unique error
+    # DataFetchAdmin.add_action_from_single_arg_method(tasks.schedule_task_clean_data_from_source_file)

@@ -10,6 +10,3 @@ def load_env(base_dir=None):
     dotenv_path = join(base_dir, '.env')
     load_dotenv(dotenv_path)
 
-
-def get_env_var(env_name: str, default=None):
-    return os.environ.get(env_name)

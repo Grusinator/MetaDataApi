@@ -1,0 +1,42 @@
+version: '3.7'
+
+services:
+  redis:
+    container_name: metadataapi_redis
+    image: "redis:alpine"
+    ports:
+      - 6379:6379
+  celery:
+    build: ../..
+    command: celery -A MetaDataApi worker -l info
+    restart: on-failure
+    environment:
+      - ENV
+    volumes:
+      - .:/code
+    depends_on:
+      - db
+      - redis
+  celery-beat:
+    build: ../..
+    command: celery -A MetaDataApi beat -l INFO --pidfile= --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    restart: on-failure
+    environment:
+      - ENV
+    volumes:
+      - .:/code
+    depends_on:
+      - db
+      - redis
+  flower:
+    container_name: metadataapi_flower
+    image: mher/flower
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - FLOWER_PORT=8888
+    ports:
+      - 8888:8888
+
+
+
+

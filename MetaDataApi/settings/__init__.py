@@ -158,6 +158,9 @@ DEFAULT_DATABASE = {
         'PASSWORD': 'dev1234',
         'HOST': 'db' if DOCKER else 'localhost',
         'PORT': '5432',
+        'TEST': {
+            'NAME': 'meta_data_api_test',
+        },
     }
 }
 
@@ -214,6 +217,7 @@ STATICFILES_DIRS = [
 from MetaDataApi.settings.admin_reorder_settings import ADMIN_REORDER
 from MetaDataApi.settings.aws_settings import *
 from MetaDataApi.settings.celery_settings import *
+from MetaDataApi.settings.db_settings import *
 
 OAUTH_REDIRECT_URI = ENV.get_url() + "oauth2redirect"
 
