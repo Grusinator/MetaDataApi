@@ -29,16 +29,5 @@
                 {% endfor %}
             {% endif %}
         </div>
-
-        <div>
-            <h3>Models</h3>
-            {% for dynamic_meta_object in dynamic_meta_objects %}
-                <div>
-                    <a href="{{ dynamic_meta_object.dynamic_object.object_name }}/">
-                        {{ dynamic_meta_object.dynamic_object.object_name }}
-                    </a>
-                </div>
-            {% endfor %}
-        </div>
     </section>
 {% endblock %}

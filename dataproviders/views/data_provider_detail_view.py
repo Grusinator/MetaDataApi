@@ -19,7 +19,6 @@ def data_provider_view(request, provider_name):
     endpoints = data_provider.endpoints.all()
     oauth_auth_url = try_get_oauth_url(data_provider, request)
     data_provider_user = DataProviderUser.objects.filter(data_provider=data_provider, user=request.user).first()
-    dynamic_meta_objects = data_provider.dynamic_meta_objects.all()
 
     return render(request, 'dataprovider_detail.html',
                   {
@@ -28,7 +27,6 @@ def data_provider_view(request, provider_name):
                       "endpoints": endpoints,
                       "user_id": request.user.pk,
                       "data_provider_user": data_provider_user,
-                      "dynamic_meta_objects": dynamic_meta_objects
                   }
                   )
 
