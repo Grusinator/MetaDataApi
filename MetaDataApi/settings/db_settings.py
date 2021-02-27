@@ -4,9 +4,6 @@ from MetaDataApi.env import Env
 
 ENV = Env[os.getenv('ENV', Env.LOCAL.value)]
 DOCKER = bool(os.getenv('DOCKER', False))
-DEBUG = bool(os.getenv('DEBUG', False))
-
-USE_MONGO = True
 
 CIRCLECI_TEST_DATABASE = {
     'default': {

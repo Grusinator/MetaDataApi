@@ -2,16 +2,17 @@
 Django
 psycopg2  
 Pillow  
-django-heroku  
+#django-heroku
+pymongo
 requests  
 boto3
-django-storages  
+django-storages
 inflection
-graphql-core 
-graphene
-graphene-django 
-graphene-file-upload
-django-graphql-jwt
+# graphql-core
+# graphene
+# graphene-django
+# graphene-file-upload
+# django-graphql-jwt
 django-filter
 celery
 django-celery-results
@@ -22,15 +23,15 @@ djangorestframework
 jsonfield # ==2.1.1
 rdflib
 redis
-djongo
+# djongo
 django-modeladmin-reorder
 model-bakery
 parameterized
 django-cors-headers
 flower
-lib/django_mutant-0.4-py2.py3-none-any.whl
-lib/django_json2model-0.3.1-py3-none-any.whl
-lib/django_generic_serializer-0.0.2-py3-none-any.whl
+# lib/django_mutant-0.4-py2.py3-none-any.whl
+# lib/django_json2model-0.3.1-py3-none-any.whl
+# lib/django_generic_serializer-0.0.2-py3-none-any.whl
 gunicorn
 
 # generic

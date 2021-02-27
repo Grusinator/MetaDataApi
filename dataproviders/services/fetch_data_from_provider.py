@@ -10,6 +10,7 @@ from MetaDataApi.utils.django_utils import django_file_utils
 from MetaDataApi.utils.django_utils.django_file_utils import FileType
 from dataproviders.models import DataProvider, DataFetch, Endpoint, HttpConfig
 from dataproviders.models.ApiTypes import ApiTypes
+from dataproviders.services import pymongo_client
 from dataproviders.services.url_format_helper import UrlFormatHelper
 
 logger = logging.getLogger(__name__)
@@ -55,8 +56,9 @@ def _request_from_endpoint(url, body, header):
 def _save_data_to_file(endpoint: Endpoint, user: User, data: str):
     data_file = django_file_utils.convert_str_to_file(data, filetype=FileType.JSON,
                                                       filename_based_on=endpoint.endpoint_name)
-    return DataFetch.objects.create(endpoint=endpoint, data_file_from_source=data_file, user=user,
-                                    data_provider=endpoint.data_provider)
+    pymongo_client.insert_data(endpoint.data_provider.provider_name, endpoint.endpoint_name, user, datetime.now(), data)
+    # DataFetch.objects.create(endpoint=endpoint, data_file_from_source=data_file, user=user,
+    #                                 data_provider=endpoint.data_provider)
 
 
 def _build_header(endpoint: Endpoint, access_token: str):

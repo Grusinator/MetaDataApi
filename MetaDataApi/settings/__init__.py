@@ -63,7 +63,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'graphene_django',
+    #'graphene_django',
     # 'rest_framework',
     # 'oauth2_provider',
     'corsheaders',
@@ -76,30 +76,10 @@ INSTALLED_APPS = [
     # 'social_django',
 ]
 
-# apps to run json2model
-INSTALLED_APPS += (
-    'mutant',
-    'mutant.contrib.text',
-    'mutant.contrib.boolean',
-    'mutant.contrib.temporal',
-    'mutant.contrib.file',
-    'mutant.contrib.numeric',
-    'mutant.contrib.related',
-    # # 'mutant.contrib.web',
-    'json2model'
-)
-# Error
-# object: activity, could not be created due to error: duplicate key value violates unique constraint "django_content_type_app_label_model_76bd3d3b_uniq"
-# DETAIL:  Key (app_label, model)=(dynamic_models, activity) already exists.
-# APP_LABEL_DYNAMIC_MODELS = "dynamic_models"
-RELATE_TO_USER = True
-
 INSTALLED_APPS += (
     'users',
     'app',
-    'metadata',
     'dataproviders',
-    'dynamic_models',
 )
 
 MIDDLEWARE = [
@@ -196,9 +176,3 @@ from MetaDataApi.settings.celery_settings import *
 from MetaDataApi.settings.db_settings import *
 
 OAUTH_REDIRECT_URI = ENV.get_url() + "oauth2redirect"
-
-TEST_SETTINGS_EXCLUDE = ("rdf",)
-
-# Activate Django-Heroku.
-# if (ENV != Env.TEST) and not TESTING:
-#     django_heroku.settings(locals())
