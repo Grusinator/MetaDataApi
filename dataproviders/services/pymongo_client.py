@@ -14,11 +14,11 @@ class PyMongoClient:
     def insert_data(self, provider, endpoint_name, user, timestamp, data):
         collection = self.get_collection(provider, endpoint_name)
         data_with_meta = {
-            "provider": provider,
-            "user": user,
-            "time_stamp": timestamp,
-            "data": data,
+            "_provider": provider,
+            "_user": user,
+            "_time_stamp": timestamp,
         }
+        data_with_meta.update(data)
         collection.insert_one(data_with_meta)
 
         # db.my_collection.create_index("x")

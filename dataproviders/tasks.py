@@ -6,8 +6,9 @@ from django.contrib.auth.models import User
 
 import dataproviders.services.fetch_data_from_provider as fetch_service
 from dataproviders.models import DataProviderUser, DataFileUpload, DataFetch
+from dataproviders.models.DataFile import DataFile
 from dataproviders.models.DataFileSourceBase import DataFileSourceBase
-from dataproviders.services import oauth
+from dataproviders.services import oauth, pymongo_client
 from dataproviders.services.transform_files_to_data import TransformFilesToData
 
 
@@ -74,3 +75,15 @@ def schedule_task_clean_data_from_source_file(data_object: DataFileSourceBase):
     if not data_object.has_been_refined:
         is_from_file_upload = isinstance(data_object, DataFileUpload)
         clean_data_from_source.delay(data_object.pk, is_from_file_upload)
+
+
+@celery.shared_task
+def persist_to_document_store(data_provider_name, endpoint_name, user, timestamp, data):
+    pymongo_client.insert_data(data_provider_name, endpoint_name, user, timestamp, data)
+
+
+def schedule_task_persist_to_document_store(data_object: DataFile):
+    persist_to_document_store.delay(
+        data_object.data_provider.provider_name, "all_temp", data_object.user.id, data_object.date_created,
+        data_object.read_data()
+    )

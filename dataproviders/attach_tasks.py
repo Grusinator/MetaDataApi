@@ -1,6 +1,7 @@
 from dataproviders import tasks
-from dataproviders.admin import DataFileUploadAdmin, DataFetchAdmin
+from dataproviders.admin import DataFileUploadAdmin
 from dataproviders.models.DataFetch import data_fetch_on_save_methods
+from dataproviders.models.DataFile import data_file_on_save_methods
 from dataproviders.models.DataFileUpload import data_file_upload_on_save_methods
 from dataproviders.models.DataProviderUser import data_provider_user_save_methods
 
@@ -14,3 +15,5 @@ def attach_tasks():
     data_fetch_on_save_methods.append(tasks.schedule_task_clean_data_from_source_file)
     # TODO causeing some unique error
     # DataFetchAdmin.add_action_from_single_arg_method(tasks.schedule_task_clean_data_from_source_file)
+
+    data_file_on_save_methods.append(tasks.schedule_task_persist_to_document_store)

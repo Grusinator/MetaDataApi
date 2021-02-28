@@ -4,7 +4,6 @@ from graphene_django.types import DjangoObjectType
 from graphql_jwt.decorators import login_required
 
 from dataproviders.models import DataProvider, DataProviderUser
-# from dataproviders.services import AddDefaultDataProviderService, LoadDataFromProviderService
 from users.models import Profile
 
 
@@ -18,44 +17,6 @@ class DataProviderType(DjangoObjectType):
 class DataProviderUserType(DjangoObjectType):
     class Meta:
         model = DataProviderUser
-
-
-# class AddDefaultDataProvider(graphene.Mutation):
-#     dataprovider = graphene.List(DataProviderType)
-#     success = graphene.Boolean()
-#
-#     class Arguments:
-#         provider_name = graphene.String()
-#
-#     @login_required
-#     def mutate(self, info, provider_name):
-#         args = dict(locals())
-#         [args.pop(x) for x in ["info", "self"]]
-#
-#         default_data_providers = AddDefaultDataProviderService.execute(args)
-#
-#         return AddDefaultDataProvider(
-#             success=True,
-#             dataprovider=default_data_providers)
-
-
-# class LoadDataFromProvider(graphene.Mutation):
-#     data = graphene.List(graphene.String)
-#
-#     class Arguments:
-#         provider_name = graphene.String()
-#         endpoint = graphene.String()
-#
-#     @login_required
-#     def mutate(self, info, provider_name, endpoint="all"):
-#         args = dict(locals())
-#         [args.pop(x) for x in ["info", "self"]]
-#         args["user_pk"] = info.context.user.pk
-#
-#         data = LoadDataFromProviderService.execute(args)
-#
-#         return LoadDataFromProvider(
-#             data=data)
 
 
 class CreateThirdPartyProfile(graphene.Mutation):
@@ -98,5 +59,3 @@ class Query(graphene.ObjectType):
 
 class Mutation(graphene.ObjectType):
     pass
-    # add_data_provider = AddDefaultDataProvider.Field()
-    # load_data_from_dataprovider = LoadDataFromProvider.Field()

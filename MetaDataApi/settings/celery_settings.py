@@ -1,8 +1,6 @@
-# CELERY
-# CELERY_BROKER_URL = 'pyamqp://django:dev1234@localhost:5672/meta_data_api'
-#: Only add pickle to this list if your broker is secured
-#: from unwanted access (see userguide/security.html)
 from MetaDataApi.settings import DOCKER, ENV, TESTING
+
+ENABLE_IN_MEMORY = True
 
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_TASK_SERIALIZER = 'json'
@@ -23,7 +21,7 @@ CELERY_BROKER_TRANSPORT_OPTIONS = {
     'interval_max': 3,
 }
 
-if (ENV == "test") or TESTING:
+if (ENV == "test") or TESTING or ENABLE_IN_MEMORY:
     BROKER_BACKEND = 'memory'
     CELERY_TASK_ALWAYS_EAGER = True
     CELERY_TASK_EAGER_PROPAGATES = True
