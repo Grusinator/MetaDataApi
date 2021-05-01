@@ -30,6 +30,8 @@ ENV = Env[os.getenv('ENV', Env.LOCAL.value)]
 DOCKER = bool(os.getenv('DOCKER', False))
 DEBUG = bool(os.getenv('DEBUG', False))
 
+ENV = Env.PROD
+
 
 def is_debugging():
     # gettrace() is none when not debugging
