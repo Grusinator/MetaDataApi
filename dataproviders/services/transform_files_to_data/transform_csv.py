@@ -3,7 +3,7 @@ import io
 import logging
 
 from django.core.files.base import ContentFile
-from json2model.services.data_type_transform import transform_data_type
+from MetaDataApi.utils.common_utils.data_type_transform import transform_data_type
 
 from MetaDataApi.utils import JsonType, JsonUtils
 from MetaDataApi.utils.django_utils.django_file_utils import FileType

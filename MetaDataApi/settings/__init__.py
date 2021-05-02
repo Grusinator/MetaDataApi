@@ -30,9 +30,6 @@ ENV = Env[os.getenv('ENV', Env.LOCAL.value)]
 DOCKER = bool(os.getenv('DOCKER', False))
 DEBUG = bool(os.getenv('DEBUG', False))
 
-ENV = Env.PROD
-
-
 def is_debugging():
     # gettrace() is none when not debugging
     return (sys.gettrace() is not None)
@@ -74,7 +71,7 @@ INSTALLED_APPS = [
     # 'graphene_file_upload',
     'django_celery_results',
     'django_celery_beat',
-    'djcelery_model',
+    #'djcelery_model',
     # 'social_django',
 ]
 

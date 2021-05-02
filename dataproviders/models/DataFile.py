@@ -2,7 +2,6 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
-from djcelery_model.models import TaskMixin
 from jsonfield import JSONField
 
 from MetaDataApi.custom_storages import PrivateMediaStorage
@@ -12,7 +11,7 @@ from dataproviders.models.DataProvider import DataProvider
 data_file_on_save_methods = []
 
 
-class DataFile(TaskMixin, models.Model):
+class DataFile(models.Model):
     date_created = models.DateField(auto_now=True)
     data_file = models.FileField(upload_to=settings.DATAFILE_STORAGE_PATH, storage=PrivateMediaStorage())
     user = models.ForeignKey(User, on_delete=models.CASCADE)

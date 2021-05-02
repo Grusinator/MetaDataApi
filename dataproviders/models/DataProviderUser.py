@@ -1,13 +1,13 @@
 from django.contrib.auth.models import User
 from django.db import models
-from djcelery_model.models import TaskMixin
+
 
 from dataproviders.models import DataProvider
 
 data_provider_user_save_methods = []
 
 
-class DataProviderUser(TaskMixin, models.Model):
+class DataProviderUser(models.Model):
     data_provider = models.ForeignKey(DataProvider, on_delete=models.CASCADE)
     user = models.ForeignKey(User, null=False, on_delete=models.CASCADE)
     access_token = models.CharField(max_length=255)

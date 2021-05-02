@@ -9,4 +9,4 @@ def setup_py(command):
 
 @task
 def run(command):
-    command.run("python3 /code/manage.py migrate --noinput && python3 /code/manage.py runserver 0.0.0.0:80")
+    command.run("python3 manage.py migrate --noinput && python3 manage.py runserver 0.0.0.0:80")

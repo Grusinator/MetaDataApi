@@ -10,7 +10,7 @@ import os
 from dotenv import load_dotenv
 from invoke import task
 
-docker_files_path = ".\\devops\\docker\\"
+docker_files_path = "./devops/docker/"
 
 load_dotenv()
 
@@ -24,7 +24,8 @@ INITIALS = os.getenv("INITIALS")
 
 @task
 def acr_login(command):
-    command.run(f"az acr login --name {ACR}")
+    pass
+    # command.run(f"az acr login --name {ACR}")
 
 
 @task(pre=[acr_login])

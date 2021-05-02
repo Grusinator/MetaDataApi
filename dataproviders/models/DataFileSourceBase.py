@@ -3,14 +3,13 @@ from abc import ABCMeta, abstractmethod
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
-from djcelery_model.models import TaskMixin
 
 from MetaDataApi.custom_storages import PrivateMediaStorage
 from dataproviders.models.DataFile import DataFile
 from dataproviders.models.DataProvider import DataProvider
 
 
-class DataFileSourceBase(TaskMixin, models.Model):
+class DataFileSourceBase(models.Model):
     __metaclass__ = ABCMeta
     data_file_from_source = models.FileField(upload_to=settings.DATAFILE_STORAGE_PATH, storage=PrivateMediaStorage())
     date_created = models.DateTimeField(auto_now_add=True)
